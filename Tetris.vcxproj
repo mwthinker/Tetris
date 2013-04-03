@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0557B962-52D9-4032-BAFB-65F49B448E4B}</ProjectGuid>
+    <RootNamespace>Tetris</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(IncludePath)</IncludePath>
+    <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib\debug;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\Debug;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(IncludePath)</IncludePath>
+    <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\Release;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;enet.lib;ws2_32.lib;winmm.lib;SDL.lib;OpenGl32.lib;MwLibrary.lib;MwNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <IgnoreSpecificDefaultLibraries>LIBCMTD;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;enet.lib;ws2_32.lib;winmm.lib;SDL.lib;OpenGl32.lib;MwLibrary.lib;MwNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="actionhandler.cpp" />
+    <ClCompile Include="block.cpp" />
+    <ClCompile Include="drawboard.cpp" />
+    <ClCompile Include="gamefont.cpp" />
+    <ClCompile Include="gamesound.cpp" />
+    <ClCompile Include="gamesprite.cpp" />
+    <ClCompile Include="graphicboard.cpp" />
+    <ClCompile Include="gui\textfield.cpp" />
+    <ClCompile Include="human.cpp" />
+    <ClCompile Include="inputdevice.cpp" />
+    <ClCompile Include="inputjoystick.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="movehandler.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="playermanager.cpp" />
+    <ClCompile Include="rotationhandler.cpp" />
+    <ClCompile Include="protocol.cpp" />
+    <ClCompile Include="tetrisboard.cpp" />
+    <ClCompile Include="tetrisgame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="actionhandler.h" />
+    <ClInclude Include="bar.h" />
+    <ClInclude Include="block.h" />
+    <ClInclude Include="color.h" />
+    <ClInclude Include="drawboard.h" />
+    <ClInclude Include="gamefont.h" />
+    <ClInclude Include="gamesound.h" />
+    <ClInclude Include="gamesprite.h" />
+    <ClInclude Include="graphicboard.h" />
+    <ClInclude Include="gui\background.h" />
+    <ClInclude Include="gui\button.h" />
+    <ClInclude Include="gui\glcoordinate.h" />
+    <ClInclude Include="gui\gui.h" />
+    <ClInclude Include="gui\guiitem.h" />
+    <ClInclude Include="gui\inputformatter.h" />
+    <ClInclude Include="gui\textbutton.h" />
+    <ClInclude Include="gui\textfield.h" />
+    <ClInclude Include="human.h" />
+    <ClInclude Include="inputdevice.h" />
+    <ClInclude Include="inputipformatter.h" />
+    <ClInclude Include="inputjoystick.h" />
+    <ClInclude Include="inputkeyboard.h" />
+    <ClInclude Include="menuevent.h" />
+    <ClInclude Include="mousedoubleclick.h" />
+    <ClInclude Include="movehandler.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="playermanager.h" />
+    <ClInclude Include="pressentertostart.h" />
+    <ClInclude Include="protocol.h" />
+    <ClInclude Include="remoteuser.h" />
+    <ClInclude Include="rotationhandler.h" />
+    <ClInclude Include="choosenbrofplayers.h" />
+    <ClInclude Include="square.h" />
+    <ClInclude Include="tetrisboard.h" />
+    <ClInclude Include="tetrisgame.h" />
+    <ClInclude Include="tetriswindow.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
