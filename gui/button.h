@@ -2,92 +2,46 @@
 #define BUTTON_H
 
 #include "guiitem.h"
-#include "glcoordinate.h"
 
-#include <SDL.h>
+#include <mw/signal.h>
+
+#include <functional>
+#include <string>
 
 namespace gui {
 
-template <typename GuiEvent>
-class Button : public GuiItem<GuiEvent> {
-public:
-	Button(GuiEvent onPushEvent) {
-		mode_ = MODE_NOTHING;
-		onPushEvent_ = onPushEvent;
-	}
+	class Button : public GuiItem {
+	public:
+		Button();
+		Button(std::string text);
 
-	virtual ~Button() {}
+		void setText(std::string text);
+		std::string getText() const;
 
-	void setEventTypeOnPush(GuiEvent onPushEvent) {
-		onPushEvent_ = onPushEvent;
-	}
+		void eventUpdate(const SDL_Event& windowEvent, int x, int y) override;
 
-	GuiEvent getEventTypeOnPush() const {
-		return onPushEvent_;
-	}
+		bool isMouseInside() const;
 
-	virtual void graphicUpdate(Uint32 deltaTime) = 0;
+		bool isPushed() const;
 
-	virtual void eventUpdate(const SDL_Event& windowEvent) {
-		int x, y;
-		// Gets the mouse position in the graphic coordinate system.
-		GuiItem<GuiEvent>::mousePosition(x,y);
-		//std::cout << "\n "<< x << " " << y;
+		bool isMouseDown() const;
 
-		bool inside = isInside(x,y);
+		void click();
 
-		switch (windowEvent.type) {
-		case SDL_MOUSEMOTION:
-			if (inside) {
-				if (mode_ != MODE_MOUSEPRESSED) {
-					mode_ = MODE_MOUSEOVER;
-					//std::cout << "\nMODE_MOUSEOVER";
-				}
-			} else {
-				mode_ = MODE_MOUSENOTOVER;
-			}
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			switch (windowEvent.button.button) {
-			case SDL_BUTTON_LEFT:
-				if (inside) {
-					mode_ = MODE_MOUSEPRESSED;
-					push(onPushEvent_);
-				} else {
-					mode_ = MODE_NOTHING;
-				}
-				break;
-			}
-			break;
-		case SDL_MOUSEBUTTONUP:
-			switch (windowEvent.button.button) {
-			case SDL_BUTTON_LEFT:
-				mode_ = MODE_MOUSEPRESSED;
-				break;
-			}
-			break;
-		};
-	}
-protected:
-	enum Mode {MODE_NOTHING,MODE_MOUSEOVER,MODE_MOUSENOTOVER,MODE_MOUSEPRESSED,MODE_MOUSERELEASED};
+		void addOnClickListener(std::function<void()> onClick);
 
-	virtual bool isInside(int x, int y) = 0;
+	private:
+		void excecute();
 
-	Mode getMode() const {
-		return mode_;
-	}
+		mw::Signal<void> onClick_;
+		std::string text_;
+		bool pushed_;
+		bool mouseDown_;
+		bool mouseInside_;
+	};
 
-	void setMode(Mode mode) {
-		mode_ = mode_;
-	}
-private:
-	Mode mode_;
+	typedef std::shared_ptr<Button> ButtonPtr;
 
-	GlCoordinate position_;
-	GuiEvent onPushEvent_;
-	int width_, height_;
-};
-
-} // namespace gui
+} // Namespace gui.
 
 #endif // BUTTON_H

@@ -1,83 +1,105 @@
 #ifndef GUIITEM_H
 #define GUIITEM_H
 
+#include "background.h"
+
+#include <functional>
+#include <cmath>
+#include <vector>
+
+#include <memory>
 #include <SDL.h>
-#include <queue>
+#include <SDL_opengl.h>
 
 namespace gui {
 
-template <typename GuiEvent>
-class GuiItem {
-public:
-	GuiItem() {
-		visible_ = true;
-		active_ = true;
-	}
+	class GuiProperties {
+	public:
+		GuiProperties() {
+			x_ = 0;
+			y_ = 0;
+			visible_ = true;
+			invX_ = false;
+			invY_ = false;
+		}
 
-	virtual ~GuiItem() {
-	}
+		GuiProperties(int x, int y, bool invX, bool invY) {
+			x_ = x;
+			y_ = y;
+			visible_ = true;
+			invX_ = invX;
+			invY_ = invY;
+		}
 
-	bool isActive() const {
-		return active_;
-	}
+		int x_, y_;  // Global position.
+		bool visible_;
+		bool invX_, invY_;  // Invert the x and y axis if true.	
+	};
 
-	void setActive(bool active) {
-		return active_;
-	}
+	class GuiItem {
+	public:
+		friend class MultiFrame;
+		friend class Group;
 
-	bool isVisible() const {
-		return visible_;
-	}
+		GuiItem() {
+			focus_ = false;
+			width_ = 0;
+			height_ = 0;
+		}
 
-	void setVisible(bool visible) {
-		visible_ = visible;
-	}	
+		virtual ~GuiItem() {
+		}
 
-	virtual void physicUpdate(Uint32 deltaTime) {}
-	virtual void graphicUpdate(Uint32 deltaTime) {};
-	virtual void eventUpdate(const SDL_Event& windowEvent) {};
+		virtual void eventUpdate(const SDL_Event& windowEvent, int x, int y) {
+		}
 
-	bool pollEvent(GuiEvent& newEvent) {
-        if (events_.empty()) {
-            return false;
-        }
-        newEvent = events_.front();
-        events_.pop();
-        return true;
-    }
-protected:
-	void push(const GuiEvent& guiEvent) {
-		events_.push(guiEvent);
-	}
+		virtual void draw() {
+		}	
 
-	// Saves the current position for the mouse in x and y.
-	void mousePosition(int& x, int& y) {
-		int tmpX;
-		int tmpY;
-		SDL_GetMouseState(&tmpX, &tmpY);
-		int w,h;
-		windowSize(w,h);
+		int getWidth() const {
+			return width_;
+		}
 
-		x = tmpX;
-		y = h - tmpY;  // Transform the sdl postion to the reference system of the opengl graphic.
-	}
+		int getHeight() const {
+			return height_;
+		}
 
-	void windowSize(int& width, int& height) {
-		SDL_Surface* surface = SDL_GetVideoSurface();
-		width = surface->w;
-		height = surface->h;
-	}
-private:
-	//template <class GuiEvent>
-	//template <class>
-	//friend class Gui; // In order for gui to access setFixProportions but hide it from classes inherited from this one.
+		void setFocus(bool focus) {
+			focus_ = focus;
+		}
 
-	std::queue<GuiEvent> events_;
+		bool hasFocus() const {
+			return focus_;
+		}
 
-	bool visible_;
-	bool active_;
-};
+		static void windowSize(int& width, int& height) {
+			SDL_Surface* surface = SDL_GetVideoSurface();
+			width = surface->w;
+			height = surface->h;
+		}
 
-} // namespace gui
+		void setWidth(int width) {
+			width_ = width;
+		}
+
+		void setHeight(int height) {
+			height_ = height;
+		}
+
+		bool isInside(int x, int y) const {
+			return x >= 0 && x < width_ &&  y >= 0 && y <= height_;
+		}
+
+	protected:
+		virtual void excecute() {
+		}
+	private:
+		int width_, height_;
+		bool focus_;
+	};
+
+	typedef std::shared_ptr<GuiItem> GuiItemPtr;
+
+} // Namespace gui.
 
 #endif // GUIITEM_H

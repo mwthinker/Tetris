@@ -20,11 +20,11 @@ public:
 		alpha_ = alpha;
 	}
 
-	void glColor3d() const {
+	void glColor3d() {
 		::glColor3d(red_,green_,blue_);
 	}
 
-	void glColor4d() const {
+	void glColor4d() {
 		::glColor4d(red_,green_,blue_,alpha_);
 	}
 

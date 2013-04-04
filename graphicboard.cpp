@@ -94,7 +94,7 @@ double GraphicBoard::getHeight() const {
 // Private
 void GraphicBoard::drawBorder() {
 	glPushMatrix();
-	color_.glColor();
+	color_.glColor4d();
 	drawFrame(0,0,getWidth(),getHeight(), borderLineThickness_);
 	//drawFrame(100,100,200,200, 7);
 	glPopMatrix();
@@ -156,7 +156,7 @@ void GraphicBoard::drawPreviewBlock() {
 	glPushMatrix();
 	// Size is 5 squares.
 	glScaled(previwBorderSizeInSquares_*pixlePerSquare_,previwBorderSizeInSquares_*pixlePerSquare_,1);
-	color_.glColor();
+	color_.glColor4d();
 	// Makes the line thickness to borderLineThickness_.
 	drawFrame(-0.5,-0.5,0.5,0.5,1.0/(previwBorderSizeInSquares_*pixlePerSquare_)*borderLineThickness_);
 	glPopMatrix();

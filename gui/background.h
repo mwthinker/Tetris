@@ -1,37 +1,18 @@
-#ifndef BACKGROUND_H
-#define BACKGROUND_H
+#ifndef VIEW_H
+#define VIEW_H
 
-#include <SDL.h>
-#include <SDL_opengl.h>
-#include <queue>
-#include <vector>
-
-#include "guiitem.h"
+#include <memory>
 
 namespace gui {
 
-template <class GuiEvent>
-class Background : public GuiItem<GuiEvent> {
-public:
-	Background(mw::Sprite sprite) {
-		sprite_ = sprite;
-	}
+	class Background {
+	public:
+		// Draws the view.
+		virtual void draw(int width, int height) = 0;
+	};
 
-	void graphicUpdate(Uint32 deltaTime) {
-		glPushMatrix();
-		glColor3d(1,1,1);
-		int w,h;
-		GuiItem<GuiEvent>::windowSize(w,h);
+	typedef std::shared_ptr<Background> BackgroundPtr;
 
-		glScaled(w,h,1);
-		glTranslated(0.5,0.5,0);
-		sprite_.draw();
-		glPopMatrix();
-	}
-private:
-	mw::Sprite sprite_;
-};
+} // Namespace gui.
 
-} // namespace gui
-
-#endif // BACKGROUND_H
+#endif // VIEW_H

@@ -39,14 +39,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(IncludePath)</IncludePath>
+    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;$(IncludePath)</IncludePath>
     <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib\debug;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\Debug;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(IncludePath)</IncludePath>
+    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;$(IncludePath)</IncludePath>
     <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\Release;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\Users\marcus\Documents\Visual Studio 2012\Projects\GuiSdl\GuiSdl;$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -86,7 +86,14 @@
     <ClCompile Include="gamesound.cpp" />
     <ClCompile Include="gamesprite.cpp" />
     <ClCompile Include="graphicboard.cpp" />
-    <ClCompile Include="gui\textfield.cpp" />
+    <ClCompile Include="gui\barcolor.cpp" />
+    <ClCompile Include="gui\button.cpp" />
+    <ClCompile Include="gui\frame.cpp" />
+    <ClCompile Include="gui\guiwindow.cpp" />
+    <ClCompile Include="gui\main.cpp" />
+    <ClCompile Include="gui\multiframe.cpp" />
+    <ClCompile Include="gui\textboxdraw.cpp" />
+    <ClCompile Include="gui\textitem.cpp" />
     <ClCompile Include="human.cpp" />
     <ClCompile Include="inputdevice.cpp" />
     <ClCompile Include="inputjoystick.cpp" />
@@ -108,15 +115,26 @@
     <ClInclude Include="gamefont.h" />
     <ClInclude Include="gamesound.h" />
     <ClInclude Include="gamesprite.h" />
+    <ClInclude Include="glcoordinate.h" />
     <ClInclude Include="graphicboard.h" />
     <ClInclude Include="gui\background.h" />
+    <ClInclude Include="gui\bar.h" />
+    <ClInclude Include="gui\barcolor.h" />
     <ClInclude Include="gui\button.h" />
-    <ClInclude Include="gui\glcoordinate.h" />
-    <ClInclude Include="gui\gui.h" />
+    <ClInclude Include="gui\color.h" />
+    <ClInclude Include="gui\frame.h" />
+    <ClInclude Include="gui\group.h" />
     <ClInclude Include="gui\guiitem.h" />
+    <ClInclude Include="gui\guiwindow.h" />
+    <ClInclude Include="gui\highscore.h" />
+    <ClInclude Include="gui\imagebackground.h" />
     <ClInclude Include="gui\inputformatter.h" />
+    <ClInclude Include="gui\inputnumberformatter.h" />
+    <ClInclude Include="gui\multiframe.h" />
+    <ClInclude Include="gui\textbox.h" />
+    <ClInclude Include="gui\textboxdraw.h" />
     <ClInclude Include="gui\textbutton.h" />
-    <ClInclude Include="gui\textfield.h" />
+    <ClInclude Include="gui\textitem.h" />
     <ClInclude Include="human.h" />
     <ClInclude Include="inputdevice.h" />
     <ClInclude Include="inputipformatter.h" />

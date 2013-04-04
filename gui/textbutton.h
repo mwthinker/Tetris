@@ -2,106 +2,108 @@
 #define TEXTBUTTON_H
 
 #include "button.h"
+#include "color.h"
+
 #include <mw/text.h>
 #include <mw/font.h>
-#include "glcoordinate.h"
-
 #include <SDL_opengl.h>
-#include <string>
 
 namespace gui {
 
-template <typename GuiEvent>
-class TextButton : public Button<GuiEvent> {
-public:
-	TextButton(int xPos, int yPos, std::string text, int characterSize, mw::FontPtr font, GuiEvent onPushEvent) : Button<GuiEvent>(onPushEvent) {
-		position_ = GlCoordinate(xPos,yPos);
-		text_ = mw::Text(text,font,characterSize);
-		reversY_ = false;
-		selected_ = false;
-	}
+	class TextButton : public Button {
+	public:
+		TextButton(std::string text, int size, mw::FontPtr font) : Button(text), text_(text,font) {
+			focused_ = Color(0.8, 0.8, 0.8);
+			textColor_ = Color(1.0,0.1,0.1);
+			onHover_ = Color(0.6, 0.1, 0.1);
+			notHover_ = Color(0.4, 0.0, 0.0);
+			insideDownHover_ = Color(0.5, 0.0, 0.5);		
+			size_ = size;
 
-	void setReverseAxleY(bool reversY) {
-		reversY_ = reversY;
-	}
-
-	bool getReverseAxleY() const {
-		return reversY_;
-	}
-
-	void setText(std::string text) {
-		text_.setText(text);
-	}
-
-	std::string getText(std::string text) {
-		return text_.getText();
-	}
-
-	void eventUpdate(const SDL_Event& windowEvent) {
-		Button<GuiEvent>::eventUpdate(windowEvent);
-
-		bool mouse = false;
-		switch (windowEvent.type) {
-		case SDL_MOUSEMOTION:
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
-			mouse = true;
-			break;
-		};
-
-		if (mouse) {
-			if (Button<GuiEvent>::getMode() == Button<GuiEvent>::MODE_MOUSEOVER) {
-				selected_ = true;
-			} else {
-				selected_ = false;
+			while (text_.getHeight() > size) {
+				text_.setCharacterSize((int) (text_.getCharacterSize()-0.1));
 			}
-		}
-	}
 
-	void graphicUpdate(Uint32 deltaTime) {
-		glPushMatrix();		
-
-		if (selected_) {
-			glColor3d(0.8,0,0);
-		} else {
-			glColor3d(0.5,0,0);
+			setWidth((int) text_.getWidth());
+			setHeight(size);
 		}
 
-		if (reversY_) {
-			int w, h;
-			Button<GuiEvent>::windowSize(w,h);
-			glTranslated(0,-2 * position_.y + h - 0.5 * text_.getHeight(),0);
+		TextButton(std::string text, int size, mw::FontPtr font, Color textColor, Color focused, Color onHover,
+			Color notHover, Color insideDownHover) : Button(text), text_(text,font) {
+				textColor_ = textColor;
+				focused_ = focused;
+				onHover_ = onHover;
+				notHover_ = notHover;
+				insideDownHover_ = insideDownHover;
+				size_ = size;
+
+				while (text_.getHeight() > size) {
+					text_.setCharacterSize((int) (text_.getCharacterSize()-0.1));
+				}
+
+				setWidth((int) text_.getWidth());
+				setHeight(size);
 		}
 
-		position_.glTranslate();
-		text_.draw();
-		glPopMatrix();
-	}
+		// Override View
+		void draw() override {
+			int width = getWidth();
+			int height = getHeight();
 
-	bool isSelected() const {
-		return selected_;
-	}
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	void setSelected(bool selected) {
-		selected_ = selected;
-	}
-protected:
-	bool isInside(int x, int y) {
-		if (reversY_) {
-			int w, h;
-			Button<GuiEvent>::windowSize(w,h);
-			y = (int) (h - y + 0.5 * text_.getHeight());
+			if (isPushed()) {
+				if (isMouseInside()) {
+					insideDownHover_.glColor4d();
+				} else {
+					notHover_.glColor4d();
+				}
+			} else if (!isMouseDown()) { // Mouse up?
+				if (isMouseInside()) {
+					onHover_.glColor4d();
+				} else {
+					notHover_.glColor4d();
+				}
+			} else { // Mouse down? // Should not go here!
+				// But just in case.
+				notHover_.glColor4d();
+			}
+
+			glBegin(GL_QUADS);
+			glVertex3f(0.0f, 0.0f, 0.0f);
+			glVertex3f(width*1.0f, 0.0f, 0.0f);
+			glVertex3f(width*1.0f, height*1.0f, 0.0f);
+			glVertex3f(0.0f, height*1.0f, 0.0f);
+			glEnd();
+
+			if (hasFocus()) {
+				focused_.glColor4d();
+				glBegin(GL_QUADS);
+				glVertex3f(0.0f, 0.0f, 0.0f);
+				glVertex3f(width*1.0f, 0.0f, 0.0f);
+				glVertex3f(width*1.0f, height*1.0f, 0.0f);
+				glVertex3f(0.0f, height*1.0f, 0.0f);
+				glEnd();
+			}
+
+			textColor_.glColor4d();
+			text_.setText(getText());
+			text_.draw();
+
+			glDisable(GL_BLEND);
 		}
-		return x > position_.x &&  y > position_.y && x < position_.x + text_.getWidth() &&  y < position_.y + text_.getHeight();
-	}
 
-private:
-	bool selected_;
-	GlCoordinate position_;
-	mw::Text text_;
-	bool reversY_;
-};
+		void setTextSize(int size) {
+			text_.setCharacterSize(size);
+		}
 
-} // namespace gui
+	private:
+		Color textColor_, focused_, onHover_, notHover_, insideDownHover_;
+		mw::Text text_;
+		int size_;
+	};
+
+} // Namespace gui.
 
 #endif // TEXTBUTTON_H
