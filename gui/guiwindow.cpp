@@ -44,6 +44,7 @@ namespace gui {
 
 		multiFrame_.setCurrentFrame(0);
 		mw::Window::setUnicodeInputEnable(true);
+		resize(500,600);
 	}
 
 	void GuiWindow::test3() {
@@ -148,6 +149,7 @@ namespace gui {
 
 	void GuiWindow::initPlayFrame() {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
+		restartGame();
 
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
@@ -263,12 +265,18 @@ namespace gui {
 	}
 
 	void GuiWindow::resize(int width, int height) {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glViewport(0,0,width,height);		
+		glOrtho(0,width,0,height,-1,1);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 	}
 
 	// Override mw::Window
 	void GuiWindow::update(Uint32 deltaTime) {
 		multiFrame_.draw(deltaTime/1000.0);
-		if (false) {
+		if (isUpdatingGame()) {
 			updateGame(deltaTime);
 		}
 	}
@@ -276,7 +284,7 @@ namespace gui {
 	// Override mw::Window
 	void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
 		multiFrame_.eventUpdate(windowEvent);
-		if (false) {
+		if (isUpdatingGame()) {
 			updateGameEvent(windowEvent);
 		}
 

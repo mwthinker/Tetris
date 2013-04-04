@@ -26,6 +26,9 @@ namespace gui {
 		void test1();
 
 	private:		
+		bool isUpdatingGame() const {
+			return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
+		}
 
 		bool isDrawGame() const;
 		void setDrawGame(bool drawGame);		

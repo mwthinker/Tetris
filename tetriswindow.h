@@ -43,8 +43,11 @@ class TetrisWindow : public gui::GuiWindow {
 public:
     TetrisWindow() {
 		numberOfPlayer_ = 1;
+		tetrisGame_.createLocalGame(1);
+		tetrisGame_.setReadyGame(true);
+		tetrisGame_.startGame();		
 
-		tetrisGame.setOnConnectionEvent([&](Protocol::ManagerEvent connectionEvent) {
+		tetrisGame_.setOnConnectionEvent([&](Protocol::ManagerEvent connectionEvent) {
 			handleConnectionEvent(connectionEvent);
 		});
     }
@@ -53,20 +56,55 @@ public:
 	}
 
 private:
+	void restartGame() {
+		tetrisGame_.startGame();
+		tetrisGame_.restartGame();
+	}
+
 	void createCustomGame(int width, int height, int maxLevel) {
 
 	}
 
     // Override gui::GuiWindow
     void updateGame(Uint32 deltaTime) {
+		tetrisGame_.physicUpdate(deltaTime);
+		View gameView;
+		glPushMatrix();
+        int w = getWidth();
+		int h = getHeight() - 30;
+
+        // Centers the game and holds the correct proportions. The sides is transparent.
+        if (tetrisGame_.getWidth() / w > tetrisGame_.getHeight() / h) {
+            // Black sides, up and down.
+            double scale = w / tetrisGame_.getWidth();
+            glTranslated(0, (h - scale*tetrisGame_.getHeight()) * 0.5, 0);
+            glScaled(scale, scale, 1);
+            gameView.x = 0;
+            gameView.y = static_cast<int>((h - scale*tetrisGame_.getHeight()) * 0.5);
+            gameView.width = w;
+            gameView.height = static_cast<int>(scale*tetrisGame_.getHeight());
+        } else {
+            // Black sides, left and right.
+            double scale = h / tetrisGame_.getHeight();
+            glTranslated((w-scale*tetrisGame_.getWidth()) * 0.5, 0, 0);
+            glScaled(scale,scale,1);
+            gameView.x = static_cast<int>((w-scale*tetrisGame_.getWidth()) * 0.5);
+            gameView.y = 0;
+            gameView.width = static_cast<int>(scale*tetrisGame_.getWidth());
+            gameView.height = h;
+        }
+
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(gameView_.x,gameView_.y,gameView_.width,gameView_.height);
-		drawTetrisGame(deltaTime);
+		glScissor(gameView.x,gameView.y,gameView.width,gameView.height);
+        tetrisGame_.graphicUpdate(deltaTime);
+        glPopMatrix();
+
 		glDisable(GL_SCISSOR_TEST);
     }
 
 	// Override gui::GuiWindow
 	void updateGameEvent(const SDL_Event& windowEvent) {
+		tetrisGame_.eventUpdate(windowEvent);
 		switch (windowEvent.type) {
 		case SDL_QUIT:
 			//quit();
@@ -85,38 +123,9 @@ private:
 		}
 	}
 
-    void drawTetrisGame(Uint32 deltaTime) {
-        glPushMatrix();
-        int w = getWidth();
-		int h = getHeight() - 30;
-
-        // Centers the game and holds the correct proportions. The sides is transparent.
-        if (tetrisGame.getWidth() / w > tetrisGame.getHeight() / h) {
-            // Black sides, up and down.
-            double scale = w / tetrisGame.getWidth();
-            glTranslated(0, (h - scale*tetrisGame.getHeight()) * 0.5, 0);
-            glScaled(scale, scale, 1);
-            gameView_.x = 0;
-            gameView_.y = static_cast<int>((h - scale*tetrisGame.getHeight()) * 0.5);
-            gameView_.width = w;
-            gameView_.height = static_cast<int>(scale*tetrisGame.getHeight());
-        } else {
-            // Black sides, left and right.
-            double scale = h / tetrisGame.getHeight();
-            glTranslated((w-scale*tetrisGame.getWidth()) * 0.5, 0, 0);
-            glScaled(scale,scale,1);
-            gameView_.x = static_cast<int>((w-scale*tetrisGame.getWidth()) * 0.5);
-            gameView_.y = 0;
-            gameView_.width = static_cast<int>(scale*tetrisGame.getWidth());
-            gameView_.height = h;
-        }
-        tetrisGame.graphicUpdate(deltaTime);
-        glPopMatrix();
-    }
-
 	void handleConnectionEvent(Protocol::ManagerEvent connectionEvent) {
 		if (connectionEvent == PlayerManager::ManagerEvent::STARTS_GAME) {
-			PlayerManager::Status status = tetrisGame.getStatus();
+			PlayerManager::Status status = tetrisGame_.getStatus();
 			std::cout << "MENUEVENT"<<std::endl;
 			switch (status) {
 			case PlayerManager::Status::LOCAL:
@@ -134,12 +143,10 @@ private:
 		}
 	}
 
-    TetrisGame tetrisGame;
+    TetrisGame tetrisGame_;
 	mw::Text header_;
 
 	int numberOfPlayer_;
-
-    View gameView_;
 };
 
 #endif // TETRISWINDOW_H
