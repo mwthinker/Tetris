@@ -107,14 +107,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="actionhandler.h" />
-    <ClInclude Include="bar.h" />
     <ClInclude Include="block.h" />
-    <ClInclude Include="color.h" />
     <ClInclude Include="drawboard.h" />
     <ClInclude Include="gamefont.h" />
     <ClInclude Include="gamesound.h" />
     <ClInclude Include="gamesprite.h" />
-    <ClInclude Include="glcoordinate.h" />
     <ClInclude Include="graphicboard.h" />
     <ClInclude Include="gui\background.h" />
     <ClInclude Include="gui\bar.h" />
@@ -139,7 +136,6 @@
     <ClInclude Include="inputipformatter.h" />
     <ClInclude Include="inputjoystick.h" />
     <ClInclude Include="inputkeyboard.h" />
-    <ClInclude Include="menuevent.h" />
     <ClInclude Include="mousedoubleclick.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="player.h" />

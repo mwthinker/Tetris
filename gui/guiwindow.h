@@ -21,10 +21,6 @@ namespace gui {
 	public:
 		GuiWindow();
 
-		void test3();
-		void test2();
-		void test1();
-
 	private:		
 		bool isUpdatingGame() const {
 			return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;

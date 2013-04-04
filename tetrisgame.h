@@ -81,7 +81,7 @@ private:
 
 	typedef std::shared_ptr<InputDevice<PlayerEvent>> InputDevicePtr;
 	    
-	std::vector<HumanPtr> humanPlayers_;	
+	std::vector<HumanPtr> humanPlayers_;
     
 	mw::Sound soundCollision_, soundTetris_, soundRowRemoved_;
 

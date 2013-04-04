@@ -1,8 +1,6 @@
 #ifndef CHOOSENBROFPLAYERS_H
 #define CHOOSENBROFPLAYERS_H
 
-#include "menuevent.h"
-
 #include <mw/texture.h>
 #include <mw/sprite.h>
 

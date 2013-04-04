@@ -1,14 +1,13 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
-#include "color.h"
+#include "gui/color.h"
 #include "tetrisboard.h"
+#include "drawboard.h"
 
 #include <mw/text.h>
 
 #include <string>
-
-#include "drawboard.h"
 
 // Used to draw a tetris board and corresponding player info.
 class GraphicBoard {

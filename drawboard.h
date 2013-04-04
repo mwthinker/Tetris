@@ -1,7 +1,7 @@
 #ifndef DRAWBOARD_H
 #define DRAWBOARD_H
 
-#include "color.h"
+#include "gui/color.h"
 #include "tetrisboard.h"
 
 #include <mw/text.h>

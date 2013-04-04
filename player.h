@@ -1,16 +1,14 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "tetrisboard.h"
+#include "graphicboard.h"
+
 #include "mw/window.h"
 #include "mw/sprite.h"
 
-//#include <SDL_opengl.h>
-//#include <iostream>
 #include <string>
 #include <queue>
-
-#include "tetrisboard.h"
-#include "graphicboard.h"
 
 class Player {
 public:

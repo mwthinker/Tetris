@@ -1,8 +1,8 @@
 #include "graphicboard.h"
-
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisboard.h"
+#include "gui/color.h"
 
 #include <mw/sprite.h>
 #include <mw/font.h>
@@ -10,7 +10,6 @@
 
 #include <SDL_opengl.h>
 #include <sstream>
-#include "color.h"
 
 GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetrisBoard) {	
 	height_ = 800; // height for the board

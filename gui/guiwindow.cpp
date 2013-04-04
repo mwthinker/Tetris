@@ -47,18 +47,6 @@ namespace gui {
 		resize(500,600);
 	}
 
-	void GuiWindow::test3() {
-		std::cout << "3\n";
-	}
-
-	void GuiWindow::test2() {
-		std::cout << "2\n";
-	}
-
-	void GuiWindow::test1() {
-		std::cout << "1\n";
-	}
-
 	void GuiWindow::quit() {
 		setQuiting(true);
 	}
@@ -92,31 +80,27 @@ namespace gui {
 
 		// Text is outside due to invY which dont know where the top of the text begin.
 		// The bottom is put where it is supposed to but the invers not.
-		ButtonPtr b1 = createTextButton("[Resume]", hDistance_, std::bind(&GuiWindow::test1,this));
-		b1->addOnClickListener([&]() {
+		ButtonPtr b1 = createTextButton("[Resume]", hDistance_, [&]() {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
-		});		
+		});
 
 		auto playFrame = [&]() {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
 		};
 
 		// Menu.
-		ButtonPtr b2 = createTextButton("[Play]", 35, std::bind(&GuiWindow::test1,this));
-		b2->addOnClickListener([&]() {
+		ButtonPtr b2 = createTextButton("[Play]", 35, [&]() {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
 			restartGame();
 		});
-		ButtonPtr b3 = createTextButton("[Custom play]", 35, std::bind(&GuiWindow::test2,this));
-		b3->addOnClickListener([&]() {
+
+		ButtonPtr b3 = createTextButton("[Custom play]", 35, [&]() {
 			multiFrame_.setCurrentFrame(customFrameIndex_);
 		});
-		ButtonPtr b4 = createTextButton("[Highscore]", 35, std::bind(&GuiWindow::test2,this));
-		b4->addOnClickListener([&]() {
+		ButtonPtr b4 = createTextButton("[Highscore]", 35, [&]() {
 			multiFrame_.setCurrentFrame(highscoreFrameIndex_);
-		});		
-		ButtonPtr b5 = createTextButton("[Options]", 35, std::bind(&GuiWindow::test3,this));
-		b5->addOnClickListener([&]() {
+		});
+		ButtonPtr b5 = createTextButton("[Options]", 35, [&]() {
 			multiFrame_.setCurrentFrame(optionFrameIndex_);
 		});
 		ButtonPtr b6 = createTextButton("[Exit]", 35, std::bind(&GuiWindow::quit,this));

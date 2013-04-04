@@ -134,13 +134,7 @@
     <ClInclude Include="actionhandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="block.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphicboard.h">
@@ -156,9 +150,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inputkeyboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="menuevent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inputjoystick.h">
@@ -180,9 +171,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="drawboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="glcoordinate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\guiwindow.h">
