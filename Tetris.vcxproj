@@ -90,7 +90,6 @@
     <ClCompile Include="gui\button.cpp" />
     <ClCompile Include="gui\frame.cpp" />
     <ClCompile Include="gui\guiwindow.cpp" />
-    <ClCompile Include="gui\main.cpp" />
     <ClCompile Include="gui\multiframe.cpp" />
     <ClCompile Include="gui\textboxdraw.cpp" />
     <ClCompile Include="gui\textitem.cpp" />

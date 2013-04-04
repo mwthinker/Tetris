@@ -81,9 +81,6 @@
     <ClCompile Include="gui\guiwindow.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\main.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
     <ClCompile Include="gui\multiframe.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
