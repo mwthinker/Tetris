@@ -93,7 +93,9 @@ namespace gui {
 		// Text is outside due to invY which dont know where the top of the text begin.
 		// The bottom is put where it is supposed to but the invers not.
 		ButtonPtr b1 = createTextButton("[Resume]", hDistance_, std::bind(&GuiWindow::test1,this));
-		multiFrame_.add(b1,0,0,false,true);
+		b1->addOnClickListener([&]() {
+			multiFrame_.setCurrentFrame(playFrameIndex_);
+		});		
 
 		auto playFrame = [&]() {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
@@ -103,6 +105,7 @@ namespace gui {
 		ButtonPtr b2 = createTextButton("[Play]", 35, std::bind(&GuiWindow::test1,this));
 		b2->addOnClickListener([&]() {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
+			restartGame();
 		});
 		ButtonPtr b3 = createTextButton("[Custom play]", 35, std::bind(&GuiWindow::test2,this));
 		b3->addOnClickListener([&]() {
@@ -122,6 +125,10 @@ namespace gui {
 		int y = 150;
 		int distance = 50;
 
+		// In Bar.
+		multiFrame_.add(b1,0,0,false,true);
+
+		// Menu.
 		multiFrame_.add(b2,x,y,false,true);
 		y += distance;
 		multiFrame_.add(b3,x,y,false,true);
@@ -148,16 +155,15 @@ namespace gui {
 	}
 
 	void GuiWindow::initPlayFrame() {
-		multiFrame_.setCurrentFrame(playFrameIndex_);
-		restartGame();
+		multiFrame_.setCurrentFrame(playFrameIndex_);		
 
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
 
-		ButtonPtr b1 = createTextButton("[Menu]", hDistance_, std::bind(&GuiWindow::test1,this));
-		b1->addOnClickListener([&]() {
+		ButtonPtr b1 = createTextButton("[Menu]", hDistance_, [&]() {
 			multiFrame_.setCurrentFrame(0);
 		});
+		
 
 		ButtonPtr b2 = createTextButton("[Restart]", hDistance_, std::bind(&GuiWindow::restartGame,this));
 		ButtonPtr b3 = createTextButton("[Pause]", hDistance_, std::bind(&GuiWindow::pauseGame,this));

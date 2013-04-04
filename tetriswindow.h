@@ -44,8 +44,6 @@ public:
     TetrisWindow() {
 		numberOfPlayer_ = 1;
 		tetrisGame_.createLocalGame(1);
-		tetrisGame_.setReadyGame(true);
-		tetrisGame_.startGame();		
 
 		tetrisGame_.setOnConnectionEvent([&](Protocol::ManagerEvent connectionEvent) {
 			handleConnectionEvent(connectionEvent);
@@ -57,12 +55,17 @@ public:
 
 private:
 	void restartGame() {
+		tetrisGame_.setReadyGame(true);
 		tetrisGame_.startGame();
 		tetrisGame_.restartGame();
 	}
 
 	void createCustomGame(int width, int height, int maxLevel) {
 
+	}
+
+	void pauseGame() {
+		tetrisGame_.pause();
 	}
 
     // Override gui::GuiWindow
