@@ -117,6 +117,7 @@
     <ClInclude Include="gui\bar.h" />
     <ClInclude Include="gui\barcolor.h" />
     <ClInclude Include="gui\button.h" />
+    <ClInclude Include="gui\choosenbrofplayers.h" />
     <ClInclude Include="gui\color.h" />
     <ClInclude Include="gui\frame.h" />
     <ClInclude Include="gui\group.h" />
@@ -144,7 +145,6 @@
     <ClInclude Include="protocol.h" />
     <ClInclude Include="remoteuser.h" />
     <ClInclude Include="rotationhandler.h" />
-    <ClInclude Include="choosenbrofplayers.h" />
     <ClInclude Include="square.h" />
     <ClInclude Include="tetrisboard.h" />
     <ClInclude Include="tetrisgame.h" />

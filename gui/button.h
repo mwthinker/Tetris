@@ -13,10 +13,7 @@ namespace gui {
 	class Button : public GuiItem {
 	public:
 		Button();
-		Button(std::string text);
-
-		void setText(std::string text);
-		std::string getText() const;
+		Button(std::string text);		
 
 		void eventUpdate(const SDL_Event& windowEvent, int x, int y) override;
 
@@ -34,7 +31,7 @@ namespace gui {
 		void excecute();
 
 		mw::Signal<void> onClick_;
-		std::string text_;
+		
 		bool pushed_;
 		bool mouseDown_;
 		bool mouseInside_;

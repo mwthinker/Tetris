@@ -11,5 +11,7 @@ extern const mw::Sprite spriteL;
 extern const mw::Sprite spriteS;
 extern const mw::Sprite spriteT;
 extern const mw::Sprite spriteZ;
+extern const mw::Sprite spriteMan;
+extern const mw::Sprite spriteNoMan;
 
 #endif // MAP_H

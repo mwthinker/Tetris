@@ -12,7 +12,7 @@ namespace gui {
 
 	class TextButton : public Button {
 	public:
-		TextButton(std::string text, int size, mw::FontPtr font) : Button(text), text_(text,font) {
+		TextButton(std::string text, int size, mw::FontPtr font) : text_(text,font) {
 			focused_ = Color(0.8, 0.8, 0.8);
 			textColor_ = Color(1.0,0.1,0.1);
 			onHover_ = Color(0.6, 0.1, 0.1);
@@ -29,7 +29,7 @@ namespace gui {
 		}
 
 		TextButton(std::string text, int size, mw::FontPtr font, Color textColor, Color focused, Color onHover,
-			Color notHover, Color insideDownHover) : Button(text), text_(text,font) {
+			Color notHover, Color insideDownHover) : text_(text,font) {
 				textColor_ = textColor;
 				focused_ = focused;
 				onHover_ = onHover;
@@ -43,6 +43,14 @@ namespace gui {
 
 				setWidth((int) text_.getWidth());
 				setHeight(size);
+		}
+
+		void setText(std::string text) {
+			text_.setText(text);
+		}
+
+		std::string getText() const {
+			return text_.getText();
 		}
 
 		// Override View

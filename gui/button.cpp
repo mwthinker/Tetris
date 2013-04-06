@@ -11,24 +11,6 @@ namespace gui {
 		mouseInside_ = false;
 		setWidth(50);
 		setHeight(50);
-		text_ = "";
-	}
-
-	Button::Button(std::string text) {
-		pushed_ = false;
-		mouseDown_ = false;
-		mouseInside_ = false;
-		setWidth(50);
-		setHeight(50);
-		text_ = text;
-	}
-
-	void Button::setText(std::string text) {
-		text_ = text;
-	}
-
-	std::string Button::getText() const {
-		return text_;
 	}
 
 	void Button::eventUpdate(const SDL_Event& windowEvent, int x, int y) {		
@@ -38,7 +20,7 @@ namespace gui {
 				mouseInside_ = true;
 			} else {
 				mouseInside_ = false;
-			}			
+			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			switch (windowEvent.button.button) {

@@ -8,6 +8,7 @@
 #include "textitem.h"
 #include "textboxdraw.h"
 #include "inputnumberformatter.h"
+#include "choosenbrofplayers.h"
 
 #include "../gamesprite.h"
 #include "../gamefont.h"
@@ -151,10 +152,14 @@ namespace gui {
 
 		ButtonPtr b2 = createTextButton("[Restart]", hDistance_, std::bind(&GuiWindow::restartGame,this));
 		ButtonPtr b3 = createTextButton("[Pause]", hDistance_, std::bind(&GuiWindow::pauseGame,this));
+		
+		ButtonPtr b4 = std::make_shared<ChooseNbrOfPlayers>(hDistance_);
 
 		multiFrame_.add(b1,0,0,false,true);
 		multiFrame_.add(b2,100,0,false,true);
 		multiFrame_.add(b3,0,0,true,true);
+		
+		multiFrame_.add(b4,215,0,false,true);
 	}
 
 	void GuiWindow::initHighscoreFrame() {
