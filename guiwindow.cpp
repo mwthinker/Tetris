@@ -76,7 +76,7 @@ namespace gui {
 
 	void GuiWindow::initFrameMenu() {
 		multiFrame_.setCurrentFrame(0);
-		multiFrame_.add(std::make_shared<TextItem>("MWetris",fontDefault50,80,Color(0.9,0.2,0,0.9)),10,50,false,true);
+		multiFrame_.add(std::make_shared<TextItem>("MWetris",fontDefault50,80,Color(1,1,1)),10,50,false,true);//Color(0.9,0.2,0,0.9)
 		multiFrame_.add(std::make_shared<TextItem>("Made by Marcus Welander",fontDefault18,12,Color(0.9,0.2,0,0.9)),0,0,true,false);
 
 		// Upper bar.		
@@ -139,9 +139,7 @@ namespace gui {
 		y += distance;
 		multiFrame_.add(b5,x,y,false,true);
 		y += distance;
-		multiFrame_.add(b6,x,y,false,true);
-		auto textBox = createTextBox(100);
-		multiFrame_.add(textBox,x+50,y+50,false,true);
+		multiFrame_.add(b6,x,y,false,true);		
 
 		// Focus is switchable by the left and right arrow.
 		GroupPtr group = std::make_shared<Group>(SDLK_UP,SDLK_DOWN);
@@ -151,7 +149,6 @@ namespace gui {
 		group->add(b4);
 		group->add(b5);
 		group->add(b6);
-		group->add(textBox);		
 
 		multiFrame_.add(group,0,0,false,false);
 	}
@@ -248,6 +245,9 @@ namespace gui {
 		});
 		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
 			switch (sdlEvent.type) {
+			case SDL_QUIT:
+				item->click();
+				break;
 			case SDL_KEYDOWN:
 				SDLKey key = sdlEvent.key.keysym.sym;
 				if (key == SDLK_ESCAPE) {
@@ -268,6 +268,19 @@ namespace gui {
 
 		ButtonPtr menu = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
+		});
+		menu->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_QUIT:
+				item->click();
+				break;
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				if (key == SDLK_ESCAPE) {
+					item->click();
+					break;
+				}
+			}
 		});
 
 		multiFrame_.add(menu,0,0,false,true);
@@ -332,6 +345,9 @@ namespace gui {
 		});
 		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
 			switch (sdlEvent.type) {
+			case SDL_QUIT:
+				item->click();
+				break;
 			case SDL_KEYDOWN:
 				SDLKey key = sdlEvent.key.keysym.sym;
 				if (key == SDLK_ESCAPE) {
@@ -352,6 +368,19 @@ namespace gui {
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
+		});
+		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_QUIT:
+				item->click();
+				break;
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				if (key == SDLK_ESCAPE) {
+					item->click();
+					break;
+				}
+			}
 		});
 	}
 
