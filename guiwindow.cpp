@@ -46,6 +46,9 @@ namespace gui {
 		multiFrame_.setCurrentFrame(0);
 		mw::Window::setUnicodeInputEnable(true);
 		resize(500,600);
+
+		pauseKey_ = SDLK_p;
+		restartKey_ = SDLK_F2;
 	}
 
 	void GuiWindow::quit() {
@@ -159,8 +162,7 @@ namespace gui {
 			switch (sdlEvent.type) {
 			case SDL_KEYDOWN:
 				SDLKey key = sdlEvent.key.keysym.sym;
-				switch (key) {
-				case SDLK_F2:
+				if (key == restartKey_) {
 					Button* button = (Button*) item;
 					button->click();
 					break;
@@ -195,9 +197,8 @@ namespace gui {
 		b4->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
 			switch (sdlEvent.type) {
 			case SDL_KEYDOWN:
-				SDLKey key = sdlEvent.key.keysym.sym;
-				switch (key) {
-				case SDLK_p:
+				SDLKey key = sdlEvent.key.keysym.sym;				
+				if (key == pauseKey_) {
 					Button* button = (Button*) item;
 					button->click();
 					break;
@@ -331,28 +332,6 @@ namespace gui {
 		multiFrame_.eventUpdate(windowEvent);
 		if (isUpdatingGame()) {
 			updateGameEvent(windowEvent);
-		}
-
-		switch (windowEvent.type) {
-		case SDL_QUIT:
-			mw::Window::setQuiting(true);
-			break;
-		case SDL_KEYDOWN:
-			switch (windowEvent.key.keysym.sym) {
-			case SDLK_p:
-			case SDLK_PAUSE:
-				break;
-			case SDLK_ESCAPE:
-				mw::Window::setQuiting(true);
-				break;
-			case SDLK_a:
-				break;
-			default:
-				break;
-			}
-			break;
-		default:
-			break;
 		}
 	}
 

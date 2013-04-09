@@ -19,6 +19,10 @@ namespace gui {
 	public:
 		GuiWindow();
 
+	protected:
+		SDLKey pauseKey_;
+		SDLKey restartKey_;
+
 	private:		
 		bool isUpdatingGame() const {
 			return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
