@@ -168,6 +168,9 @@ namespace gui {
 		});
 		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
 			switch (sdlEvent.type) {
+			case SDL_QUIT:
+				item->click();
+				break;
 			case SDL_KEYDOWN:
 				SDLKey key = sdlEvent.key.keysym.sym;
 				if (key == SDLK_ESCAPE) {
@@ -177,7 +180,7 @@ namespace gui {
 			}
 		});
 
-		ButtonPtr b2 = createTextButton("Restart[F2]", hDistance_, [&](GuiItem* item) {
+		ButtonPtr b2 = createTextButton("Restart", hDistance_, [&](GuiItem* item) {
 			restartGame();
 			item->setFocus(false);
 		});
@@ -203,15 +206,15 @@ namespace gui {
 			restartLocalGame(nbr);
 		});
 
-		ButtonPtr b4 = createTextButton("Pause[P]", hDistance_, [&](GuiItem* item) {
+		ButtonPtr b4 = createTextButton("Pause", hDistance_, [&](GuiItem* item) {
 			TextButton* textB = (TextButton*) item;
 			// The game is paused?
 			if (isPaused()) {
 				// The game will now be unpaused.
-				textB->setText("Pause[P]");
+				textB->setText("Pause");
 			} else {
 				// The game will now be unpaused.
-				textB->setText("Unpause[P]");
+				textB->setText("Unpause");
 			}
 			setPause(!isPaused());
 			item->setFocus(false);
