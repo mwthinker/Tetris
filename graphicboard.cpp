@@ -2,7 +2,7 @@
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisboard.h"
-#include "gui/color.h"
+#include "color.h"
 
 #include <mw/sprite.h>
 #include <mw/font.h>

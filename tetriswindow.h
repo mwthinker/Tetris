@@ -5,8 +5,8 @@
 #include "gamefont.h"
 #include "tetrisboard.h"
 #include "tetrisgame.h"
-#include "gui/color.h"
-#include "gui/guiwindow.h"
+#include "color.h"
+#include "guiwindow.h"
 
 #include <mw/gamewindow.h>
 #include <mw/sprite.h>

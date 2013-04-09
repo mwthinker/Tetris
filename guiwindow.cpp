@@ -10,8 +10,8 @@
 #include "inputnumberformatter.h"
 #include "choosenbrofplayers.h"
 
-#include "../gamesprite.h"
-#include "../gamefont.h"
+#include "gamesprite.h"
+#include "gamefont.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>

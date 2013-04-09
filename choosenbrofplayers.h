@@ -2,7 +2,7 @@
 #define CHOOSENBROFPLAYERS_H
 
 #include "button.h"
-#include "../gamesprite.h"
+#include "gamesprite.h"
 
 #include <mw/texture.h>
 #include <mw/sprite.h>

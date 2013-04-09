@@ -75,32 +75,29 @@
     <ClCompile Include="drawboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\frame.cpp">
+    <ClCompile Include="barcolor.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\guiwindow.cpp">
+    <ClCompile Include="button.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\multiframe.cpp">
+    <ClCompile Include="frame.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\textboxdraw.cpp">
+    <ClCompile Include="guiwindow.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\textitem.cpp">
+    <ClCompile Include="multiframe.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\barcolor.cpp">
+    <ClCompile Include="textitem.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\button.cpp">
+    <ClCompile Include="textboxdraw.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mousedoubleclick.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="movehandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -108,9 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="playermanager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pressentertostart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="remoteuser.h">
@@ -170,61 +164,67 @@
     <ClInclude Include="drawboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\guiwindow.h">
+    <ClInclude Include="inputformatter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="choosenbrofplayers.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\highscore.h">
+    <ClInclude Include="pressentertostart.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\imagebackground.h">
+    <ClInclude Include="multiframe.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\inputformatter.h">
+    <ClInclude Include="barcolor.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\inputnumberformatter.h">
+    <ClInclude Include="bar.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\multiframe.h">
+    <ClInclude Include="background.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\textbox.h">
+    <ClInclude Include="button.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\textboxdraw.h">
+    <ClInclude Include="color.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\textbutton.h">
+    <ClInclude Include="group.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\textitem.h">
+    <ClInclude Include="frame.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\background.h">
+    <ClInclude Include="guiitem.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\bar.h">
+    <ClInclude Include="guiwindow.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\barcolor.h">
+    <ClInclude Include="highscore.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\button.h">
+    <ClInclude Include="imagebackground.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\color.h">
+    <ClInclude Include="textitem.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\frame.h">
+    <ClInclude Include="textbutton.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\group.h">
+    <ClInclude Include="textbox.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\guiitem.h">
+    <ClInclude Include="textboxdraw.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\choosenbrofplayers.h">
+    <ClInclude Include="mousedoubleclick.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="inputnumberformatter.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
   </ItemGroup>
