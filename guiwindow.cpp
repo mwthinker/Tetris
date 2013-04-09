@@ -111,6 +111,9 @@ namespace gui {
 		});
 		b6->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
 			switch (sdlEvent.type) {
+			case SDL_QUIT:
+				quit();
+				break;
 			case SDL_KEYDOWN:
 				SDLKey key = sdlEvent.key.keysym.sym;
 				if (key == SDLK_ESCAPE) {
