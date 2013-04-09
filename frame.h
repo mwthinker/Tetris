@@ -16,17 +16,31 @@
 
 namespace gui {
 
+	// Responsible of delegating windows events and drawing the added elements.
+	// The elements are of three different classes, i.e. BarPtr, GuiItemPtr and BackgroundPtr.
 	class Frame {
 	public:
+		// Creates a empty frame.
 		Frame();
 
+		// Sets all guiitems to be unfocused.
 		void unfocusAll();
+
+		// Sets the current background.
 		void setBackground(BackgroundPtr background);
 
+		// Add a bar.
 		void addBar(BarPtr bar);
+
+		// Add a gui item at postion (x,y). By default origo is at the bottom left of the window.
+		// Y-axis is directed up and X-axis is directed right. If invX and/or invY is true then the 
+		// respectiv axis direction is inverted.
 		void add(GuiItemPtr guiItem, int x, int y, bool invX = false, bool invY = false);
 
+		// Updates all guitems in order for them to repsond to a window event.
 		void eventUpdate(const SDL_Event& windowEvent);
+		
+		// Draws all elements in frame.
 		void draw();
 
 	private:
