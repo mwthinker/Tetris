@@ -56,10 +56,6 @@ namespace gui {
 				{
 					if (hasFocus()) {
 						SDLKey sdlKey = windowEvent.key.keysym.sym;
-						if (sdlKey == SDLK_RETURN || sdlKey == SDLK_KP_ENTER) {					
-							excecute();
-							break;
-						}
 
 						// Transforms a unicode character to asci, therefor it will only work as
 						// intended for unicodes that has a corrensponding ascii value.
@@ -100,14 +96,7 @@ namespace gui {
 		int getMarkerPosition() const {
 			return inputFormatter_->getMarkerPosition();
 		}
-
-		void addExcecuteListener(std::function<void(std::string text)> excecute) {
-			excecute_.connect(excecute);
-		}
-
-		void excecute() override {
-			excecute_(inputFormatter_->getText());
-		}
+		
 	private:
 		mw::Signal<std::string> excecute_;
 		InputFormatterPtr inputFormatter_;

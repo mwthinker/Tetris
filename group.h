@@ -51,7 +51,7 @@ namespace gui {
 				if (SDLK_RETURN == key) {
 					for (unsigned int i = 0; i < items_.size(); ++i) {
 						if (items_[i]->hasFocus()) {
-							items_[i]->excecute();
+							items_[i]->click();
 							break;
 						}
 					}

@@ -22,8 +22,6 @@ namespace gui {
 		bool isPushed() const;
 
 		bool isMouseDown() const;
-
-		void click();
 	private:
 		void excecute();		
 		

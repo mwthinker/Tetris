@@ -19,7 +19,6 @@ namespace gui {
 	public:
 		friend class MultiFrame;
 		friend class Frame;
-		friend class Group;
 
 		GuiItem() {
 			focus_ = false;
@@ -87,13 +86,9 @@ namespace gui {
 			return sdlEventHandler_.connect(sdlEvent);
 		}
 
-	protected:
-		virtual void excecute() {
-		}
-
-		void onClick() {
+		void click() {
 			onClick_(this);
-		}
+		}	
 
 	private:
 		void eventUpdate(const SDL_Event& windowEvent) {

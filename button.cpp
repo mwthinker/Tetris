@@ -57,7 +57,7 @@ namespace gui {
 
 				if (mouseInside_ && hasFocus() && pushed_) {
 					setFocus(true);
-					onClick();
+					click();
 				}
 
 				mouseDown_ = false;
@@ -80,14 +80,6 @@ namespace gui {
 
 	bool Button::isMouseDown() const {
 		return mouseDown_;
-	}
-
-	void Button::click() {
-		onClick();
-	}	
-
-	void Button::excecute() {
-		click();
 	}
 
 } // Namespace gui.
