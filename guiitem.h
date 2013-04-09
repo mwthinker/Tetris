@@ -10,7 +10,14 @@
 #include <functional>
 #include <vector>
 
+#include <SDL.h>
+
 namespace gui {
+
+	// Identifies if the SDL_UserEvent is made by the "gui".
+	// Means that the frame has changed. Random number.
+	const int GUI_CHANGE_FROM_FRAME_CODE = 7219;
+	const int GUI_CHANGE_TO_FRAME_CODE = 7220;
 
 	class GuiItem {
 	public:

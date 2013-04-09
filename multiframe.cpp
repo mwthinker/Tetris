@@ -88,7 +88,20 @@ int MultiFrame::getCurrentFrameIndex() const {
 }
 
 void MultiFrame::setCurrentFrame(int index) {
+	SDL_Event sdlEvent;
+	sdlEvent.user.type = SDL_USEREVENT;
+	sdlEvent.user.code = GUI_CHANGE_FROM_FRAME_CODE;
+	sdlEvent.user.data1 = 0;
+	sdlEvent.user.data2 = 0;
+	
+	// Update all current items that their frame is being inactivated.
+	eventUpdate(sdlEvent);
+
 	currentFrame_ = index;
+	
+	// Update the new current items that their frame is being activated.
+	sdlEvent.user.code = GUI_CHANGE_TO_FRAME_CODE;
+	eventUpdate(sdlEvent);
 }
 
 FramePtr MultiFrame::getCurrentFrame() const {
