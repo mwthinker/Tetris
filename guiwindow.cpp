@@ -109,6 +109,16 @@ namespace gui {
 		ButtonPtr b6 = createTextButton("Exit", 35, [&](GuiItem*) {
 			quit();
 		});
+		b6->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				if (key == SDLK_ESCAPE) {
+					quit();
+					break;
+				}
+			}
+		});
 
 		int x = 10;
 		int y = 150;
@@ -153,6 +163,16 @@ namespace gui {
 			multiFrame_.setCurrentFrame(0);
 			item->setFocus(false);
 		});
+		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				if (key == SDLK_ESCAPE) {
+					item->click();
+					break;
+				}
+			}
+		});
 
 		ButtonPtr b2 = createTextButton("Restart[F2]", hDistance_, [&](GuiItem* item) {
 			restartGame();
@@ -162,9 +182,8 @@ namespace gui {
 			switch (sdlEvent.type) {
 			case SDL_KEYDOWN:
 				SDLKey key = sdlEvent.key.keysym.sym;
-				if (key == restartKey_) {
-					Button* button = (Button*) item;
-					button->click();
+				if (key == restartKey_) {					
+					item->click();
 					break;
 				}
 			}
@@ -220,6 +239,16 @@ namespace gui {
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
+		});
+		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				if (key == SDLK_ESCAPE) {
+					item->click();
+					break;
+				}
+			}
 		});
 
 		multiFrame_.add(b1,0,0,false,true);
@@ -294,6 +323,16 @@ namespace gui {
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
+		});
+		b1->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				if (key == SDLK_ESCAPE) {
+					item->click();
+					break;
+				}
+			}
 		});
 
 		multiFrame_.add(b1,0,0,false,true);
