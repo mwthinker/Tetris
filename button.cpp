@@ -15,6 +15,12 @@ namespace gui {
 
 	void Button::eventUpdate(const SDL_Event& windowEvent, int x, int y) {		
 		switch (windowEvent.type) {
+		case SDL_ACTIVEEVENT:
+			// Mouse leaves window?
+			if (windowEvent.active.gain == false) {
+				mouseInside_ = false;
+			}
+			break;
 		case SDL_MOUSEMOTION:
 			if (isInside(x,y)) {
 				mouseInside_ = true;
