@@ -28,6 +28,14 @@ public:
 	}
 
 private:
+	void restartLocalGame(int nbrOfPlayers) {
+		tetrisGame_.closeGame();
+		tetrisGame_.createLocalGame(nbrOfPlayers);
+		tetrisGame_.setReadyGame(true);
+		tetrisGame_.startGame();
+		tetrisGame_.restartGame();
+	}
+
 	void restartGame() {
 		tetrisGame_.setReadyGame(true);
 		tetrisGame_.startGame();
@@ -38,8 +46,14 @@ private:
 
 	}
 
-	void pauseGame() {
-		tetrisGame_.pause();
+	bool isPaused() const {
+		return tetrisGame_.isPaused();
+	}
+
+	void setPause(bool pause) {
+		if (pause != tetrisGame_.isPaused()) {
+			tetrisGame_.pause();
+		}
 	}
 
     // Override gui::GuiWindow

@@ -24,13 +24,8 @@ namespace gui {
 		bool isMouseDown() const;
 
 		void click();
-
-		void addOnClickListener(std::function<void()> onClick);
-
 	private:
-		void excecute();
-
-		mw::Signal<void> onClick_;
+		void excecute();		
 		
 		bool pushed_;
 		bool mouseDown_;

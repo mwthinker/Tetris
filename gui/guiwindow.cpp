@@ -52,7 +52,7 @@ namespace gui {
 		setQuiting(true);
 	}
 
-	ButtonPtr GuiWindow::createTextButton(std::string text, int size, std::function<void()> onClick) {
+	ButtonPtr GuiWindow::createTextButton(std::string text, int size, std::function<void(GuiItem*)> onClick) {
 		Color textColor(1.0,0.1,0.1);
 		Color focus(0.8, 0.1, 0, 0.3);
 		Color onHover(0.6, 0.1, 0.1);
@@ -81,7 +81,7 @@ namespace gui {
 
 		// Text is outside due to invY which dont know where the top of the text begin.
 		// The bottom is put where it is supposed to but the invers not.
-		ButtonPtr b1 = createTextButton("[Resume]", hDistance_, [&]() {
+		ButtonPtr b1 = createTextButton("Resume", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
 		});
 
@@ -90,21 +90,23 @@ namespace gui {
 		};
 
 		// Menu.
-		ButtonPtr b2 = createTextButton("[Play]", 35, [&]() {
+		ButtonPtr b2 = createTextButton("Play", 35, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
 			restartGame();
 		});
 
-		ButtonPtr b3 = createTextButton("[Custom play]", 35, [&]() {
+		ButtonPtr b3 = createTextButton("Custom play", 35, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(customFrameIndex_);
 		});
-		ButtonPtr b4 = createTextButton("[Highscore]", 35, [&]() {
+		ButtonPtr b4 = createTextButton("Highscore", 35, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(highscoreFrameIndex_);
 		});
-		ButtonPtr b5 = createTextButton("[Options]", 35, [&]() {
+		ButtonPtr b5 = createTextButton("Options", 35, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(optionFrameIndex_);
 		});
-		ButtonPtr b6 = createTextButton("[Exit]", 35, std::bind(&GuiWindow::quit,this));
+		ButtonPtr b6 = createTextButton("Exit", 35, [&](GuiItem*) {
+			quit();
+		});
 
 		int x = 10;
 		int y = 150;
@@ -145,21 +147,45 @@ namespace gui {
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
 
-		ButtonPtr b1 = createTextButton("[Menu]", hDistance_, [&]() {
+		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem* item) {
 			multiFrame_.setCurrentFrame(0);
+			item->setFocus(false);
 		});
-		
 
-		ButtonPtr b2 = createTextButton("[Restart]", hDistance_, std::bind(&GuiWindow::restartGame,this));
-		ButtonPtr b3 = createTextButton("[Pause]", hDistance_, std::bind(&GuiWindow::pauseGame,this));
-		
-		ButtonPtr b4 = std::make_shared<ChooseNbrOfPlayers>(hDistance_);
+		ButtonPtr b2 = createTextButton("Restart[F2]", hDistance_, [&](GuiItem* item) {
+			restartGame();
+			item->setFocus(false);
+		});
+
+		ButtonPtr b3 = std::make_shared<ChooseNbrOfPlayers>(hDistance_);
+		b3->addOnClickListener([&](GuiItem* item) {
+			ChooseNbrOfPlayers* nbrOfPlayers = (ChooseNbrOfPlayers*) item;
+			int nbr = 1 + nbrOfPlayers->getNbrOfPlayers();
+			if (nbr > 4) {
+				nbr = 1;
+			}
+			nbrOfPlayers->setNbrOfPlayers(nbr);
+			restartLocalGame(nbr);
+		});
+
+		ButtonPtr b4 = createTextButton("Pause[P]", hDistance_, [&](GuiItem* item) {
+			TextButton* textB = (TextButton*) item;
+			// The game is paused?
+			if (isPaused()) {
+				// The game will now be unpaused.
+				textB->setText("Pause[P]");
+			} else {
+				// The game will now be unpaused.
+				textB->setText("Unpause[P]");
+			}
+			setPause(!isPaused());
+			item->setFocus(false);
+		});		
 
 		multiFrame_.add(b1,0,0,false,true);
-		multiFrame_.add(b2,100,0,false,true);
-		multiFrame_.add(b3,0,0,true,true);
-		
-		multiFrame_.add(b4,215,0,false,true);
+		multiFrame_.add(b2,80,0,false,true);
+		multiFrame_.add(b3,80 + b2->getWidth(),0,false,true);
+		multiFrame_.add(b4,0,0,true,true);
 	}
 
 	void GuiWindow::initHighscoreFrame() {
@@ -168,7 +194,7 @@ namespace gui {
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
 
-		ButtonPtr b1 = createTextButton("[Menu]", hDistance_, [&]() {
+		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
 		});
 
@@ -181,7 +207,7 @@ namespace gui {
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
 
-		ButtonPtr menu = createTextButton("[Menu]", hDistance_, [&]() {
+		ButtonPtr menu = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
 		});
 
@@ -211,7 +237,7 @@ namespace gui {
 		multiFrame_.add(customPlaymaxLevel_,140,100,false,true);
 
 		// Create game -----------------------------------------------------
-		auto button = createTextButton("Create game", 30, [&]() {
+		auto button = createTextButton("Create game", 30, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
 			std::stringstream stream;
 			stream << customPlayWidth_->getText() << " ";
@@ -241,7 +267,7 @@ namespace gui {
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
 
-		ButtonPtr b1 = createTextButton("[Menu]", hDistance_, [&]() {
+		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
 		});
 
@@ -254,7 +280,7 @@ namespace gui {
 		// Upper bar.
 		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
 
-		ButtonPtr b1 = createTextButton("[Menu]", hDistance_, [&]() {
+		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
 		});
 	}

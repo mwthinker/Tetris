@@ -47,6 +47,7 @@ namespace gui {
 
 		void setText(std::string text) {
 			text_.setText(text);
+			setWidth((int) text_.getWidth());
 		}
 
 		std::string getText() const {

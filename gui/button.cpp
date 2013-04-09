@@ -51,8 +51,7 @@ namespace gui {
 
 				if (mouseInside_ && hasFocus() && pushed_) {
 					setFocus(true);
-
-					onClick_();
+					onClick();
 				}
 
 				mouseDown_ = false;
@@ -78,12 +77,8 @@ namespace gui {
 	}
 
 	void Button::click() {
-		onClick_();
-	}
-
-	void Button::addOnClickListener(std::function<void()> onClick) {
-		onClick_.connect(onClick);
-	}
+		onClick();
+	}	
 
 	void Button::excecute() {
 		click();

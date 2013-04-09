@@ -7,6 +7,8 @@
 #include <cmath>
 #include <vector>
 
+#include <mw/signal.h>
+
 #include <memory>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -90,10 +92,20 @@ namespace gui {
 			return x >= 0 && x < width_ &&  y >= 0 && y <= height_;
 		}
 
+		void addOnClickListener(std::function<void(GuiItem*)> onClick) {
+			onClick_.connect(onClick);
+		}
+
 	protected:
 		virtual void excecute() {
 		}
+
+		void onClick() {
+			onClick_(this);
+		}
 	private:
+		mw::Signal<GuiItem*> onClick_;
+
 		int width_, height_;
 		bool focus_;
 	};

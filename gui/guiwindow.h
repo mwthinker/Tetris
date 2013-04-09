@@ -38,7 +38,11 @@ namespace gui {
 		virtual void createCustomGame(int width, int height, int maxLevel) {
 		}
 
-		virtual void pauseGame() {
+		virtual bool isPaused() const = 0;
+
+		virtual void setPause(bool pause) = 0;
+
+		virtual void restartLocalGame(int nbrOfPlayers) {
 		}
 
 		virtual void restartGame() {
@@ -46,7 +50,7 @@ namespace gui {
 
 		void quit();
 
-		ButtonPtr createTextButton(std::string text, int size, std::function<void()> onClick);
+		ButtonPtr createTextButton(std::string text, int size, std::function<void(GuiItem*)> onClick);
 		TextBoxPtr createTextBox(int size);
 
 		void initFrameMenu();
