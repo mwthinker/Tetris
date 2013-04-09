@@ -122,6 +122,7 @@
     <ClInclude Include="graphicboard.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="guiitem.h" />
+    <ClInclude Include="guitypedefs.h" />
     <ClInclude Include="guiwindow.h" />
     <ClInclude Include="highscore.h" />
     <ClInclude Include="human.h" />
@@ -132,12 +133,10 @@
     <ClInclude Include="inputjoystick.h" />
     <ClInclude Include="inputkeyboard.h" />
     <ClInclude Include="inputnumberformatter.h" />
-    <ClInclude Include="mousedoubleclick.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="playermanager.h" />
-    <ClInclude Include="pressentertostart.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="remoteuser.h" />
     <ClInclude Include="rotationhandler.h" />

@@ -8,7 +8,6 @@
 #include <mw/font.h>
 
 #include <SDL_opengl.h>
-#include <memory>
 
 namespace gui {
 
@@ -22,9 +21,7 @@ namespace gui {
 		Color color_;
 		mw::FontPtr font_;
 		mw::Text text_;
-	};
-
-	typedef std::shared_ptr<TextItem> TextItemPtr;
+	};	
 
 } // Namespace gui.
 

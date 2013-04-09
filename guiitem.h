@@ -1,17 +1,14 @@
 #ifndef GUIITEM_H
 #define GUIITEM_H
 
-#include "background.h"
-
-#include <functional>
-#include <cmath>
-#include <vector>
+#include "guitypedefs.h"
 
 #include <mw/signal.h>
 
-#include <memory>
 #include <SDL.h>
-#include <SDL_opengl.h>
+
+#include <functional>
+#include <vector>
 
 namespace gui {
 
@@ -101,9 +98,7 @@ namespace gui {
 		int width_, height_;
 		bool focus_;
 		bool visible_;
-	};
-
-	typedef std::shared_ptr<GuiItem> GuiItemPtr;
+	};	
 
 } // Namespace gui.
 

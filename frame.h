@@ -1,18 +1,14 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-#include "bar.h"
-#include "guiitem.h"
+#include "guitypedefs.h"
 #include "color.h"
-#include "background.h"
 
 #include <mw/window.h>
 
 #include <functional>
-#include <cmath>
+
 #include <vector>
-#include <SDL_opengl.h>
-#include <memory>
 
 namespace gui {
 
@@ -65,9 +61,7 @@ namespace gui {
 		std::vector<BarItem_> barItems_;
 
 		BackgroundPtr background_;
-	};
-
-	typedef std::shared_ptr<Frame> FramePtr;
+	};	
 
 } // Namespace gui.
 

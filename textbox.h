@@ -4,9 +4,10 @@
 #include "guiitem.h"
 #include "inputformatter.h"
 
-#include <string>
 #include <mw/signal.h>
+
 #include <functional>
+#include <string>
 
 namespace gui {
 
@@ -102,8 +103,6 @@ namespace gui {
 		InputFormatterPtr inputFormatter_;
 		bool inside_;
 	};
-
-	typedef std::shared_ptr<TextBox> TextBoxPtr;
 
 } // Namespace gui.
 

@@ -1,6 +1,7 @@
 #include "frame.h"
-#include "bar.h"
 #include "guiitem.h"
+#include "bar.h"
+#include "background.h"
 #include "color.h"
 
 #include <mw/window.h>

@@ -1,11 +1,11 @@
 #ifndef MULTIFRAME_H
 #define MULTIFRAME_H
 
-#include "guiitem.h"
-#include "bar.h"
-#include "frame.h"
+#include "guitypedefs.h"
 
 #include <vector>
+
+#include <SDL.h>
 
 namespace gui {
 

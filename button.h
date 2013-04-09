@@ -28,9 +28,7 @@ namespace gui {
 		bool pushed_;
 		bool mouseDown_;
 		bool mouseInside_;
-	};
-
-	typedef std::shared_ptr<Button> ButtonPtr;
+	};	
 
 } // Namespace gui.
 

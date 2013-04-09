@@ -4,10 +4,8 @@
 #include "textbox.h"
 #include "color.h"
 
-#include <mw/font.h>
 #include <mw/text.h>
 
-#include <memory>
 #include <string>
 
 namespace gui {
@@ -22,9 +20,7 @@ namespace gui {
 		mw::Text text_;
 		mw::Text marker_;
 		Color textColor_, focused_, notFoxused_;
-	};
-
-	typedef std::shared_ptr<TextBoxDraw> TextBoxDrawPtr;
+	};	
 
 } // Namespace gui.
 

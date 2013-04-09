@@ -170,9 +170,6 @@
     <ClInclude Include="choosenbrofplayers.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="pressentertostart.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
     <ClInclude Include="multiframe.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
@@ -221,10 +218,10 @@
     <ClInclude Include="textboxdraw.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="mousedoubleclick.h">
+    <ClInclude Include="inputnumberformatter.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="inputnumberformatter.h">
+    <ClInclude Include="guitypedefs.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
   </ItemGroup>

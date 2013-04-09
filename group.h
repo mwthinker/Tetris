@@ -1,8 +1,7 @@
 #ifndef GROUP_H
 #define GROUP_H
 
-#include "guiitem.h"
-#include "button.h"
+#include "guitypedefs.h"
 
 namespace gui {
 
@@ -64,9 +63,7 @@ namespace gui {
 
 		SDLKey last_, next_;
 		std::vector<GuiItemPtr> items_;
-	};
-
-	typedef std::shared_ptr<Group> GroupPtr;
+	};	
 
 } // Namespace gui.
 

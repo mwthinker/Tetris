@@ -1,12 +1,9 @@
 #ifndef GUIWINDOW_H
 #define GUIWINDOW_H
 
+#include "guitypedefs.h"
 #include "multiframe.h"
-#include "textitem.h"
-#include "textbutton.h"
-#include "textbox.h"
-#include "group.h"
-#include "highscore.h"
+
 #include <mw/font.h>
 #include <mw/sprite.h>
 #include <mw/window.h>
@@ -14,6 +11,7 @@
 #include <tuple>
 #include <string>
 #include <algorithm>
+#include <functional>
 
 namespace gui {
 

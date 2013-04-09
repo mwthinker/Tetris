@@ -1,8 +1,6 @@
 #ifndef BAR_H
 #define BAR_H
 
-#include <memory>
-
 namespace gui {
 
 	class Bar {
@@ -29,8 +27,6 @@ namespace gui {
 		int width_, height_;
 		int size_;
 	};
-
-	typedef std::shared_ptr<Bar> BarPtr;
 
 } // Namespace gui.
 
