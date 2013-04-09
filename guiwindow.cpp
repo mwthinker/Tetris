@@ -26,7 +26,7 @@ namespace gui {
 		playFrameIndex_ = multiFrame_.addFrameBack();
 		highscoreFrameIndex_ = multiFrame_.addFrameBack();
 		customFrameIndex_ = multiFrame_.addFrameBack();
-		optionFrameIndex_ = multiFrame_.addFrameBack();		
+		optionFrameIndex_ = multiFrame_.addFrameBack();
 
 		auto background = std::make_shared<ImageBackground>(spriteBackground);
 		multiFrame_.setBackground(background,0);

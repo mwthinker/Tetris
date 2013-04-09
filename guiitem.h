@@ -23,6 +23,7 @@ namespace gui {
 
 		GuiItem() {
 			focus_ = false;
+			visible_ = true;
 			width_ = 0;
 			height_ = 0;
 		}
@@ -50,6 +51,14 @@ namespace gui {
 
 		bool hasFocus() const {
 			return focus_;
+		}
+
+		void setVisible(bool visible) {
+			visible_ = visible;
+		}
+
+		bool isVisible() const {
+			return visible_;
 		}
 
 		static void windowSize(int& width, int& height) {
@@ -96,6 +105,7 @@ namespace gui {
 
 		int width_, height_;
 		bool focus_;
+		bool visible_;
 	};
 
 	typedef std::shared_ptr<GuiItem> GuiItemPtr;

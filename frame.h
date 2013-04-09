@@ -37,7 +37,6 @@ namespace gui {
 			GuiProperties(int x, int y, bool invX, bool invY);
 
 			int x_, y_;  // Global position.
-			bool visible_;
 			bool invX_, invY_;  // Invert the x and y axis if true.	
 		};
 

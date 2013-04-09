@@ -16,7 +16,6 @@ namespace gui {
 	Frame::GuiProperties::GuiProperties() {
 		x_ = 0;
 		y_ = 0;
-		visible_ = true;
 		invX_ = false;
 		invY_ = false;
 	}
@@ -24,7 +23,6 @@ namespace gui {
 	Frame::GuiProperties::GuiProperties(int x, int y, bool invX, bool invY) {
 		x_ = x;
 		y_ = y;
-		visible_ = true;
 		invX_ = invX;
 		invY_ = invY;
 	}
@@ -80,17 +78,19 @@ namespace gui {
 		windowSize(w,h);
 
 		for (Item_& item : items_) {
-			int xTemp = item.second.x_;
-			int yTemp = item.second.y_;
-			if (item.second.invX_) {
-				xTemp = w - item.second.x_ - item.first->getWidth();
-			}
-			if (item.second.invY_) {
-				yTemp = h - item.second.y_ - item.first->getHeight();
-			}
+			if (item.first->isVisible()) {
+				int xTemp = item.second.x_;
+				int yTemp = item.second.y_;
+				if (item.second.invX_) {
+					xTemp = w - item.second.x_ - item.first->getWidth();
+				}
+				if (item.second.invY_) {
+					yTemp = h - item.second.y_ - item.first->getHeight();
+				}
 
-			item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);
-			item.first->eventUpdate(windowEvent);
+				item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);
+				item.first->eventUpdate(windowEvent);
+			}
 		}
 	}
 
@@ -104,38 +104,36 @@ namespace gui {
 		}
 
 		// Draw all visible Bars.
-		for (BarItem_& item : barItems_) {
-			if (item.second.visible_) {
-				GuiProperties& p = item.second;
-				glPushMatrix();
-				int x = p.x_;
-				if (p.invX_) {
-					x = w - p.x_;
-				}
-				int y = p.y_;
-				if (p.invY_) {
-					y = h - p.y_;
-				}
-				glTranslated(x,y,0.0);
-				switch (item.first->getType()) {
-				case Bar::UP:
-					// Fall through.
-				case Bar::DOWN:
-					item.first->draw(w,item.first->getSize());
-					break;
-				case Bar::LEFT:
-					// Fall through.
-				case Bar::RIGHT:
-					item.first->draw(item.first->getSize(),h);
-					break;
-				}				
-				glPopMatrix();
+		for (BarItem_& item : barItems_) {			
+			GuiProperties& p = item.second;
+			glPushMatrix();
+			int x = p.x_;
+			if (p.invX_) {
+				x = w - p.x_;
 			}
+			int y = p.y_;
+			if (p.invY_) {
+				y = h - p.y_;
+			}
+			glTranslated(x,y,0.0);
+			switch (item.first->getType()) {
+			case Bar::UP:
+				// Fall through.
+			case Bar::DOWN:
+				item.first->draw(w,item.first->getSize());
+				break;
+			case Bar::LEFT:
+				// Fall through.
+			case Bar::RIGHT:
+				item.first->draw(item.first->getSize(),h);
+				break;
+			}				
+			glPopMatrix();
 		}
 
 		// Draw all visible Gui Items.
 		for (Item_& item : items_) {
-			if (item.second.visible_) {
+			if (item.first->isVisible()) {
 				GuiProperties& p = item.second;
 				glPushMatrix();
 				int x = p.x_;
