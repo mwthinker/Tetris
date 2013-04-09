@@ -30,6 +30,17 @@ namespace gui {
 		void draw();
 
 	private:
+		class GuiProperties {
+		public:
+			GuiProperties();
+
+			GuiProperties(int x, int y, bool invX, bool invY);
+
+			int x_, y_;  // Global position.
+			bool visible_;
+			bool invX_, invY_;  // Invert the x and y axis if true.	
+		};
+
 		static void windowSize(int& width, int& height);
 
 		static void mousePosition(int& x, int& y);

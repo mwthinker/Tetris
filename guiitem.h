@@ -15,32 +15,10 @@
 
 namespace gui {
 
-	class GuiProperties {
-	public:
-		GuiProperties() {
-			x_ = 0;
-			y_ = 0;
-			visible_ = true;
-			invX_ = false;
-			invY_ = false;
-		}
-
-		GuiProperties(int x, int y, bool invX, bool invY) {
-			x_ = x;
-			y_ = y;
-			visible_ = true;
-			invX_ = invX;
-			invY_ = invY;
-		}
-
-		int x_, y_;  // Global position.
-		bool visible_;
-		bool invX_, invY_;  // Invert the x and y axis if true.	
-	};
-
 	class GuiItem {
 	public:
 		friend class MultiFrame;
+		friend class Frame;
 		friend class Group;
 
 		GuiItem() {
@@ -92,8 +70,12 @@ namespace gui {
 			return x >= 0 && x < width_ &&  y >= 0 && y <= height_;
 		}
 
-		void addOnClickListener(std::function<void(GuiItem*)> onClick) {
-			onClick_.connect(onClick);
+		mw::signals::Connection addOnClickListener(std::function<void(GuiItem*)> onClick) {
+			return onClick_.connect(onClick);
+		}
+
+		mw::signals::Connection addSdlEventListener(std::function<void(GuiItem*,const SDL_Event&)> sdlEvent) {
+			return sdlEventHandler_.connect(sdlEvent);
 		}
 
 	protected:
@@ -103,8 +85,14 @@ namespace gui {
 		void onClick() {
 			onClick_(this);
 		}
+
 	private:
+		void eventUpdate(const SDL_Event& windowEvent) {
+			sdlEventHandler_(this, windowEvent);
+		}
+
 		mw::Signal<GuiItem*> onClick_;
+		mw::Signal<GuiItem*, const SDL_Event&> sdlEventHandler_;
 
 		int width_, height_;
 		bool focus_;

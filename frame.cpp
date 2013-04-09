@@ -13,6 +13,22 @@
 
 namespace gui {
 
+	Frame::GuiProperties::GuiProperties() {
+		x_ = 0;
+		y_ = 0;
+		visible_ = true;
+		invX_ = false;
+		invY_ = false;
+	}
+
+	Frame::GuiProperties::GuiProperties(int x, int y, bool invX, bool invY) {
+		x_ = x;
+		y_ = y;
+		visible_ = true;
+		invX_ = invX;
+		invY_ = invY;
+	}
+
 	Frame::Frame() {
 		background_ = nullptr;
 	}
@@ -74,6 +90,7 @@ namespace gui {
 			}
 
 			item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);
+			item.first->eventUpdate(windowEvent);
 		}
 	}
 

@@ -156,6 +156,18 @@ namespace gui {
 			restartGame();
 			item->setFocus(false);
 		});
+		b2->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				switch (key) {
+				case SDLK_F2:
+					Button* button = (Button*) item;
+					button->click();
+					break;
+				}
+			}
+		});
 
 		ButtonPtr b3 = std::make_shared<ChooseNbrOfPlayers>(hDistance_);
 		b3->addOnClickListener([&](GuiItem* item) {
@@ -180,7 +192,19 @@ namespace gui {
 			}
 			setPause(!isPaused());
 			item->setFocus(false);
-		});		
+		});
+		b4->addSdlEventListener([&](GuiItem* item, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDLKey key = sdlEvent.key.keysym.sym;
+				switch (key) {
+				case SDLK_p:
+					Button* button = (Button*) item;
+					button->click();
+					break;
+				}
+			}
+		});
 
 		multiFrame_.add(b1,0,0,false,true);
 		multiFrame_.add(b2,80,0,false,true);
