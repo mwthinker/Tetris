@@ -25,7 +25,7 @@ namespace gui {
 		}
 
 		bool isDrawGame() const;
-		void setDrawGame(bool drawGame);		
+		void setDrawGame(bool drawGame);
 
 		virtual void updateGame(Uint32 deltaTime) {
 		}
@@ -75,8 +75,11 @@ namespace gui {
 		int highscoreFrameIndex_;
 		int customFrameIndex_;
 		int optionFrameIndex_;
+		
+		// Attribute defined in initFrameMenu.
+		ButtonPtr resumeButton_;
 
-		// Attributes defined in void initCustomPlayFrame.
+		// Attributes defined in initCustomPlayFrame.
 		TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
 	};
 

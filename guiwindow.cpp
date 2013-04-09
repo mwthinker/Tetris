@@ -84,15 +84,14 @@ namespace gui {
 		ButtonPtr b1 = createTextButton("Resume", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(playFrameIndex_);
 		});
-
-		auto playFrame = [&]() {
-			multiFrame_.setCurrentFrame(playFrameIndex_);
-		};
+		resumeButton_ = b1;
+		resumeButton_->setVisible(false);
 
 		// Menu.
 		ButtonPtr b2 = createTextButton("Play", 35, [&](GuiItem*) {
+			resumeButton_->setVisible(true);
 			multiFrame_.setCurrentFrame(playFrameIndex_);
-			restartGame();
+			restartGame();			
 		});
 
 		ButtonPtr b3 = createTextButton("Custom play", 35, [&](GuiItem*) {
@@ -136,7 +135,7 @@ namespace gui {
 		group->add(b4);
 		group->add(b5);
 		group->add(b6);
-		group->add(textBox);
+		group->add(textBox);		
 
 		multiFrame_.add(group,0,0,false,false);
 	}
@@ -270,6 +269,7 @@ namespace gui {
 			int width, height, maxLevel;
 			stream >> width >> height >> maxLevel;
 			createCustomGame(width,height,maxLevel);
+			resumeButton_->setVisible(true);
 		});
 
 		multiFrame_.add(button,45,150,false,true);
