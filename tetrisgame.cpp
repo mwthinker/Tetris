@@ -1,5 +1,4 @@
 #include "tetrisgame.h"
-
 #include "gamesound.h"
 #include "graphicboard.h"
 #include "player.h"
@@ -37,7 +36,6 @@ void TetrisGame::createNewHumanPlayers(int nbrOfLocalPlayers) {
 			HumanPtr human(new Human());
 			humanPlayers_.push_back(human);
 		}
-		std::cout << "\n" << "createNewHumanPlayers";
 	}
 }
 
@@ -48,7 +46,6 @@ void TetrisGame::createLocalGame(int nbrOfLocalPlayers) {
 
 void TetrisGame::createServerGame(int nbrOfLocalPlayers, int port) {
 	createNewHumanPlayers(nbrOfLocalPlayers);
-	//manager_.setPort();
 	manager_.setServerPort(port);
 	manager_.connect(humanPlayers_,PlayerManager::SERVER);
 }
@@ -77,21 +74,6 @@ void TetrisGame::closeGame() {
 void TetrisGame::setReadyGame(bool ready) {
 	manager_.setReady(ready);
 }
-
-/*
-bool TetrisGame::updateAddNewHumans(int nbrOfLocalPlayers) {
-	std::vector<HumanPtr> tmp;
-	for (int i = 0; i < nbrOfLocalPlayers; ++i) {
-		HumanPtr human(new Human());
-		tmp.push_back(human);
-	}
-	if (manager_.updateAddNewHumans(tmp)) {
-		humanPlayers_.insert(humanPlayers_.begin(),tmp.begin(), tmp.end());
-		return true;
-	}
-	return false;
-}
-*/
 
 void TetrisGame::update(Uint32 deltaTime) {
 	manager_.update(deltaTime);

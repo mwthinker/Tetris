@@ -23,7 +23,7 @@ public:
 	void createLocalGame(int nbrLocalPlayers);
 	void createServerGame(int nbrLocalPlayers, int port);
 	void createClientGame(int nbrLocalPlayers, int port, std::string ip);
-	void updatePlayersInGame(int nbrLocalPlayers) {}
+	
 	void startGame();
 	void restartGame();
 	void closeGame();
