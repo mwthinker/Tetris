@@ -93,20 +93,7 @@ bool TetrisGame::updateAddNewHumans(int nbrOfLocalPlayers) {
 }
 */
 
-void TetrisGame::graphicUpdate(Uint32 deltaTime) {
-	glPushMatrix();	
-	
-	auto& players = manager_.getPlayers();
-	for (auto it = players.begin(); it != players.end(); ++it) {
-		Player* player = *it;
-		player->draw();
-		glTranslated(player->getWidth(),0,0);
-	}
-	
-	glPopMatrix();
-}
-
-void TetrisGame::physicUpdate(Uint32 deltaTime) {
+void TetrisGame::update(Uint32 deltaTime) {
 	manager_.update(deltaTime);
 
 	if (manager_.isStarted()) {
@@ -119,7 +106,20 @@ void TetrisGame::physicUpdate(Uint32 deltaTime) {
 				soundEffects(gameEvent);
 			}
 		}
+	}	
+}
+
+void TetrisGame::draw() {
+	glPushMatrix();	
+	
+	auto& players = manager_.getPlayers();
+	for (auto it = players.begin(); it != players.end(); ++it) {
+		Player* player = *it;
+		player->draw();
+		glTranslated(player->getWidth(),0,0);
 	}
+	
+	glPopMatrix();
 }
 
 void TetrisGame::eventUpdate(const SDL_Event& windowEvent) {

@@ -28,23 +28,10 @@ public:
 	void restartGame();
 	void closeGame();
 	void setReadyGame(bool ready);
+	
 	bool isReadyGame() const {
 		return manager_.isReady();
 	}
-
-	PlayerManager::Status getStatus() const {
-		return manager_.getStatus();
-	}
-
-	int getNumberOfConnections() const {
-		return manager_.getNumberOfConnections();
-	}
-
-	int getNumberOfPlayers(int connection) const {		
-		return manager_.getNumberOfPlayers(connection);
-	}
-	
-	//bool updateAddNewHumans(int nbrLocalPlayers);
 
 	bool isPaused() const {
 		return manager_.isPaused();
@@ -53,18 +40,13 @@ public:
 	void pause() {
 		manager_.pause();
 	}
-		
-	bool isConnected() const {
-		return true;
-	}
-
-	// Updates the graphic to the current frame. The parameter deltaTime
-	// specifies the amount of time from the last frame update.
-    void graphicUpdate(Uint32 deltaTime);
     
-	// Moves the game forward in time by the amount of milliseconds 
+	// Moves the game forward in time by the amount of milliseconds
 	// specified in parameter deltaTime.
-	void physicUpdate(Uint32 deltaTime);
+	void update(Uint32 deltaTime);
+
+	// Draws the game.
+	void draw();
 	
 	// Handles all input from the users. Should be called whenever new inputs arrives.
     void eventUpdate(const SDL_Event& windowEvent);

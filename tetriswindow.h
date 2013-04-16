@@ -58,7 +58,7 @@ private:
 
     // Override gui::GuiWindow
     void updateGame(Uint32 deltaTime) {
-		tetrisGame_.physicUpdate(deltaTime);
+		tetrisGame_.update(deltaTime);
 		
 		glPushMatrix();
         int w = getWidth();
@@ -90,7 +90,7 @@ private:
 
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(x,y,width,height);
-        tetrisGame_.graphicUpdate(deltaTime);
+        tetrisGame_.draw();
         glPopMatrix();
 
 		glDisable(GL_SCISSOR_TEST);
@@ -119,21 +119,6 @@ private:
 
 	void handleConnectionEvent(Protocol::ManagerEvent connectionEvent) {
 		if (connectionEvent == PlayerManager::ManagerEvent::STARTS_GAME) {
-			PlayerManager::Status status = tetrisGame_.getStatus();
-			std::cout << "MENUEVENT"<<std::endl;
-			switch (status) {
-			case PlayerManager::Status::LOCAL:
-				//gui_.pushEvent(MENUEVENT_LOCALGAME);
-				std::cout << "MENUEVENT_LOCALGAMEDAS"<<std::endl;
-				break;
-			case PlayerManager::Status::SERVER:
-				//gui_.pushEvent(MENUEVENT_SERVERGAME);
-				std::cout << "MENUEVENT_SERVERGAME"<<std::endl;
-				break;
-			case PlayerManager::Status::CLIENT:
-				//gui_.pushEvent(MENUEVENT_CLIENTGAME);
-				break;
-			}
 		}
 	}
 

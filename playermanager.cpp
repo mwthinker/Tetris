@@ -67,8 +67,7 @@ void PlayerManager::connect(const std::vector<HumanPtr>& humans, Status status) 
 			manager_ = new mw::ServerManager(serverPort_,this);
 			manager_->start();
 			// Add new player to all human players.
-			for (auto it = humans_.begin(); it != humans_.end(); ++it) {
-				PairHumanIndex& pair = *it;
+			for (PairHumanIndex& pair : humans_) {
 				pair.second = players_.size();
 				players_.push_back(new Player(++playerId_));
 			}
