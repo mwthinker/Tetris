@@ -2,9 +2,7 @@
 #define SQUARE_H
 
 enum BlockType {BLOCK_TYPE_I,BLOCK_TYPE_J,BLOCK_TYPE_L,BLOCK_TYPE_O,
-                BLOCK_TYPE_S, BLOCK_TYPE_T,BLOCK_TYPE_Z,BLOCK_TYPE_EMPTY};
-
-const int NBR_OF_BLOCKTYPES = 5;
+	BLOCK_TYPE_S, BLOCK_TYPE_T,BLOCK_TYPE_Z,BLOCK_TYPE_EMPTY};
 
 struct Square {
 	Square() {
@@ -18,7 +16,7 @@ struct Square {
 		this->blockType = blockType;
 	}
 
-    BlockType blockType;
+	BlockType blockType;
 	int row, column;
 
 	bool operator==(const Square& square) const {
