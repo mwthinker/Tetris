@@ -1,10 +1,10 @@
 #ifndef DRAWBOARD_H
 #define DRAWBOARD_H
 
-#include "color.h"
 #include "tetrisboard.h"
 
 #include <mw/text.h>
+#include <mw/color.h>
 
 #include <string>
 
@@ -33,7 +33,7 @@ private:
 	double height_; // Height for the board
 	double pixlePerSquare_;
 	const TetrisBoard& tetrisBoard_;
-	Color color_;
+	mw::Color color_;
 };
 
 #endif // DRAWBOARD_H

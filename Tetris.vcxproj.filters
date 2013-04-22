@@ -185,9 +185,6 @@
     <ClInclude Include="button.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="color.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
     <ClInclude Include="group.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>

@@ -1,12 +1,13 @@
 #include "drawboard.h"
-
 #include "gamesprite.h"
+
+#include <mw/color.h>
 
 DrawBoard::DrawBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetrisBoard) {
 	height_ = 800; // height for the board
 
 	pixlePerSquare_ = 800.0 / (tetrisBoard_.getNbrOfRows() + 2);
-	color_ = Color(237/256.0,78/256.0,8/256.0);
+	color_ = mw::Color(237/256.0,78/256.0,8/256.0);
 }
 
 void DrawBoard::draw() {

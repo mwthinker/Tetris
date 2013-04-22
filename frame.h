@@ -2,8 +2,8 @@
 #define FRAME_H
 
 #include "guitypedefs.h"
-#include "color.h"
 
+#include <mw/color.h>
 #include <mw/window.h>
 
 #include <functional>

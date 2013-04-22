@@ -2,11 +2,11 @@
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisboard.h"
-#include "color.h"
 
 #include <mw/sprite.h>
 #include <mw/font.h>
 #include <mw/text.h>
+#include <mw/color.h>
 
 #include <SDL_opengl.h>
 #include <sstream>
@@ -19,7 +19,7 @@ GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetris
 	horizontalDistanceToText_ = 40;
 
 	pixlePerSquare_ = 800.0 / (tetrisBoard_.getNbrOfRows() + 2);
-	color_ = Color(237/256.0,78/256.0,8/256.0);
+	color_ = mw::Color(237/256.0,78/256.0,8/256.0);
 
 	text1_ = mw::Text("Player",fontDefault);
 	text2_ = mw::Text("Level ",fontDefault);

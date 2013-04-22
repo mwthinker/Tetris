@@ -1,15 +1,15 @@
 #include "textboxdraw.h"
-#include "color.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
+#include <mw/color.h>
 
 #include <memory>
 #include <string>
 
 namespace gui {
 
-	TextBoxDraw::TextBoxDraw(int width, mw::FontPtr font, int characterSize,  Color textColor, Color focused, Color notFoxused) : TextBox(width,(int) (characterSize*1.2)) {
+	TextBoxDraw::TextBoxDraw(int width, mw::FontPtr font, int characterSize,  mw::Color textColor, mw::Color focused, mw::Color notFoxused) : TextBox(width,(int) (characterSize*1.2)) {
 		text_ = mw::Text("",font,characterSize);
 		marker_ = text_;
 

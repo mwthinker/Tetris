@@ -5,11 +5,11 @@
 #include "gamefont.h"
 #include "tetrisboard.h"
 #include "tetrisgame.h"
-#include "color.h"
 #include "guiwindow.h"
 
 #include <mw/gamewindow.h>
 #include <mw/sprite.h>
+#include <mw/color.h>
 
 #include <iostream>
 

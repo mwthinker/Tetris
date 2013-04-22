@@ -113,7 +113,6 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="choosenbrofplayers.h" />
-    <ClInclude Include="color.h" />
     <ClInclude Include="drawboard.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gamefont.h" />

@@ -4,7 +4,7 @@
 #include "bar.h"
 #include "frame.h"
 
-#include "color.h"
+#include <mw/color.h>
 
 #include <vector>
 #include <SDL_opengl.h>

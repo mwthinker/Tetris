@@ -2,9 +2,9 @@
 #include "guiitem.h"
 #include "bar.h"
 #include "background.h"
-#include "color.h"
 
 #include <mw/window.h>
+#include <mw/color.h>
 
 #include <functional>
 #include <cmath>

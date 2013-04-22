@@ -56,11 +56,11 @@ namespace gui {
 	}
 
 	ButtonPtr GuiWindow::createTextButton(std::string text, int size, std::function<void(GuiItem*)> onClick) {
-		Color textColor(1.0,0.1,0.1);
-		Color focus(0.8, 0.1, 0, 0.3);
-		Color onHover(0.6, 0.1, 0.1);
-		Color notHover(0.4, 0.0, 0.0,0.0);
-		Color pushed(0.8, 0.0, 0, 0.7);
+		mw::Color textColor(1.0,0.1,0.1);
+		mw::Color focus(0.8, 0.1, 0, 0.3);
+		mw::Color onHover(0.6, 0.1, 0.1);
+		mw::Color notHover(0.4, 0.0, 0.0,0.0);
+		mw::Color pushed(0.8, 0.0, 0, 0.7);
 		ButtonPtr button(new TextButton(text, size, fontDefault,
 			textColor,focus,onHover,notHover,pushed));
 		button->addOnClickListener(onClick);
@@ -68,19 +68,19 @@ namespace gui {
 	}
 
 	TextBoxPtr GuiWindow::createTextBox(int size) {
-		Color textColor(1.0,1.0,1.0);
-		Color focus(0.8, 0.1, 0, 0.3);
-		Color onHover(0.6, 0.1, 0.1);
+		mw::Color textColor(1.0,1.0,1.0);
+		mw::Color focus(0.8, 0.1, 0, 0.3);
+		mw::Color onHover(0.6, 0.1, 0.1);
 		return TextBoxPtr(new TextBoxDraw(size, fontDefault, 30, textColor, focus, onHover));
 	}
 
 	void GuiWindow::initFrameMenu() {
 		multiFrame_.setCurrentFrame(0);
-		multiFrame_.add(std::make_shared<TextItem>("MWetris",fontDefault50,80,Color(1,1,1)),10,50,false,true);//Color(0.9,0.2,0,0.9)
-		multiFrame_.add(std::make_shared<TextItem>("Made by Marcus Welander",fontDefault18,12,Color(0.9,0.2,0,0.9)),0,0,true,false);
+		multiFrame_.add(std::make_shared<TextItem>("MWetris",fontDefault50,80,mw::Color(1,1,1)),10,50,false,true);//Color(0.9,0.2,0,0.9)
+		multiFrame_.add(std::make_shared<TextItem>("Made by Marcus Welander",fontDefault18,12,mw::Color(0.9,0.2,0,0.9)),0,0,true,false);
 
 		// Upper bar.		
-		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
+		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30)));
 
 		// Text is outside due to invY which dont know where the top of the text begin.
 		// The bottom is put where it is supposed to but the invers not.
@@ -157,7 +157,7 @@ namespace gui {
 		multiFrame_.setCurrentFrame(playFrameIndex_);		
 
 		// Upper bar.
-		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
+		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30)));
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem* item) {
 			multiFrame_.setCurrentFrame(0);
@@ -238,7 +238,7 @@ namespace gui {
 		multiFrame_.setCurrentFrame(highscoreFrameIndex_);
 
 		// Upper bar.
-		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
+		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30)));
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
@@ -264,7 +264,7 @@ namespace gui {
 		multiFrame_.setCurrentFrame(customFrameIndex_);
 
 		// Upper bar.
-		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
+		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30)));
 
 		ButtonPtr menu = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
@@ -286,14 +286,14 @@ namespace gui {
 		multiFrame_.add(menu,0,0,false,true);
 
 		// Set board size ------------------------------------------------------
-		TextItemPtr textItem(new TextItem("Width",fontDefault18,18,Color(1.0,1.0,1.0)));
+		TextItemPtr textItem(new TextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0)));
 		multiFrame_.add(textItem,45,50,false,true);
 		customPlayWidth_ = createTextBox(35);		
 		customPlayWidth_->setInputFormatter(std::make_shared<InputNumberFormatter>(2));
 		customPlayWidth_->setText("10");
 		multiFrame_.add(customPlayWidth_,100,50,false,true);
 
-		TextItemPtr textItem2(new TextItem("Height",fontDefault18,18,Color(1.0,1.0,1.0)));
+		TextItemPtr textItem2(new TextItem("Height",fontDefault18,18,mw::Color(1.0,1.0,1.0)));
 		multiFrame_.add(textItem2,140,50,false,true);
 		customPlayHeight_ = createTextBox(35);
 		customPlayHeight_->setInputFormatter(std::make_shared<InputNumberFormatter>(2));
@@ -301,7 +301,7 @@ namespace gui {
 		multiFrame_.add(customPlayHeight_,200,50,false,true);
 
 		// Set max level -----------------------------------------------------
-		TextItemPtr textItem3(new TextItem("Max Level",fontDefault18,18,Color(1.0,1.0,1.0)));
+		TextItemPtr textItem3(new TextItem("Max Level",fontDefault18,18,mw::Color(1.0,1.0,1.0)));
 		multiFrame_.add(textItem3,45,100,false,true);
 		customPlaymaxLevel_ = createTextBox(35);
 		customPlaymaxLevel_->setInputFormatter(std::make_shared<InputNumberFormatter>(2));
@@ -338,7 +338,7 @@ namespace gui {
 		multiFrame_.setCurrentFrame(optionFrameIndex_);
 
 		// Upper bar.
-		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
+		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30)));
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);
@@ -364,7 +364,7 @@ namespace gui {
 		multiFrame_.setCurrentFrame(optionFrameIndex_);
 
 		// Upper bar.
-		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,Color(0.5,0,0,0.30)));
+		multiFrame_.addBar(std::make_shared<BarColor>(Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30)));
 
 		ButtonPtr b1 = createTextButton("Menu", hDistance_, [&](GuiItem*) {
 			multiFrame_.setCurrentFrame(0);

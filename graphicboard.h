@@ -1,11 +1,11 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
-#include "color.h"
 #include "tetrisboard.h"
 #include "drawboard.h"
 
 #include <mw/text.h>
+#include <mw/color.h>
 
 #include <string>
 
@@ -55,7 +55,7 @@ private:
 	double pixlePerSquare_;
     const TetrisBoard& tetrisBoard_;
     
-    Color color_;
+    mw::Color color_;
 
     double height_; // Height for the board
 	double voidHeight_; // Height between board and outside screen, up/down and to the left.

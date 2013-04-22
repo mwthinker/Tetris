@@ -2,10 +2,11 @@
 #define TEXTBUTTON_H
 
 #include "button.h"
-#include "color.h"
 
 #include <mw/text.h>
 #include <mw/font.h>
+#include <mw/color.h>
+
 #include <SDL_opengl.h>
 
 namespace gui {
@@ -13,11 +14,11 @@ namespace gui {
 	class TextButton : public Button {
 	public:
 		TextButton(std::string text, int size, mw::FontPtr font) : text_(text,font) {
-			focused_ = Color(0.8, 0.8, 0.8);
-			textColor_ = Color(1.0,0.1,0.1);
-			onHover_ = Color(0.6, 0.1, 0.1);
-			notHover_ = Color(0.4, 0.0, 0.0);
-			insideDownHover_ = Color(0.5, 0.0, 0.5);		
+			focused_ = mw::Color(0.8, 0.8, 0.8);
+			textColor_ = mw::Color(1.0,0.1,0.1);
+			onHover_ = mw::Color(0.6, 0.1, 0.1);
+			notHover_ = mw::Color(0.4, 0.0, 0.0);
+			insideDownHover_ = mw::Color(0.5, 0.0, 0.5);		
 			size_ = size;
 
 			while (text_.getHeight() > size) {
@@ -28,8 +29,8 @@ namespace gui {
 			setHeight(size);
 		}
 
-		TextButton(std::string text, int size, mw::FontPtr font, Color textColor, Color focused, Color onHover,
-			Color notHover, Color insideDownHover) : text_(text,font) {
+		TextButton(std::string text, int size, mw::FontPtr font, mw::Color textColor, mw::Color focused, mw::Color onHover,
+			mw::Color notHover, mw::Color insideDownHover) : text_(text,font) {
 				textColor_ = textColor;
 				focused_ = focused;
 				onHover_ = onHover;
@@ -108,7 +109,7 @@ namespace gui {
 		}
 
 	private:
-		Color textColor_, focused_, onHover_, notHover_, insideDownHover_;
+		mw::Color textColor_, focused_, onHover_, notHover_, insideDownHover_;
 		mw::Text text_;
 		int size_;
 	};

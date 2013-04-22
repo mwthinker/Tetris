@@ -1,10 +1,12 @@
 #include "barcolor.h"
 
+#include <mw/color.h>
+
 #include <SDL_opengl.h>
 
 namespace gui {
 
-	BarColor::BarColor(Bar::Type type, int size, Color color) : Bar(type,size), color_(color) {
+	BarColor::BarColor(Bar::Type type, int size, mw::Color color) : Bar(type,size), color_(color) {
 	}
 
 	// Override View
