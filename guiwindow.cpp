@@ -9,6 +9,7 @@
 #include "textboxdraw.h"
 #include "inputnumberformatter.h"
 #include "choosenbrofplayers.h"
+#include "highscore.h"
 
 #include "gamesprite.h"
 #include "gamefont.h"
@@ -257,6 +258,8 @@ void GuiWindow::initHighscoreFrame() {
 			}
 		}
 	});
+
+	multiFrame_.add(createHighscore(10),100,100,false,true);
 
 	multiFrame_.add(b1,0,0,false,true);
 }
