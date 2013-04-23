@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-class TetrisWindow : public gui::GuiWindow {
+class TetrisWindow : public GuiWindow {
 public:
     TetrisWindow() {
 		numberOfPlayer_ = 1;

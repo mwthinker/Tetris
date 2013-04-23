@@ -13,80 +13,76 @@
 #include <algorithm>
 #include <functional>
 
-namespace gui {
+class GuiWindow : public mw::Window {
+public:
+	GuiWindow();
 
-	class GuiWindow : public mw::Window {
-	public:
-		GuiWindow();
+protected:
+	SDLKey pauseKey_;
+	SDLKey restartKey_;
 
-	protected:
-		SDLKey pauseKey_;
-		SDLKey restartKey_;
+private:		
+	bool isUpdatingGame() const {
+		return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
+	}
 
-	private:		
-		bool isUpdatingGame() const {
-			return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
-		}
+	bool isDrawGame() const;
+	void setDrawGame(bool drawGame);
 
-		bool isDrawGame() const;
-		void setDrawGame(bool drawGame);
+	virtual void updateGame(Uint32 deltaTime) {
+	}
 
-		virtual void updateGame(Uint32 deltaTime) {
-		}
+	virtual void updateGameEvent(const SDL_Event& windowEvent) {
+	}
 
-		virtual void updateGameEvent(const SDL_Event& windowEvent) {
-		}
+	virtual void createCustomGame(int width, int height, int maxLevel) {
+	}
 
-		virtual void createCustomGame(int width, int height, int maxLevel) {
-		}
+	virtual bool isPaused() const = 0;
 
-		virtual bool isPaused() const = 0;
+	virtual void setPause(bool pause) = 0;
 
-		virtual void setPause(bool pause) = 0;
+	virtual void restartLocalGame(int nbrOfPlayers) {
+	}
 
-		virtual void restartLocalGame(int nbrOfPlayers) {
-		}
+	virtual void restartGame() {
+	}
 
-		virtual void restartGame() {
-		}
+	void quit();
 
-		void quit();
+	gui::ButtonPtr createTextButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick);
+	gui::TextBoxPtr createTextBox(int size);
 
-		ButtonPtr createTextButton(std::string text, int size, std::function<void(GuiItem*)> onClick);
-		TextBoxPtr createTextBox(int size);
+	void initFrameMenu();
+	void initPlayFrame();
+	void initHighscoreFrame();
+	void initCustomPlayFrame();
+	void initOptionFrame();
+	void initCreateClientFrame();
 
-		void initFrameMenu();
-		void initPlayFrame();
-		void initHighscoreFrame();
-		void initCustomPlayFrame();
-		void initOptionFrame();
-		void initCreateClientFrame();
+	void resize(int width, int height) override;
 
-		void resize(int width, int height) override;
+	// Override mw::Window
+	void update(Uint32 deltaTime) override;
 
-		// Override mw::Window
-		void update(Uint32 deltaTime) override;
+	// Override mw::Window
+	void eventUpdate(const SDL_Event& windowEvent) override;
 
-		// Override mw::Window
-		void eventUpdate(const SDL_Event& windowEvent) override;
-		
-		int hDistance_;
-		
-		MultiFrame multiFrame_;
-		bool fixSize_;
+	int hDistance_;
 
-		int playFrameIndex_;
-		int highscoreFrameIndex_;
-		int customFrameIndex_;
-		int optionFrameIndex_;
-		
-		// Attribute defined in initFrameMenu.
-		ButtonPtr resumeButton_;
+	gui::MultiFrame multiFrame_;
+	bool fixSize_;
 
-		// Attributes defined in initCustomPlayFrame.
-		TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
-	};
+	int playFrameIndex_;
+	int highscoreFrameIndex_;
+	int customFrameIndex_;
+	int optionFrameIndex_;
 
-} // Namespace gui.
+	// Attribute defined in initFrameMenu.
+	gui::ButtonPtr resumeButton_;
+
+	// Attributes defined in initCustomPlayFrame.
+	gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
+};
 
 #endif // GUIWINDOW_H
