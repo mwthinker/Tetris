@@ -3,6 +3,8 @@
 
 #include "guitypedefs.h"
 
+#include <memory>
+
 namespace gui {
 
 	class Group : public GuiItem {
@@ -63,7 +65,13 @@ namespace gui {
 
 		SDLKey last_, next_;
 		std::vector<GuiItemPtr> items_;
-	};	
+	};
+	
+	typedef std::shared_ptr<Group> GroupPtr;
+
+	GroupPtr createGroup(SDLKey last, SDLKey next) {
+		return GroupPtr(new Group(last,next));
+	}
 
 } // Namespace gui.
 

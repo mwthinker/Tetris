@@ -167,9 +167,6 @@
     <ClInclude Include="inputformatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="choosenbrofplayers.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
     <ClInclude Include="multiframe.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
@@ -194,9 +191,6 @@
     <ClInclude Include="guiitem.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="highscore.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
     <ClInclude Include="imagebackground.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
@@ -219,6 +213,12 @@
       <Filter>Header Files\gui</Filter>
     </ClInclude>
     <ClInclude Include="guiwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="choosenbrofplayers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="highscore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

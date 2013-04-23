@@ -144,7 +144,7 @@ void GuiWindow::initFrameMenu() {
 	multiFrame_.add(b6,x,y,false,true);		
 
 	// Focus is switchable by the left and right arrow.
-	gui::GroupPtr group = std::make_shared<gui::Group>(SDLK_UP,SDLK_DOWN);
+	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
 	group->add(b1);
 	group->add(b2);
 	group->add(b3);
@@ -194,9 +194,9 @@ void GuiWindow::initPlayFrame() {
 		}
 	});
 
-	gui::ButtonPtr b3 = std::make_shared<gui::ChooseNbrOfPlayers>(hDistance_);
+	gui::ButtonPtr b3 = createChooseNbrOfPlayers(hDistance_);
 	b3->addOnClickListener([&](gui::GuiItem* item) {
-		gui::ChooseNbrOfPlayers* nbrOfPlayers = (gui::ChooseNbrOfPlayers*) item;
+		ChooseNbrOfPlayers* nbrOfPlayers = (ChooseNbrOfPlayers*) item;
 		int nbr = 1 + nbrOfPlayers->getNbrOfPlayers();
 		if (nbr > 4) {
 			nbr = 1;
@@ -325,7 +325,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(button,45,150,false,true);
 
 	// Add all items to group!
-	gui::GroupPtr group = std::make_shared<gui::Group>(SDLK_UP,SDLK_DOWN);
+	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
 	group->add(customPlayWidth_);
 	group->add(customPlayHeight_);
 	group->add(customPlaymaxLevel_);
