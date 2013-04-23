@@ -84,9 +84,6 @@
     <ClCompile Include="frame.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="guiwindow.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
     <ClCompile Include="multiframe.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
@@ -95,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="textboxdraw.cpp">
       <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="guiwindow.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,9 +194,6 @@
     <ClInclude Include="guiitem.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="guiwindow.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
     <ClInclude Include="highscore.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
@@ -220,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="guitypedefs.h">
       <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="guiwindow.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

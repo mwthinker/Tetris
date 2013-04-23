@@ -8,6 +8,9 @@ namespace gui {
 	class Bar;
 	typedef std::shared_ptr<Bar> BarPtr;
 
+	class BarColor;
+	typedef std::shared_ptr<BarColor> BarColorPtr;
+
 	class TextItem;
 	typedef std::shared_ptr<TextItem> TextItemPtr;
 

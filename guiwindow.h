@@ -50,8 +50,9 @@ private:
 
 	void quit();
 
-	gui::ButtonPtr createTextButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick);
+	gui::ButtonPtr createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick);
 	gui::TextBoxPtr createTextBox(int size);
+	gui::BarColorPtr createUpperBar();
 
 	void initFrameMenu();
 	void initPlayFrame();
