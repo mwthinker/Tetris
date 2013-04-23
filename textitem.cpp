@@ -16,4 +16,8 @@ namespace gui {
 		text_.draw();
 	}
 
+	TextItemPtr createTextItem(std::string text, mw::FontPtr font, int size, mw::Color color) {
+		return TextItemPtr(new TextItem(text, font, size, color));
+	}
+
 } // Namespace gui.

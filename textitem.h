@@ -9,6 +9,8 @@
 
 #include <SDL_opengl.h>
 
+#include <memory>
+
 namespace gui {
 
 	class TextItem : public GuiItem {
@@ -21,7 +23,11 @@ namespace gui {
 		mw::Color color_;
 		mw::FontPtr font_;
 		mw::Text text_;
-	};	
+	};
+
+	typedef std::shared_ptr<TextItem> TextItemPtr;
+
+	TextItemPtr createTextItem(std::string text, mw::FontPtr font, int size, mw::Color color);
 
 } // Namespace gui.
 

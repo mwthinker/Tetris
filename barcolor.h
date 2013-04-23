@@ -7,6 +7,8 @@
 
 #include <SDL_opengl.h>
 
+#include <memory>
+
 namespace gui {
 
 	class BarColor : public Bar {
@@ -17,6 +19,10 @@ namespace gui {
 	private:
 		mw::Color color_;
 	};
+
+	typedef std::shared_ptr<BarColor> BarColorPtr;
+
+	BarColorPtr createBarColor(Bar::Type type, int size, mw::Color color);
 
 } // Namespace gui.
 

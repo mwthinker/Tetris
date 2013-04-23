@@ -7,6 +7,8 @@
 
 #include <SDL_opengl.h>
 
+#include <memory>
+
 namespace gui {
 
 	class ImageBackground : public Background {
@@ -27,6 +29,12 @@ namespace gui {
 	private:
 		mw::Sprite sprite_;
 	};
+
+	typedef std::shared_ptr<ImageBackground> ImageBackgroundPtr;
+
+	ImageBackgroundPtr createImageBackground(mw::Sprite sprite) {
+		return ImageBackgroundPtr(new ImageBackground(sprite));
+	}
 
 } // Namespace gui.
 

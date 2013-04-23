@@ -25,4 +25,8 @@ namespace gui {
 		glDisable(GL_BLEND);
 	}
 
+	BarColorPtr createBarColor(Bar::Type type, int size, mw::Color color) {
+		return BarColorPtr(new BarColor(type,size,color));
+	}
+
 } // Namespace gui.

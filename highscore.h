@@ -6,6 +6,8 @@
 #include <string>
 #include <algorithm>
 
+#include <memory>
+
 namespace gui {
 
 	typedef std::tuple<int,std::string,std::string> HighscoreElement;

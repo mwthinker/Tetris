@@ -9,6 +9,8 @@
 
 #include <SDL_opengl.h>
 
+#include <memory>
+
 namespace gui {
 
 	class TextButton : public Button {
@@ -113,7 +115,18 @@ namespace gui {
 		mw::Text text_;
 		int size_;
 	};
+	
+	typedef std::shared_ptr<TextButton> TextButtonPtr;
 
+	TextButtonPtr createTextButton(std::string text, int size, mw::FontPtr font) {
+		return TextButtonPtr(new TextButton(text, size, font));
+	}
+	
+	TextButtonPtr createTextButton(std::string text, int size, mw::FontPtr font, mw::Color textColor, mw::Color focused, mw::Color onHover,
+			mw::Color notHover, mw::Color insideDownHover) {
+				return TextButtonPtr(new TextButton(text, size, font, textColor, focused, onHover, notHover, insideDownHover));
+	}
+	
 } // Namespace gui.
 
 #endif // TEXTBUTTON_H

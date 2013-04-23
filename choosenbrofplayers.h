@@ -7,6 +7,8 @@
 #include <mw/texture.h>
 #include <mw/sprite.h>
 
+#include <memory>
+
 namespace gui {
 
 	class ChooseNbrOfPlayers : public Button {
@@ -64,6 +66,12 @@ namespace gui {
 		mw::Sprite man_, noMan_;		
 		int pixelSize_;
 	};
+
+	typedef std::shared_ptr<ChooseNbrOfPlayers> ChooseNbrOfPlayersPtr;
+
+	ChooseNbrOfPlayersPtr createChoosenNbrOfPlayers(int pixelSize) {
+		return ChooseNbrOfPlayersPtr(new ChooseNbrOfPlayers(pixelSize));
+	}
 
 } // Namespace gui.
 

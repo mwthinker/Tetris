@@ -49,4 +49,8 @@ namespace gui {
 		text_.draw();
 	}
 
+	TextBoxDrawPtr createTextBoxDraw(int width, mw::FontPtr font, int characterSize,  mw::Color textColor, mw::Color focused, mw::Color notFoxused) {
+		return TextBoxDrawPtr(new TextBoxDraw(width, font, characterSize, textColor, focused, notFoxused));
+	}
+
 } // Namespace gui.
