@@ -80,7 +80,7 @@ gui::BarColorPtr GuiWindow::createUpperBar() {
 void GuiWindow::initFrameMenu() {
 	multiFrame_.setCurrentFrame(0);
 	multiFrame_.add(gui::createTextItem("MWetris",fontDefault50,80,mw::Color(1,1,1)),10,50,false,true);//Color(0.9,0.2,0,0.9)
-	multiFrame_.add(gui::createTextItem("Made by Marcus Welander",fontDefault18,12,mw::Color(0.9,0.2,0,0.9)),0,0,true,false);
+	multiFrame_.add(gui::createTextItem("Made by Marcus Welander",fontDefault18,12,mw::Color(1,1,1)),0,0,true,false);
 
 	// Upper bar.		
 	multiFrame_.addBar(createUpperBar());
@@ -259,7 +259,7 @@ void GuiWindow::initHighscoreFrame() {
 		}
 	});
 
-	multiFrame_.add(createHighscore(10),100,100,false,true);
+	multiFrame_.add(createHighscore(10,mw::Color(1,1,1)),10, (int) (hDistance_*1.2),false,true);
 
 	multiFrame_.add(b1,0,0,false,true);
 }
@@ -292,7 +292,7 @@ void GuiWindow::initCustomPlayFrame() {
 	// Set board size ------------------------------------------------------
 	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem,45,50,false,true);
-	customPlayWidth_ = createTextBox(35);		
+	customPlayWidth_ = createTextBox(35);
 	customPlayWidth_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
 	customPlayWidth_->setText("10");
 	multiFrame_.add(customPlayWidth_,100,50,false,true);
@@ -313,7 +313,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(customPlaymaxLevel_,140,100,false,true);
 
 	// Create game -----------------------------------------------------
-	auto button = createButton("Create game", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Create game", 30, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
 		std::stringstream stream;
 		stream << customPlayWidth_->getText() << " ";

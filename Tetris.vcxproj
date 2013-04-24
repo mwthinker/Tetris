@@ -90,6 +90,7 @@
     <ClCompile Include="gamesprite.cpp" />
     <ClCompile Include="graphicboard.cpp" />
     <ClCompile Include="guiwindow.cpp" />
+    <ClCompile Include="highscore.cpp" />
     <ClCompile Include="human.cpp" />
     <ClCompile Include="inputdevice.cpp" />
     <ClCompile Include="inputjoystick.cpp" />
