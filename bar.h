@@ -12,6 +12,9 @@ namespace gui {
 			size_ = size;
 		}
 
+		virtual ~Bar() {
+		}
+
 		virtual void draw(int width, int height) = 0;
 
 		int getSize() const {
@@ -24,7 +27,6 @@ namespace gui {
 
 	private:
 		Type type_;
-		int width_, height_;
 		int size_;
 	};
 

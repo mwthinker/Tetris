@@ -5,9 +5,12 @@ namespace gui {
 
 	class Background {
 	public:
+		virtual ~Background() {
+		}
+
 		// Draws the view.
 		virtual void draw(int width, int height) = 0;
-	};	
+	};
 
 } // Namespace gui.
 
