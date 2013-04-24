@@ -28,9 +28,9 @@ namespace gui {
 		// Add a bar.
 		void addBar(BarPtr bar);
 
-		// Add a gui item at postion (x,y). By default origo is at the bottom left of the window.
+		// Add a gui item at postion (x,y). By default origo is at the corner decided by (invX,invY) of the window.
 		// Y-axis is directed up and X-axis is directed right. If invX and/or invY is true then the 
-		// respectiv axis direction is inverted.
+		// respectiv axis direction is inverted. (invX,invY)= (false,false) the origo is placed in the bottom left.
 		void add(GuiItemPtr guiItem, int x, int y, bool invX = false, bool invY = false);
 
 		// Updates all guitems in order for them to repsond to a window event.
