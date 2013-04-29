@@ -175,6 +175,20 @@ void TetrisGame::update(Uint32 deltaTime) {
 		status_ = WAITING_TO_CONNECT;
 	}
 
+	// Takes care of user input for all human players.
+	for (auto it = humanPlayers_.begin(); it != humanPlayers_.end(); ++it) {
+		HumanPtr& human = *it;
+		unsigned int index = it - humanPlayers_.begin();
+		if (index < inputDevices_.size()) {
+			InputDevicePtr& device = inputDevices_[index];
+
+			PlayerEvent playerEvent;
+			while (device->pollEvent(playerEvent)) {
+				human->updatePlayerEvent(playerEvent);
+			}
+		}
+	}
+
 	if (start_) {
 		auto& players = players_;
 		// Iterate through all players and progress the game and apply game rules and sound effects.
@@ -199,23 +213,6 @@ void TetrisGame::draw() {
 	}
 	
 	glPopMatrix();
-}
-
-void TetrisGame::eventUpdate(const SDL_Event& windowEvent) {
-	// Takes care of user input for all human players.
-	for (auto it = humanPlayers_.begin(); it != humanPlayers_.end(); ++it) {
-		HumanPtr& human = *it;
-		unsigned int index = it - humanPlayers_.begin();
-		if (index < inputDevices_.size()) {
-			InputDevicePtr& device = inputDevices_[index];
-			device->eventUpdate(windowEvent);
-
-			PlayerEvent playerEvent;
-			while (device->pollEvent(playerEvent)) {
-				human->updatePlayerEvent(playerEvent);
-			}
-		}
-	}
 }
 
 double TetrisGame::getWidth() const {

@@ -116,7 +116,6 @@ private:
 
 	// Override gui::GuiWindow
 	void updateGameEvent(const SDL_Event& windowEvent) {
-		tetrisGame_.eventUpdate(windowEvent);
 		for (InputDevicePtr device : inputDevices_) {
 			device->eventUpdate(windowEvent);
 		}

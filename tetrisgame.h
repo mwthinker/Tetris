@@ -45,9 +45,6 @@ public:
 
 	// Draws the game.
 	void draw();
-	
-	// Handles all input from the users. Should be called whenever new inputs arrives.
-    void eventUpdate(const SDL_Event& windowEvent);
 
 	// Returns the width in pixels.
     double getWidth() const;
