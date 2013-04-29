@@ -19,7 +19,7 @@ public:
 		numberOfPlayer_ = 1;
 		tetrisGame_.createLocalGame(1);
 
-		tetrisGame_.setOnConnectionEvent([&](Protocol::ManagerEvent connectionEvent) {
+		tetrisGame_.addCallback([&](Protocol::ManagerEvent connectionEvent) {
 			handleConnectionEvent(connectionEvent);
 		});
     }

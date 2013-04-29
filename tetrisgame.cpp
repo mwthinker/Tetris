@@ -88,7 +88,7 @@ void TetrisGame::update(Uint32 deltaTime) {
 				soundEffects(gameEvent);
 			}
 		}
-	}	
+	}
 }
 
 void TetrisGame::draw() {

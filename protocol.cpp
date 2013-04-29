@@ -329,11 +329,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		std::cout << "\n" << "PACKET_STARTGAME" << std::endl;
 		
 		// Signals the gui that the game begins.
-		// Has a handler?
-		if (!eventHandler_) {
-			eventHandler_(STARTS_GAME);
-		}
-		//events_.push(STARTS_GAME);
+		signalEvent(STARTS_GAME);
 
 		break;
 	case PACKET_PAUSE:

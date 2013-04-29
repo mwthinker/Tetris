@@ -15,9 +15,9 @@
 class TetrisGame {
 public:
 	TetrisGame();
-	
-	void setOnConnectionEvent(std::function<void (Protocol::ManagerEvent)> eventHandler) {
-		manager_.setOnConnectionEvent(eventHandler);
+
+	void addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback) {
+		//manager_->addCallback(callback);
 	}
 	
 	void createLocalGame(int nbrLocalPlayers);
@@ -56,6 +56,7 @@ public:
     
 	// Returns the width in pixels.
 	double getHeight() const;
+
 private:
 	void createNewHumanPlayers(int nbrOfLocalPlayers);
 

@@ -11,7 +11,7 @@
 #include "remoteuser.h"
 #include "human.h"
 
-#include <functional>
+#include <mw/signal.h>
 
 // Is throwed when data is received which violates the 
 // tetris protocol.
@@ -47,11 +47,7 @@ class Protocol : public mw::ServerFilter {
 public:
 	Protocol();
 
-	enum ManagerEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};
-
-	void setOnConnectionEvent(std::function<void (ManagerEvent)> eventHandler) {
-		eventHandler_ = eventHandler;
-	}
+	enum ManagerEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};	
 
 	// Returns true when the game is paused.
 	bool isPaused() const;
@@ -62,7 +58,16 @@ public:
 
 	// Returns true if the game is started.
 	bool isStarted() const;
+
+	void addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback) {
+		eventHandler_.connect(callback);
+	}
+
 protected:
+	void signalEvent(Protocol::ManagerEvent mEvent) {
+		eventHandler_(mEvent);
+	}
+
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value 
 	// defined in PacketType.
@@ -140,8 +145,7 @@ private:
 	// Receives the starting block from remote player.
 	void receiveStartBlock(const mw::Packet& data, int id);
 
-	std::function<void (ManagerEvent)> eventHandler_;
+	mw::Signal<Protocol::ManagerEvent> eventHandler_;
 };
-
 
 #endif // PROTOCOL_H
