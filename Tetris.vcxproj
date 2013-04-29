@@ -98,7 +98,6 @@
     <ClCompile Include="movehandler.cpp" />
     <ClCompile Include="multiframe.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="playermanager.cpp" />
     <ClCompile Include="rotationhandler.cpp" />
     <ClCompile Include="protocol.cpp" />
     <ClCompile Include="tetrisboard.cpp" />
@@ -136,7 +135,6 @@
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="playermanager.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="remoteuser.h" />
     <ClInclude Include="rotationhandler.h" />
