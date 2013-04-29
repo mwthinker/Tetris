@@ -30,10 +30,6 @@ PlayerManager::~PlayerManager() {
 	delete manager_;
 }
 
-int PlayerManager::getNumberOfConnections() const {
-	return 1 + remoteUsers_.size();
-}
-
 int PlayerManager::getNumberOfPlayers(int connection) const {
 	if (connection == 0) {
 		return humans_.size();

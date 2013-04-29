@@ -25,11 +25,7 @@ public:
 	PlayerManager();
 	
 	// Destorys and close any active connections.
-	~PlayerManager();
-
-	// Returns the number of PlayerManager:s connected to each other.
-	// Returns one if this instance is not connected to any remote instances.
-	int getNumberOfConnections() const;
+	~PlayerManager();	
 
 	// Returns the number of total players from the index (connection).
 	// Index (connection) goes from 0 to getNumberOfConnections()-1.

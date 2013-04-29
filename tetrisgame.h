@@ -10,6 +10,8 @@
 #include <vector>
 #include <functional>
 
+typedef std::shared_ptr<InputDevice<PlayerEvent>> InputDevicePtr;
+
 // Is responsible of the all game components. It takes the sound, graphic, 
 // input, network and connects it with the core tetris game.
 class TetrisGame {
@@ -57,18 +59,19 @@ public:
 	// Returns the width in pixels.
 	double getHeight() const;
 
+	void setInputDevice(const InputDevicePtr& inputDevice, int playerIndex) {
+		inputDevices_[playerIndex] = inputDevice;
+	}
 private:
 	void createNewHumanPlayers(int nbrOfLocalPlayers);
 
-    void soundEffects(GameEvent gameEvent);
-
-	typedef std::shared_ptr<InputDevice<PlayerEvent>> InputDevicePtr;
+    void soundEffects(GameEvent gameEvent);	
 	    
 	std::vector<HumanPtr> humanPlayers_;
     
 	mw::Sound soundCollision_, soundTetris_, soundRowRemoved_;
 
-	std::vector<InputDevicePtr> inputDevices_;
+	std::map<int,InputDevicePtr> inputDevices_;
 	PlayerManager manager_;
 };
 

@@ -6,6 +6,7 @@
 #include "tetrisboard.h"
 #include "tetrisgame.h"
 #include "guiwindow.h"
+#include "inputjoystick.h"
 
 #include <mw/gamewindow.h>
 #include <mw/sprite.h>
@@ -22,6 +23,23 @@ public:
 		tetrisGame_.addCallback([&](Protocol::ManagerEvent connectionEvent) {
 			handleConnectionEvent(connectionEvent);
 		});
+
+		// Initializes default keybord devices for two players.
+		InputDevicePtr inputDevice1(new InputKeyboard(SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
+		inputDevices_.push_back(inputDevice1);
+		InputDevicePtr inputDevice2(new InputKeyboard(SDLK_s, SDLK_a, SDLK_d, SDLK_w));
+		inputDevices_.push_back(inputDevice2);
+
+		// Init joysticks!
+		auto joystics = mw::Joystick::getJoystics();
+		for(mw::JoystickPtr& joystick : joystics) {
+			std::cout << joystick->getName() << std::endl;
+			InputDevicePtr inputDevice(new InputJoystick(joystick,0,1));
+			inputDevices_.push_back(inputDevice);
+		}
+
+		tetrisGame_.setInputDevice(inputDevice1,0);
+		tetrisGame_.setInputDevice(inputDevice2,1);
     }
 
 	~TetrisWindow() {
@@ -99,6 +117,10 @@ private:
 	// Override gui::GuiWindow
 	void updateGameEvent(const SDL_Event& windowEvent) {
 		tetrisGame_.eventUpdate(windowEvent);
+		for (InputDevicePtr device : inputDevices_) {
+			device->eventUpdate(windowEvent);
+		}
+
 		switch (windowEvent.type) {
 		case SDL_QUIT:
 			//quit();
@@ -124,6 +146,7 @@ private:
 
     TetrisGame tetrisGame_;
 	mw::Text header_;
+	std::vector<InputDevicePtr> inputDevices_;
 
 	int numberOfPlayer_;
 };

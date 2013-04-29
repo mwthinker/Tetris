@@ -13,20 +13,7 @@
 #include <utility>
 #include <memory>
 
-TetrisGame::TetrisGame() {
-	// Initializes default keybord devices for two players.
-	InputDevicePtr inputDevice1(new InputKeyboard(SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
-	inputDevices_.push_back(inputDevice1);
-	InputDevicePtr inputDevice2(new InputKeyboard(SDLK_s, SDLK_a, SDLK_d, SDLK_w));
-	inputDevices_.push_back(inputDevice2);
-
-	// Init joysticks!
-	auto joystics = mw::Joystick::getJoystics();
-	for(mw::JoystickPtr& joystick : joystics) {
-		std::cout << joystick->getName() << std::endl;
-		InputDevicePtr inputDevice(new InputJoystick(joystick,0,1));
-		inputDevices_.push_back(inputDevice);
-	}
+TetrisGame::TetrisGame() {	
 }
 
 void TetrisGame::createNewHumanPlayers(int nbrOfLocalPlayers) {
