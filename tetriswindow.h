@@ -140,12 +140,13 @@ private:
 	}
 
 	void handleConnectionEvent(Protocol::ManagerEvent connectionEvent) {
-		if (connectionEvent == PlayerManager::ManagerEvent::STARTS_GAME) {
+		/*
+		if (connectionEvent == ManagerEvent::STARTS_GAME) {
 		}
+		*/
 	}
 
     TetrisGame tetrisGame_;
-	mw::Text header_;
 	std::vector<InputDevicePtr> inputDevices_;
 
 	int numberOfPlayer_;

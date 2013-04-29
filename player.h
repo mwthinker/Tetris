@@ -12,7 +12,7 @@
 
 class Player {
 public:
-	friend class PlayerManager;
+	friend class TetrisGame;
 	friend class Protocol;
 
 	Player(int id) : graphicBoard_(tetrisBoard_) {		

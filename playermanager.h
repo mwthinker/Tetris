@@ -18,9 +18,6 @@
 // of the game rules, synchronization and progressing the game.
 class PlayerManager : public Protocol {
 public:
-	// Explains what PlayerManager is.
-	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
-
 	// PlayerManager starts in status (WAITING_TO_CONNECT).
 	PlayerManager();
 	
@@ -48,28 +45,7 @@ public:
 
 	void restart();
 
-	// Sets the port which PlayerManager should connect to if status 
-	// is CLIENT. I.e. calling connect(humans, Status::CLIENT).
-	void setConnectToPort(int port);
-
-	// Returns the current port to connect to if calling 
-	// connect(humans, Status::CLIENT).
-	int getConnectToPort() const;
-
-	// Sets the port which PlayerManager should be connected to if status 
-	// is SERVER. I.e. calling connect(humans, Status::SERVER).
-	void setServerPort(int port);
 	
-	// Returns the current port to to which new connection connects to.
-	// This accurs when a call to connect(humans, Status::SERVER) is made.
-	int getServerPort() const;
-
-	// Sets the ip to the server to connect to. 
-	// This ip us used when a call to connect(humans, Status::SERVER) is made.
-	void setConnectToIp(std::string ip);
-	
-	// Returns the ip to the server.
-	std::string getConnectToIp() const;
 
 	// Starts the game. Must be ready to start.
 	void start();
@@ -85,8 +61,6 @@ public:
 	// Is is recomended to be called frequntly, otherwise any active connection
 	// may be lossed (depending on implemetion).
 	void update(Uint32 deltaTime);
-	
-	Status getStatus() const;
 
 	// Is called when polling gameEvent from player. The player pointer 
 	// is gathered from getPlayers();
@@ -107,7 +81,7 @@ public:
 	const std::vector<Player*>& getPlayers() const;
 private:
 
-	Status status_;
+	
 };
 
 #endif // PLAYERMANAGER_H
