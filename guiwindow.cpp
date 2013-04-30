@@ -408,6 +408,19 @@ void GuiWindow::update(Uint32 deltaTime) {
 // Override mw::Window
 void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
 	multiFrame_.eventUpdate(windowEvent);
+	switch (windowEvent.type) {
+	case SDL_KEYDOWN:
+		switch (windowEvent.key.keysym.sym) {
+		case SDLK_F11:				
+			mw::Window::setFullScreen(!mw::Window::isFullScreen());
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
 	if (isUpdatingGame()) {
 		updateGameEvent(windowEvent);
 	}
