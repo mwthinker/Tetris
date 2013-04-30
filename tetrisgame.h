@@ -21,10 +21,6 @@ public:
 
 	TetrisGame();
 	~TetrisGame();
-
-	void addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback) {
-		//manager_->addCallback(callback);
-	}
 	
 	void createLocalGame(int nbrLocalPlayers);
 	void createServerGame(int nbrLocalPlayers, int port);
@@ -34,10 +30,7 @@ public:
 	void restartGame();
 	void closeGame();
 	void setReadyGame(bool ready);
-	
-	bool isReady() const {
-		return ready_;
-	}
+	bool isReady() const;
     
 	// Moves the game forward in time by the amount of milliseconds
 	// specified in parameter deltaTime.
@@ -52,9 +45,7 @@ public:
 	// Returns the width in pixels.
 	double getHeight() const;
 
-	void setInputDevice(const InputDevicePtr& inputDevice, int playerIndex) {
-		inputDevices_[playerIndex] = inputDevice;
-	}
+	void setInputDevice(const InputDevicePtr& inputDevice, int playerIndex);
 
 private:
 	void createNewHumanPlayers(int nbrOfLocalPlayers);
@@ -88,12 +79,9 @@ private:
 
 	int getNumberOfPlayers(int connection) const;
 	    
-	std::vector<HumanPtr> humanPlayers_;
-    
+	std::vector<HumanPtr> humanPlayers_;    
 	mw::Sound soundCollision_, soundTetris_, soundRowRemoved_;
-
 	std::map<int,InputDevicePtr> inputDevices_;
-
 	Status status_;
 };
 

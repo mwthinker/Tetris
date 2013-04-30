@@ -132,6 +132,14 @@ void TetrisGame::setReadyGame(bool ready) {
 	}
 }
 
+bool TetrisGame::isReady() const {
+	return ready_;
+}
+
+void TetrisGame::setInputDevice(const InputDevicePtr& inputDevice, int playerIndex) {
+	inputDevices_[playerIndex] = inputDevice;
+}
+
 void TetrisGame::update(Uint32 deltaTime) {
 	if (manager_ != 0) {
 		manager_->update();

@@ -59,14 +59,10 @@ public:
 	// Returns true if the game is started.
 	bool isStarted() const;
 
-	void addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback) {
-		eventHandler_.connect(callback);
-	}
+	void addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback);
 
 protected:
-	void signalEvent(Protocol::ManagerEvent mEvent) {
-		eventHandler_(mEvent);
-	}
+	void signalEvent(Protocol::ManagerEvent mEvent);
 
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value 
@@ -103,7 +99,8 @@ protected:
 	void sendTetrisInfo(int playerId, const std::vector<BlockType>& blockTypes);
 
 	bool start_;
-	bool ready_;	
+	bool ready_;
+	bool pause_; // Is game paused?
 		
 	std::vector<Player*> players_; // All players.
 	
@@ -117,14 +114,10 @@ protected:
 	std::string connectToIp_; // The ip on the remote server.
 	
 	int nbrOfAlivePlayers_; // The total number of alive players.
-
-	mw::ConnectionManager* manager_; // The connection manager.	
-
+	mw::ConnectionManager* manager_; // The connection manager.
 	static int playerId_; // The id for the last added player.
-
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 
-	bool pause_; // Is game paused?
 private:
 	// @Override ServerFilter. Is only called in server/local mode.
 	// Data (data) is received from client (id). Type (type)

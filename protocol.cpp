@@ -90,6 +90,14 @@ bool Protocol::isStarted() const {
 	return start_;
 }
 
+void Protocol::addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback) {
+	eventHandler_.connect(callback);
+}
+
+void Protocol::signalEvent(Protocol::ManagerEvent mEvent) {
+	eventHandler_(mEvent);
+}
+
 // @Override ServerFilter. Is only called in server/local mode.
 // Data (data) is received from client (id). Type (type)
 // describes the type of event. The return value is the 
