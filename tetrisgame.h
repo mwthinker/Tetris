@@ -2,7 +2,6 @@
 #define TETRISGAME_H
 
 #include "inputdevice.h"
-#include "inputkeyboard.h"
 #include "protocol.h"
 
 #include <mw/sound.h>
@@ -12,11 +11,10 @@
 
 typedef std::shared_ptr<InputDevice<PlayerEvent>> InputDevicePtr;
 
-// Is responsible of the all game components. It takes the sound, graphic, 
+// Is responsible of the all game components. It takes the sound, graphic,
 // input, network and connects it with the core tetris game.
 class TetrisGame : public Protocol {
 public:
-	// Explains what PlayerManager is.
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
 	TetrisGame();

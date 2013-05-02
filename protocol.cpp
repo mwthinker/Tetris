@@ -226,8 +226,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 
 			receivInput(data,playerId,move,next);
 
-			for (auto it = players_.begin(); it != players_.end(); ++it) {
-				Player* player = *it;
+			for (Player* player : players_) {
 				if (player->getId() == playerId) {
 					player->tetrisBoard_.setNonRandomNextBlockType(next);
 					player->update(move);

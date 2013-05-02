@@ -47,7 +47,7 @@ class Protocol : public mw::ServerFilter {
 public:
 	Protocol();
 
-	enum ManagerEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};	
+	enum ManagerEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};
 
 	// Returns true when the game is paused.
 	bool isPaused() const;

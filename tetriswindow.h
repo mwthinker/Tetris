@@ -1,12 +1,12 @@
 #ifndef TETRISWINDOW_H
 #define TETRISWINDOW_H
 
+#include "guiwindow.h"
 #include "gamesprite.h"
 #include "gamefont.h"
-#include "tetrisboard.h"
 #include "tetrisgame.h"
-#include "guiwindow.h"
 #include "inputjoystick.h"
+#include "inputkeyboard.h"
 
 #include <mw/gamewindow.h>
 #include <mw/sprite.h>
