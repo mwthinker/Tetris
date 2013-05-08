@@ -9,9 +9,9 @@
 
 #include <mw/sound.h>
 
-#include <mw/servermanager.h>
-#include <mw/clientmanager.h>
-#include <mw/localmanager.h>
+#include <mw/enet/server.h>
+#include <mw/enet/client.h>
+#include <mw/localnetwork.h>
 
 #include <iostream>
 #include <utility>
@@ -68,7 +68,7 @@ void TetrisGame::createClientGame(int nbrOfLocalPlayers,int port, std::string ip
 
 void TetrisGame::startGame() {
 	// Game not started. // Connection must be active!
-	if (manager_ != 0 && !start_ && manager_->getStatus() == mw::ConnectionManager::ACTIVE) {		
+	if (manager_ != 0 && !start_ && manager_->getStatus() == mw::Network::ACTIVE) {		
 		// Is server.
 		if (manager_->getId() == manager_->getServerId()) {
 			if (!ready_) {
@@ -144,10 +144,10 @@ void TetrisGame::update(Uint32 deltaTime) {
 	if (manager_ != 0) {
 		manager_->update();
 		switch (manager_->getStatus()) {
-		case mw::ConnectionManager::NOT_ACTIVE:
+		case mw::Network::NOT_ACTIVE:
 			//std::cout << "\nNOT_ACTIVE: " << std::endl;
 			break;
-		case mw::ConnectionManager::ACTIVE:
+		case mw::Network::ACTIVE:
 			{				
 				mw::Packet data;
 				int id = 0;
@@ -174,7 +174,7 @@ void TetrisGame::update(Uint32 deltaTime) {
 				}
 			}
 			break;
-		case mw::ConnectionManager::DISCONNECTING:
+		case mw::Network::DISCONNECTING:
 			// Will soon change status to not active.
 			std::cout << "\nDISCONNECTING: " << std::endl;
 			break;
@@ -282,7 +282,7 @@ void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
 
 		switch (status) {
 		case LOCAL:
-			manager_ = new mw::LocalManager(this);
+			manager_ = new mw::LocalNetwork(this);
 			manager_->start();
 			std::cout << "\nLocal" << std::endl;
 			// Add new player to all human players.
@@ -292,7 +292,7 @@ void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
 			}
 			break;
 		case SERVER:
-			manager_ = new mw::ServerManager(serverPort_,this);
+			manager_ = new mw::enet::Server(serverPort_,this);
 			manager_->start();
 			// Add new player to all human players.
 			for (PairHumanIndex& pair : humans_) {
@@ -301,7 +301,7 @@ void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
 			}
 			break;
 		case CLIENT:
-			manager_ = new mw::ClientManager(connectToPort_,connectToIp_);
+			manager_ = new mw::enet::Client(connectToPort_,connectToIp_);
 			manager_->start();
 			sendClientInfo();
 			break;

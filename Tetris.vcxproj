@@ -39,13 +39,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;$(IncludePath)</IncludePath>
-    <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib\debug;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Programmering\SDK\mw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib\debug;C:\Programmering\SDK\mw\lib-d;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwLibrary;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\MwNetwork;$(IncludePath)</IncludePath>
-    <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib;C:\Users\marcus\Documents\Visual Studio 2012\Projects\MwLibrary\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>c:\Programmering\SDK\SDL\SDL all\include;C:\Programmering\SDK\enet\include;C:\Programmering\SDK\mw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>c:\Programmering\SDK\SDL\SDL all\lib;C:\Programmering\SDK\enet\lib;C:\Programmering\SDK\mw\lib-r;$(LibraryPath)</LibraryPath>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -56,7 +56,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;enet.lib;ws2_32.lib;winmm.lib;SDL.lib;OpenGl32.lib;MwLibrary.lib;MwNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;enet.lib;ws2_32.lib;winmm.lib;SDL.lib;OpenGl32.lib;MwLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <IgnoreSpecificDefaultLibraries>LIBCMTD;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -73,7 +73,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;enet.lib;ws2_32.lib;winmm.lib;SDL.lib;OpenGl32.lib;MwLibrary.lib;MwNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;enet.lib;ws2_32.lib;winmm.lib;SDL.lib;OpenGl32.lib;MwLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>

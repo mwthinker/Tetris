@@ -366,7 +366,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 void Protocol::serverReceiveClientInfo(RemoteUser* remote, mw::Packet packet) {
 	PacketType type;
 	packet >> type;	
-	int nbrOfPlayers;
+	char nbrOfPlayers;
 	packet >> nbrOfPlayers;
 
 	// Add the changes. I.e. add or remove player. 

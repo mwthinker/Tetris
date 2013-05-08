@@ -2,7 +2,7 @@
 #define PROTOCOL_H
 
 #include <mw\packet.h>
-#include <mw\connectionmanager.h>
+#include <mw\network.h>
 
 #include "tetrisboard.h"
 #include "player.h"
@@ -114,7 +114,7 @@ protected:
 	std::string connectToIp_; // The ip on the remote server.
 	
 	int nbrOfAlivePlayers_; // The total number of alive players.
-	mw::ConnectionManager* manager_; // The connection manager.
+	mw::Network* manager_; // The connection manager.
 	static int playerId_; // The id for the last added player.
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 
