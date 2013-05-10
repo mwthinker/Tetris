@@ -20,20 +20,11 @@
 
 TetrisGame::TetrisGame() {
 	status_ = WAITING_TO_CONNECT;
-	start_ = false;
-	serverPort_ = 12008;
-	connectToPort_ = 12008;
-	connectToIp_ = "localhost";
-	manager_ = 0;
-	ready_ = false;
-	
-	nbrOfAlivePlayers_ = 0;
-	acceptNewConnections_ = false;
 }
 
 TetrisGame::~TetrisGame() {
 	closeGame();
-	delete manager_;
+	delete network_;
 }
 
 void TetrisGame::createNewHumanPlayers(int nbrOfLocalPlayers) {
@@ -68,9 +59,9 @@ void TetrisGame::createClientGame(int nbrOfLocalPlayers,int port, std::string ip
 
 void TetrisGame::startGame() {
 	// Game not started. // Connection must be active!
-	if (manager_ != 0 && !start_ && manager_->getStatus() == mw::Network::ACTIVE) {		
+	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {		
 		// Is server.
-		if (manager_->getId() == manager_->getServerId()) {
+		if (network_->getId() == network_->getServerId()) {
 			if (!ready_) {
 				return;
 			}
@@ -96,14 +87,14 @@ void TetrisGame::startGame() {
 
 void TetrisGame::restartGame() {
 	// Manager is active and is server and game is started => restart,
-	if (manager_ != 0 && isStarted() && manager_->getId() == manager_->getServerId()) {
+	if (network_ != 0 && isStarted() && network_->getId() == network_->getServerId()) {
 		serverSendStartGame();
 	}
 }
 
 // Stops the game and aborts any active connection.
 void TetrisGame::closeGame() {	
-	if (manager_ != 0) {
+	if (network_ != 0) {
 		//players_.clear();
 		start_ = false;
 		ready_ = false;
@@ -111,7 +102,7 @@ void TetrisGame::closeGame() {
 		status_ = WAITING_TO_CONNECT;
 
 		// Disconnecting
-		manager_->stop();
+		network_->stop();
 
 		for (RemoteUser* remoteUser : remoteUsers_) {
 			delete remoteUser;
@@ -126,7 +117,7 @@ void TetrisGame::closeGame() {
 }
 
 void TetrisGame::setReadyGame(bool ready) {
-	if (manager_ != 0 && !isStarted()) {
+	if (network_ != 0 && !isStarted()) {
 		ready_ = ready;
 		sendReady();
 	}
@@ -141,9 +132,9 @@ void TetrisGame::setInputDevice(const InputDevicePtr& inputDevice, int playerInd
 }
 
 void TetrisGame::update(Uint32 deltaTime) {
-	if (manager_ != 0) {
-		manager_->update();
-		switch (manager_->getStatus()) {
+	if (network_ != 0) {
+		network_->update();
+		switch (network_->getStatus()) {
 		case mw::Network::NOT_ACTIVE:
 			//std::cout << "\nNOT_ACTIVE: " << std::endl;
 			break;
@@ -151,7 +142,7 @@ void TetrisGame::update(Uint32 deltaTime) {
 			{				
 				mw::Packet data;
 				int id = 0;
-				while (id = manager_->pullFromReceiveBuffer(data)) {
+				while (id = network_->pullFromReceiveBuffer(data)) {
 					receiveData(data, id);
 				}
 
@@ -276,14 +267,14 @@ void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
 		for (const HumanPtr& human : humans) {
 			humans_.push_back(PairHumanIndex(human,-1));
 		}
-		delete manager_;
+		delete network_;
 		status_ = status;
 		acceptNewConnections_ = true;
 
 		switch (status) {
 		case LOCAL:
-			manager_ = new mw::LocalNetwork(this);
-			manager_->start();
+			network_ = new mw::LocalNetwork(this);
+			network_->start();
 			std::cout << "\nLocal" << std::endl;
 			// Add new player to all human players.
 			for (PairHumanIndex& pair : humans_) {
@@ -292,8 +283,8 @@ void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
 			}
 			break;
 		case SERVER:
-			manager_ = new mw::enet::Server(serverPort_,this);
-			manager_->start();
+			network_ = new mw::enet::Server(serverPort_,this);
+			network_->start();
 			// Add new player to all human players.
 			for (PairHumanIndex& pair : humans_) {
 				pair.second = players_.size();
@@ -301,8 +292,8 @@ void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
 			}
 			break;
 		case CLIENT:
-			manager_ = new mw::enet::Client(connectToPort_,connectToIp_);
-			manager_->start();
+			network_ = new mw::enet::Client(connectToPort_,connectToIp_);
+			network_->start();
 			sendClientInfo();
 			break;
 		};

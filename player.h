@@ -103,6 +103,20 @@ public:
 		tetrisBoard_.update(move);
     }
 
+	void update(BlockType current, BlockType next) {
+		tetrisBoard_.setNonRandomCurrentBlockType(current);
+		tetrisBoard_.setNonRandomNextBlockType(next);
+	}
+
+	void update(TetrisBoard::Move move, BlockType next) {
+		tetrisBoard_.setNonRandomNextBlockType(next);
+		tetrisBoard_.update(move);
+    }
+
+	void update(const std::vector<BlockType>& blockTypes) {
+		tetrisBoard_.addRows(blockTypes);
+	}
+
 	void setLevelUpCounter(int value) {
 		levelUpCounter_ = value;
 	}
