@@ -92,8 +92,8 @@
     <ClCompile Include="guiwindow.cpp" />
     <ClCompile Include="highscore.cpp" />
     <ClCompile Include="human.cpp" />
-    <ClCompile Include="inputdevice.cpp" />
-    <ClCompile Include="inputjoystick.cpp" />
+    <ClCompile Include="device.cpp" />
+    <ClCompile Include="devicejoystick.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="movehandler.cpp" />
     <ClCompile Include="multiframe.cpp" />
@@ -126,11 +126,11 @@
     <ClInclude Include="highscore.h" />
     <ClInclude Include="human.h" />
     <ClInclude Include="imagebackground.h" />
-    <ClInclude Include="inputdevice.h" />
+    <ClInclude Include="device.h" />
     <ClInclude Include="inputformatter.h" />
     <ClInclude Include="inputipformatter.h" />
-    <ClInclude Include="inputjoystick.h" />
-    <ClInclude Include="inputkeyboard.h" />
+    <ClInclude Include="devicejoystick.h" />
+    <ClInclude Include="devicekeyboard.h" />
     <ClInclude Include="inputnumberformatter.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />

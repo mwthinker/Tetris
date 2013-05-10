@@ -5,8 +5,8 @@
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisgame.h"
-#include "inputjoystick.h"
-#include "inputkeyboard.h"
+#include "devicejoystick.h"
+#include "devicekeyboard.h"
 
 #include <mw/gamewindow.h>
 #include <mw/sprite.h>
@@ -25,21 +25,21 @@ public:
 		});
 
 		// Initializes default keybord devices for two players.
-		InputDevicePtr inputDevice1(new InputKeyboard(SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
-		inputDevices_.push_back(inputDevice1);
-		InputDevicePtr inputDevice2(new InputKeyboard(SDLK_s, SDLK_a, SDLK_d, SDLK_w));
-		inputDevices_.push_back(inputDevice2);
+		DevicePtr device1(new InputKeyboard(SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
+		devices_.push_back(device1);
+		DevicePtr device2(new InputKeyboard(SDLK_s, SDLK_a, SDLK_d, SDLK_w));
+		devices_.push_back(device2);
 
 		// Init joysticks!
 		auto joystics = mw::Joystick::getJoystics();
 		for(mw::JoystickPtr& joystick : joystics) {
 			std::cout << joystick->getName() << std::endl;
-			InputDevicePtr inputDevice(new InputJoystick(joystick,0,1));
-			inputDevices_.push_back(inputDevice);
+			DevicePtr device(new InputJoystick(joystick,0,1));
+			devices_.push_back(device);
 		}
 
-		tetrisGame_.setInputDevice(inputDevice1,0);
-		tetrisGame_.setInputDevice(inputDevice2,1);
+		tetrisGame_.setInputDevice(device1,0);
+		tetrisGame_.setInputDevice(device2,1);
 	}
 
 	~TetrisWindow() {
@@ -116,7 +116,7 @@ private:
 
 	// Override gui::GuiWindow
 	void updateGameEvent(const SDL_Event& windowEvent) override {
-		for (InputDevicePtr device : inputDevices_) {
+		for (DevicePtr& device : devices_) {
 			device->eventUpdate(windowEvent);
 		}
 	}
@@ -129,7 +129,7 @@ private:
 	}
 
 	TetrisGame tetrisGame_;
-	std::vector<InputDevicePtr> inputDevices_;
+	std::vector<DevicePtr> devices_;
 
 	int numberOfPlayer_;
 };

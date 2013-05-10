@@ -30,9 +30,6 @@
     <ClCompile Include="human.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inputdevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,9 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="actionhandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="inputjoystick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="protocol.cpp">
@@ -96,6 +90,12 @@
     <ClCompile Include="highscore.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
+    <ClCompile Include="devicejoystick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="movehandler.h">
@@ -134,16 +134,7 @@
     <ClInclude Include="human.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inputdevice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inputipformatter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inputkeyboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inputjoystick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="protocol.h">
@@ -216,6 +207,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="highscore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="devicekeyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="devicejoystick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

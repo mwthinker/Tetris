@@ -1,14 +1,10 @@
 #include "human.h"
-
-#include "player.h"
 #include "actionhandler.h"
 #include "movehandler.h"
 #include "rotationhandler.h"
 
 #include <string>
 #include <memory>
-
-// public
 
 Human::Human() {
 	int nbrOfRows = 20;
@@ -19,11 +15,6 @@ Human::Human() {
 
 	time_ = 0.0;
 	lastDownTime_ = 0.0;
-
-	input_.down = false;
-	input_.rotate = false;
-	input_.left = false;
-	input_.right = false;
 }
 
 Human::~Human() {
@@ -33,36 +24,7 @@ Human::~Human() {
 	delete rotateHandler_;
 }
 
-void Human::updatePlayerEvent(PlayerEvent playerEvent) {
-	switch (playerEvent) {
-	case PLAYER_ROTATE:
-		input_.rotate = true;
-		break;
-	case PLAYER_DOWN:
-		input_.down = true;
-		break;
-	case PLAYER_LEFT:
-		input_.left = true;
-		break;
-	case PLAYER_RIGHT:
-		input_.right = true;
-		break;
-	case PLAYER_UN_ROTATE:
-		input_.rotate = false;
-		break;
-	case PLAYER_UN_DOWN:
-		input_.down = false;
-		break;
-	case PLAYER_UN_LEFT:
-		input_.left = false;
-		break;
-	case PLAYER_UN_RIGHT:
-		input_.right = false;
-		break;
-	}
-}    
-
-void Human::update(double deltaTime, int level) {
+void Human::update(Input input, double deltaTime, int level) {
 	time_ += deltaTime;
 	double downTime = 1.0 / calculateDownSpeed(level); // The time beetween each "gravity" move.
 
@@ -71,22 +33,22 @@ void Human::update(double deltaTime, int level) {
 		pushMove(TetrisBoard::DOWN_GRAVITY);
 	}
 
-	leftHandler_->update(deltaTime,input_.left && !input_.right);
+	leftHandler_->update(deltaTime,input.left && !input.right);
 	if (leftHandler_->doAction()) {
 		pushMove(TetrisBoard::LEFT);
 	}
 
-	rightHandler_->update(deltaTime,input_.right && !input_.left);
+	rightHandler_->update(deltaTime,input.right && !input.left);
 	if (rightHandler_->doAction()) {
 		pushMove(TetrisBoard::RIGHT);
 	}
 
-	downHandler_->update(deltaTime,input_.down);
+	downHandler_->update(deltaTime,input.down);
 	if (downHandler_->doAction()) {
 		pushMove(TetrisBoard::DOWN);
 	}
 
-	rotateHandler_->update(deltaTime,input_.rotate);
+	rotateHandler_->update(deltaTime,input.rotate);
 	if (rotateHandler_->doAction()) {
 		pushMove(TetrisBoard::ROTATE_LEFT);
 	}
@@ -101,7 +63,7 @@ bool Human::pollMove(TetrisBoard::Move& move) {
 	moves_.pop();
 	return true;
 }
-// private
+
 double Human::calculateDownSpeed(int level) const {
 	return 1+level*0.5;
 }

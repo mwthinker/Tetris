@@ -1,27 +1,24 @@
-#ifndef INPUTJOYSTICK_H
-#define INPUTJOYSTICK_H
+#ifndef DEVICEJOYSTICK_H
+#define DEVICEJOYSTICK_H
 
-#include "inputdevice.h"
-#include "human.h"
+#include "device.h"
 
 #include <mw/joystick.h>
 
 #include <SDL.h>
 #include <iostream>
 
-class InputJoystick : public InputDevice<PlayerEvent> {
+class InputJoystick : public Device {
 public:
 	InputJoystick(mw::JoystickPtr joystick, int rotateButton = 0, int downButton = 1) {
 		joystick_ = joystick;
 		joystick->setActive(true);
-		
 		rotateButton_ = rotateButton;
 		downButton_ = downButton;
 	}
 
-	void eventUpdate(const SDL_Event& windowEvent) {
+	void eventUpdate(const SDL_Event& windowEvent) override {
 		if (windowEvent.jaxis.which == joystick_->getJoystickIndex()) {
-			//std::cout << windowEvent.jaxis.which+1 << "\n";
 			switch (windowEvent.type) {
 			case SDL_JOYAXISMOTION:  // Handle Joystick Motion
 				if ( ( windowEvent.jaxis.value < -3200 ) || (windowEvent.jaxis.value > 3200 ) ) {
@@ -39,49 +36,43 @@ public:
 			case SDL_JOYHATMOTION:
 				if ( windowEvent.jhat.value & SDL_HAT_LEFT ) {
 					//std::cout << "\n SDL_HAT_LEFT";
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_LEFT);
+					input_.left = true;
 				} else {
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_UN_LEFT);
+					input_.left = false;
 				}
 
 				if ( windowEvent.jhat.value & SDL_HAT_RIGHT)
 				{
-					//std::cout << "\n SDL_HAT_RIGHT";
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_RIGHT);
+					input_.right = true;
 				} else {
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_UN_RIGHT);
+					input_.right = false;
 				}
 
 				if (windowEvent.jhat.value & SDL_HAT_DOWN)
 				{
-					//std::cout << "\n SDL_HAT_RIGHT";
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_DOWN);
+					input_.down = true;
 				} else {
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_UN_DOWN);
+					input_.down = false;
 				}
 				break;
 			case SDL_JOYBUTTONDOWN:  // Handle Joystick Button Presses
 				if (windowEvent.jbutton.button == rotateButton_) 
 				{
-					//std::cout << "\n BUTTON " << (int) windowEvent.jbutton.button;
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_ROTATE);
+					input_.rotate = true;
 				}
 				if (windowEvent.jbutton.button == downButton_) 
 				{
-					//std::cout << "\n BUTTON " << (int) windowEvent.jbutton.button;
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_DOWN);
+					input_.down = true;
 				}
 				break;
 			case SDL_JOYBUTTONUP:  // Handle Joystick Button Presses
 				if (windowEvent.jbutton.button == rotateButton_) 
 				{
-					//std::cout << "\n BUTTON " << (int) windowEvent.jbutton.button;
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_UN_ROTATE);
+					input_.rotate = false;
 				}
 				if (windowEvent.jbutton.button == downButton_) 
 				{
-					//std::cout << "\n BUTTON " << (int) windowEvent.jbutton.button;
-					InputDevice<PlayerEvent>::pushEvent(PLAYER_UN_DOWN);
+					input_.down = false;
 				}
 				break;
 			default:
@@ -90,10 +81,14 @@ public:
 		}
     }
 
-private:
+	Input currentInput() override {
+		return input_;
+	}
 
+private:
+	Input input_;
 	mw::JoystickPtr joystick_;
 	int rotateButton_, downButton_;	
 };
 
-#endif // INPUTJOYSTICK_H
+#endif // DEVICEJOYSTICK_H

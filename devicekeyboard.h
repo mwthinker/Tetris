@@ -1,42 +1,43 @@
 #ifndef INPUTKEYBOARD_H
 #define INPUTKEYBOARD_H
 
-#include "inputdevice.h"
-#include "human.h"
+#include "device.h"
 
-class InputKeyboard : public InputDevice<PlayerEvent> {
+#include <SDL.h>
+
+class InputKeyboard : public Device {
 public:
 	InputKeyboard(SDLKey down, SDLKey left, SDLKey right, SDLKey rotate) {		
 		down_ = down;
 		right_ = right;
 		left_ = left;
-		rotate_ = rotate;		
+		rotate_ = rotate;
 	}
 
-    void eventUpdate(const SDL_Event& windowEvent) {
+    void eventUpdate(const SDL_Event& windowEvent) override {
 		SDLKey key = windowEvent.key.keysym.sym;
-		
+
         switch (windowEvent.type) {
-        case SDL_KEYDOWN:			
+        case SDL_KEYDOWN:
 			if (key == down_) {
-				pushEvent(PLAYER_DOWN);
+				input_.down = true;
 			} else if (key == left_) {
-				pushEvent(PLAYER_LEFT);
+				input_.left = true;
 			} else if (key == right_) {
-				pushEvent(PLAYER_RIGHT);
+				input_.right = true;
 			} else if (key == rotate_) {
-				pushEvent(PLAYER_ROTATE);
+				input_.rotate = true;
 			}
             break;
-        case SDL_KEYUP:            
+        case SDL_KEYUP:
 			if (key == down_) {
-				pushEvent(PLAYER_UN_DOWN);
+				input_.down = false;
 			} else if (key == left_) {
-				pushEvent(PLAYER_UN_LEFT);
+				input_.left = false;
 			} else if (key == right_) {
-				pushEvent(PLAYER_UN_RIGHT);
+				input_.right = false;
 			} else if (key == rotate_) {
-				pushEvent(PLAYER_UN_ROTATE);
+				input_.rotate = false;
 			}
             break;
         default:
@@ -44,8 +45,14 @@ public:
         }
     }
 
+	Input currentInput() override {
+		return input_;
+	}
+
 private:
+	Input input_;
+
 	SDLKey down_, right_, left_, rotate_;
 };
 
-#endif // INPUTKEYBOARD_H
+#endif // INPUT_H

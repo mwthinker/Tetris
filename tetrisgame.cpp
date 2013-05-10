@@ -3,9 +3,9 @@
 #include "graphicboard.h"
 #include "player.h"
 #include "human.h"
-#include "inputdevice.h"
-#include "inputkeyboard.h"
-#include "inputjoystick.h"
+#include "device.h"
+#include "devicekeyboard.h"
+#include "devicejoystick.h"
 
 #include <mw/sound.h>
 
@@ -127,8 +127,8 @@ bool TetrisGame::isReady() const {
 	return ready_;
 }
 
-void TetrisGame::setInputDevice(const InputDevicePtr& inputDevice, int playerIndex) {
-	inputDevices_[playerIndex] = inputDevice;
+void TetrisGame::setInputDevice(const DevicePtr& device, int playerIndex) {
+	devices_[playerIndex] = device;
 }
 
 void TetrisGame::update(Uint32 deltaTime) {
@@ -149,12 +149,17 @@ void TetrisGame::update(Uint32 deltaTime) {
 				if (isStarted()) {
 					for (auto it = humans_.begin(); it != humans_.end(); ++it) {
 						HumanPtr& human = it->first;
-						int index = it->second;
+						unsigned int index = it->second;
 						Player* player = players_[index];
 						int level = player->getLevel();
 
 						if (!isPaused()) {
-							human->update(deltaTime/1000.0,level);
+							Input input;
+							if (index < devices_.size()) {
+								DevicePtr& device = devices_[index];
+								input = device->currentInput();
+							}
+							human->update(input, deltaTime/1000.0,level);
 						}						
 
 						TetrisBoard::Move move;
@@ -172,20 +177,6 @@ void TetrisGame::update(Uint32 deltaTime) {
 		}
 	} else {
 		status_ = WAITING_TO_CONNECT;
-	}
-
-	// Takes care of user input for all human players.
-	for (auto it = humanPlayers_.begin(); it != humanPlayers_.end(); ++it) {
-		HumanPtr& human = *it;
-		unsigned int index = it - humanPlayers_.begin();
-		if (index < inputDevices_.size()) {
-			InputDevicePtr& device = inputDevices_[index];
-
-			PlayerEvent playerEvent;
-			while (device->pollEvent(playerEvent)) {
-				human->updatePlayerEvent(playerEvent);
-			}
-		}
 	}
 
 	if (start_) {

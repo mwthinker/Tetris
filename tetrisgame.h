@@ -1,7 +1,7 @@
 #ifndef TETRISGAME_H
 #define TETRISGAME_H
 
-#include "inputdevice.h"
+#include "device.h"
 #include "protocol.h"
 
 #include <mw/sound.h>
@@ -9,7 +9,7 @@
 #include <vector>
 #include <functional>
 
-typedef std::shared_ptr<InputDevice<PlayerEvent>> InputDevicePtr;
+typedef std::shared_ptr<Device> DevicePtr;
 
 // Is responsible of the all game components. It takes the sound, graphic,
 // input, network and connects it with the core tetris game.
@@ -43,7 +43,7 @@ public:
 	// Returns the width in pixels.
 	double getHeight() const;
 
-	void setInputDevice(const InputDevicePtr& inputDevice, int playerIndex);
+	void setInputDevice(const DevicePtr& device, int playerIndex);
 
 private:
 	void createNewHumanPlayers(int nbrOfLocalPlayers);
@@ -77,9 +77,9 @@ private:
 
 	int getNumberOfPlayers(int connection) const;
 	    
-	std::vector<HumanPtr> humanPlayers_;    
+	std::vector<HumanPtr> humanPlayers_;
 	mw::Sound soundCollision_, soundTetris_, soundRowRemoved_;
-	std::map<int,InputDevicePtr> inputDevices_;
+	std::map<int,DevicePtr> devices_;
 	Status status_;
 };
 
