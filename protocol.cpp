@@ -5,6 +5,9 @@
 #include "remoteuser.h"
 
 #include <mw/packet.h>
+#include <mw/enet/server.h>
+#include <mw/enet/client.h>
+#include <mw/localnetwork.h>
 
 mw::Packet& operator<<(mw::Packet& packet, const PacketType& net) {
 	packet << static_cast<char>(net);
@@ -68,7 +71,6 @@ mw::Packet& operator>>(mw::Packet& packet, BlockType& type) {
 	return packet;
 }
 
-//
 int Protocol::playerId_ = 0;
 
 Protocol::Protocol() {
@@ -81,6 +83,85 @@ Protocol::Protocol() {
 	ready_ = false;
 	nbrOfAlivePlayers_ = 0;
 	acceptNewConnections_ = false;
+	status_ = WAITING_TO_CONNECT;
+}
+
+Protocol::~Protocol() {
+	closeGame();
+	delete network_;
+}
+
+void Protocol::createLocalGame(int nbrOfLocalPlayers) {
+	//createNewHumanPlayers(nbrOfLocalPlayers);
+	//connect(humanPlayers_,LOCAL);
+}
+
+void Protocol::createServerGame(int nbrOfLocalPlayers, int port) {
+	//createNewHumanPlayers(nbrOfLocalPlayers);
+	//setServerPort(port);
+	//connect(humanPlayers_,SERVER);
+}
+
+void Protocol::createClientGame(int nbrOfLocalPlayers,int port, std::string ip) {	
+	if (status_ == WAITING_TO_CONNECT) {
+		//createNewHumanPlayers(nbrOfLocalPlayers);
+		//setConnectToIp(ip);
+		//setConnectToPort(port);
+		//connect(humanPlayers_,CLIENT);
+	}
+}
+
+void Protocol::startGame() {
+	// Game not started. // Connection must be active!
+	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {		
+		// Is server.
+		if (network_->getId() == network_->getServerId()) {
+			if (!ready_) {
+				return;
+			}
+			std::cout << "\nReady!" << std::endl;
+
+			// Stops new connections.
+			acceptNewConnections_ = false;
+
+			// Check if all remote users are ready to start.
+			for (RemoteUser* remoteUser : remoteUsers_) {
+				if (!remoteUser->isReady()) {
+					// Not ready -> dont start!
+					return;
+				}
+			}
+			std::cout << "\nReady2!" << std::endl;
+
+			serverSendStartGame();
+		} else { // Is client.
+		}
+	}
+}
+
+// Stops the game and aborts any active connection.
+void Protocol::closeGame() {	
+	if (network_ != 0) {
+		//players_.clear();
+		start_ = false;
+		ready_ = false;
+		pause_ = false;
+		status_ = WAITING_TO_CONNECT;
+
+		// Disconnecting
+		network_->stop();
+
+		for (RemoteUser* remoteUser : remoteUsers_) {
+			delete remoteUser;
+		}
+
+		remoteUsers_.clear();
+		for (Player* player : players_) {
+			delete player;
+		}
+		players_.clear();
+		humans_.clear();
+	}
 }
 
 bool Protocol::isPaused() const {
@@ -94,16 +175,114 @@ void Protocol::pause() {
 	}
 }
 
+void Protocol::setReadyGame(bool ready) {
+	if (network_ != 0 && !isStarted()) {
+		ready_ = ready;
+		sendReady();
+	}
+}
+
+bool Protocol::isReady() const {
+	return ready_;
+}
+
 bool Protocol::isStarted() const {
 	return start_;
 }
 
-void Protocol::addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback) {
+void Protocol::addCallback(mw::Signal<Protocol::NetworkEvent>::Callback callback) {
 	eventHandler_.connect(callback);
 }
 
-void Protocol::signalEvent(Protocol::ManagerEvent mEvent) {
-	eventHandler_(mEvent);
+void Protocol::signalEvent(Protocol::NetworkEvent nEvent) {
+	eventHandler_(nEvent);
+}
+
+void Protocol::createNewHumanPlayers(int nbrOfLocalPlayers) {
+	if (status_ == WAITING_TO_CONNECT) {
+		humans_.clear();	
+		for (int i = 0; i < nbrOfLocalPlayers; ++i) {
+			HumanPtr human(new Human());
+			//humans_.push_back(PairHumanIndex(human));
+		}
+	}
+}
+
+void Protocol::update(Uint32 deltaTime) {
+	if (network_ != 0) {
+		network_->update();
+		switch (network_->getStatus()) {
+		case mw::Network::NOT_ACTIVE:
+			//std::cout << "\nNOT_ACTIVE: " << std::endl;
+			break;
+		case mw::Network::ACTIVE:
+			{				
+				mw::Packet data;
+				int id = 0;
+				while (id = network_->pullFromReceiveBuffer(data)) {
+					receiveData(data, id);
+				}
+
+				if (isStarted()) {
+					updateGame(deltaTime);
+				}
+			}
+			break;
+		case mw::Network::DISCONNECTING:
+			// Will soon change status to not active.
+			std::cout << "\nDISCONNECTING: " << std::endl;
+			break;
+		}
+	} else {
+		status_ = WAITING_TO_CONNECT;
+	}
+}
+
+void Protocol::restartGame() {
+	// Manager is active and is server and game is started => restart,
+	if (network_ != 0 && isStarted() && network_->getId() == network_->getServerId()) {
+		serverSendStartGame();
+	}
+}
+
+// Initiates the choosen connection.
+void Protocol::connect(const std::vector<HumanPtr>& humans, Status status) {
+	if (status_ == WAITING_TO_CONNECT) {
+		humans_.clear(); // Clear old data.			
+		for (const HumanPtr& human : humans) {
+			humans_.push_back(PairHumanIndex(human,-1));
+		}
+		delete network_;
+		status_ = status;
+		acceptNewConnections_ = true;
+
+		switch (status) {
+		case LOCAL:
+			network_ = new mw::LocalNetwork(this);
+			network_->start();
+			std::cout << "\nLocal" << std::endl;
+			// Add new player to all human players.
+			for (PairHumanIndex& pair : humans_) {
+				pair.second = players_.size();
+				players_.push_back(new Player(++playerId_));
+			}
+			break;
+		case SERVER:
+			network_ = new mw::enet::Server(serverPort_,this);
+			network_->start();
+			// Add new player to all human players.
+			for (PairHumanIndex& pair : humans_) {
+				pair.second = players_.size();
+				players_.push_back(new Player(++playerId_));
+			}
+			break;
+		case CLIENT:
+			network_ = new mw::enet::Client(connectToPort_,connectToIp_);
+			network_->start();
+			sendClientInfo();
+			break;
+		};
+	}
 }
 
 // @Override ServerFilter. Is only called in server/local mode.
@@ -582,4 +761,31 @@ void Protocol::sendPause() {
 	mw::Packet data;
 	data.push_back(PACKET_PAUSE);
 	network_->pushToSendBuffer(data);
+}
+
+int Protocol::getConnectToPort() const {
+	return connectToPort_;
+}
+
+void Protocol::setServerPort(int port) {
+	serverPort_ = port;
+}
+
+int Protocol::getServerPort() const {
+	return serverPort_;
+}
+
+void Protocol::setConnectToIp(std::string ip) {
+	connectToIp_ = ip;
+}
+
+std::string Protocol::getConnectToIp() const {
+	return connectToIp_;
+}
+
+int Protocol::getNumberOfPlayers(int connection) const {
+	if (connection == 0) {
+		return humans_.size();
+	}
+	return remoteUsers_[connection-1]->getNbrOfPlayers();
 }

@@ -1,9 +1,6 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
-#include <mw\packet.h>
-#include <mw\network.h>
-
 #include "tetrisboard.h"
 #include "player.h"
 #include "human.h"
@@ -12,6 +9,8 @@
 #include "human.h"
 
 #include <mw/signal.h>
+#include <mw/packet.h>
+#include <mw/network.h>
 
 // Is throwed when data is received which violates the 
 // tetris protocol.
@@ -45,9 +44,20 @@ mw::Packet& operator>>(mw::Packet& packet, BlockType& type);
 
 class Protocol : public mw::ServerFilter {
 public:
-	Protocol();
+	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
+	enum NetworkEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};
 
-	enum ManagerEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};
+	Protocol();
+	~Protocol();
+
+	void update(Uint32 deltaTime);
+
+	void createLocalGame(int nbrLocalPlayers);
+	void createServerGame(int nbrLocalPlayers, int port);
+	void createClientGame(int nbrLocalPlayers, int port, std::string ip);
+
+	void startGame();
+	void closeGame();
 
 	// Returns true when the game is paused.
 	bool isPaused() const;
@@ -56,13 +66,24 @@ public:
 	// the game.
 	void pause();
 
+	void setReadyGame(bool ready);
+	bool isReady() const;
+
 	// Returns true if the game is started.
 	bool isStarted() const;
 
-	void addCallback(mw::Signal<Protocol::ManagerEvent>::Callback callback);
+	void restartGame();
+
+	void addCallback(mw::Signal<Protocol::NetworkEvent>::Callback callback);
 
 protected:
-	void signalEvent(Protocol::ManagerEvent mEvent);
+	void signalEvent(Protocol::NetworkEvent nEvent);
+
+	void createNewHumanPlayers(int nbrOfLocalPlayers);
+
+	void connect(const std::vector<HumanPtr>& humans, Status status);
+
+	virtual void updateGame(Uint32 deltaTime) = 0;
 
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value 
@@ -98,26 +119,35 @@ protected:
 	// in complete rows. With the upper left and block and row first.
 	void sendTetrisInfo(int playerId, const std::vector<BlockType>& blockTypes);
 
-	bool start_;
-	bool ready_;
-	bool pause_; // Is game paused?
-		
-	std::vector<Player*> players_; // All players.
+	// Sets the port which PlayerManager should connect to if status 
+	// is CLIENT. I.e. calling connect(humans, Status::CLIENT).
+	void setConnectToPort(int port);
+
+	// Returns the current port to connect to if calling 
+	// connect(humans, Status::CLIENT).
+	int getConnectToPort() const;
+
+	// Sets the port which PlayerManager should be connected to if status 
+	// is SERVER. I.e. calling connect(humans, Status::SERVER).
+	void setServerPort(int port);
 	
+	// Returns the current port to to which new connection connects to.
+	// This accurs when a call to connect(humans, Status::SERVER) is made.
+	int getServerPort() const;
+
+	// Sets the ip to the server to connect to. 
+	// This ip us used when a call to connect(humans, Status::SERVER) is made.
+	void setConnectToIp(std::string ip);
+
+	// Returns the ip to the server.
+	std::string getConnectToIp() const;
+
+	int getNumberOfPlayers(int connection) const;	
+		
+	std::vector<Player*> players_; // All players.	
+	int nbrOfAlivePlayers_; // The total number of alive players.
 	typedef std::pair<HumanPtr,int> PairHumanIndex;  // All local players.
 	std::vector<PairHumanIndex> humans_;  // Local humans.
-	
-	std::vector<RemoteUser*> remoteUsers_;  // All remote players.
-
-	int serverPort_; // The port on the local server.
-	int connectToPort_; // The port on the remote server.
-	std::string connectToIp_; // The ip on the remote server.
-	
-	int nbrOfAlivePlayers_; // The total number of alive players.
-	mw::Network* network_; // The connection manager.
-	static int playerId_; // The id for the last added player.
-	bool acceptNewConnections_; // Is true if more players are allowed to connect.
-
 private:
 	// @Override ServerFilter. Is only called in server/local mode.
 	// Data (data) is received from client (id). Type (type)
@@ -138,7 +168,21 @@ private:
 	// Receives the starting block from remote player.
 	void receiveStartBlock(const mw::Packet& data, int id);
 
-	mw::Signal<Protocol::ManagerEvent> eventHandler_;
+	mw::Signal<Protocol::NetworkEvent> eventHandler_;
+	bool start_; // The game is started?
+	bool ready_; // In game looby, ready to start?
+	bool pause_; // Is game paused?
+
+	int serverPort_; // The port on the local server.
+	int connectToPort_; // The port on the remote server.
+	std::string connectToIp_; // The ip on the remote server.	
+	
+	std::vector<RemoteUser*> remoteUsers_;  // All remote players.
+	
+	mw::Network* network_; // The connection manager.
+	static int playerId_; // The id for the last added player.
+	bool acceptNewConnections_; // Is true if more players are allowed to connect.
+	Status status_;
 };
 
 #endif // PROTOCOL_H

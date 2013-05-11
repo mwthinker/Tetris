@@ -9,185 +9,50 @@
 
 #include <mw/sound.h>
 
-#include <mw/enet/server.h>
-#include <mw/enet/client.h>
-#include <mw/localnetwork.h>
-
 #include <iostream>
 #include <utility>
 #include <memory>
 #include <sstream>
 
 TetrisGame::TetrisGame() {
-	status_ = WAITING_TO_CONNECT;
 }
 
 TetrisGame::~TetrisGame() {
-	closeGame();
-	delete network_;
-}
-
-void TetrisGame::createNewHumanPlayers(int nbrOfLocalPlayers) {
-	if (status_ == WAITING_TO_CONNECT) {
-		humanPlayers_.clear();	
-		for (int i = 0; i < nbrOfLocalPlayers; ++i) {
-			HumanPtr human(new Human());
-			humanPlayers_.push_back(human);
-		}
-	}
-}
-
-void TetrisGame::createLocalGame(int nbrOfLocalPlayers) {
-	createNewHumanPlayers(nbrOfLocalPlayers);
-	connect(humanPlayers_,LOCAL);
-}
-
-void TetrisGame::createServerGame(int nbrOfLocalPlayers, int port) {
-	createNewHumanPlayers(nbrOfLocalPlayers);
-	setServerPort(port);
-	connect(humanPlayers_,SERVER);
-}
-
-void TetrisGame::createClientGame(int nbrOfLocalPlayers,int port, std::string ip) {	
-	if (status_ == WAITING_TO_CONNECT) {
-		createNewHumanPlayers(nbrOfLocalPlayers);
-		setConnectToIp(ip);
-		setConnectToPort(port);
-		connect(humanPlayers_,CLIENT);
-	}
-}
-
-void TetrisGame::startGame() {
-	// Game not started. // Connection must be active!
-	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {		
-		// Is server.
-		if (network_->getId() == network_->getServerId()) {
-			if (!ready_) {
-				return;
-			}
-			std::cout << "\nReady!" << std::endl;
-
-			// Stops new connections.
-			acceptNewConnections_ = false;
-
-			// Check if all remote users are ready to start.
-			for (RemoteUser* remoteUser : remoteUsers_) {
-				if (!remoteUser->isReady()) {
-					// Not ready -> dont start!
-					return;
-				}
-			}
-			std::cout << "\nReady2!" << std::endl;
-
-			serverSendStartGame();
-		} else { // Is client.
-		}
-	}
-}
-
-void TetrisGame::restartGame() {
-	// Manager is active and is server and game is started => restart,
-	if (network_ != 0 && isStarted() && network_->getId() == network_->getServerId()) {
-		serverSendStartGame();
-	}
-}
-
-// Stops the game and aborts any active connection.
-void TetrisGame::closeGame() {	
-	if (network_ != 0) {
-		//players_.clear();
-		start_ = false;
-		ready_ = false;
-		pause_ = false;
-		status_ = WAITING_TO_CONNECT;
-
-		// Disconnecting
-		network_->stop();
-
-		for (RemoteUser* remoteUser : remoteUsers_) {
-			delete remoteUser;
-		}
-		remoteUsers_.clear();
-		for (Player* player : players_) {
-			delete player;
-		}
-		players_.clear();
-		humans_.clear();
-	}
-}
-
-void TetrisGame::setReadyGame(bool ready) {
-	if (network_ != 0 && !isStarted()) {
-		ready_ = ready;
-		sendReady();
-	}
-}
-
-bool TetrisGame::isReady() const {
-	return ready_;
 }
 
 void TetrisGame::setInputDevice(const DevicePtr& device, int playerIndex) {
 	devices_[playerIndex] = device;
 }
 
-void TetrisGame::update(Uint32 deltaTime) {
-	if (network_ != 0) {
-		network_->update();
-		switch (network_->getStatus()) {
-		case mw::Network::NOT_ACTIVE:
-			//std::cout << "\nNOT_ACTIVE: " << std::endl;
-			break;
-		case mw::Network::ACTIVE:
-			{				
-				mw::Packet data;
-				int id = 0;
-				while (id = network_->pullFromReceiveBuffer(data)) {
-					receiveData(data, id);
-				}
+void TetrisGame::updateGame(Uint32 deltaTime) {
+	for (auto it = humans_.begin(); it != humans_.end(); ++it) {
+		HumanPtr& human = it->first;
+		unsigned int index = it->second;
+		Player* player = players_[index];
+		int level = player->getLevel();
 
-				if (isStarted()) {
-					for (auto it = humans_.begin(); it != humans_.end(); ++it) {
-						HumanPtr& human = it->first;
-						unsigned int index = it->second;
-						Player* player = players_[index];
-						int level = player->getLevel();
-
-						if (!isPaused()) {
-							Input input;
-							if (index < devices_.size()) {
-								DevicePtr& device = devices_[index];
-								input = device->currentInput();
-							}
-							human->update(input, deltaTime/1000.0,level);
-						}						
-
-						TetrisBoard::Move move;
-						while (human->pollMove(move)) {
-							sendInput(player->getId(),move,player->getTetrisBoard().nextBlock().blockType());
-						}
-					}
-				}
+		if (!isPaused()) {
+			Input input;
+			if (index < devices_.size()) {
+				DevicePtr& device = devices_[index];
+				input = device->currentInput();
 			}
-			break;
-		case mw::Network::DISCONNECTING:
-			// Will soon change status to not active.
-			std::cout << "\nDISCONNECTING: " << std::endl;
-			break;
+			human->update(input, deltaTime/1000.0,level);
+		}						
+
+		TetrisBoard::Move move;
+		while (human->pollMove(move)) {
+			sendInput(player->getId(),move,player->getTetrisBoard().nextBlock().blockType());
 		}
-	} else {
-		status_ = WAITING_TO_CONNECT;
 	}
 
-	if (start_) {
-		auto& players = players_;
-		// Iterate through all players and progress the game and apply game rules and sound effects.
-		for (Player* player : players) {
-			GameEvent gameEvent;
-			while (player->pollGameEvent(gameEvent)) {
-				applyRules(player, gameEvent);
-				soundEffects(gameEvent);
-			}
+	auto& players = players_;
+	// Iterate through all players and progress the game and apply game rules and sound effects.
+	for (Player* player : players) {
+		GameEvent gameEvent;
+		while (player->pollGameEvent(gameEvent)) {
+			applyRules(player, gameEvent);
+			soundEffects(gameEvent);
 		}
 	}
 }
@@ -251,49 +116,9 @@ void TetrisGame::soundEffects(GameEvent gameEvent) {
 	sound.play();
 }
 
-// Initiates the choosen connection.
-void TetrisGame::connect(const std::vector<HumanPtr>& humans, Status status) {
-	if (status_ == WAITING_TO_CONNECT) {
-		humans_.clear(); // Clear old data.			
-		for (const HumanPtr& human : humans) {
-			humans_.push_back(PairHumanIndex(human,-1));
-		}
-		delete network_;
-		status_ = status;
-		acceptNewConnections_ = true;
-
-		switch (status) {
-		case LOCAL:
-			network_ = new mw::LocalNetwork(this);
-			network_->start();
-			std::cout << "\nLocal" << std::endl;
-			// Add new player to all human players.
-			for (PairHumanIndex& pair : humans_) {
-				pair.second = players_.size();
-				players_.push_back(new Player(++playerId_));
-			}
-			break;
-		case SERVER:
-			network_ = new mw::enet::Server(serverPort_,this);
-			network_->start();
-			// Add new player to all human players.
-			for (PairHumanIndex& pair : humans_) {
-				pair.second = players_.size();
-				players_.push_back(new Player(++playerId_));
-			}
-			break;
-		case CLIENT:
-			network_ = new mw::enet::Client(connectToPort_,connectToIp_);
-			network_->start();
-			sendClientInfo();
-			break;
-		};
-	}
-}
-
 void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
-	// Warning a slight rick to be out of sync in multiplayer.
-	// however only effecting points and level and in very subtle ways.
+	// Warning a slight risk of being out of sync in multiplayer.
+	// However only effecting points and level and in very subtle ways.
 	// Nothing other than graphics is effected.
 	int rows = 0;
 	switch (gameEvent) {
@@ -422,33 +247,3 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 	}
 }
 
-void TetrisGame::setConnectToPort(int port) {
-	connectToPort_ = port;
-}
-
-int TetrisGame::getConnectToPort() const {
-	return connectToPort_;
-}
-
-void TetrisGame::setServerPort(int port) {
-	serverPort_ = port;
-}
-
-int TetrisGame::getServerPort() const {
-	return serverPort_;
-}
-
-void TetrisGame::setConnectToIp(std::string ip) {
-	connectToIp_ = ip;
-}
-
-std::string TetrisGame::getConnectToIp() const {
-	return connectToIp_;
-}
-
-int TetrisGame::getNumberOfPlayers(int connection) const {
-	if (connection == 0) {
-		return humans_.size();
-	}
-	return remoteUsers_[connection-1]->getNbrOfPlayers();
-}

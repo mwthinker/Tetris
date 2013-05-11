@@ -47,8 +47,8 @@ public:
 private:
 	std::vector<int> playerIndexes_; // Player indexes_;
 
-	int id_;					 // Server/client id.
-	bool ready_;				 // Is ready to start.
+	int id_; // Server/client id.
+	bool ready_; // Is ready to start.
 };
 
 #endif // REMOTEUSER_H
