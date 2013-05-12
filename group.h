@@ -20,7 +20,7 @@ namespace gui {
 		}
 
 		void eventUpdate(const SDL_Event& windowEvent, int x, int y) override {
-			switch (windowEvent.type) {		
+			switch (windowEvent.type) {
 			case SDL_KEYDOWN:
 				SDLKey key = windowEvent.key.keysym.sym;
 				if (last_ == key) {
@@ -41,7 +41,7 @@ namespace gui {
 					for (unsigned int i = 0; i < items_.size(); ++i) {
 						if (items_[i]->hasFocus()) {
 							index = (i + 1) % items_.size();
-						}				
+						}
 					}
 					for (unsigned int i = 0; i < items_.size(); ++i) {
 						items_[i]->setFocus(false);
@@ -66,7 +66,7 @@ namespace gui {
 		SDLKey last_, next_;
 		std::vector<GuiItemPtr> items_;
 	};
-	
+
 	typedef std::shared_ptr<Group> GroupPtr;
 
 	GroupPtr createGroup(SDLKey last, SDLKey next) {
@@ -75,4 +75,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif GROUP_H
+#endif // GROUP_H

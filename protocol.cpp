@@ -9,6 +9,8 @@
 #include <mw/enet/client.h>
 #include <mw/localnetwork.h>
 
+#include <algorithm>
+
 mw::Packet& operator<<(mw::Packet& packet, const PacketType& net) {
 	packet << static_cast<char>(net);
 	return packet;
@@ -29,7 +31,7 @@ mw::Packet& operator<<(mw::Packet& packet, const Input& input) {
 	data += input.left;
 	data <<= 1;
 	data += input.right;
-	packet << data;	
+	packet << data;
 	return packet;
 }
 
@@ -102,7 +104,7 @@ void Protocol::createServerGame(int nbrOfLocalPlayers, int port) {
 	//connect(humanPlayers_,SERVER);
 }
 
-void Protocol::createClientGame(int nbrOfLocalPlayers,int port, std::string ip) {	
+void Protocol::createClientGame(int nbrOfLocalPlayers,int port, std::string ip) {
 	if (status_ == WAITING_TO_CONNECT) {
 		//createNewHumanPlayers(nbrOfLocalPlayers);
 		//setConnectToIp(ip);
@@ -113,7 +115,7 @@ void Protocol::createClientGame(int nbrOfLocalPlayers,int port, std::string ip) 
 
 void Protocol::startGame() {
 	// Game not started. // Connection must be active!
-	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {		
+	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {
 		// Is server.
 		if (network_->getId() == network_->getServerId()) {
 			if (!ready_) {
@@ -140,7 +142,7 @@ void Protocol::startGame() {
 }
 
 // Stops the game and aborts any active connection.
-void Protocol::closeGame() {	
+void Protocol::closeGame() {
 	if (network_ != 0) {
 		//players_.clear();
 		start_ = false;
@@ -200,7 +202,7 @@ void Protocol::signalEvent(Protocol::NetworkEvent nEvent) {
 
 void Protocol::createNewHumanPlayers(int nbrOfLocalPlayers) {
 	if (status_ == WAITING_TO_CONNECT) {
-		humans_.clear();	
+		humans_.clear();
 		for (int i = 0; i < nbrOfLocalPlayers; ++i) {
 			HumanPtr human(new Human());
 			//humans_.push_back(PairHumanIndex(human));
@@ -216,7 +218,7 @@ void Protocol::update(Uint32 deltaTime) {
 			//std::cout << "\nNOT_ACTIVE: " << std::endl;
 			break;
 		case mw::Network::ACTIVE:
-			{				
+			{
 				mw::Packet data;
 				int id = 0;
 				while (id = network_->pullFromReceiveBuffer(data)) {
@@ -248,7 +250,7 @@ void Protocol::restartGame() {
 // Initiates the choosen connection.
 void Protocol::connect(const std::vector<HumanPtr>& humans, Status status) {
 	if (status_ == WAITING_TO_CONNECT) {
-		humans_.clear(); // Clear old data.			
+		humans_.clear(); // Clear old data.
 		for (const HumanPtr& human : humans) {
 			humans_.push_back(PairHumanIndex(human,-1));
 		}
@@ -287,7 +289,7 @@ void Protocol::connect(const std::vector<HumanPtr>& humans, Status status) {
 
 // @Override ServerFilter. Is only called in server/local mode.
 // Data (data) is received from client (id). Type (type)
-// describes the type of event. The return value is the 
+// describes the type of event. The return value is the
 // data which will be sent to all clients.
 bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type type) {
 	switch (type) {
@@ -299,14 +301,14 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 
 			//sendServerInfo();
 			std::cout << "\n" << "NEW_CONNECTION" << packet.size() <<std::endl;
-		
+
 			// Accept connection!
 			return true;
 		}
 
 		// Refuse connection!
 		return false;
-	case mw::ServerFilter::PACKET: 
+	case mw::ServerFilter::PACKET:
 		{
 			PacketType type = static_cast<PacketType>(packet[0]);
 			switch (type) {
@@ -318,7 +320,7 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 					if (start_) {
 						throw ProtocolError();
 					}
-						
+
 					// Find the remote user with id (fromId).
 					auto it = std::find_if(remoteUsers_.begin(),remoteUsers_.end(), [fromId] (RemoteUser* remote) {
 						return remote->getId() == fromId;
@@ -364,10 +366,10 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 
 	// Send package to clients.
 	return true;
-}	
+}
 
 // Receives data (data) received from user with id (id).
-// First element in (data) must be of a value 
+// First element in (data) must be of a value
 // defined in PacketType.
 void Protocol::receiveData(const mw::Packet& data, int id) {
 	PacketType type = static_cast<PacketType>(data[0]);
@@ -394,7 +396,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			std::cout << "\n" << "PACKET_SERVERINFO" << std::endl;
 		}
 		break;
-	case PACKET_INPUT: 
+	case PACKET_INPUT:
 		{
 			// Game not started -> protocol error.
 			if (!start_) {
@@ -509,7 +511,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 				player->restart();
 			}
 		}
-		
+
 		nbrOfAlivePlayers_ = players_.size();
 
 		start_ = true;
@@ -520,7 +522,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 
 		sendStartBlock();
 		std::cout << "\n" << "PACKET_STARTGAME" << std::endl;
-		
+
 		// Signals the gui that the game begins.
 		signalEvent(STARTS_GAME);
 
@@ -535,8 +537,8 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 	case PACKET_STARTBLOCK:
 		if (network_->getId() != id) {
 			receiveStartBlock(data,id);
-		}		
-		
+		}
+
 		// Game not started -> protocol error.
 		std::cout << "\n" << "PACKET_STARTBLOCK" << std::endl;
 		break;
@@ -551,11 +553,11 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 
 void Protocol::serverReceiveClientInfo(RemoteUser* remote, mw::Packet packet) {
 	PacketType type;
-	packet >> type;	
+	packet >> type;
 	char nbrOfPlayers;
 	packet >> nbrOfPlayers;
 
-	// Add the changes. I.e. add or remove player. 
+	// Add the changes. I.e. add or remove player.
 	const std::vector<int>& indexes = remote->getPlayerIndexes();
 
 	// Number of players to add or remove.
@@ -596,7 +598,7 @@ void Protocol::serverReceiveClientInfo(RemoteUser* remote, mw::Packet packet) {
 // char player2NId
 void Protocol::sendServerInfo() {
 	// Add new player to all human players.
-	mw::Packet data;	
+	mw::Packet data;
 	data.push_back(PACKET_SERVERINFO);
 	data.push_back(network_->getId());
 	data.push_back(humans_.size());
@@ -652,7 +654,7 @@ void Protocol::clientReceiveStartInfo(mw::Packet data) {
 				// Add index.
 				user->add(players_.size());  // Maps remoteuser to player.
 				players_.push_back(player);
-			}				
+			}
 		}
 	}
 }
@@ -667,7 +669,7 @@ void Protocol::sendClientInfo() {
 	network_->pushToSendBuffer(data);
 }
 
-// char type = STARTGAME	
+// char type = STARTGAME
 void Protocol::serverSendStartGame() {
 	mw::Packet data;
 	data.push_back(PACKET_STARTGAME);
@@ -694,7 +696,7 @@ void Protocol::sendInput(char playerId, TetrisBoard::Move move, BlockType next) 
 	network_->pushToSendBuffer(data);
 }
 
-void Protocol::receivInput(mw::Packet packet, char& playerId, TetrisBoard::Move& move, BlockType& next) {	
+void Protocol::receivInput(mw::Packet packet, char& playerId, TetrisBoard::Move& move, BlockType& next) {
 	PacketType type;
 	packet >> type;
 	packet >> playerId;

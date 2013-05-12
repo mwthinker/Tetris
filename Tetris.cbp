@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Tetris" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Tetris" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Tetris" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="`sdl-config --cflags`" />
+			<Add directory="../SDK/MwLibrary" />
+		</Compiler>
+		<Linker>
+			<Add option="`sdl-config --libs`" />
+			<Add option="-lMwLibrary" />
+			<Add option="-lSDL" />
+			<Add option="-lSDL_image" />
+			<Add option="-lSDL_ttf" />
+			<Add option="-lSDL_mixer" />
+			<Add option="-lenet" />
+			<Add option="-lGL" />
+			<Add option="-lGLU" />
+			<Add directory="../SDK/MwLibrary" />
+		</Linker>
+		<Unit filename="actionhandler.cpp" />
+		<Unit filename="actionhandler.h" />
+		<Unit filename="background.h" />
+		<Unit filename="bar.h" />
+		<Unit filename="barcolor.cpp" />
+		<Unit filename="barcolor.h" />
+		<Unit filename="block.cpp" />
+		<Unit filename="block.h" />
+		<Unit filename="button.cpp" />
+		<Unit filename="button.h" />
+		<Unit filename="choosenbrofplayers.h" />
+		<Unit filename="device.cpp" />
+		<Unit filename="device.h" />
+		<Unit filename="devicejoystick.cpp" />
+		<Unit filename="devicejoystick.h" />
+		<Unit filename="devicekeyboard.h" />
+		<Unit filename="drawboard.cpp" />
+		<Unit filename="drawboard.h" />
+		<Unit filename="frame.cpp" />
+		<Unit filename="frame.h" />
+		<Unit filename="gamefont.cpp" />
+		<Unit filename="gamefont.h" />
+		<Unit filename="gamesound.cpp" />
+		<Unit filename="gamesound.h" />
+		<Unit filename="gamesprite.cpp" />
+		<Unit filename="gamesprite.h" />
+		<Unit filename="graphicboard.cpp" />
+		<Unit filename="graphicboard.h" />
+		<Unit filename="group.h" />
+		<Unit filename="guiitem.h" />
+		<Unit filename="guitypedefs.h" />
+		<Unit filename="guiwindow.cpp" />
+		<Unit filename="guiwindow.h" />
+		<Unit filename="highscore.cpp" />
+		<Unit filename="highscore.h" />
+		<Unit filename="human.cpp" />
+		<Unit filename="human.h" />
+		<Unit filename="imagebackground.h" />
+		<Unit filename="inputformatter.h" />
+		<Unit filename="inputipformatter.h" />
+		<Unit filename="inputnumberformatter.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="movehandler.cpp" />
+		<Unit filename="movehandler.h" />
+		<Unit filename="multiframe.cpp" />
+		<Unit filename="multiframe.h" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.h" />
+		<Unit filename="protocol.cpp" />
+		<Unit filename="protocol.h" />
+		<Unit filename="remoteuser.h" />
+		<Unit filename="rotationhandler.cpp" />
+		<Unit filename="rotationhandler.h" />
+		<Unit filename="square.h" />
+		<Unit filename="tetrisboard.cpp" />
+		<Unit filename="tetrisboard.h" />
+		<Unit filename="tetrisgame.cpp" />
+		<Unit filename="tetrisgame.h" />
+		<Unit filename="tetriswindow.h" />
+		<Unit filename="textbox.h" />
+		<Unit filename="textboxdraw.cpp" />
+		<Unit filename="textboxdraw.h" />
+		<Unit filename="textbutton.h" />
+		<Unit filename="textitem.cpp" />
+		<Unit filename="textitem.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
