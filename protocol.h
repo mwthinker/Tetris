@@ -12,7 +12,7 @@
 #include <mw/packet.h>
 #include <mw/network.h>
 
-// Is throwed when data is received which violates the 
+// Is throwed when data is received which violates the
 // tetris protocol.
 class ProtocolError {
 };
@@ -61,7 +61,7 @@ public:
 
 	// Returns true when the game is paused.
 	bool isPaused() const;
-	
+
 	// Pause/Unpause the game depending on the current state of
 	// the game.
 	void pause();
@@ -86,11 +86,11 @@ protected:
 	virtual void updateGame(Uint32 deltaTime) = 0;
 
 	// Receives data (data) received from user with id (id).
-	// First element in (data) must be of a value 
+	// First element in (data) must be of a value
 	// defined in PacketType.
 	void receiveData(const mw::Packet& data, int id);
 
-	// Server receives info from a client with id (id) about the number (nbrOfPlayers) 
+	// Server receives info from a client with id (id) about the number (nbrOfPlayers)
 	// of local players.
 	void serverReceiveClientInfo(RemoteUser* remote, mw::Packet packet);
 
@@ -103,8 +103,8 @@ protected:
 
 	// Sent by server to signal that the game starts.
 	void serverSendStartGame();
-	
-	// Send the current input (input) and tetrisboard move (move) from player local player 
+
+	// Send the current input (input) and tetrisboard move (move) from player local player
 	// with id (id).
 	void sendInput(char playerId, TetrisBoard::Move move, BlockType next);
 
@@ -113,45 +113,46 @@ protected:
 	// Pause/Unpause the game.
 	void sendPause();
 
-	// Sends info about a local player with id (playerId) who triggered a 
+	// Sends info about a local player with id (playerId) who triggered a
 	// tetris event (4 rows removal at once). The rows to be transformed to
 	// all opponent players is saved in vector (blockTypes) which must be
 	// in complete rows. With the upper left and block and row first.
 	void sendTetrisInfo(int playerId, const std::vector<BlockType>& blockTypes);
 
-	// Sets the port which PlayerManager should connect to if status 
+	// Sets the port which PlayerManager should connect to if status
 	// is CLIENT. I.e. calling connect(humans, Status::CLIENT).
 	void setConnectToPort(int port);
 
-	// Returns the current port to connect to if calling 
+	// Returns the current port to connect to if calling
 	// connect(humans, Status::CLIENT).
 	int getConnectToPort() const;
 
-	// Sets the port which PlayerManager should be connected to if status 
+	// Sets the port which PlayerManager should be connected to if status
 	// is SERVER. I.e. calling connect(humans, Status::SERVER).
 	void setServerPort(int port);
-	
+
 	// Returns the current port to to which new connection connects to.
 	// This accurs when a call to connect(humans, Status::SERVER) is made.
 	int getServerPort() const;
 
-	// Sets the ip to the server to connect to. 
+	// Sets the ip to the server to connect to.
 	// This ip us used when a call to connect(humans, Status::SERVER) is made.
 	void setConnectToIp(std::string ip);
 
 	// Returns the ip to the server.
 	std::string getConnectToIp() const;
 
-	int getNumberOfPlayers(int connection) const;	
-		
-	std::vector<Player*> players_; // All players.	
+	int getNumberOfPlayers(int connection) const;
+
+	std::vector<Player*> players_; // All players.
 	int nbrOfAlivePlayers_; // The total number of alive players.
 	typedef std::pair<HumanPtr,int> PairHumanIndex;  // All local players.
 	std::vector<PairHumanIndex> humans_;  // Local humans.
+
 private:
 	// @Override ServerFilter. Is only called in server/local mode.
 	// Data (data) is received from client (id). Type (type)
-	// describes the type of event. The return value is the 
+	// describes the type of event. The return value is the
 	// data which will be sent to all clients.
 	bool sendThrough(const mw::Packet& packet, int fromId, int toId, Type type) override;
 
@@ -162,7 +163,7 @@ private:
 	// players in the game.
 	void clientReceiveStartInfo(mw::Packet data);
 
-	// Sends information about the start block and preview block of all local players.	
+	// Sends information about the start block and preview block of all local players.
 	void sendStartBlock();
 
 	// Receives the starting block from remote player.
@@ -175,10 +176,10 @@ private:
 
 	int serverPort_; // The port on the local server.
 	int connectToPort_; // The port on the remote server.
-	std::string connectToIp_; // The ip on the remote server.	
-	
+	std::string connectToIp_; // The ip on the remote server.
+
 	std::vector<RemoteUser*> remoteUsers_;  // All remote players.
-	
+
 	mw::Network* network_; // The connection manager.
 	static int playerId_; // The id for the last added player.
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.

@@ -6,8 +6,7 @@
 // Hold information about all local players on a client/server.
 class RemoteUser {
 public:
-	RemoteUser(int id) {
-		id_ = id;
+	RemoteUser(int id) : id_(id) {
 		ready_ = false;
 	}
 
@@ -44,6 +43,7 @@ public:
 	const std::vector<int> getPlayerIndexes() const {
 		return playerIndexes_;
 	}
+
 private:
 	std::vector<int> playerIndexes_; // Player indexes_;
 

@@ -428,7 +428,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 	case PACKET_READY:
 		// Game started?
 		if (start_) {
-			// Dont change anything.
+			// Don't change anything, break!
 			break;
 		}
 

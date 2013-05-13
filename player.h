@@ -15,18 +15,18 @@ public:
 	friend class TetrisGame;
 	friend class Protocol;
 
-	Player(int id) : graphicBoard_(tetrisBoard_) {		
-		init(id);
+	Player(int id) : graphicBoard_(tetrisBoard_), id_(id) {
+		init();
     }
+
+    virtual ~Player() {
+	}
 
 	void restart() {
 		bool random = tetrisBoard_.isDecideRandomBlockType();
 		tetrisBoard_ = TetrisBoard();
 		tetrisBoard_.setDecideRandomBlockType(random);
-		init(id_);
-	}
-
-	virtual ~Player() {
+		init();
 	}
 
     void setNbrOfClearedRows(int nbr) {
@@ -68,7 +68,7 @@ public:
 
 	void setGameOverMessage(std::string message) {
         graphicBoard_.setGameOverMessage(message);
-    }	
+    }
 
 	// Draws the tetrisboard.
     void draw() {
@@ -93,7 +93,7 @@ public:
 	// Returns the players id.
 	int getId() const {
 		return id_;
-	}	
+	}
 
 	const TetrisBoard& getTetrisBoard() const {
 		return tetrisBoard_;
@@ -124,13 +124,13 @@ public:
 	int getLevelUpCounter() const {
 		return levelUpCounter_;
 	}
+
 private:
-	void init(int id) {
+	void init() {
 		level_ = 1;
         points_ = 0;
-        nbrOfClearedRows_ = 0;        
-		id_ = id;
-		levelUpCounter_ = 0;		
+        nbrOfClearedRows_ = 0;
+		levelUpCounter_ = 0;
 		graphicBoard_.setPoints(points_);
 		graphicBoard_.setLevel(level_);
 		graphicBoard_.setNbrOfClearedRows(nbrOfClearedRows_);
@@ -139,13 +139,13 @@ private:
 
     TetrisBoard tetrisBoard_;
     GraphicBoard graphicBoard_;
-    
+
 	int level_;			   // Current level.
 	int points_;		   // Number of points.
 	int nbrOfClearedRows_; // Number of rows the player cleared.
 	std::string name_;     // The name of the player.
-	int id_;
-	int levelUpCounter_;	// Is used to determen when to level up.	
+	const int id_;
+	int levelUpCounter_;	// Is used to determen when to level up.
 };
 
 #endif // PLAYER_H
