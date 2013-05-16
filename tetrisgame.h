@@ -28,8 +28,8 @@ private:
 	int nbrOfAlivePlayers_; // The total number of alive players.
 
 	// Fix timestep.
-    float timeStep_;
-	float accumulator_;
+    double timeStep_;
+	double accumulator_;
 };
 
 #endif // TETRISGAME_H

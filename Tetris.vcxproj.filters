@@ -27,9 +27,6 @@
     <ClCompile Include="graphicboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="human.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,15 +93,15 @@
     <ClCompile Include="device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="localplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="movehandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="remoteuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rotationhandler.h">
@@ -129,9 +126,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphicboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="human.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inputipformatter.h">
@@ -216,6 +210,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="devicejoystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="localplayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="userconnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
