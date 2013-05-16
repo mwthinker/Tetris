@@ -48,7 +48,8 @@ private:
 		tetrisGame_.closeGame();
 		std::vector<DevicePtr> devices;
 
-		for (int i = 0; i < nbrOfPlayers && i < devices_.size(); ++i) {
+		const int size = devices_.size();
+		for (int i = 0; i < nbrOfPlayers && i < size; ++i) {
             devices.push_back(devices_[i]);
 		}
 

@@ -42,8 +42,7 @@ private:
 
 	virtual void setPause(bool pause) = 0;
 
-	virtual int restartLocalGame(int nbrOfPlayers) {
-	}
+	virtual int restartLocalGame(int nbrOfPlayers) = 0;
 
 	virtual void restartGame() {
 	}

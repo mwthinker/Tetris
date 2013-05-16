@@ -42,19 +42,19 @@ public:
 		return players_.size();
 	}
 
-    typename std::vector<Player*>::iterator begin() {
+    std::vector<Player*>::iterator begin() {
         return players_.begin();
     }
 
-    typename std::vector<Player*>::iterator end() {
+    std::vector<Player*>::iterator end() {
         return players_.end();
     }
 
-    typename std::vector<Player*>::const_iterator begin() const {
+    std::vector<Player*>::const_iterator begin() const {
         return players_.begin();
     }
 
-    typename std::vector<Player*>::const_iterator end() const {
+    std::vector<Player*>::const_iterator end() const {
         return players_.end();
     }
 

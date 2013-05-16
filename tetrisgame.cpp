@@ -63,7 +63,7 @@ void TetrisGame::draw() {
 }
 
 double TetrisGame::getWidth() const {
-    int width = 0;
+    double width = 0;
     iterateAllPlayers([&](Player* player) {
         width += player->getWidth();
         return true;
@@ -73,7 +73,7 @@ double TetrisGame::getWidth() const {
 }
 
 double TetrisGame::getHeight() const {
-	int height = 400;
+	double height = 400;
     iterateAllPlayers([&](Player* player) {
         height = player->getHeight();
         return false;

@@ -91,9 +91,9 @@
     <ClCompile Include="graphicboard.cpp" />
     <ClCompile Include="guiwindow.cpp" />
     <ClCompile Include="highscore.cpp" />
-    <ClCompile Include="human.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="devicejoystick.cpp" />
+    <ClCompile Include="localplayer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="movehandler.cpp" />
     <ClCompile Include="multiframe.cpp" />
@@ -124,7 +124,6 @@
     <ClInclude Include="guitypedefs.h" />
     <ClInclude Include="guiwindow.h" />
     <ClInclude Include="highscore.h" />
-    <ClInclude Include="human.h" />
     <ClInclude Include="imagebackground.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="inputformatter.h" />
@@ -132,11 +131,11 @@
     <ClInclude Include="devicejoystick.h" />
     <ClInclude Include="devicekeyboard.h" />
     <ClInclude Include="inputnumberformatter.h" />
+    <ClInclude Include="localplayer.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="protocol.h" />
-    <ClInclude Include="remoteuser.h" />
     <ClInclude Include="rotationhandler.h" />
     <ClInclude Include="square.h" />
     <ClInclude Include="tetrisboard.h" />
@@ -146,6 +145,7 @@
     <ClInclude Include="textboxdraw.h" />
     <ClInclude Include="textbutton.h" />
     <ClInclude Include="textitem.h" />
+    <ClInclude Include="userconnection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
