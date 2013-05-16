@@ -82,7 +82,7 @@ void GuiWindow::initFrameMenu() {
 	multiFrame_.add(gui::createTextItem("MWetris",fontDefault50,80,mw::Color(1,1,1)),10,50,false,true);//Color(0.9,0.2,0,0.9)
 	multiFrame_.add(gui::createTextItem("Made by Marcus Welander",fontDefault18,12,mw::Color(1,1,1)),0,0,true,false);
 
-	// Upper bar.		
+	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
 	// Text is outside due to invY which dont know where the top of the text begin.
@@ -97,7 +97,7 @@ void GuiWindow::initFrameMenu() {
 	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::GuiItem*) {
 		resumeButton_->setVisible(true);
 		multiFrame_.setCurrentFrame(playFrameIndex_);
-		restartGame();			
+		restartGame();
 	});
 
 	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::GuiItem*) {
@@ -142,7 +142,7 @@ void GuiWindow::initFrameMenu() {
 	y += distance;
 	multiFrame_.add(b5,x,y,false,true);
 	y += distance;
-	multiFrame_.add(b6,x,y,false,true);		
+	multiFrame_.add(b6,x,y,false,true);
 
 	// Focus is switchable by the left and right arrow.
 	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
@@ -157,7 +157,7 @@ void GuiWindow::initFrameMenu() {
 }
 
 void GuiWindow::initPlayFrame() {
-	multiFrame_.setCurrentFrame(playFrameIndex_);		
+	multiFrame_.setCurrentFrame(playFrameIndex_);
 
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
@@ -188,7 +188,7 @@ void GuiWindow::initPlayFrame() {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDLKey key = sdlEvent.key.keysym.sym;
-			if (key == restartKey_) {					
+			if (key == restartKey_) {
 				item->click();
 				break;
 			}
@@ -199,11 +199,14 @@ void GuiWindow::initPlayFrame() {
 	b3->addOnClickListener([&](gui::GuiItem* item) {
 		ChooseNbrOfPlayers* nbrOfPlayers = (ChooseNbrOfPlayers*) item;
 		int nbr = 1 + nbrOfPlayers->getNbrOfPlayers();
-		if (nbr > 4) {
-			nbr = 1;
+		int tmpNbr = restartLocalGame(nbr);
+		if (tmpNbr < nbr) {
+            restartLocalGame(1);
+            nbrOfPlayers->setNbrOfPlayers(1);
+		} else {
+            restartLocalGame(nbr);
+            nbrOfPlayers->setNbrOfPlayers(nbr);
 		}
-		nbrOfPlayers->setNbrOfPlayers(nbr);
-		restartLocalGame(nbr);
 	});
 
 	gui::ButtonPtr b4 = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
@@ -222,7 +225,7 @@ void GuiWindow::initPlayFrame() {
 	b4->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;				
+			SDLKey key = sdlEvent.key.keysym.sym;
 			if (key == pauseKey_) {
 				item->click();
 				break;
@@ -391,7 +394,7 @@ void GuiWindow::initCreateClientFrame() {
 void GuiWindow::resize(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0,0,width,height);		
+	glViewport(0,0,width,height);
 	glOrtho(0,width,0,height,-1,1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -411,7 +414,7 @@ void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
 	switch (windowEvent.type) {
 	case SDL_KEYDOWN:
 		switch (windowEvent.key.keysym.sym) {
-		case SDLK_F11:				
+		case SDLK_F11:
 			mw::Window::setFullScreen(!mw::Window::isFullScreen());
 			break;
 		default:

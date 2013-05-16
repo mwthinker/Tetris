@@ -1,23 +1,22 @@
-#ifndef HUMAN_H
-#define HUMAN_H
+#ifndef LOCALPLAYER_H
+#define LOCALPLAYER_H
 
 #include "actionhandler.h"
 #include "device.h"
 #include "tetrisboard.h"
+#include "player.h"
 
 #include <memory>
 
-class Human {
+class LocalPlayer : public Player {
 public:
-    Human();
-    ~Human();
+    LocalPlayer(int id, const DevicePtr& device);
+    ~LocalPlayer();
 
-    void update(Input input, double deltaTime, int level);
-	bool pollMove(TetrisBoard::Move& move);
+    void update(double deltaTime);
 
 private:
 	double calculateDownSpeed(int level) const;
-	void pushMove(TetrisBoard::Move move);
 
     double time_; // Gametime
 	double lastDownTime_; // The gametime for the last "gravity" move.
@@ -28,9 +27,9 @@ private:
     ActionHandler* downHandler_;
     ActionHandler* rotateHandler_;
 
-	std::queue<TetrisBoard::Move> moves_;   // The moves to update
+    DevicePtr device_;
 };
 
-typedef std::shared_ptr<Human> HumanPtr;
+typedef std::shared_ptr<LocalPlayer> LocalPlayerPtr;
 
-#endif // HUMAN_H
+#endif // LOCALPLAYER_H

@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 
+#include <memory>
+
 struct Input {
 	Input() {
 		rotate = false;
@@ -27,5 +29,6 @@ public:
 	virtual Input currentInput() = 0;
 };
 
-#endif // DEVICE_H
+typedef std::shared_ptr<Device> DevicePtr;
 
+#endif // DEVICE_H

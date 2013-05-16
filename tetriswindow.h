@@ -17,9 +17,6 @@
 class TetrisWindow : public GuiWindow {
 public:
 	TetrisWindow() {
-		numberOfPlayer_ = 1;
-		tetrisGame_.createLocalGame(1);
-
 		tetrisGame_.addCallback([&](Protocol::NetworkEvent connectionEvent) {
 			handleConnectionEvent(connectionEvent);
 		});
@@ -38,20 +35,28 @@ public:
 			devices_.push_back(device);
 		}
 
-		tetrisGame_.setInputDevice(device1,0);
-		tetrisGame_.setInputDevice(device2,1);
+        std::vector<DevicePtr> onePlayer;
+        onePlayer.push_back(device1);
+		tetrisGame_.createLocalGame(onePlayer);
 	}
 
 	~TetrisWindow() {
 	}
 
 private:
-	void restartLocalGame(int nbrOfPlayers) {
+	int restartLocalGame(int nbrOfPlayers) {
 		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(nbrOfPlayers);
+		std::vector<DevicePtr> devices;
+
+		for (int i = 0; i < nbrOfPlayers && i < devices_.size(); ++i) {
+            devices.push_back(devices_[i]);
+		}
+
+		tetrisGame_.createLocalGame(devices);
 		tetrisGame_.setReadyGame(true);
 		tetrisGame_.startGame();
 		tetrisGame_.restartGame();
+		return devices.size();
 	}
 
 	void restartGame() {
@@ -130,8 +135,6 @@ private:
 
 	TetrisGame tetrisGame_;
 	std::vector<DevicePtr> devices_;
-
-	int numberOfPlayer_;
 };
 
 #endif // TETRISWINDOW_H

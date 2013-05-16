@@ -3,14 +3,17 @@
 
 #include "tetrisboard.h"
 #include "player.h"
-#include "human.h"
+#include "localplayer.h"
 
-#include "remoteuser.h"
-#include "human.h"
+#include "userconnection.h"
+#include "localplayer.h"
+#include "device.h"
 
 #include <mw/signal.h>
 #include <mw/packet.h>
 #include <mw/network.h>
+
+#include <functional>
 
 // Is throwed when data is received which violates the
 // tetris protocol.
@@ -52,9 +55,9 @@ public:
 
 	void update(Uint32 deltaTime);
 
-	void createLocalGame(int nbrLocalPlayers);
-	void createServerGame(int nbrLocalPlayers, int port);
-	void createClientGame(int nbrLocalPlayers, int port, std::string ip);
+	void createLocalGame(const std::vector<DevicePtr>& devices);
+	void createServerGame(const std::vector<DevicePtr>& devices, int port);
+	void createClientGame(const std::vector<DevicePtr>& devices, int port, std::string ip);
 
 	void startGame();
 	void closeGame();
@@ -76,14 +79,19 @@ public:
 
 	void addCallback(mw::Signal<Protocol::NetworkEvent>::Callback callback);
 
+	int getNbrOfPlayers() const;
+
 protected:
 	void signalEvent(Protocol::NetworkEvent nEvent);
 
-	void createNewHumanPlayers(int nbrOfLocalPlayers);
+	void connect(const std::vector<DevicePtr>& devices, Status status);
 
-	void connect(const std::vector<HumanPtr>& humans, Status status);
+    void iterateAllPlayers(std::function<bool(Player*)> nextPlayer) const;
 
-	virtual void updateGame(Uint32 deltaTime) = 0;
+    void addRowsToAllPlayersExcept(Player* player, int nbrOfRows);
+private:
+
+	virtual void updateGame(double timeStep) = 0;
 
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value
@@ -92,7 +100,7 @@ protected:
 
 	// Server receives info from a client with id (id) about the number (nbrOfPlayers)
 	// of local players.
-	void serverReceiveClientInfo(RemoteUser* remote, mw::Packet packet);
+	void serverReceiveClientInfo(UserConnection* remote, mw::Packet packet);
 
 	// Sent by client to notify the server about number of local players.
 	void sendClientInfo();
@@ -144,10 +152,7 @@ protected:
 
 	int getNumberOfPlayers(int connection) const;
 
-	std::vector<Player*> players_; // All players.
-	int nbrOfAlivePlayers_; // The total number of alive players.
-	typedef std::pair<HumanPtr,int> PairHumanIndex;  // All local players.
-	std::vector<PairHumanIndex> humans_;  // Local humans.
+	int nbrOfPlayers_;
 
 private:
 	// @Override ServerFilter. Is only called in server/local mode.
@@ -178,7 +183,9 @@ private:
 	int connectToPort_; // The port on the remote server.
 	std::string connectToIp_; // The ip on the remote server.
 
-	std::vector<RemoteUser*> remoteUsers_;  // All remote players.
+	std::vector<UserConnection*> remoteUsers_;  // All remote players.
+    UserConnection localUser_;
+    std::vector<DevicePtr> devices_;
 
 	mw::Network* network_; // The connection manager.
 	static int playerId_; // The id for the last added player.

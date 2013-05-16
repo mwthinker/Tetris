@@ -1,4 +1,4 @@
-#include "human.h"
+#include "localplayer.h"
 #include "actionhandler.h"
 #include "movehandler.h"
 #include "rotationhandler.h"
@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-Human::Human() {
+LocalPlayer::LocalPlayer(int id, const DevicePtr& device) : Player(id) {
 	int nbrOfRows = 20;
 	leftHandler_ = new MoveHandler(0.09); // 0.12
 	rightHandler_ = new MoveHandler(0.09); // 0.12
@@ -15,18 +15,21 @@ Human::Human() {
 
 	time_ = 0.0;
 	lastDownTime_ = 0.0;
+	device_ = device;
 }
 
-Human::~Human() {
+LocalPlayer::~LocalPlayer() {
 	delete leftHandler_;
 	delete rightHandler_;
 	delete downHandler_;
 	delete rotateHandler_;
 }
 
-void Human::update(Input input, double deltaTime, int level) {
+void LocalPlayer::update(double deltaTime) {
+    Input input = device_->currentInput();
+
 	time_ += deltaTime;
-	double downTime = 1.0 / calculateDownSpeed(level); // The time beetween each "gravity" move.
+	double downTime = 1.0 / calculateDownSpeed(getLevel()); // The time beetween each "gravity" move.
 
 	if (lastDownTime_ + downTime < time_) {
 		lastDownTime_ = time_;
@@ -54,20 +57,7 @@ void Human::update(Input input, double deltaTime, int level) {
 	}
 }
 
-bool Human::pollMove(TetrisBoard::Move& move) {
-	if (moves_.empty()) {
-		return false;
-	}
-
-	move = moves_.front();
-	moves_.pop();
-	return true;
-}
-
-double Human::calculateDownSpeed(int level) const {
+double LocalPlayer::calculateDownSpeed(int level) const {
 	return 1+level*0.5;
 }
 
-void Human::pushMove(TetrisBoard::Move move) {
-	moves_.push(move);
-}

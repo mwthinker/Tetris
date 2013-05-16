@@ -103,6 +103,8 @@ public:
 		tetrisBoard_.update(move);
     }
 
+    virtual void update(double deltaTime) = 0;
+
 	void update(BlockType current, BlockType next) {
 		tetrisBoard_.setNonRandomCurrentBlockType(current);
 		tetrisBoard_.setNonRandomNextBlockType(next);
@@ -125,6 +127,23 @@ public:
 		return levelUpCounter_;
 	}
 
+protected:
+    // Pushed to a queue.
+    void pushMove(TetrisBoard::Move move) {
+        moves_.push(move);
+    }
+
+    // Remove from the queue.
+    bool pollMove(TetrisBoard::Move& move) {
+        if (moves_.empty()) {
+            return false;
+        }
+
+        move = moves_.front();
+        moves_.pop();
+        return true;
+    }
+
 private:
 	void init() {
 		level_ = 1;
@@ -146,6 +165,7 @@ private:
 	std::string name_;     // The name of the player.
 	const int id_;
 	int levelUpCounter_;	// Is used to determen when to level up.
+	std::queue<TetrisBoard::Move> moves_;
 };
 
 #endif // PLAYER_H

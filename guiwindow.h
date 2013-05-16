@@ -21,7 +21,7 @@ protected:
 	SDLKey pauseKey_;
 	SDLKey restartKey_;
 
-private:		
+private:
 	bool isUpdatingGame() const {
 		return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
 	}
@@ -42,7 +42,7 @@ private:
 
 	virtual void setPause(bool pause) = 0;
 
-	virtual void restartLocalGame(int nbrOfPlayers) {
+	virtual int restartLocalGame(int nbrOfPlayers) {
 	}
 
 	virtual void restartGame() {

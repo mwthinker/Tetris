@@ -2,7 +2,7 @@
 #include "gamesound.h"
 #include "graphicboard.h"
 #include "player.h"
-#include "human.h"
+#include "localplayer.h"
 #include "device.h"
 #include "devicekeyboard.h"
 #include "devicejoystick.h"
@@ -15,77 +15,71 @@
 #include <sstream>
 
 TetrisGame::TetrisGame() {
+    nbrOfAlivePlayers_ = 0;
+    timeStep_ = 0.017f; // Fix time step for physics update.
+    accumulator_ = 0.0f; // Time accumulator.
 }
 
 TetrisGame::~TetrisGame() {
 }
 
-void TetrisGame::setInputDevice(const DevicePtr& device, int playerIndex) {
-	devices_[playerIndex] = device;
+void TetrisGame::updateGame(double deltaTime) {
+    // DeltaTime to big?
+    if (deltaTime > 0.250) {
+        // To avoid spiral of death.
+        deltaTime = 0.250;
+    }
+
+    accumulator_ += deltaTime;
+    while (accumulator_ >= timeStep_) {
+        accumulator_ -= timeStep_;
+        iterateAllPlayers([&](Player* player) {
+            updatePlayer(player,deltaTime);
+            return true;
+        });
+    }
 }
 
-void TetrisGame::updateGame(Uint32 deltaTime) {
-	for (auto it = humans_.begin(); it != humans_.end(); ++it) {
-		HumanPtr& human = it->first;
-		unsigned int index = it->second;
-		Player* player = players_[index];
-		int level = player->getLevel();
+void TetrisGame::updatePlayer(Player* player, double deltaTime) {
+    player->update(deltaTime);
 
-		if (!isPaused()) {
-			Input input;
-			if (index < devices_.size()) {
-				DevicePtr& device = devices_[index];
-				input = device->currentInput();
-			}
-			human->update(input, deltaTime/1000.0,level);
-		}
-
-		TetrisBoard::Move move;
-		while (human->pollMove(move)) {
-			sendInput(player->getId(),move,player->getTetrisBoard().nextBlock().blockType());
-		}
-	}
-
-	auto& players = players_;
-	// Iterate through all players and progress the game and apply game rules and sound effects.
-	for (Player* player : players) {
-		GameEvent gameEvent;
-		while (player->pollGameEvent(gameEvent)) {
-			applyRules(player, gameEvent);
-			soundEffects(gameEvent);
-		}
-	}
+    GameEvent gameEvent;
+    while (player->pollGameEvent(gameEvent)) {
+        applyRules(player, gameEvent);
+        soundEffects(gameEvent);
+    }
 }
 
 void TetrisGame::draw() {
 	glPushMatrix();
 
-	auto& players = players_;
-	for (auto it = players.begin(); it != players.end(); ++it) {
-		Player* player = *it;
-		player->draw();
+    iterateAllPlayers([&](Player* player) {
+        player->draw();
 		glTranslated(player->getWidth(),0,0);
-	}
+        return true;
+    });
 
 	glPopMatrix();
 }
 
 double TetrisGame::getWidth() const {
-	double width = 0;
-	const auto& players = players_;
+    int width = 0;
+    iterateAllPlayers([&](Player* player) {
+        width += player->getWidth();
+        return true;
+    });
 
-	for (Player* player : players) {
-		width += player->getWidth();
-	}
 	return width;
 }
 
 double TetrisGame::getHeight() const {
-	auto& players = players_;
-	if (players.size() == 0) {
-		return 400;
-	}
-	return players.front()->getHeight();
+	int height = 400;
+    iterateAllPlayers([&](Player* player) {
+        height = player->getHeight();
+        return false;
+    });
+
+	return height;
 }
 
 void TetrisGame::soundEffects(GameEvent gameEvent) {
@@ -134,39 +128,25 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 	case FOUR_ROW_REMOVED:
 		{
 			rows = 4;
-
-			// More than one player->
-			if (players_.size() > 1) {
-				for (auto it = humans_.begin(); it != humans_.end(); ++it) {
-					// Human player => sendTetrisInfo() to all players.
-					int nbrOfPlayers = players_.size();
-					int nbrOfRowsToAdd = 4;
-					if (nbrOfPlayers == 2) {
-						nbrOfRowsToAdd = 4;
-					} else if (nbrOfPlayers == 3) {
-						nbrOfRowsToAdd = 2;
-					} else {
-						nbrOfRowsToAdd = 1;
-					}
-
-					// Send rows to all humans player except to the player who
-					// triggered the event.
-					Player* tmpPlayer = players_[it->second];
-					if (player != tmpPlayer) {
-						std::vector<BlockType> blockTypes;
-						for (int i = 0; i < nbrOfRowsToAdd; ++i) {
-							std::vector<BlockType> tmp = tmpPlayer->getTetrisBoard().generateRow();
-							blockTypes.insert(blockTypes.begin(),tmp.begin(),tmp.end());
-						}
-						sendTetrisInfo(tmpPlayer->getId(), blockTypes);
-					}
+			int nbrOfPlayers = getNbrOfPlayers();
+			// Multiplayer?
+			if (nbrOfPlayers > 1) {
+				int nbrOfRowsToAdd = 4;
+				if (nbrOfPlayers == 2) {
+					nbrOfRowsToAdd = 4;
+				} else if (nbrOfPlayers == 3) {
+					nbrOfRowsToAdd = 2;
+				} else {
+					nbrOfRowsToAdd = 1;
 				}
+
+				addRowsToAllPlayersExcept(player,nbrOfRowsToAdd);
 			}
 			break;
 		}
 	case GAME_OVER:
 		// Multiplayer?
-		if (players_.size() > 1) {
+		if (getNbrOfPlayers() > 1) {
 			std::stringstream stream;
 			stream << nbrOfAlivePlayers_ ;
 			if (nbrOfAlivePlayers_ == 1) {
@@ -186,11 +166,12 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 
 			// All dead except one => End game!
 			if (nbrOfAlivePlayers_ == 1) {
-				for (Player* tmp : players_) {
-					// Will be noticed in the next call to PlayerManager::applyRules(...).
+                iterateAllPlayers([](Player* tmpPlayer) {
+                    // Will be noticed in the next call to PlayerManager::applyRules(...).
 					// Triggers only for not dead players.
-					tmp->tetrisBoard_.triggerGameOverEvent();
-				}
+					tmpPlayer->tetrisBoard_.triggerGameOverEvent();
+                    return true;
+                });
 			}
 		} else {
 			// Singleplayer.
@@ -211,18 +192,19 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 		// Increase level up counter.
 		// If assuming all players are equally good. Players should level up with the
 		// the same time in both single- and multiplayer game.
-		if (players_.size() > 1) {
+		if (getNbrOfPlayers() > 1) {
 			// Multiplayer
 
 			// Increase level up counter for all opponents to the current player.
-			for (Player* opponent : players_) {
-				if (opponent != player) {
+			iterateAllPlayers([&](Player* opponent) {
+                if (opponent != player) {
 					// Compensates for more opponents which are also increasing counter
 					// Compared to singleplayer.
-					int add = rows*(players_.size() - nbrOfAlivePlayers_ + 1);
+					int add = rows*(getNbrOfPlayers() - nbrOfAlivePlayers_ + 1);
 					opponent->setLevelUpCounter(opponent->getLevelUpCounter() + add);
 				}
-			}
+                return true;
+            });
 		} else {
 			// Singleplayer.
 			player->setLevelUpCounter(player->getLevelUpCounter() + rows);
@@ -230,11 +212,11 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 
 		// Set level to this player. Only when this players cleares a row.
 		int maxLevel = 20;
-		if (players_.size() > 1) {
+		if (getNbrOfPlayers() > 1) {
 			// Multiplayer
 			// Higher counter bar to level up due to more players that contribute to
 			// increase counter.
-			int level = player->getLevelUpCounter() / (nbrOfRowsToLevelUp*(players_.size()-1)) + 1;
+			int level = player->getLevelUpCounter() / (nbrOfRowsToLevelUp*(getNbrOfPlayers()-1)) + 1;
 			if (level <= maxLevel) {
 				player->setLevel(level);
 			}

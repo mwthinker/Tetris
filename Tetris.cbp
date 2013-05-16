@@ -80,12 +80,12 @@
 		<Unit filename="guiwindow.h" />
 		<Unit filename="highscore.cpp" />
 		<Unit filename="highscore.h" />
-		<Unit filename="human.cpp" />
-		<Unit filename="human.h" />
 		<Unit filename="imagebackground.h" />
 		<Unit filename="inputformatter.h" />
 		<Unit filename="inputipformatter.h" />
 		<Unit filename="inputnumberformatter.h" />
+		<Unit filename="localplayer.cpp" />
+		<Unit filename="localplayer.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="movehandler.cpp" />
 		<Unit filename="movehandler.h" />
@@ -95,7 +95,7 @@
 		<Unit filename="player.h" />
 		<Unit filename="protocol.cpp" />
 		<Unit filename="protocol.h" />
-		<Unit filename="remoteuser.h" />
+		<Unit filename="remoteplayer.h" />
 		<Unit filename="rotationhandler.cpp" />
 		<Unit filename="rotationhandler.h" />
 		<Unit filename="square.h" />
@@ -110,6 +110,7 @@
 		<Unit filename="textbutton.h" />
 		<Unit filename="textitem.cpp" />
 		<Unit filename="textitem.h" />
+		<Unit filename="userconnection.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
