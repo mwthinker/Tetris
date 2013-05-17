@@ -20,9 +20,8 @@ namespace gui {
 		virtual void draw() override;
 
 	private:
-		mw::Color color_;
-		mw::FontPtr font_;
 		mw::Text text_;
+		mw::Color color_;
 	};
 
 	typedef std::shared_ptr<TextItem> TextItemPtr;

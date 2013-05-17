@@ -53,7 +53,7 @@ namespace gui {
 					break;
 				}
 				break;
-			case SDL_KEYDOWN: 
+			case SDL_KEYDOWN:
 				{
 					if (hasFocus()) {
 						SDLKey sdlKey = windowEvent.key.keysym.sym;
@@ -77,6 +77,8 @@ namespace gui {
 						case SDLK_DELETE:
 							inputFormatter_->update(InputFormatter::INPUT_ERASE_RIGHT);
 							break;
+                        default:
+                            break;
 						}
 					}
 				}
@@ -97,7 +99,7 @@ namespace gui {
 		int getMarkerPosition() const {
 			return inputFormatter_->getMarkerPosition();
 		}
-		
+
 	private:
 		mw::Signal<std::string> excecute_;
 		InputFormatterPtr inputFormatter_;
