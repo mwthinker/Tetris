@@ -381,45 +381,43 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 	switch (type) {
 	case PACKET_SERVERINFO:
 		{
-			// Game started => ProtocolError
+			// Game started?
 			if (start_) {
 				throw ProtocolError();
 			}
 
-			// Sent from client?
+			// Sent from a client?
 			if (id != network_->getServerId()) {
 				throw ProtocolError();
 			}
 
-			// This is a server?
+			// This is not a server?
 			if (network_->getId() != network_->getServerId()) {
 				// Only real clients (i.e. not server).
 				clientReceiveStartInfo(data);
-				std::cout << "\n" << "clientReceiveStartInfo" << std::endl;
+				std::cout << "\nClientReceiveStartInfo" << std::endl;
 			}
 
-			std::cout << "\n" << "PACKET_SERVERINFO" << std::endl;
+			std::cout << "\nPACKET_SERVERINFO" << std::endl;
 		}
 		break;
 	case PACKET_INPUT:
 		{
-			// Game not started -> protocol error.
+			// Game not started?
 			if (!start_) {
-				// Protocol error.
 				throw ProtocolError();
 			}
 
 			if (data.size() != 4) {
-				// Protocol error.
 				throw ProtocolError();
 			}
 
 			char playerId;
 			TetrisBoard::Move move;
 			BlockType next;
-
 			receivInput(data,playerId,move,next);
 
+			// Iterate until the player is found.
 			iterateAllPlayers([&](Player* player) {
                 bool findPlayer = false;
                 if (player->getId() == playerId) {
@@ -428,10 +426,9 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
                 }
                 return !findPlayer;
 			});
-
 			//std::cout << "\n" << "PACKET_INPUT" << std::endl;
-			break;
 		}
+		break;
 	case PACKET_READY:
 		// Game started?
 		if (start_) {
@@ -456,7 +453,6 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		}
 
 		if (data.size() != 1) {
-			// Protocol error.
 			throw ProtocolError();
 		}
 
@@ -470,18 +466,16 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		break;
 	case PACKET_TETRIS:
 		{
-			// Game not started -> protocol error.
+			// Game not started?
 			if (!start_) {
-				// Protocol error.
 				throw ProtocolError();
 			}
 
 			if (data.size() < 2) {
-				// Protocol error.
 				throw ProtocolError();
 			}
 
-			int id = data[1];
+			int playerId = data[1];
 			int index = 2;
 			std::vector<BlockType> blockTypes;
 			while (index < data.size()) {
@@ -492,16 +486,14 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			// Add rows to the player with correct id.
 			iterateAllPlayers([&](Player* player) {
                 bool findPlayer = false;
-                if (player->getId() == id) {
+                if (player->getId() == playerId) {
                     player->update(blockTypes);
                 }
                 return !findPlayer;
 			});
-
 			std::cout << "\n" << "PACKET_TETRIS" << std::endl;
-
-			break;
 		}
+		break;
 	case PACKET_STARTGAME:
 		// Signals the game to start. Only sent by the server.
 
@@ -512,14 +504,12 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 
 		// Game allready started?
 		if (start_) {
-			// Restart human players.
+			// Restart local players.
 			for (Player* player : localUser_) {
 				// Restart player.
 				player->restart();
 			}
 		}
-
-		//nbrOfAlivePlayers_ = players_.size();
 
 		start_ = true;
 		pause_ = false;
@@ -532,11 +522,9 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 
 		// Signals the gui that the game begins.
 		signalEvent(STARTS_GAME);
-
 		break;
 	case PACKET_PAUSE:
 		if (data.size() != 1) {
-			// Protocol error.
 			throw ProtocolError();
 		}
 		pause_ = !pause_;
@@ -545,8 +533,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		if (network_->getId() != id) {
 			receiveStartBlock(data,id);
 		}
-
-		// Game not started -> protocol error.
+		
 		std::cout << "\n" << "PACKET_STARTBLOCK" << std::endl;
 		break;
 	case PACKET_CLIENTINFO:
@@ -701,10 +688,10 @@ void Protocol::sendReady() {
 // char nextBlockType, before move has taken effect
 void Protocol::sendInput(char playerId, TetrisBoard::Move move, BlockType next) {
 	mw::Packet data;
-	data.push_back(PACKET_INPUT);
-	data.push_back(playerId);
-	data.push_back(move);
-	data.push_back(next);
+	data << PACKET_INPUT;
+	data << playerId;
+	data << move;
+	data << next;
 	network_->pushToSendBuffer(data);
 }
 
@@ -718,7 +705,7 @@ void Protocol::receivInput(mw::Packet packet, char& playerId, TetrisBoard::Move&
 
 void Protocol::sendStartBlock() {
 	mw::Packet data;
-	data.push_back(PACKET_STARTBLOCK);
+	data << PACKET_STARTBLOCK;
 	for (Player* player : localUser_) {
 		data << player->tetrisBoard_.currentBlock().blockType();
 		data << player->tetrisBoard_.nextBlock().blockType();
