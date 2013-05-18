@@ -729,7 +729,7 @@ void Protocol::sendStartBlock() {
 };
 
 void Protocol::receiveStartBlock(const mw::Packet& data, int id) {
-	UserConnection* user = 0;
+	UserConnection* user = nullptr;
 	for (UserConnection* tmp : remoteUsers_) {
 		if (tmp->getId() == id) {
 			user = tmp;
@@ -737,22 +737,20 @@ void Protocol::receiveStartBlock(const mw::Packet& data, int id) {
 		}
 	}
 
-	if (user == 0) {
+	if (user == nullptr) {
 		throw ProtocolError();
 	}
 
-	int i = 1;
+	int i = 0;
 	while (i < data.size()) {
-		BlockType current = static_cast<BlockType>(data[i+1]);
-		BlockType next = static_cast<BlockType>(data[i+2]);
+		BlockType current = static_cast<BlockType>(data[++i]);
+		BlockType next = static_cast<BlockType>(data[++i]);
 
 		for (Player* player : *user) {
 			player->restart();
 			player->tetrisBoard_.setNonRandomCurrentBlockType(current);
 			player->tetrisBoard_.setNonRandomNextBlockType(next);
 		}
-
-		i = i + 3;
 	}
 	std::cout << "\nReceiveStartBlock" << std::endl;
 };

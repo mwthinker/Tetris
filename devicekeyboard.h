@@ -14,7 +14,12 @@ public:
 		rotate_ = rotate;
 	}
 
-    void eventUpdate(const SDL_Event& windowEvent) override {
+	Input currentInput() override {
+		return input_;
+	}
+
+private:
+	void eventUpdate(const SDL_Event& windowEvent) override {
 		SDLKey key = windowEvent.key.keysym.sym;
 
         switch (windowEvent.type) {
@@ -45,11 +50,6 @@ public:
         }
     }
 
-	Input currentInput() override {
-		return input_;
-	}
-
-private:
 	Input input_;
 
 	SDLKey down_, right_, left_, rotate_;

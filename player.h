@@ -12,7 +12,6 @@
 
 class Player {
 public:
-	friend class TetrisGame;
 	friend class Protocol;
 
 	Player(int id) : graphicBoard_(tetrisBoard_), id_(id) {
@@ -125,6 +124,10 @@ public:
 
 	int getLevelUpCounter() const {
 		return levelUpCounter_;
+	}
+
+	void triggerGameOverEvent() {
+		tetrisBoard_.triggerGameOverEvent();
 	}
 
 protected:

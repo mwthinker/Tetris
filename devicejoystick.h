@@ -17,6 +17,11 @@ public:
 		downButton_ = downButton;
 	}
 
+	Input currentInput() override {
+		return input_;
+	}
+
+private:
 	void eventUpdate(const SDL_Event& windowEvent) override {
 		if (windowEvent.jaxis.which == joystick_->getJoystickIndex()) {
 			switch (windowEvent.type) {
@@ -81,11 +86,6 @@ public:
 		}
     }
 
-	Input currentInput() override {
-		return input_;
-	}
-
-private:
 	Input input_;
 	mw::JoystickPtr joystick_;
 	int rotateButton_, downButton_;	

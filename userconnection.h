@@ -1,9 +1,9 @@
 #ifndef USERCONNECTION_H
 #define USERCONNECTION_H
 
-#include "player.h"
-
 #include <vector>
+
+class Player;
 
 // Hold information about all local players on a client/server.
 class UserConnection {

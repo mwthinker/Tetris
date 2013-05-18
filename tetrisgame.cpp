@@ -169,7 +169,7 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
                 iterateAllPlayers([](Player* tmpPlayer) {
                     // Will be noticed in the next call to PlayerManager::applyRules(...).
 					// Triggers only for not dead players.
-					tmpPlayer->tetrisBoard_.triggerGameOverEvent();
+					tmpPlayer->triggerGameOverEvent();
                     return true;
                 });
 			}

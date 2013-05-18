@@ -21,12 +21,15 @@ struct Input {
 
 class Device {
 public:
+	friend class TetrisWindow;
+
 	virtual ~Device() {
 	}
 
-    virtual void eventUpdate(const SDL_Event& windowEvent) = 0;
-
 	virtual Input currentInput() = 0;
+
+private:
+    virtual void eventUpdate(const SDL_Event& windowEvent) = 0;
 };
 
 typedef std::shared_ptr<Device> DevicePtr;
