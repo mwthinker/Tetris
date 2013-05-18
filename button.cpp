@@ -13,7 +13,7 @@ namespace gui {
 		setHeight(50);
 	}
 
-	void Button::eventUpdate(const SDL_Event& windowEvent, int x, int y) {		
+	void Button::eventUpdate(const SDL_Event& windowEvent, int x, int y) {
 		switch (windowEvent.type) {
 		case SDL_USEREVENT:
 			static_assert(GUI_CHANGE_FROM_FRAME_CODE != GUI_CHANGE_TO_FRAME_CODE,
@@ -23,8 +23,11 @@ namespace gui {
 			if (windowEvent.user.code == GUI_CHANGE_FROM_FRAME_CODE) {
 				mouseInside_ = false;
 			} else if (windowEvent.user.code == GUI_CHANGE_TO_FRAME_CODE) { // Belonging frame inactivated?
-				// Check if mouse is inside.
-				mouseInside_ = isInside(x,y);
+                // Mouse inside of the window?
+				if (SDL_GetAppState() & SDL_APPMOUSEFOCUS) {
+                    // Check if mouse is inside.
+                    mouseInside_ = isInside(x,y);
+                }
 			}
 			break;
 		case SDL_ACTIVEEVENT:
