@@ -209,7 +209,7 @@ void Protocol::update(Uint32 deltaTime) {
 			{
 				mw::Packet data;
 				int id = 0;
-				while (id = network_->pullFromReceiveBuffer(data)) {
+				while ( (id = network_->pullFromReceiveBuffer(data)) != 0 ) {
 					receiveData(data, id);
 				}
 
@@ -257,6 +257,8 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 		nbrOfPlayers_ = 0;
 
 		switch (status) {
+		case WAITING_TO_CONNECT:
+            break;
 		case LOCAL:
 			network_ = new mw::LocalNetwork(this);
 			network_->start();
@@ -718,7 +720,6 @@ void Protocol::sendStartBlock() {
 	mw::Packet data;
 	data.push_back(PACKET_STARTBLOCK);
 	for (Player* player : localUser_) {
-		data << player->getId();
 		data << player->tetrisBoard_.currentBlock().blockType();
 		data << player->tetrisBoard_.nextBlock().blockType();
 	}
@@ -742,7 +743,6 @@ void Protocol::receiveStartBlock(const mw::Packet& data, int id) {
 
 	int i = 1;
 	while (i < data.size()) {
-		int playerId = data[i];
 		BlockType current = static_cast<BlockType>(data[i+1]);
 		BlockType next = static_cast<BlockType>(data[i+2]);
 
@@ -774,7 +774,6 @@ void Protocol::addRowsToAllPlayersExcept(Player* player, int nbrOfRows) {
 }
 
 void Protocol::sendTetrisInfo(int playerId, const std::vector<BlockType>& blockTypes) {
-	Player* player = 0;
 	std::vector<char> data;
 	data.push_back(PACKET_TETRIS);
 	data.push_back(playerId);
@@ -784,7 +783,7 @@ void Protocol::sendTetrisInfo(int playerId, const std::vector<BlockType>& blockT
 
 void Protocol::sendPause() {
 	mw::Packet data;
-	data.push_back(PACKET_PAUSE);
+	data << PACKET_PAUSE;
 	network_->pushToSendBuffer(data);
 }
 
