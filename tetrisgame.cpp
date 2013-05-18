@@ -176,6 +176,7 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 		} else {
 			// Singleplayer.
 			player->setGameOverMessage("Game over!");
+			signalEvent(std::make_shared<GameOver>(player->getPoints()));
 		}
 		break;
 	default:

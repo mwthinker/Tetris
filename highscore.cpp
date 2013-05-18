@@ -53,14 +53,22 @@ bool Highscore::isNewRecord(int record) const {
 	return false;
 }
 
-void Highscore::addNewRecord(int record, std::string name, std::string date) {
+void Highscore::addNewRecord(std::string name, std::string date) {
 	mw::Text nameT(name,fontDefault);
 	mw::Text dateT(date,fontDefault);
 	mw::Text points("0",fontDefault);
 
-	descList_.push_back(HighscoreElement(record, points, nameT, dateT));
+	descList_.push_back(HighscoreElement(nextRecord_, points, nameT, dateT));
 	sort();
 	descList_.pop_back();
+}
+
+void Highscore::setNextRecord(int record) {
+    nextRecord_ = record;
+}
+
+int Highscore::getNextRecord() const {
+    return nextRecord_;
 }
 
 // Sorts the vector in descending order.

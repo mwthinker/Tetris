@@ -18,7 +18,11 @@ public:
 
 	bool isNewRecord(int record) const;
 
-	void addNewRecord(int record, std::string name, std::string date);	
+	void addNewRecord(std::string name, std::string date);
+
+	void setNextRecord(int record);
+
+	int getNextRecord() const;
 
 private:
 	struct HighscoreElement {
@@ -38,6 +42,7 @@ private:
 
 	std::list<HighscoreElement> descList_;
 	mw::Color color_;
+	int nextRecord_;
 };
 
 typedef std::shared_ptr<Highscore> HighscorePtr;

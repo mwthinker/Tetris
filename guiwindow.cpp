@@ -26,6 +26,7 @@ GuiWindow::GuiWindow() : mw::Window(500,600,"MWetris","images/tetris.bmp") {
 	highscoreFrameIndex_ = multiFrame_.addFrameBack();
 	customFrameIndex_ = multiFrame_.addFrameBack();
 	optionFrameIndex_ = multiFrame_.addFrameBack();
+	newHighscoreFrameIndex_ = multiFrame_.addFrameBack();
 
 	auto background = gui::createImageBackground(spriteBackground);
 	multiFrame_.setBackground(background,0);
@@ -33,6 +34,7 @@ GuiWindow::GuiWindow() : mw::Window(500,600,"MWetris","images/tetris.bmp") {
 	multiFrame_.setBackground(background,highscoreFrameIndex_);
 	multiFrame_.setBackground(background,customFrameIndex_);
 	multiFrame_.setBackground(background,optionFrameIndex_);
+	multiFrame_.setBackground(background,newHighscoreFrameIndex_);
 
 	hDistance_ = 30;
 
@@ -41,6 +43,7 @@ GuiWindow::GuiWindow() : mw::Window(500,600,"MWetris","images/tetris.bmp") {
 	initPlayFrame();
 	initCustomPlayFrame();
 	initOptionFrame();
+	initNewHighScoreFrame();
 
 	multiFrame_.setCurrentFrame(0);
 	mw::Window::setUnicodeInputEnable(true);
@@ -52,6 +55,10 @@ GuiWindow::GuiWindow() : mw::Window(500,600,"MWetris","images/tetris.bmp") {
 
 void GuiWindow::quit() {
 	setQuiting(true);
+}
+
+HighscorePtr GuiWindow::getHighscorePtr() const {
+    return highscorePtr_;
 }
 
 gui::ButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
@@ -262,7 +269,12 @@ void GuiWindow::initHighscoreFrame() {
 		}
 	});
 
-	multiFrame_.add(createHighscore(10,mw::Color(1,1,1)),10, (int) (hDistance_*1.2),false,true);
+	highscorePtr_ = createHighscore(10,mw::Color(1,1,1));
+	highscorePtr_->addOnClickListener([&](gui::GuiItem* item) {
+        multiFrame_.setCurrentFrame(newHighscoreFrameIndex_);
+	});
+
+	multiFrame_.add(highscorePtr_, 10, (int) (hDistance_*1.2), false, true);
 
 	multiFrame_.add(b1,0,0,false,true);
 }
@@ -389,6 +401,48 @@ void GuiWindow::initCreateClientFrame() {
 			}
 		}
 	});
+}
+
+void GuiWindow::initNewHighScoreFrame() {
+	multiFrame_.setCurrentFrame(newHighscoreFrameIndex_);
+
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+
+	gui::TextItemPtr textItem = gui::createTextItem("Name",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	nameBox_ = createTextBox(250);
+
+	multiFrame_.add(textItem,45,50,false,true);
+	multiFrame_.add(nameBox_,100,50,false,true);
+
+	gui::ButtonPtr b1 = createButton("Done!", 30, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(playFrameIndex_);
+		std::string name = nameBox_->getText();
+		if (name.size() > 0) {
+            highscorePtr_->addNewRecord(name,"2013");
+            multiFrame_.setCurrentFrame(highscoreFrameIndex_);
+		}
+	});
+	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			item->click();
+			break;
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == SDLK_RETURN || key == SDLK_KP_ENTER) {
+				item->click();
+				break;
+			}
+		}
+	});
+
+	multiFrame_.add(b1,45,100,false,true);
+
+	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
+	group->add(nameBox_);
+	group->add(b1);
+	multiFrame_.add(group,0,0,false,false);
 }
 
 void GuiWindow::resize(int width, int height) {

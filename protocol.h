@@ -14,6 +14,39 @@
 #include <mw/network.h>
 
 #include <functional>
+#include <memory>
+
+class NetworkEvent {
+public:
+    virtual ~NetworkEvent() {
+    }
+};
+
+class NewConnection : public NetworkEvent {
+public:
+};
+
+class ConnectedToServer : public NetworkEvent {
+public:
+};
+
+class Connecting : public NetworkEvent {
+public:
+};
+
+class GameStart : public NetworkEvent {
+public:
+};
+
+class GameOver : public NetworkEvent {
+public:
+    GameOver(int points) : points_(points) {
+    }
+
+    const int points_;
+};
+
+typedef std::shared_ptr<NetworkEvent> NetworkEventPtr;
 
 // Is throwed when data is received which violates the
 // tetris protocol.
@@ -48,7 +81,6 @@ mw::Packet& operator>>(mw::Packet& packet, BlockType& type);
 class Protocol : public mw::ServerFilter {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
-	enum NetworkEvent {NEW_CONNECTION, STARTS_GAME, CONNECTING, CONNECTED_TO_SERVER};
 
 	Protocol();
 	~Protocol();
@@ -77,20 +109,20 @@ public:
 
 	void restartGame();
 
-	void addCallback(mw::Signal<Protocol::NetworkEvent>::Callback callback);
+	void addCallback(mw::Signal<NetworkEventPtr>::Callback callback);
 
 	int getNbrOfPlayers() const;
 
 protected:
-	void signalEvent(Protocol::NetworkEvent nEvent);
+	void signalEvent(NetworkEventPtr nEvent);
 
 	void connect(const std::vector<DevicePtr>& devices, Status status);
 
     void iterateAllPlayers(std::function<bool(Player*)> nextPlayer) const;
 
     void addRowsToAllPlayersExcept(Player* player, int nbrOfRows);
-private:
 
+private:
 	virtual void updateGame(double timeStep) = 0;
 
 	// Receives data (data) received from user with id (id).
@@ -174,7 +206,7 @@ private:
 	// Receives the starting block from remote player.
 	void receiveStartBlock(const mw::Packet& data, int id);
 
-	mw::Signal<Protocol::NetworkEvent> eventHandler_;
+	mw::Signal<NetworkEventPtr> eventHandler_;
 	bool start_; // The game is started?
 	bool ready_; // In game looby, ready to start?
 	bool pause_; // Is game paused?

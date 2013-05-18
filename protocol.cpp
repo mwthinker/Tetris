@@ -186,7 +186,7 @@ bool Protocol::isStarted() const {
 	return start_;
 }
 
-void Protocol::addCallback(mw::Signal<Protocol::NetworkEvent>::Callback callback) {
+void Protocol::addCallback(mw::Signal<NetworkEventPtr>::Callback callback) {
 	eventHandler_.connect(callback);
 }
 
@@ -194,7 +194,7 @@ int Protocol::getNbrOfPlayers() const {
     return nbrOfPlayers_;
 }
 
-void Protocol::signalEvent(Protocol::NetworkEvent nEvent) {
+void Protocol::signalEvent(NetworkEventPtr nEvent) {
 	eventHandler_(nEvent);
 }
 
@@ -521,7 +521,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		std::cout << "\n" << "PACKET_STARTGAME" << std::endl;
 
 		// Signals the gui that the game begins.
-		signalEvent(STARTS_GAME);
+		signalEvent(std::make_shared<GameStart>());
 		break;
 	case PACKET_PAUSE:
 		if (data.size() != 1) {
@@ -533,7 +533,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		if (network_->getId() != id) {
 			receiveStartBlock(data,id);
 		}
-		
+
 		std::cout << "\n" << "PACKET_STARTBLOCK" << std::endl;
 		break;
 	case PACKET_CLIENTINFO:

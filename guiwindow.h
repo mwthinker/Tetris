@@ -3,6 +3,7 @@
 
 #include "guitypedefs.h"
 #include "multiframe.h"
+#include "highscore.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -20,6 +21,8 @@ public:
 protected:
 	SDLKey pauseKey_;
 	SDLKey restartKey_;
+
+    HighscorePtr getHighscorePtr() const;
 
 private:
 	bool isUpdatingGame() const {
@@ -59,6 +62,7 @@ private:
 	void initCustomPlayFrame();
 	void initOptionFrame();
 	void initCreateClientFrame();
+	void initNewHighScoreFrame();
 
 	void resize(int width, int height) override;
 
@@ -77,12 +81,19 @@ private:
 	int highscoreFrameIndex_;
 	int customFrameIndex_;
 	int optionFrameIndex_;
+	int newHighscoreFrameIndex_;
+
+    // Attribute defined in initHighscoreMenu.
+	HighscorePtr highscorePtr_;
 
 	// Attribute defined in initFrameMenu.
 	gui::ButtonPtr resumeButton_;
 
 	// Attributes defined in initCustomPlayFrame.
 	gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
+
+	// Attributes defined in initNewHighScoreFrame.
+	gui::TextBoxPtr nameBox_;
 };
 
 #endif // GUIWINDOW_H

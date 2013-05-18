@@ -13,12 +13,13 @@
 #include <mw/color.h>
 
 #include <iostream>
+#include <fstream>
 
 class TetrisWindow : public GuiWindow {
 public:
 	TetrisWindow() {
-		tetrisGame_.addCallback([&](Protocol::NetworkEvent connectionEvent) {
-			handleConnectionEvent(connectionEvent);
+		tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
+			handleConnectionEvent(nEvent);
 		});
 
 		// Initializes default keybord devices for two players.
@@ -127,11 +128,40 @@ private:
 		}
 	}
 
-	void handleConnectionEvent(Protocol::NetworkEvent nEvent) {
+	void handleConnectionEvent(NetworkEventPtr nEvent) {
 		/*
 		if (connectionEvent == ManagerEvent::STARTS_GAME) {
 		}
 		*/
+		if (std::shared_ptr<GameOver> gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
+            HighscorePtr highscore = getHighscorePtr();
+            // Points high enough to be saved in the highscore list?
+            if (highscore->isNewRecord(gameOver->points_)) {
+                // Set points in order for highscore to know which point to save in list.
+                highscore->setNextRecord(gameOver->points_);
+                // In order for the user to insert name.
+                highscore->click();
+            }
+		}
+	}
+
+	void loadHighscore() {
+        std::string line;
+        std::ifstream file("highscore");
+        if (file.is_open()) {
+            HighscorePtr highscore = getHighscorePtr();
+            while (file.good()) {
+                std::getline(file, line);
+                //std::stringstream strStream;
+                int record = -1;
+                std::string name = "";
+                std::string date = "";
+
+                highscore->setNextRecord(record);
+                highscore->addNewRecord(name, date);
+            }
+            file.close();
+        }
 	}
 
 	TetrisGame tetrisGame_;
