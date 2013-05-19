@@ -20,8 +20,9 @@
 
 #include <iostream>
 #include <string>
+#include <ctime>
 
-GuiWindow::GuiWindow() : mw::Window(500,600,"MWetris","images/tetris.bmp") {
+GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	playFrameIndex_ = multiFrame_.addFrameBack();
 	highscoreFrameIndex_ = multiFrame_.addFrameBack();
 	customFrameIndex_ = multiFrame_.addFrameBack();
@@ -47,7 +48,7 @@ GuiWindow::GuiWindow() : mw::Window(500,600,"MWetris","images/tetris.bmp") {
 
 	multiFrame_.setCurrentFrame(0);
 	mw::Window::setUnicodeInputEnable(true);
-	resize(500,600);
+	resize(getWidth(),getHeight());
 
 	pauseKey_ = SDLK_p;
 	restartKey_ = SDLK_F2;
@@ -228,7 +229,7 @@ void GuiWindow::initPlayFrame() {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDLKey key = sdlEvent.key.keysym.sym;
-			if (key == pauseKey_) {
+			if (key == pauseKey_ || SDLK_PAUSE) {
 				item->click();
 				break;
 			}
@@ -257,7 +258,7 @@ void GuiWindow::initHighscoreFrame() {
 			break;
 		case SDL_KEYDOWN:
 			SDLKey key = sdlEvent.key.keysym.sym;
-			if (key == SDLK_ESCAPE) {
+			if (key == SDLK_ESCAPE || key == SDLK_RETURN || key == SDLK_KP_ENTER) {
 				item->click();
 				break;
 			}
@@ -406,6 +407,8 @@ void GuiWindow::initNewHighScoreFrame() {
 
 	gui::TextItemPtr textItem = gui::createTextItem("Name",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	nameBox_ = createTextBox(250);
+	nameBox_->setInputFormatter(std::make_shared<gui::InputFormatter>(7));
+	nameBox_->setFocus(true);
 
 	multiFrame_.add(textItem,45,50,false,true);
 	multiFrame_.add(nameBox_,100,50,false,true);
@@ -413,8 +416,12 @@ void GuiWindow::initNewHighScoreFrame() {
 	gui::ButtonPtr b1 = createButton("Done!", 30, [&](gui::GuiItem*) {
 		std::string name = nameBox_->getText();
 		if (name.size() > 0) {
-            highscorePtr_->addNewRecord(name,"2013");
+			std::time_t t = std::time(NULL);
+			char mbstr[30];
+			std::strftime(mbstr, 30, "%Y-%m-%d", std::localtime(&t));
+            highscorePtr_->addNewRecord(name,mbstr);
             multiFrame_.setCurrentFrame(highscoreFrameIndex_);
+			saveHighscore();
 		}
 	});
 	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {

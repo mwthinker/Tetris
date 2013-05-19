@@ -56,7 +56,7 @@ public:
 
 typedef std::shared_ptr<NetworkEvent> NetworkEventPtr;
 
-// Is throwed when data is received which violates the
+// Is throwed when the data which is received violates the
 // tetris protocol.
 class ProtocolError {
 };

@@ -9,6 +9,7 @@
 #include <list>
 #include <string>
 #include <memory>
+#include <functional>
 
 class Highscore : public gui::GuiItem {
 public:
@@ -23,6 +24,8 @@ public:
 	void setNextRecord(int record);
 
 	int getNextRecord() const;
+
+	void iterateRecords(std::function<void(int points, std::string name, std::string date)> func) const;
 
 private:
 	struct HighscoreElement {
@@ -40,7 +43,8 @@ private:
 	// Sorts the vector in descending order.
 	void sort();
 
-	std::list<HighscoreElement> descList_;
+	std::vector<mw::Text> numbers_;
+	std::list<HighscoreElement> ascList_;
 	mw::Color color_;
 	int nextRecord_;
 };

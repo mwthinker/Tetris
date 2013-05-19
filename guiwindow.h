@@ -26,6 +26,8 @@ protected:
 	gui::TextButtonPtr getPausePtr() const;
 
 private:
+	virtual void saveHighscore() = 0;
+
 	bool isUpdatingGame() const {
 		return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
 	}

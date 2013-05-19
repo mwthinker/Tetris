@@ -152,9 +152,6 @@
     <ClInclude Include="drawboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inputformatter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="multiframe.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
@@ -223,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="userconnection.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inputformatter.h">
+      <Filter>Header Files\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 TetrisWindow::TetrisWindow() {
 	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
@@ -30,13 +31,15 @@ TetrisWindow::TetrisWindow() {
 	auto joystics = mw::Joystick::getJoystics();
 	for(mw::JoystickPtr& joystick : joystics) {
 		std::cout << joystick->getName() << std::endl;
-		DevicePtr device(new InputJoystick(joystick,0,1));
+		DevicePtr device(new InputJoystick(joystick, 0, 1));
 		devices_.push_back(device);
 	}
 
 	std::vector<DevicePtr> onePlayer;
 	onePlayer.push_back(device1);
 	tetrisGame_.createLocalGame(onePlayer);
+
+	loadHighscore();
 }
 
 TetrisWindow::~TetrisWindow() {
@@ -149,14 +152,39 @@ void TetrisWindow::loadHighscore() {
 		HighscorePtr highscore = getHighscorePtr();
 		while (file.good()) {
 			std::getline(file, line);
-			//std::stringstream strStream;
-			int record = -1;
-			std::string name = "";
-			std::string date = "";
+			if (line.size() < 6) {
+				break;
+			}
+
+			// Line should look like.
+			// line = "'Marcus' 2013-05-19 2340".
+			unsigned pos1 = line.find('\'');
+			unsigned pos2 = line.find('\'', pos1+1);
+			std::string name = line.substr(pos1+1, pos2-pos1-1); // name = "Marcus".
+			
+			line = line.substr(pos2+1); // line = " 2013-05-19 2340".
+			std::stringstream strStream(line);
+			std::string date;
+			int record;
+			strStream >> date >> record;
 
 			highscore->setNextRecord(record);
 			highscore->addNewRecord(name, date);
 		}
 		file.close();
 	}
+}
+
+void TetrisWindow::saveHighscore() {
+	std::string line;
+	std::ofstream file("highscore");
+	HighscorePtr highscore = getHighscorePtr();
+	if (file.is_open() && file.good()) {
+		// Line should look like.
+		// line = "'Marcus' 2013-05-19 2340".
+		highscore->iterateRecords([&](int points,std::string name, std::string date) {
+			file << "'" << name << "' " << date << " " << points << "\n";
+		});
+	}
+	file.close();
 }

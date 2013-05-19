@@ -25,7 +25,9 @@ private:
 	void updateGameEvent(const SDL_Event& windowEvent) override;
 
 	void handleConnectionEvent(NetworkEventPtr nEvent);
+	
 	void loadHighscore();
+	void saveHighscore() override;
 
 	TetrisGame tetrisGame_;
 	std::vector<DevicePtr> devices_;

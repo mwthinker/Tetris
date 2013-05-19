@@ -11,39 +11,57 @@
 #include <sstream>
 
 Highscore::Highscore(int nbr, const mw::Color& color) : color_(color) {
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < nbr; ++i) {
 		mw::Text points("0",fontDefault,25);
 		mw::Text name("EMPTY",fontDefault,25);
-		mw::Text date("NO DATE",fontDefault,25);
-		descList_.push_back(HighscoreElement(0,points,name,date));
+		mw::Text date("2013-01-01",fontDefault,25);
+		ascList_.push_back(HighscoreElement(0,points,name,date));
+		std::stringstream stream;
+		stream << nbr-i << ":";
+		numbers_.push_back(mw::Text(stream.str(),fontDefault,25));
 	}
-	setWidth(50);
-	setHeight(nbr * (fontDefault->getCharacterSize()+2));
+	setWidth(300);
+	setHeight(nbr* (fontDefault->getCharacterSize()+2) + 28);
 }
 
 void Highscore::draw() {
 	glColor3d(1,1,1);
 	glPushMatrix();
-	for (auto it = descList_.rbegin(); it != descList_.rend(); ++it) {
+
+	int index = 0;
+	for (auto it = ascList_.begin(); it != ascList_.end(); ++it) {
 		HighscoreElement& highscore = *it;
 		mw::Text& points = highscore.points_;
 		mw::Text& name = highscore.name_;
 		mw::Text& date = highscore.date_;
 		glPushMatrix();
+		numbers_[index++].draw();
+		glTranslated(50,0,0);
 		points.draw();
-		glTranslated(140,0,0);
+		glTranslated(150,0,0);
 		name.draw();
-		glTranslated(230,0,0);
+		glTranslated(170,0,0);
 		date.draw();
 		glPopMatrix();
 
 		glTranslated(0,fontDefault->getCharacterSize()+2,0);
 	}
+	
+	static mw::Text pointsH("Points",fontDefault,28);
+	static mw::Text nameH("Name",fontDefault,28);
+	static mw::Text dataH("Date",fontDefault,28);
+	glTranslated(50,0,0);
+	pointsH.draw();
+	glTranslated(150,0,0);
+	nameH.draw();
+	glTranslated(170,0,0);
+	dataH.draw();
+
 	glPopMatrix();
 }
 
 bool Highscore::isNewRecord(int record) const {
-	for (const HighscoreElement& highscore : descList_) {
+	for (const HighscoreElement& highscore : ascList_) {
 		int points = highscore.intPoints_;
 		// New record?
 		if (record > points) {
@@ -54,13 +72,16 @@ bool Highscore::isNewRecord(int record) const {
 }
 
 void Highscore::addNewRecord(std::string name, std::string date) {
-	mw::Text nameT(name,fontDefault);
-	mw::Text dateT(date,fontDefault);
-	mw::Text points("0",fontDefault);
+	mw::Text nameT(name,fontDefault,25);
+	mw::Text dateT(date,fontDefault,25);
 
-	descList_.push_back(HighscoreElement(nextRecord_, points, nameT, dateT));
+	std::stringstream stream;
+	stream << nextRecord_;
+	
+	mw::Text points(stream.str(),fontDefault,25);
+	ascList_.push_front(HighscoreElement(nextRecord_, points, nameT, dateT));
 	sort();
-	descList_.pop_back();
+	ascList_.pop_front();
 }
 
 void Highscore::setNextRecord(int record) {
@@ -71,9 +92,15 @@ int Highscore::getNextRecord() const {
     return nextRecord_;
 }
 
-// Sorts the vector in descending order.
+void Highscore::iterateRecords(std::function<void(int, std::string, std::string)> func) const {
+	for (const HighscoreElement& highscore: ascList_) {
+		func(highscore.intPoints_, highscore.name_.getText(), highscore.date_.getText());
+	}
+}
+
+// Sorts the vector in ascending order.
 void Highscore::sort() {
-	descList_.sort([](const HighscoreElement& a, const HighscoreElement& b) {
+	ascList_.sort([](const HighscoreElement& a, const HighscoreElement& b) {
 		// Points A lesser than points b?
 		if (a.intPoints_ < b.intPoints_) {
 			return true;
