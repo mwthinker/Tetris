@@ -102,6 +102,7 @@
     <ClCompile Include="protocol.cpp" />
     <ClCompile Include="tetrisboard.cpp" />
     <ClCompile Include="tetrisgame.cpp" />
+    <ClCompile Include="tetriswindow.cpp" />
     <ClCompile Include="textboxdraw.cpp" />
     <ClCompile Include="textitem.cpp" />
   </ItemGroup>
