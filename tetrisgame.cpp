@@ -34,7 +34,7 @@ void TetrisGame::updateGame(double deltaTime) {
     while (accumulator_ >= timeStep_) {
         accumulator_ -= timeStep_;
         iterateAllPlayers([&](Player* player) {
-            updatePlayer(player,deltaTime);
+            updatePlayer(player, timeStep_);
             return true;
         });
     }
