@@ -416,7 +416,6 @@ void GuiWindow::initNewHighScoreFrame() {
 	multiFrame_.add(nameBox_,100,50,false,true);
 
 	gui::ButtonPtr b1 = createButton("Done!", 30, [&](gui::GuiItem*) {
-		multiFrame_.setCurrentFrame(playFrameIndex_);
 		std::string name = nameBox_->getText();
 		if (name.size() > 0) {
             highscorePtr_->addNewRecord(name,"2013");
