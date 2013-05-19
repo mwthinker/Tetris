@@ -229,7 +229,7 @@ void GuiWindow::initPlayFrame() {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDLKey key = sdlEvent.key.keysym.sym;
-			if (key == pauseKey_ || SDLK_PAUSE) {
+			if (key == pauseKey_ || key == SDLK_PAUSE) {
 				item->click();
 				break;
 			}
