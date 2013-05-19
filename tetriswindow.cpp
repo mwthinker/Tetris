@@ -6,6 +6,9 @@
 #include "devicejoystick.h"
 #include "devicekeyboard.h"
 
+#include "textbutton.h"
+#include "highscore.h"
+
 #include <mw/sprite.h>
 #include <mw/color.h>
 
@@ -132,9 +135,9 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 		}
 	} else if (std::shared_ptr<GamePause> gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
 		if (gameOver->pause_) {
-			//getPausePtr()->setText("Pause");
+			getPausePtr()->setText("Unpause");
 		} else {
-			//getPausePtr()->setText("Unpause");
+			getPausePtr()->setText("Pause");
 		}
 	}
 }

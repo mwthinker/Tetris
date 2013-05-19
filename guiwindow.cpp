@@ -155,7 +155,7 @@ void GuiWindow::initFrameMenu() {
 	y += distance;
 	multiFrame_.add(b6,x,y,false,true);
 
-	// Focus is switchable by the left and right arrow.
+	// Focus is switchable by the up and down arrow.
 	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
 	group->add(b1);
 	group->add(b2);
@@ -221,15 +221,6 @@ void GuiWindow::initPlayFrame() {
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
-		gui::TextButton* textB = (gui::TextButton*) item;
-		// The game is paused?
-		if (isPaused()) {
-			// The game will now be unpaused.
-			textB->setText("Pause");
-		} else {
-			// The game will now be unpaused.
-			textB->setText("Unpause");
-		}
 		setPause(!isPaused());
 		item->setFocus(false);
 	});

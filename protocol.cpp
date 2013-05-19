@@ -165,7 +165,6 @@ bool Protocol::isPaused() const {
 }
 
 void Protocol::pause() {
-	//pause_;
 	if (network_ != 0 && isStarted()) {
 		sendPause();
 	}
@@ -224,7 +223,9 @@ void Protocol::update(Uint32 deltaTime) {
                         return true;
                     });
 
-                    updateGame(deltaTime/1000.0);
+					if (!pause_) {
+						updateGame(deltaTime/1000.0);
+					}
 				}
 			}
 			break;
@@ -522,6 +523,9 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 
 		// Signals the gui that the game begins.
 		signalEvent(std::make_shared<GameStart>());
+
+		// Signals the gui that the game is not paused.
+		signalEvent(std::make_shared<GamePause>(pause_));
 		break;
 	case PACKET_PAUSE:
 		if (data.size() != 1) {
