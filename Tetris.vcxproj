@@ -104,6 +104,7 @@
     <ClCompile Include="tetrisgame.cpp" />
     <ClCompile Include="tetriswindow.cpp" />
     <ClCompile Include="textboxdraw.cpp" />
+    <ClCompile Include="textbutton.cpp" />
     <ClCompile Include="textitem.cpp" />
   </ItemGroup>
   <ItemGroup>

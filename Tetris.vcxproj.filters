@@ -99,6 +99,9 @@
     <ClCompile Include="tetriswindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="textbutton.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="movehandler.h">
