@@ -38,6 +38,14 @@ class GameStart : public NetworkEvent {
 public:
 };
 
+class GamePause : public NetworkEvent {
+public:
+	GamePause(bool pause) : pause_(pause) {
+	}
+
+	const bool pause_;
+};
+
 class GameOver : public NetworkEvent {
 public:
     GameOver(int points) : points_(points) {

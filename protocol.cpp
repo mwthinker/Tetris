@@ -528,6 +528,9 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			throw ProtocolError();
 		}
 		pause_ = !pause_;
+
+		// Signals the gui that the game begins.
+		signalEvent(std::make_shared<GamePause>(pause_));
 		break;
 	case PACKET_STARTBLOCK:
 		if (network_->getId() != id) {

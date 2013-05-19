@@ -35,6 +35,9 @@ namespace gui {
 	class Button;
 	typedef std::shared_ptr<Button> ButtonPtr;
 
+	class TextButton;
+	typedef std::shared_ptr<TextButton> TextButtonPtr;
+
 } // Namespace gui.
 
 #endif // GUITYPEDEFS_H

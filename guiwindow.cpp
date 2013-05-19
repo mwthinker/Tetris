@@ -61,13 +61,17 @@ HighscorePtr GuiWindow::getHighscorePtr() const {
     return highscorePtr_;
 }
 
-gui::ButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
+gui::TextButtonPtr GuiWindow::getPausePtr() const {
+    return pause_;
+}
+
+gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
 	mw::Color textColor(1.0,0.1,0.1);
 	mw::Color focus(0.8, 0.1, 0, 0.3);
 	mw::Color onHover(0.6, 0.1, 0.1);
 	mw::Color notHover(0.4, 0.0, 0.0,0.0);
 	mw::Color pushed(0.8, 0.0, 0, 0.7);
-	gui::ButtonPtr button = gui::createTextButton(text, size, fontDefault,
+	gui::TextButtonPtr button = gui::createTextButton(text, size, fontDefault,
 		textColor,focus,onHover,notHover,pushed);
 	button->addOnClickListener(onClick);
 	return button;
@@ -216,7 +220,7 @@ void GuiWindow::initPlayFrame() {
 		}
 	});
 
-	gui::ButtonPtr b4 = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
+	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* textB = (gui::TextButton*) item;
 		// The game is paused?
 		if (isPaused()) {
@@ -229,7 +233,7 @@ void GuiWindow::initPlayFrame() {
 		setPause(!isPaused());
 		item->setFocus(false);
 	});
-	b4->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	pause_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDLKey key = sdlEvent.key.keysym.sym;
@@ -243,7 +247,7 @@ void GuiWindow::initPlayFrame() {
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
 	multiFrame_.add(b3,80 + b2->getWidth(),0,false,true);
-	multiFrame_.add(b4,0,0,true,true);
+	multiFrame_.add(pause_,0,0,true,true);
 }
 
 void GuiWindow::initHighscoreFrame() {

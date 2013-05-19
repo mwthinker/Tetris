@@ -129,10 +129,6 @@ private:
 	}
 
 	void handleConnectionEvent(NetworkEventPtr nEvent) {
-		/*
-		if (connectionEvent == ManagerEvent::STARTS_GAME) {
-		}
-		*/
 		if (std::shared_ptr<GameOver> gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
             HighscorePtr highscore = getHighscorePtr();
             // Points high enough to be saved in the highscore list?
@@ -142,6 +138,12 @@ private:
                 // In order for the user to insert name.
                 highscore->click();
             }
+		} else if (std::shared_ptr<GamePause> gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
+			if (gameOver->pause_) {
+				//getPausePtr()->setText("Pause");
+			} else {
+				//getPausePtr()->setText("Unpause");
+			}
 		}
 	}
 

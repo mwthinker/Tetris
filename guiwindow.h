@@ -23,6 +23,7 @@ protected:
 	SDLKey restartKey_;
 
     HighscorePtr getHighscorePtr() const;
+	gui::TextButtonPtr getPausePtr() const;
 
 private:
 	bool isUpdatingGame() const {
@@ -52,7 +53,7 @@ private:
 
 	void quit();
 
-	gui::ButtonPtr createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick);
+	gui::TextButtonPtr createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick);
 	gui::TextBoxPtr createTextBox(int size);
 	gui::BarColorPtr createUpperBar();
 
@@ -88,6 +89,9 @@ private:
 
 	// Attribute defined in initFrameMenu.
 	gui::ButtonPtr resumeButton_;
+
+	// Attribute defined in initPlayFrame.
+	gui::TextButtonPtr pause_;
 
 	// Attributes defined in initCustomPlayFrame.
 	gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
