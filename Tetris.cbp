@@ -104,10 +104,12 @@
 		<Unit filename="tetrisboard.h" />
 		<Unit filename="tetrisgame.cpp" />
 		<Unit filename="tetrisgame.h" />
+		<Unit filename="tetriswindow.cpp" />
 		<Unit filename="tetriswindow.h" />
 		<Unit filename="textbox.h" />
 		<Unit filename="textboxdraw.cpp" />
 		<Unit filename="textboxdraw.h" />
+		<Unit filename="textbutton.cpp" />
 		<Unit filename="textbutton.h" />
 		<Unit filename="textitem.cpp" />
 		<Unit filename="textitem.h" />
