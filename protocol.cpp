@@ -185,6 +185,10 @@ bool Protocol::isStarted() const {
 	return start_;
 }
 
+Protocol::Status Protocol::getStatus() const {
+    return status_;
+}
+
 void Protocol::addCallback(mw::Signal<NetworkEventPtr>::Callback callback) {
 	eventHandler_.connect(callback);
 }

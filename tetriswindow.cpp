@@ -17,6 +17,7 @@
 #include <sstream>
 
 TetrisWindow::TetrisWindow() {
+    numberOfLocalPlayers_ = 1;
 	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
 		handleConnectionEvent(nEvent);
 	});
@@ -45,23 +46,56 @@ TetrisWindow::TetrisWindow() {
 TetrisWindow::~TetrisWindow() {
 }
 
-int TetrisWindow::restartLocalGame(int nbrOfPlayers) {
-	tetrisGame_.closeGame();
-	std::vector<DevicePtr> devices;
+void TetrisWindow::setNumberOfLocalPlayers(int number) {
+    const int size = devices_.size();
+    if (number <= size) {
+        numberOfLocalPlayers_ = number;
+    } else {
+        numberOfLocalPlayers_ = size;
+    }
+}
 
+int TetrisWindow::getNumberOfLocalPlayers() const {
+    return numberOfLocalPlayers_;
+}
+
+void TetrisWindow::createLocalGame() {
 	const int size = devices_.size();
-	for (int i = 0; i < nbrOfPlayers && i < size; ++i) {
-		devices.push_back(devices_[i]);
+	std::vector<DevicePtr> tmpDevices;
+	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+		tmpDevices.push_back(devices_[i]);
 	}
 
-	tetrisGame_.createLocalGame(devices);
+	tetrisGame_.createLocalGame(tmpDevices);
 	tetrisGame_.setReadyGame(true);
 	tetrisGame_.startGame();
-	tetrisGame_.restartGame();
-	return devices.size();
+}
+
+void TetrisWindow::createServerGame(int port) {
+    const int size = devices_.size();
+	std::vector<DevicePtr> tmpDevices;
+	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+		tmpDevices.push_back(devices_[i]);
+	}
+
+	tetrisGame_.createServerGame(tmpDevices,port);
+}
+
+void TetrisWindow::createClientGame(int port, std::string ip) {
+    const int size = devices_.size();
+	std::vector<DevicePtr> tmpDevices;
+	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+		tmpDevices.push_back(devices_[i]);
+	}
+
+	tetrisGame_.createClientGame(tmpDevices,port,ip);
 }
 
 void TetrisWindow::restartGame() {
+    if (tetrisGame_.getStatus() == Protocol::Status::LOCAL || tetrisGame_.getStatus() == Protocol::Status::WAITING_TO_CONNECT) {
+        tetrisGame_.closeGame();
+        createLocalGame();
+    }
 	tetrisGame_.setReadyGame(true);
 	tetrisGame_.startGame();
 	tetrisGame_.restartGame();
@@ -161,7 +195,7 @@ void TetrisWindow::loadHighscore() {
 			unsigned pos1 = line.find('\'');
 			unsigned pos2 = line.find('\'', pos1+1);
 			std::string name = line.substr(pos1+1, pos2-pos1-1); // name = "Marcus".
-			
+
 			line = line.substr(pos2+1); // line = " 2013-05-19 2340".
 			std::stringstream strStream(line);
 			std::string date;

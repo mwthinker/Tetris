@@ -25,6 +25,9 @@ protected:
     HighscorePtr getHighscorePtr() const;
 	gui::TextButtonPtr getPausePtr() const;
 
+	virtual void setNumberOfLocalPlayers(int number) = 0;
+	virtual int getNumberOfLocalPlayers() const = 0;
+
 private:
 	virtual void saveHighscore() = 0;
 
@@ -44,11 +47,13 @@ private:
 	virtual void createCustomGame(int width, int height, int maxLevel) {
 	}
 
+    virtual void createLocalGame() = 0;
+	virtual void createServerGame(int port) = 0;
+	virtual void createClientGame(int port, std::string ip) = 0;
+
 	virtual bool isPaused() const = 0;
 
 	virtual void setPause(bool pause) = 0;
-
-	virtual int restartLocalGame(int nbrOfPlayers) = 0;
 
 	virtual void restartGame() {
 	}
@@ -64,7 +69,11 @@ private:
 	void initHighscoreFrame();
 	void initCustomPlayFrame();
 	void initOptionFrame();
+	void initCreateServerFrame();
 	void initCreateClientFrame();
+	void initServerLoobyFrame();
+	void initClientLoobyFrame();
+
 	void initNewHighScoreFrame();
 
 	void resize(int width, int height) override;
@@ -81,10 +90,18 @@ private:
 	bool fixSize_;
 
 	int playFrameIndex_;
+	int networkFrameIndex_;
 	int highscoreFrameIndex_;
 	int customFrameIndex_;
 	int optionFrameIndex_;
 	int newHighscoreFrameIndex_;
+	int createClientFrameIndex_;
+	int createServerFrameIndex_;
+	int loobyClientFrameIndex_;
+	int loobyServerFrameIndex_;
+
+	// Attribute defined in initCreateServerMenu.
+	gui::TextBoxPtr portBox_, ipBox_;;
 
     // Attribute defined in initHighscoreMenu.
 	HighscorePtr highscorePtr_;

@@ -113,6 +113,9 @@ namespace gui {
 			if (key >= '0' && key <= '9') {
 				return true;
 			}
+			if (key == '.') {
+				return true;
+            }
 
 			// Swedish keyboard.
 			if (key == 'å' || key == 'ä' || key == 'ö' || key == 'Å' || key == 'Ä' || key == 'Ö') {

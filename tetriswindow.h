@@ -11,10 +11,15 @@ public:
 	~TetrisWindow();
 
 private:
-	int restartLocalGame(int nbrOfPlayers) override;
+    void setNumberOfLocalPlayers(int number) override;
+	int getNumberOfLocalPlayers() const override;
+
 	void restartGame() override;
 	void createCustomGame(int width, int height, int maxLevel) override;
-	
+	void createLocalGame() override;
+	void createServerGame(int port) override;
+	void createClientGame(int port, std::string ip) override;
+
 	bool isPaused() const override;
 	void setPause(bool pause) override;
 
@@ -25,12 +30,13 @@ private:
 	void updateGameEvent(const SDL_Event& windowEvent) override;
 
 	void handleConnectionEvent(NetworkEventPtr nEvent);
-	
+
 	void loadHighscore();
 	void saveHighscore() override;
 
 	TetrisGame tetrisGame_;
 	std::vector<DevicePtr> devices_;
+	int numberOfLocalPlayers_;
 };
 
 #endif // TETRISWINDOW_H

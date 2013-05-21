@@ -121,6 +121,7 @@ public:
 
 	int getNbrOfPlayers() const;
 
+	Status getStatus() const;
 protected:
 	void signalEvent(NetworkEventPtr nEvent);
 

@@ -28,14 +28,24 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	customFrameIndex_ = multiFrame_.addFrameBack();
 	optionFrameIndex_ = multiFrame_.addFrameBack();
 	newHighscoreFrameIndex_ = multiFrame_.addFrameBack();
+	networkFrameIndex_ = multiFrame_.addFrameBack();
+	createClientFrameIndex_ = multiFrame_.addFrameBack();
+	createServerFrameIndex_ = multiFrame_.addFrameBack();
+	loobyClientFrameIndex_ = multiFrame_.addFrameBack();
+	loobyServerFrameIndex_ = multiFrame_.addFrameBack();
 
 	auto background = gui::createImageBackground(spriteBackground);
 	multiFrame_.setBackground(background,0);
+	multiFrame_.setBackground(background,networkFrameIndex_);
 	multiFrame_.setBackground(background,playFrameIndex_);
 	multiFrame_.setBackground(background,highscoreFrameIndex_);
 	multiFrame_.setBackground(background,customFrameIndex_);
 	multiFrame_.setBackground(background,optionFrameIndex_);
 	multiFrame_.setBackground(background,newHighscoreFrameIndex_);
+	multiFrame_.setBackground(background,createClientFrameIndex_);
+	multiFrame_.setBackground(background,createServerFrameIndex_);
+	multiFrame_.setBackground(background,loobyClientFrameIndex_);
+	multiFrame_.setBackground(background,loobyServerFrameIndex_);
 
 	hDistance_ = 30;
 
@@ -45,6 +55,10 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	initCustomPlayFrame();
 	initOptionFrame();
 	initNewHighScoreFrame();
+	initCreateServerFrame();
+	initCreateClientFrame();
+	initServerLoobyFrame();
+	initClientLoobyFrame();
 
 	multiFrame_.setCurrentFrame(0);
 	mw::Window::setUnicodeInputEnable(true);
@@ -138,6 +152,10 @@ void GuiWindow::initFrameMenu() {
 		}
 	});
 
+	gui::ButtonPtr b7 = createButton("Network game", 35, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(createServerFrameIndex_);
+	});
+
 	int x = 10;
 	int y = 150;
 	int distance = 50;
@@ -150,6 +168,8 @@ void GuiWindow::initFrameMenu() {
 	y += distance;
 	multiFrame_.add(b3,x,y,false,true);
 	y += distance;
+	multiFrame_.add(b7,x,y,false,true);
+	y += distance;
 	multiFrame_.add(b4,x,y,false,true);
 	y += distance;
 	multiFrame_.add(b5,x,y,false,true);
@@ -161,6 +181,7 @@ void GuiWindow::initFrameMenu() {
 	group->add(b1);
 	group->add(b2);
 	group->add(b3);
+	group->add(b7);
 	group->add(b4);
 	group->add(b5);
 	group->add(b6);
@@ -210,15 +231,18 @@ void GuiWindow::initPlayFrame() {
 	gui::ButtonPtr b3 = createChooseNbrOfPlayers(hDistance_);
 	b3->addOnClickListener([&](gui::GuiItem* item) {
 		ChooseNbrOfPlayers* nbrOfPlayers = (ChooseNbrOfPlayers*) item;
-		int nbr = 1 + nbrOfPlayers->getNbrOfPlayers();
-		int tmpNbr = restartLocalGame(nbr);
-		if (tmpNbr < nbr) {
-            restartLocalGame(1);
-            nbrOfPlayers->setNbrOfPlayers(1);
-		} else {
-            restartLocalGame(nbr);
-            nbrOfPlayers->setNbrOfPlayers(nbr);
+		int nbr = nbrOfPlayers->getNbrOfPlayers();
+		setNumberOfLocalPlayers(nbr+1);
+		int newNbr = getNumberOfLocalPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 1;
 		}
+
+		nbrOfPlayers->setNbrOfPlayers(newNbr);
+		setNumberOfLocalPlayers(newNbr);
+
+		restartGame();
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
@@ -375,8 +399,8 @@ void GuiWindow::initOptionFrame() {
 	multiFrame_.add(b1,0,0,false,true);
 }
 
-void GuiWindow::initCreateClientFrame() {
-	multiFrame_.setCurrentFrame(optionFrameIndex_);
+void GuiWindow::initServerLoobyFrame() {
+	multiFrame_.setCurrentFrame(loobyServerFrameIndex_);
 
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
@@ -397,6 +421,175 @@ void GuiWindow::initCreateClientFrame() {
 			}
 		}
 	});
+
+	multiFrame_.add(b1,0,0,false,true);
+}
+
+void GuiWindow::initClientLoobyFrame() {
+	multiFrame_.setCurrentFrame(loobyClientFrameIndex_);
+
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+
+	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(0);
+	});
+	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			item->click();
+			break;
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == SDLK_ESCAPE) {
+				item->click();
+				break;
+			}
+		}
+	});
+
+	multiFrame_.add(b1,0,0,false,true);
+}
+
+void GuiWindow::initCreateServerFrame() {
+	multiFrame_.setCurrentFrame(createServerFrameIndex_);
+
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+
+	gui::TextItemPtr header = gui::createTextItem("Server",fontDefault,30,mw::Color(1.0,1.0,1.0));
+
+	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(0);
+	});
+	menu->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			item->click();
+			break;
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == SDLK_ESCAPE) {
+				item->click();
+				break;
+			}
+		}
+	});
+	gui::ButtonPtr b1 = createButton("Client", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(createClientFrameIndex_);
+	});
+
+	multiFrame_.add(menu,0,0,false,true);
+	multiFrame_.add(header,0,50,false,true);
+	multiFrame_.add(b1,80,0,false,true);
+
+	// Set board size ------------------------------------------------------
+	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	multiFrame_.add(textItem,0,100,false,true);
+	multiFrame_.add(customPlayWidth_,55,100,false,true);
+
+	gui::TextItemPtr textItem2 = gui::createTextItem("Height",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	multiFrame_.add(textItem2,95,100,false,true);
+	multiFrame_.add(customPlayHeight_,155,100,false,true);
+
+	gui::TextItemPtr textItem3 = gui::createTextItem("Port",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	portBox_ = createTextBox(105);
+	portBox_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(6));
+	portBox_->setText("11155");
+	multiFrame_.add(textItem3,0,150,false,true);
+	multiFrame_.add(portBox_,55,150,false,true);
+
+	// Create game -----------------------------------------------------
+	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(playFrameIndex_);
+		std::stringstream stream;
+		stream << customPlayWidth_->getText() << " ";
+		stream << customPlayHeight_->getText() << " ";
+		int width, height;
+		stream >> width >> height;
+		createCustomGame(width,height,20);
+		resumeButton_->setVisible(true);
+	});
+
+	multiFrame_.add(button,0,200,false,true);
+
+	// Add all items to group!
+	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
+	group->add(menu);
+	group->add(b1);
+	group->add(customPlayWidth_);
+	group->add(customPlayHeight_);
+	group->add(portBox_);
+	group->add(button);
+
+	multiFrame_.add(group,0,0,false,false);
+}
+
+void GuiWindow::initCreateClientFrame() {
+	multiFrame_.setCurrentFrame(createClientFrameIndex_);
+
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+
+	gui::TextItemPtr header = gui::createTextItem("Client",fontDefault,30,mw::Color(1.0,1.0,1.0));
+
+	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(0);
+	});
+	menu->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			item->click();
+			break;
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == SDLK_ESCAPE) {
+				item->click();
+				break;
+			}
+		}
+	});
+	gui::ButtonPtr b1 = createButton("Server", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(createServerFrameIndex_);
+	});
+
+	multiFrame_.add(menu,0,0,false,true);
+	multiFrame_.add(header,0,50,false,true);
+	multiFrame_.add(b1,80,0,false,true);
+
+    gui::TextItemPtr textItem = gui::createTextItem("Connect to ip",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+    ipBox_ = createTextBox(260);
+	ipBox_->setInputFormatter(std::make_shared<gui::InputFormatter>(15));
+	multiFrame_.add(textItem,0,100,false,true);
+	multiFrame_.add(ipBox_,120,100,false,true);
+
+	gui::TextItemPtr textItem3 = gui::createTextItem("Port",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	multiFrame_.add(textItem3,0,150,false,true);
+	multiFrame_.add(portBox_,55,150,false,true);
+
+	// Create game -----------------------------------------------------
+	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(playFrameIndex_);
+		std::stringstream stream;
+		stream << customPlayWidth_->getText() << " ";
+		stream << customPlayHeight_->getText() << " ";
+		int width, height;
+		stream >> width >> height;
+		createCustomGame(width,height,20);
+		resumeButton_->setVisible(true);
+	});
+
+	multiFrame_.add(button,0,200,false,true);
+
+	// Add all items to group!
+	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
+	group->add(menu);
+	group->add(b1);
+	group->add(ipBox_);
+	group->add(portBox_);
+	group->add(button);
+
+	multiFrame_.add(group,0,0,false,false);
 }
 
 void GuiWindow::initNewHighScoreFrame() {
