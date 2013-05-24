@@ -14,6 +14,7 @@ private:
     void setNumberOfLocalPlayers(int number) override;
 	int getNumberOfLocalPlayers() const override;
 
+	void abortGame() override;
 	void restartGame() override;
 	void createCustomGame(int width, int height, int maxLevel) override;
 	void createLocalGame() override;

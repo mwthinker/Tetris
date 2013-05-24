@@ -59,6 +59,10 @@ int TetrisWindow::getNumberOfLocalPlayers() const {
     return numberOfLocalPlayers_;
 }
 
+void TetrisWindow::abortGame() {
+	tetrisGame_.closeGame();
+}
+
 void TetrisWindow::createLocalGame() {
 	const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;

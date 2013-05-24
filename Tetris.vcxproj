@@ -95,6 +95,7 @@
     <ClCompile Include="devicejoystick.cpp" />
     <ClCompile Include="localplayer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="manbutton.cpp" />
     <ClCompile Include="movehandler.cpp" />
     <ClCompile Include="multiframe.cpp" />
     <ClCompile Include="player.cpp" />
@@ -114,7 +115,7 @@
     <ClInclude Include="barcolor.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="button.h" />
-    <ClInclude Include="choosenbrofplayers.h" />
+    <ClInclude Include="manbutton.h" />
     <ClInclude Include="drawboard.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gamefont.h" />
@@ -136,6 +137,7 @@
     <ClInclude Include="localplayer.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
+    <ClInclude Include="networklooby.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="rotationhandler.h" />

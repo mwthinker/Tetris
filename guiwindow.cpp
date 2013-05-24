@@ -8,7 +8,7 @@
 #include "textitem.h"
 #include "textboxdraw.h"
 #include "inputnumberformatter.h"
-#include "choosenbrofplayers.h"
+#include "manbutton.h"
 #include "highscore.h"
 
 #include "gamesprite.h"
@@ -33,6 +33,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	createServerFrameIndex_ = multiFrame_.addFrameBack();
 	loobyClientFrameIndex_ = multiFrame_.addFrameBack();
 	loobyServerFrameIndex_ = multiFrame_.addFrameBack();
+	waitToConnectFrameIndex_ = multiFrame_.addFrameBack();
 
 	auto background = gui::createImageBackground(spriteBackground);
 	multiFrame_.setBackground(background,0);
@@ -46,6 +47,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	multiFrame_.setBackground(background,createServerFrameIndex_);
 	multiFrame_.setBackground(background,loobyClientFrameIndex_);
 	multiFrame_.setBackground(background,loobyServerFrameIndex_);
+	multiFrame_.setBackground(background,waitToConnectFrameIndex_);	
 
 	hDistance_ = 30;
 
@@ -228,10 +230,10 @@ void GuiWindow::initPlayFrame() {
 		}
 	});
 
-	gui::ButtonPtr b3 = createChooseNbrOfPlayers(hDistance_);
-	b3->addOnClickListener([&](gui::GuiItem* item) {
-		ChooseNbrOfPlayers* nbrOfPlayers = (ChooseNbrOfPlayers*) item;
-		int nbr = nbrOfPlayers->getNbrOfPlayers();
+	manButton_ = createManButton(hDistance_);
+	manButton_->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
 		setNumberOfLocalPlayers(nbr+1);
 		int newNbr = getNumberOfLocalPlayers();
 
@@ -239,7 +241,7 @@ void GuiWindow::initPlayFrame() {
             newNbr = 1;
 		}
 
-		nbrOfPlayers->setNbrOfPlayers(newNbr);
+		nbrOfPlayers->setNbr(newNbr);
 		setNumberOfLocalPlayers(newNbr);
 
 		restartGame();
@@ -262,7 +264,7 @@ void GuiWindow::initPlayFrame() {
 
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
-	multiFrame_.add(b3,80 + b2->getWidth(),0,false,true);
+	multiFrame_.add(manButton_,80 + b2->getWidth(),0,false,true);
 	multiFrame_.add(pause_,0,0,true,true);
 }
 
@@ -499,6 +501,10 @@ void GuiWindow::initCreateServerFrame() {
 	multiFrame_.add(textItem3,0,150,false,true);
 	multiFrame_.add(portBox_,55,150,false,true);
 
+	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	multiFrame_.add(textItem4,0,200,false,true);
+	multiFrame_.add(manButton_,120,200,false,true);
+
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
@@ -511,7 +517,7 @@ void GuiWindow::initCreateServerFrame() {
 		resumeButton_->setVisible(true);
 	});
 
-	multiFrame_.add(button,0,200,false,true);
+	multiFrame_.add(button,0,250,false,true);
 
 	// Add all items to group!
 	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
@@ -567,6 +573,10 @@ void GuiWindow::initCreateClientFrame() {
 	multiFrame_.add(textItem3,0,150,false,true);
 	multiFrame_.add(portBox_,55,150,false,true);
 
+	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	multiFrame_.add(textItem4,0,200,false,true);
+	multiFrame_.add(manButton_,120,200,false,true);
+
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
@@ -579,7 +589,7 @@ void GuiWindow::initCreateClientFrame() {
 		resumeButton_->setVisible(true);
 	});
 
-	multiFrame_.add(button,0,200,false,true);
+	multiFrame_.add(button,0,250,false,true);
 
 	// Add all items to group!
 	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
@@ -590,6 +600,18 @@ void GuiWindow::initCreateClientFrame() {
 	group->add(button);
 
 	multiFrame_.add(group,0,0,false,false);
+}
+
+void GuiWindow::initWaitToConnectFrame() {
+	gui::ButtonPtr menu = createButton("Abort connection", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(0);
+	});
+
+	multiFrame_.add(menu,0,0,false,true);
+
+	gui::TextItemPtr textItem = gui::createTextItem("Waiting for the server to accept connection!",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+
+	multiFrame_.add(menu,0,100,false,true);
 }
 
 void GuiWindow::initNewHighScoreFrame() {
@@ -662,6 +684,8 @@ void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
 	switch (windowEvent.type) {
 	case SDL_KEYDOWN:
 		switch (windowEvent.key.keysym.sym) {
+		case SDLK_f:
+			// Fall through!
 		case SDLK_F11:
 			mw::Window::setFullScreen(!mw::Window::isFullScreen());
 			break;

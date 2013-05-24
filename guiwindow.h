@@ -4,6 +4,7 @@
 #include "guitypedefs.h"
 #include "multiframe.h"
 #include "highscore.h"
+#include "manbutton.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -47,6 +48,8 @@ private:
 	virtual void createCustomGame(int width, int height, int maxLevel) {
 	}
 
+	virtual void abortGame() = 0;
+
     virtual void createLocalGame() = 0;
 	virtual void createServerGame(int port) = 0;
 	virtual void createClientGame(int port, std::string ip) = 0;
@@ -73,6 +76,7 @@ private:
 	void initCreateClientFrame();
 	void initServerLoobyFrame();
 	void initClientLoobyFrame();
+	void initWaitToConnectFrame();
 
 	void initNewHighScoreFrame();
 
@@ -99,6 +103,7 @@ private:
 	int createServerFrameIndex_;
 	int loobyClientFrameIndex_;
 	int loobyServerFrameIndex_;
+	int waitToConnectFrameIndex_;
 
 	// Attribute defined in initCreateServerMenu.
 	gui::TextBoxPtr portBox_, ipBox_;;
@@ -111,6 +116,7 @@ private:
 
 	// Attribute defined in initPlayFrame.
 	gui::TextButtonPtr pause_;
+	ManButtonPtr manButton_;
 
 	// Attributes defined in initCustomPlayFrame.
 	gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
