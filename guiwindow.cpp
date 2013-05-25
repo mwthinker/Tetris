@@ -10,6 +10,7 @@
 #include "inputnumberformatter.h"
 #include "manbutton.h"
 #include "highscore.h"
+#include "networklooby.h"
 
 #include "gamesprite.h"
 #include "gamefont.h"
@@ -34,6 +35,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	loobyClientFrameIndex_ = multiFrame_.addFrameBack();
 	loobyServerFrameIndex_ = multiFrame_.addFrameBack();
 	waitToConnectFrameIndex_ = multiFrame_.addFrameBack();
+	networkPlayFrameIndex_ = multiFrame_.addFrameBack();
 
 	auto background = gui::createImageBackground(spriteBackground);
 	multiFrame_.setBackground(background,0);
@@ -48,6 +50,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	multiFrame_.setBackground(background,loobyClientFrameIndex_);
 	multiFrame_.setBackground(background,loobyServerFrameIndex_);
 	multiFrame_.setBackground(background,waitToConnectFrameIndex_);	
+	multiFrame_.setBackground(background,networkPlayFrameIndex_);	
 
 	hDistance_ = 30;
 
@@ -61,6 +64,8 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	initCreateClientFrame();
 	initServerLoobyFrame();
 	initClientLoobyFrame();
+	initWaitToConnectFrame();
+	initNetworkPlayFrame();
 
 	multiFrame_.setCurrentFrame(0);
 	mw::Window::setUnicodeInputEnable(true);
@@ -80,6 +85,14 @@ HighscorePtr GuiWindow::getHighscorePtr() const {
 
 gui::TextButtonPtr GuiWindow::getPausePtr() const {
     return pause_;
+}
+
+NetworkLoobyPtr GuiWindow::getNetworkLoobyPtr() const {
+    return networkLoobyPtr_;
+}
+
+gui::TextButtonPtr GuiWindow::getReadyPtr() const {
+	return ready_;
 }
 
 gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
@@ -407,8 +420,9 @@ void GuiWindow::initServerLoobyFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
+		abortGame();
 	});
 	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
@@ -424,7 +438,23 @@ void GuiWindow::initServerLoobyFrame() {
 		}
 	});
 
+	ready_ = createButton("Ready", hDistance_, [&] (gui::GuiItem* item) {
+		setReady(!isReady());
+	});
+
+	gui::ButtonPtr b3 = createButton("Start", hDistance_, [&](gui::GuiItem* item) {
+		restartGame();
+		multiFrame_.setCurrentFrame(networkPlayFrameIndex_);
+	});
+
 	multiFrame_.add(b1,0,0,false,true);
+
+	networkLoobyPtr_ = createNetworkLooby();
+
+	multiFrame_.add(b1,0,0,false,true);
+	multiFrame_.add(networkLoobyPtr_, 0, 100, false,true);
+	multiFrame_.add(ready_,0,400,false,true);
+	multiFrame_.add(b3,100,400,false,true);
 }
 
 void GuiWindow::initClientLoobyFrame() {
@@ -433,8 +463,9 @@ void GuiWindow::initClientLoobyFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
+		abortGame();
 	});
 	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
@@ -507,14 +538,15 @@ void GuiWindow::initCreateServerFrame() {
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
-		multiFrame_.setCurrentFrame(playFrameIndex_);
 		std::stringstream stream;
 		stream << customPlayWidth_->getText() << " ";
 		stream << customPlayHeight_->getText() << " ";
-		int width, height;
-		stream >> width >> height;
-		createCustomGame(width,height,20);
+		stream << portBox_->getText();
+		int width, height, port;
+		stream >> width >> height >> port;
+		createServerGame(port);
 		resumeButton_->setVisible(true);
+		multiFrame_.setCurrentFrame(loobyServerFrameIndex_);
 	});
 
 	multiFrame_.add(button,0,250,false,true);
@@ -586,7 +618,6 @@ void GuiWindow::initCreateClientFrame() {
 		int width, height;
 		stream >> width >> height;
 		createCustomGame(width,height,20);
-		resumeButton_->setVisible(true);
 	});
 
 	multiFrame_.add(button,0,250,false,true);
@@ -659,6 +690,51 @@ void GuiWindow::initNewHighScoreFrame() {
 	group->add(nameBox_);
 	group->add(b1);
 	multiFrame_.add(group,0,0,false,false);
+}
+
+void GuiWindow::initNetworkPlayFrame() {
+	multiFrame_.setCurrentFrame(networkPlayFrameIndex_);
+
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+
+	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::GuiItem* item) {
+		multiFrame_.setCurrentFrame(0);
+		item->setFocus(false);
+		abortGame();
+	});
+	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			item->click();
+			break;
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == SDLK_ESCAPE) {
+				item->click();
+				break;
+			}
+		}
+	});
+
+	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::GuiItem* item) {
+		restartGame();
+		item->setFocus(false);
+	});
+	b2->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == restartKey_) {
+				item->click();
+				break;
+			}
+		}
+	});
+
+	multiFrame_.add(b1,0,0,false,true);
+	multiFrame_.add(b2,80,0,false,true);
+	multiFrame_.add(pause_,0,0,true,true);
 }
 
 void GuiWindow::resize(int width, int height) {

@@ -5,6 +5,7 @@
 #include "multiframe.h"
 #include "highscore.h"
 #include "manbutton.h"
+#include "networklooby.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -25,6 +26,8 @@ protected:
 
     HighscorePtr getHighscorePtr() const;
 	gui::TextButtonPtr getPausePtr() const;
+	NetworkLoobyPtr getNetworkLoobyPtr() const;
+	gui::TextButtonPtr getReadyPtr() const;
 
 	virtual void setNumberOfLocalPlayers(int number) = 0;
 	virtual int getNumberOfLocalPlayers() const = 0;
@@ -33,20 +36,17 @@ private:
 	virtual void saveHighscore() = 0;
 
 	bool isUpdatingGame() const {
-		return multiFrame_.getCurrentFrameIndex() == playFrameIndex_;
+		return multiFrame_.getCurrentFrameIndex() == playFrameIndex_ || multiFrame_.getCurrentFrameIndex() == networkPlayFrameIndex_;
 	}
 
 	bool isDrawGame() const;
 	void setDrawGame(bool drawGame);
 
-	virtual void updateGame(Uint32 deltaTime) {
-	}
+	virtual void updateGame(Uint32 deltaTime) = 0;
 
-	virtual void updateGameEvent(const SDL_Event& windowEvent) {
-	}
+	virtual void updateGameEvent(const SDL_Event& windowEvent) = 0;
 
-	virtual void createCustomGame(int width, int height, int maxLevel) {
-	}
+	virtual void createCustomGame(int width, int height, int maxLevel) = 0;
 
 	virtual void abortGame() = 0;
 
@@ -55,11 +55,11 @@ private:
 	virtual void createClientGame(int port, std::string ip) = 0;
 
 	virtual bool isPaused() const = 0;
-
 	virtual void setPause(bool pause) = 0;
+	virtual bool isReady() const = 0;
+	virtual void setReady(bool ready) = 0;
 
-	virtual void restartGame() {
-	}
+	virtual void restartGame() = 0;
 
 	void quit();
 
@@ -77,6 +77,7 @@ private:
 	void initServerLoobyFrame();
 	void initClientLoobyFrame();
 	void initWaitToConnectFrame();
+	void initNetworkPlayFrame();
 
 	void initNewHighScoreFrame();
 
@@ -104,6 +105,7 @@ private:
 	int loobyClientFrameIndex_;
 	int loobyServerFrameIndex_;
 	int waitToConnectFrameIndex_;
+	int networkPlayFrameIndex_;
 
 	// Attribute defined in initCreateServerMenu.
 	gui::TextBoxPtr portBox_, ipBox_;;
@@ -117,6 +119,10 @@ private:
 	// Attribute defined in initPlayFrame.
 	gui::TextButtonPtr pause_;
 	ManButtonPtr manButton_;
+
+	// Init in loobySErver
+	NetworkLoobyPtr networkLoobyPtr_;
+	gui::TextButtonPtr ready_;
 
 	// Attributes defined in initCustomPlayFrame.
 	gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;

@@ -100,7 +100,6 @@ void TetrisWindow::restartGame() {
         tetrisGame_.closeGame();
         createLocalGame();
     }
-	tetrisGame_.setReadyGame(true);
 	tetrisGame_.startGame();
 	tetrisGame_.restartGame();
 }
@@ -117,6 +116,14 @@ void TetrisWindow::setPause(bool pause) {
 	if (pause != tetrisGame_.isPaused()) {
 		tetrisGame_.pause();
 	}
+}
+
+bool TetrisWindow::isReady() const {
+	return tetrisGame_.isReady();
+}
+
+void TetrisWindow::setReady(bool ready) {
+	tetrisGame_.setReadyGame(ready);
 }
 
 void TetrisWindow::updateGame(Uint32 deltaTime) {
@@ -180,6 +187,15 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 		} else {
 			getPausePtr()->setText("Pause");
 		}
+	} else if (std::shared_ptr<NewConnection> newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
+		auto networkLooby = getNetworkLoobyPtr();
+		networkLooby->clear();
+		newConnection->iterate([&](int id, int nbrOfPlayers) {
+			networkLooby->addConnection(id,nbrOfPlayers);
+		});
+	} else if (std::shared_ptr<GameReady> ready = std::dynamic_pointer_cast<GameReady>(nEvent)) {
+		auto networkLooby = getNetworkLoobyPtr();
+		networkLooby->setReady(ready->id_,ready->ready_);
 	}
 }
 

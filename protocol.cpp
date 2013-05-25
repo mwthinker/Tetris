@@ -114,7 +114,7 @@ void Protocol::createClientGame(const std::vector<DevicePtr>& devices, int port,
 void Protocol::startGame() {
 	// Game not started. // Connection must be active!
 	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {
-		// Is server.
+		// Is server?
 		if (network_->getId() == network_->getServerId()) {
 			if (!ready_) {
 				return;
@@ -285,6 +285,11 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			for (const DevicePtr& device : devices) {
 				localUser_.add(new LocalPlayer(++playerId_,device));
 			}
+			{
+				auto newConnection = std::make_shared<NewConnection>();
+				newConnection->add(network_->getId(),network_->getNbrOfConnections());
+				signalEvent(newConnection);
+			}
 			break;
 		case CLIENT:
 			network_ = new mw::enet::Client(connectToPort_,connectToIp_);
@@ -309,7 +314,7 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 			//sendConnected();
 			remoteUsers_.push_back(new UserConnection(fromId));
 
-			//sendServerInfo();
+			sendServerInfo();
 			std::cout << "\n" << "NEW_CONNECTION" << packet.size() <<std::endl;
 
 			// Accept connection!
@@ -580,6 +585,19 @@ void Protocol::iterateAllPlayers(std::function<bool(Player*)> nextPlayer) const 
     }
 }
 
+void Protocol::iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const {
+	bool next = nextUserConnection(localUser_);
+
+    if (next) {
+        for (const UserConnection* user : remoteUsers_) {
+			next = nextUserConnection(*user);
+			if (!next) {
+				break;
+			}
+        }
+    }
+}
+
 void Protocol::serverReceiveClientInfo(UserConnection* remote, mw::Packet packet) {
 	PacketType type;
 	packet >> type;
@@ -608,23 +626,18 @@ void Protocol::serverReceiveClientInfo(UserConnection* remote, mw::Packet packet
 // ..............
 // char player2NId
 void Protocol::sendServerInfo() {
+	auto newConnection = std::make_shared<NewConnection>();
 	// Add new player to all human players.
 	mw::Packet data;
 	data << PACKET_SERVERINFO;
-	data << network_->getId();
-	data << localUser_.getNbrOfPlayers();
-	for (Player* player : localUser_) {
-		data << player->getId();
-	}
-    nbrOfPlayers_ = localUser_.getNbrOfPlayers();
-	for (UserConnection* remote : remoteUsers_) {
-		data << remote->getId();
-		data << remote->getNbrOfPlayers();
-		nbrOfPlayers_ += remote->getNbrOfPlayers();
-		for (Player* player : localUser_) {
-            data << player->getId();
-        }
-	}
+	iterateUserConnections([&](const UserConnection& user) {
+		data << user.getId();
+		data << user.getNbrOfPlayers();
+		for (Player* player : user) {
+			data << player->getId();
+		}
+		return true;
+	});
 
 	network_->pushToSendBuffer(data);
 	std::cout << "\nSendStartInfo" << std::endl;
@@ -682,15 +695,18 @@ void Protocol::sendClientInfo() {
 // char type = STARTGAME
 void Protocol::serverSendStartGame() {
 	mw::Packet data;
-	data.push_back(PACKET_STARTGAME);
-	std::cout << "\nserverSendStartGame!" << std::endl;
+	data.push_back(PACKET_STARTGAME);	
 	network_->pushToSendBuffer(data);
+	
+	std::cout << "\nServerSendStartGame!" << std::endl;
 }
 
 void Protocol::sendReady() {
 	mw::Packet data;
 	data.push_back(PACKET_READY);
 	network_->pushToSendBuffer(data);
+
+	std::cout << "\nSendReady!" << std::endl;
 }
 
 // char type = INPUT

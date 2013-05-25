@@ -23,6 +23,8 @@ private:
 
 	bool isPaused() const override;
 	void setPause(bool pause) override;
+	bool isReady() const override;
+	void setReady(bool ready) override;
 
 	// Override gui::GuiWindow
 	void updateGame(Uint32 deltaTime) override;

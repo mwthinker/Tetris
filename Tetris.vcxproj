@@ -98,6 +98,7 @@
     <ClCompile Include="manbutton.cpp" />
     <ClCompile Include="movehandler.cpp" />
     <ClCompile Include="multiframe.cpp" />
+    <ClCompile Include="networklooby.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="rotationhandler.cpp" />
     <ClCompile Include="protocol.cpp" />

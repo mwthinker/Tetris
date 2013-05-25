@@ -24,10 +24,33 @@ public:
 
 class NewConnection : public NetworkEvent {
 public:
+	void add(int id, int nbrOfPlayers) {
+		pairIdNbrVector_.push_back(std::pair<int,int>(id, nbrOfPlayers));
+	}
+
+	void iterate(std::function<void(int id,int nbrOfPlayers)> funcIdPort) {
+		for (std::pair<int,int>& pair : pairIdNbrVector_) {
+			funcIdPort(pair.first,pair.second);
+		}
+	}
+	
+private:
+	std::vector<std::pair<int,int>> pairIdNbrVector_;
 };
 
 class ConnectedToServer : public NetworkEvent {
 public:
+};
+
+class GameReady : public NetworkEvent {
+public:
+	GameReady(int id, bool ready) {
+		id_ = id;
+		ready_ = ready;
+	}
+
+	bool ready_;
+	int id_;
 };
 
 class Connecting : public NetworkEvent {
@@ -132,6 +155,8 @@ protected:
     void addRowsToAllPlayersExcept(Player* player, int nbrOfRows);
 
 private:
+	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
+
 	virtual void updateGame(double timeStep) = 0;
 
 	// Receives data (data) received from user with id (id).

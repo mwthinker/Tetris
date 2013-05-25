@@ -2,49 +2,44 @@
 #define NETWORKLOOBY_H
 
 #include "guiitem.h"
+#include "gamefont.h"
 
 #include <mw/text.h>
 #include <mw/color.h>
 
 #include <list>
 #include <string>
+#include <sstream>
 #include <memory>
 #include <functional>
 
 class NetworkLooby : public gui::GuiItem {
 public:
-	NetworkLooby(int nbrOfLocalPlayers, int localId) {
-
-	}
-
-	void draw() override {
-
-	}
+	NetworkLooby();
+	void draw() override;
+	void addConnection(int id, int nbrOfPlayers);
+	void removeConnection(int id);
+	void setReady(int id, bool ready);
+	void clear();
 
 private:
-	struct TextElement {
-		TextElement(int intPoints, const mw::Text& points, const mw::Text& name, const mw::Text& date) {
-			intPoints_ = intPoints;
-			points_ = points;
-			name_ = name;
-			date_ = date;
-		}
+	struct Connection {
+		Connection();
+		Connection(int intId, int intNbrOfPlayers);
 
-		int intPoints_;
-		mw::Text points_, name_, date_;
+		int intId_;
+		int intNbrOfPlayers_;
+		bool boolReady_;
+		mw::Text id_, numberOfPlayers_, ready_;
 	};
-
-	// Sorts the vector in descending order.
-	void sort();
-
-	std::vector<mw::Text> numbers_;
-	std::list<TextElement> ascList_;
+	
+	std::list<Connection> ascList_;
 	mw::Color color_;
 	int nextRecord_;
 };
 
 typedef std::shared_ptr<NetworkLooby> NetworkLoobyPtr;
 
-NetworkLoobyPtr createNetworkLooby(int nbr, const mw::Color&);
+NetworkLoobyPtr createNetworkLooby();
 
 #endif // NETWORKLOOBY_H
