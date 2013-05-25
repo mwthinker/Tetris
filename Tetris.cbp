@@ -88,10 +88,14 @@
 		<Unit filename="localplayer.cpp" />
 		<Unit filename="localplayer.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="manbutton.cpp" />
+		<Unit filename="manbutton.h" />
 		<Unit filename="movehandler.cpp" />
 		<Unit filename="movehandler.h" />
 		<Unit filename="multiframe.cpp" />
 		<Unit filename="multiframe.h" />
+		<Unit filename="networklooby.cpp" />
+		<Unit filename="networklooby.h" />
 		<Unit filename="player.cpp" />
 		<Unit filename="player.h" />
 		<Unit filename="protocol.cpp" />
