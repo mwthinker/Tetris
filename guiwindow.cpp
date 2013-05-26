@@ -95,6 +95,10 @@ gui::TextButtonPtr GuiWindow::getReadyPtr() const {
 	return ready_;
 }
 
+bool GuiWindow::isUpdatingGame() const {
+	return multiFrame_.getCurrentFrameIndex() == playFrameIndex_ || multiFrame_.getCurrentFrameIndex() == networkPlayFrameIndex_;
+}
+
 gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
 	mw::Color textColor(1.0,0.1,0.1);
 	mw::Color focus(0.8, 0.1, 0, 0.3);
@@ -138,7 +142,8 @@ void GuiWindow::initFrameMenu() {
 	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::GuiItem*) {
 		resumeButton_->setVisible(true);
 		multiFrame_.setCurrentFrame(playFrameIndex_);
-		restartGame();
+		abortGame();
+		createLocalGame();
 	});
 
 	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::GuiItem*) {
@@ -257,7 +262,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNumberOfLocalPlayers(newNbr);
 
-		restartGame();
+		createLocalGame();
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
@@ -363,7 +368,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(customPlaymaxLevel_,140,100,false,true);
 
 	// Create game -----------------------------------------------------
-	gui::ButtonPtr button = createButton("Create game", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Create game", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
 		std::stringstream stream;
 		stream << customPlayWidth_->getText() << " ";
@@ -439,7 +444,7 @@ void GuiWindow::initServerLoobyFrame() {
 	});
 
 	ready_ = createButton("Ready", hDistance_, [&] (gui::GuiItem* item) {
-		setReady(!isReady());
+		changeReadyState();
 	});
 
 	gui::ButtonPtr b3 = createButton("Start", hDistance_, [&](gui::GuiItem* item) {
@@ -659,7 +664,7 @@ void GuiWindow::initNewHighScoreFrame() {
 	multiFrame_.add(textItem,45,50,false,true);
 	multiFrame_.add(nameBox_,100,50,false,true);
 
-	gui::ButtonPtr b1 = createButton("Done!", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Done!", hDistance_, [&](gui::GuiItem*) {
 		std::string name = nameBox_->getText();
 		if (name.size() > 0) {
 			std::time_t t = std::time(NULL);

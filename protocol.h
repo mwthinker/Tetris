@@ -89,7 +89,6 @@ enum PacketType {
 	PACKET_INPUT,       // Tetrisboard updates.
 	PACKET_STARTGAME,   // The server starts the game. All user starts the game.
 	PACKET_READY,       // The server/client is ready to start.
-	PACKET_UNREADY,	    // The server/client is unready to start.
 	PACKET_SERVERINFO,  // The info about players and tetrisboard conditions (e.g. length and width).
 	PACKET_TETRIS,      // Data describing when player adds rows..
 	PACKET_CLIENTINFO,  // Client send info to server.
@@ -132,7 +131,7 @@ public:
 	// the game.
 	void pause();
 
-	void setReadyGame(bool ready);
+	void changeReadyState();
 	bool isReady() const;
 
 	// Returns true if the game is started.
@@ -156,6 +155,7 @@ protected:
 
 private:
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
+	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
 
 	virtual void updateGame(double timeStep) = 0;
 
@@ -216,11 +216,8 @@ private:
 	// Returns the ip to the server.
 	std::string getConnectToIp() const;
 
-	int getNumberOfPlayers(int connection) const;
+	int getNumberOfPlayers(int connection) const;	
 
-	int nbrOfPlayers_;
-
-private:
 	// @Override ServerFilter. Is only called in server/local mode.
 	// Data (data) is received from client (id). Type (type)
 	// describes the type of event. The return value is the
@@ -242,8 +239,8 @@ private:
 
 	mw::Signal<NetworkEventPtr> eventHandler_;
 	bool start_; // The game is started?
-	bool ready_; // In game looby, ready to start?
 	bool pause_; // Is game paused?
+	int nbrOfPlayers_;
 
 	int serverPort_; // The port on the local server.
 	int connectToPort_; // The port on the remote server.

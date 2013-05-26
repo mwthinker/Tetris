@@ -83,7 +83,6 @@ Protocol::Protocol() {
 	start_ = false;
 	connectToIp_ = "localhost";
 	network_ = nullptr;
-	ready_ = false;
 	acceptNewConnections_ = false;
 	status_ = WAITING_TO_CONNECT;
 	nbrOfPlayers_ = 0;
@@ -112,30 +111,16 @@ void Protocol::createClientGame(const std::vector<DevicePtr>& devices, int port,
 }
 
 void Protocol::startGame() {
-	// Game not started. // Connection must be active!
-	if (network_ != 0 && !start_ && network_->getStatus() == mw::Network::ACTIVE) {
-		// Is server?
-		if (network_->getId() == network_->getServerId()) {
-			if (!ready_) {
-				return;
-			}
-			std::cout << "\nReady!" << std::endl;
+	// And game is not started? And network is not null? And network is active and this is a server?
+	if (!isStarted() && network_ != 0 && network_->getStatus() == mw::Network::ACTIVE && network_->getId() == network_->getServerId()) {
+		serverSendStartGame();
+	}
+}
 
-			// Stops new connections.
-			acceptNewConnections_ = false;
-
-			// Check if all remote users are ready to start.
-			for (UserConnection* remoteUser : remoteUsers_) {
-				if (!remoteUser->isReady()) {
-					// Not ready -> dont start!
-					return;
-				}
-			}
-			std::cout << "\nReady2!" << std::endl;
-
-			serverSendStartGame();
-		} else { // Is client.
-		}
+void Protocol::restartGame() {
+	// Network is not null? And this is a server? And game is started?
+	if (network_ != 0 && network_->getId() == network_->getServerId() && isStarted()) {
+		serverSendStartGame();
 	}
 }
 
@@ -144,8 +129,7 @@ void Protocol::closeGame() {
 	if (network_ != 0) {
 		//players_.clear();
 		start_ = false;
-		ready_ = false;
-		pause_ = false;
+		localUser_.setReady(false);
 		status_ = WAITING_TO_CONNECT;
 
 		// Disconnecting
@@ -170,15 +154,14 @@ void Protocol::pause() {
 	}
 }
 
-void Protocol::setReadyGame(bool ready) {
+void Protocol::changeReadyState() {
 	if (network_ != 0 && !isStarted()) {
-		ready_ = ready;
 		sendReady();
 	}
 }
 
 bool Protocol::isReady() const {
-	return ready_;
+	return localUser_.isReady();
 }
 
 bool Protocol::isStarted() const {
@@ -243,13 +226,6 @@ void Protocol::update(Uint32 deltaTime) {
 	}
 }
 
-void Protocol::restartGame() {
-	// Manager is active and is server and game is started => restart,
-	if (network_ != 0 && isStarted() && network_->getId() == network_->getServerId()) {
-		serverSendStartGame();
-	}
-}
-
 // Initiates the choosen connection.
 void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 	if (status_ == WAITING_TO_CONNECT) {
@@ -260,6 +236,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 		acceptNewConnections_ = true;
 		devices_.clear();
 		nbrOfPlayers_ = 0;
+		playerId_ = 0;
 
 		switch (status) {
 		case WAITING_TO_CONNECT:
@@ -269,6 +246,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			network_->start();
 
             localUser_ = UserConnection(network_->getId());
+			localUser_.setReady(true);
 
 			// Add new player to all local players.
 			for (const DevicePtr& device : devices) {
@@ -279,7 +257,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			network_ = new mw::enet::Server(serverPort_,this);
 			network_->start();
 
-			localUser_ = UserConnection(network_->getId());
+			localUser_ = UserConnection(network_->getId());			
 
 			// Add new player to all local players.
 			for (const DevicePtr& device : devices) {
@@ -287,7 +265,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			}
 			{
 				auto newConnection = std::make_shared<NewConnection>();
-				newConnection->add(network_->getId(),network_->getNbrOfConnections());
+				newConnection->add(network_->getId(),localUser_.getNbrOfPlayers());
 				signalEvent(newConnection);
 			}
 			break;
@@ -315,7 +293,7 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 			remoteUsers_.push_back(new UserConnection(fromId));
 
 			sendServerInfo();
-			std::cout << "\n" << "NEW_CONNECTION" << packet.size() <<std::endl;
+			std::cout << "\nNEW_CONNECTION" << packet.size() <<std::endl;
 
 			// Accept connection!
 			return true;
@@ -329,7 +307,7 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 			switch (type) {
 			case PACKET_CLIENTINFO:
 				{
-					std::cout << "\n" << "PACKET_CLIENTINFO" << std::endl;
+					std::cout << "\nPACKET_CLIENTINFO" << std::endl;
 
 					// Game started?
 					if (start_) {
@@ -345,7 +323,7 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 					UserConnection* remote = *it;
 
 					// Failed to find?
-					if (remote == 0) {
+					if (remote == nullptr) {
 						throw ProtocolError();
 					}
 
@@ -356,11 +334,40 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 				// Do not send to clients.
 				return false;
 			case PACKET_SERVERINFO:
-				// Data not from server => ProtocolError
+				// Data not from server?
 				if (network_->getServerId() != fromId) {
 					throw ProtocolError();
 				}
 
+				return true;
+			case PACKET_STARTGAME:
+				// Data not from server?
+				if (network_->getServerId() != fromId) {
+					throw ProtocolError();
+				}
+				
+				// Game already started?
+				if (!isStarted()) {
+					// Check if all players ready to start!
+					bool allUsersReady = true;
+					iterateUserConnections([&](UserConnection& user) {
+						if (user.isReady()) {
+							return true;
+						}
+						allUsersReady = false;
+						return false;
+					});
+
+					if (!allUsersReady) {
+						// Not ready -> don't start!
+						return false;
+					}
+				}
+
+				// Stops new connections.
+				acceptNewConnections_ = false;
+				
+				// Sent to all players to start the game.
 				return true;
 			default:
 				return true;
@@ -446,34 +453,18 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			break;
 		}
 
-		// Find remote user and set it to ready!
-		for (UserConnection* remoteUser : remoteUsers_) {
-			if (remoteUser->getId() == id) {
-				remoteUser->setReady(true);
-				break;
+		// Finds remote user and changes the ready state.
+		iterateUserConnections([&](UserConnection& user) {
+			if (user.getId() == id) {
+				user.setReady(!user.isReady());
+				return false; // User found, stop looking!
 			}
-		}
+			// User not found, keep iterating!!
+			return true;
+		});
 
 		std::cout << "\n" << "PACKET_READY" << std::endl;
-		break;
-	case PACKET_UNREADY:
-		// Game started?
-		if (start_) {
-			throw ProtocolError();
-		}
-
-		if (data.size() != 1) {
-			throw ProtocolError();
-		}
-
-		for (UserConnection* remoteUser : remoteUsers_) {
-			if (remoteUser->getId() == id) {
-				remoteUser->setReady(false);
-				break;
-			}
-		}
-		std::cout << "\n" << "PACKET_UNREADY" << std::endl;
-		break;
+		break;	
 	case PACKET_TETRIS:
 		{
 			// Game not started?
@@ -512,7 +503,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			throw ProtocolError();
 		}
 
-		// Game allready started?
+		// Game already started?
 		if (start_) {
 			// Restart local players.
 			for (Player* player : localUser_) {
@@ -525,7 +516,10 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 		pause_ = false;
 		// When server decides to start all clients must be ready.
 		// If not they are set to ready. To avoid sync problem.
-		ready_ = true;
+		iterateUserConnections([&](UserConnection& user) {		
+			user.setReady(true);
+			return true;
+		});
 
 		sendStartBlock();
 		std::cout << "\n" << "PACKET_STARTGAME" << std::endl;
@@ -590,6 +584,19 @@ void Protocol::iterateUserConnections(std::function<bool(const UserConnection&)>
 
     if (next) {
         for (const UserConnection* user : remoteUsers_) {
+			next = nextUserConnection(*user);
+			if (!next) {
+				break;
+			}
+        }
+    }
+}
+
+void Protocol::iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection) {
+	bool next = nextUserConnection(localUser_);
+
+    if (next) {
+        for (UserConnection* user : remoteUsers_) {
 			next = nextUserConnection(*user);
 			if (!next) {
 				break;

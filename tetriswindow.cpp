@@ -30,15 +30,11 @@ TetrisWindow::TetrisWindow() {
 
 	// Init joysticks!
 	auto joystics = mw::Joystick::getJoystics();
-	for(mw::JoystickPtr& joystick : joystics) {
+	for (mw::JoystickPtr& joystick : joystics) {
 		std::cout << joystick->getName() << std::endl;
 		DevicePtr device(new InputJoystick(joystick, 0, 1));
 		devices_.push_back(device);
-	}
-
-	std::vector<DevicePtr> onePlayer;
-	onePlayer.push_back(device1);
-	tetrisGame_.createLocalGame(onePlayer);
+	}	
 
 	loadHighscore();
 }
@@ -70,8 +66,8 @@ void TetrisWindow::createLocalGame() {
 		tmpDevices.push_back(devices_[i]);
 	}
 
+	tetrisGame_.closeGame();
 	tetrisGame_.createLocalGame(tmpDevices);
-	tetrisGame_.setReadyGame(true);
 	tetrisGame_.startGame();
 }
 
@@ -96,11 +92,6 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 }
 
 void TetrisWindow::restartGame() {
-    if (tetrisGame_.getStatus() == Protocol::Status::LOCAL || tetrisGame_.getStatus() == Protocol::Status::WAITING_TO_CONNECT) {
-        tetrisGame_.closeGame();
-        createLocalGame();
-    }
-	tetrisGame_.startGame();
 	tetrisGame_.restartGame();
 }
 
@@ -122,8 +113,8 @@ bool TetrisWindow::isReady() const {
 	return tetrisGame_.isReady();
 }
 
-void TetrisWindow::setReady(bool ready) {
-	tetrisGame_.setReadyGame(ready);
+void TetrisWindow::changeReadyState() {
+	tetrisGame_.changeReadyState();
 }
 
 void TetrisWindow::updateGame(Uint32 deltaTime) {

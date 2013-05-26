@@ -35,21 +35,16 @@ protected:
 private:
 	virtual void saveHighscore() = 0;
 
-	bool isUpdatingGame() const {
-		return multiFrame_.getCurrentFrameIndex() == playFrameIndex_ || multiFrame_.getCurrentFrameIndex() == networkPlayFrameIndex_;
-	}
-
+	bool isUpdatingGame() const;
 	bool isDrawGame() const;
 	void setDrawGame(bool drawGame);
 
 	virtual void updateGame(Uint32 deltaTime) = 0;
-
 	virtual void updateGameEvent(const SDL_Event& windowEvent) = 0;
 
 	virtual void createCustomGame(int width, int height, int maxLevel) = 0;
 
 	virtual void abortGame() = 0;
-
     virtual void createLocalGame() = 0;
 	virtual void createServerGame(int port) = 0;
 	virtual void createClientGame(int port, std::string ip) = 0;
@@ -57,14 +52,14 @@ private:
 	virtual bool isPaused() const = 0;
 	virtual void setPause(bool pause) = 0;
 	virtual bool isReady() const = 0;
-	virtual void setReady(bool ready) = 0;
+	virtual void changeReadyState() = 0;
 
 	virtual void restartGame() = 0;
 
 	void quit();
 
-	gui::TextButtonPtr createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick);
-	gui::TextBoxPtr createTextBox(int size);
+	gui::TextButtonPtr createButton(std::string text, int width, std::function<void(gui::GuiItem*)> onClick);
+	gui::TextBoxPtr createTextBox(int width);
 	gui::BarColorPtr createUpperBar();
 
 	void initFrameMenu();
@@ -92,7 +87,6 @@ private:
 	int hDistance_;
 
 	gui::MultiFrame multiFrame_;
-	bool fixSize_;
 
 	int playFrameIndex_;
 	int networkFrameIndex_;
@@ -108,7 +102,7 @@ private:
 	int networkPlayFrameIndex_;
 
 	// Attribute defined in initCreateServerMenu.
-	gui::TextBoxPtr portBox_, ipBox_;;
+	gui::TextBoxPtr portBox_, ipBox_;
 
     // Attribute defined in initHighscoreMenu.
 	HighscorePtr highscorePtr_;
@@ -120,7 +114,7 @@ private:
 	gui::TextButtonPtr pause_;
 	ManButtonPtr manButton_;
 
-	// Init in loobySErver
+	// Init in initServerLoobyFrame.
 	NetworkLoobyPtr networkLoobyPtr_;
 	gui::TextButtonPtr ready_;
 
