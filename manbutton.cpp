@@ -21,7 +21,10 @@ unsigned int ManButton::getNbr() const {
 
 void ManButton::setNbr(unsigned int nbr) {
 	nbr_ = nbr;
-	setWidth(pixelSize_*nbr_);
+	if (nbr == 0) {
+		nbr = 1;
+	}
+	setWidth(pixelSize_*nbr);
 }
 
 void ManButton::draw() {
