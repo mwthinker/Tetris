@@ -95,6 +95,26 @@ gui::TextButtonPtr GuiWindow::getReadyPtr() const {
 	return ready_;
 }
 
+void GuiWindow::gotoLocalPlayFrame() {
+	multiFrame_.setCurrentFrame(playFrameIndex_);
+}
+
+void GuiWindow::gotoServerPlayFrame() {
+	multiFrame_.setCurrentFrame(networkPlayFrameIndex_);
+}
+
+void GuiWindow::gotoClientPlayFrame() {
+	multiFrame_.setCurrentFrame(networkPlayFrameIndex_);
+}
+
+void GuiWindow::gotoServerLoobyFrame() {
+	multiFrame_.setCurrentFrame(loobyServerFrameIndex_);
+}
+
+void GuiWindow::gotoClientLoobyFrame() {
+	multiFrame_.setCurrentFrame(loobyClientFrameIndex_);
+}
+
 bool GuiWindow::isUpdatingGame() const {
 	return multiFrame_.getCurrentFrameIndex() == playFrameIndex_ || multiFrame_.getCurrentFrameIndex() == networkPlayFrameIndex_;
 }
@@ -141,7 +161,6 @@ void GuiWindow::initFrameMenu() {
 	// Menu.
 	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::GuiItem*) {
 		resumeButton_->setVisible(true);
-		multiFrame_.setCurrentFrame(playFrameIndex_);
 		abortGame();
 		createLocalGame();
 	});
@@ -248,8 +267,8 @@ void GuiWindow::initPlayFrame() {
 		}
 	});
 
-	manButton_ = createManButton(hDistance_);
-	manButton_->addOnClickListener([&](gui::GuiItem* item) {
+	auto manButton = createManButton(hDistance_);
+	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
 		setNumberOfLocalPlayers(nbr+1);
@@ -282,7 +301,7 @@ void GuiWindow::initPlayFrame() {
 
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
-	multiFrame_.add(manButton_,80 + b2->getWidth(),0,false,true);
+	multiFrame_.add(manButton,80 + b2->getWidth(),0,false,true);
 	multiFrame_.add(pause_,0,0,true,true);
 }
 
@@ -447,19 +466,16 @@ void GuiWindow::initServerLoobyFrame() {
 		changeReadyState();
 	});
 
-	gui::ButtonPtr b3 = createButton("Start", hDistance_, [&](gui::GuiItem* item) {
-		restartGame();
-		multiFrame_.setCurrentFrame(networkPlayFrameIndex_);
+	gui::ButtonPtr b2 = createButton("Start", hDistance_, [&](gui::GuiItem* item) {
+		startGame();
 	});
-
-	multiFrame_.add(b1,0,0,false,true);
 
 	networkLoobyPtr_ = createNetworkLooby();
 
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(networkLoobyPtr_, 0, 100, false,true);
 	multiFrame_.add(ready_,0,400,false,true);
-	multiFrame_.add(b3,100,400,false,true);
+	multiFrame_.add(b2,100,400,false,true);
 }
 
 void GuiWindow::initClientLoobyFrame() {
@@ -487,6 +503,8 @@ void GuiWindow::initClientLoobyFrame() {
 	});
 
 	multiFrame_.add(b1,0,0,false,true);
+	multiFrame_.add(networkLoobyPtr_, 0, 100, false,true);
+	multiFrame_.add(ready_,0,400,false,true);
 }
 
 void GuiWindow::initCreateServerFrame() {
@@ -521,6 +539,21 @@ void GuiWindow::initCreateServerFrame() {
 	multiFrame_.add(header,0,50,false,true);
 	multiFrame_.add(b1,80,0,false,true);
 
+	auto manButton = createManButton(hDistance_);
+	manButton->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNumberOfLocalPlayers(nbr+1);
+		int newNbr = getNumberOfLocalPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNumberOfLocalPlayers(newNbr);
+	});
+
 	// Set board size ------------------------------------------------------
 	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem,0,100,false,true);
@@ -539,7 +572,7 @@ void GuiWindow::initCreateServerFrame() {
 
 	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem4,0,200,false,true);
-	multiFrame_.add(manButton_,120,200,false,true);
+	multiFrame_.add(manButton,120,200,false,true);
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
@@ -550,7 +583,7 @@ void GuiWindow::initCreateServerFrame() {
 		int width, height, port;
 		stream >> width >> height >> port;
 		createServerGame(port);
-		resumeButton_->setVisible(true);
+		resumeButton_->setVisible(false);
 		multiFrame_.setCurrentFrame(loobyServerFrameIndex_);
 	});
 
@@ -600,9 +633,25 @@ void GuiWindow::initCreateClientFrame() {
 	multiFrame_.add(header,0,50,false,true);
 	multiFrame_.add(b1,80,0,false,true);
 
+	auto manButton = createManButton(hDistance_);
+	manButton->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNumberOfLocalPlayers(nbr+1);
+		int newNbr = getNumberOfLocalPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNumberOfLocalPlayers(newNbr);
+	});
+
     gui::TextItemPtr textItem = gui::createTextItem("Connect to ip",fontDefault18,18,mw::Color(1.0,1.0,1.0));
     ipBox_ = createTextBox(260);
 	ipBox_->setInputFormatter(std::make_shared<gui::InputFormatter>(15));
+	ipBox_->setText("127.0.0.1");
 	multiFrame_.add(textItem,0,100,false,true);
 	multiFrame_.add(ipBox_,120,100,false,true);
 
@@ -612,17 +661,17 @@ void GuiWindow::initCreateClientFrame() {
 
 	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem4,0,200,false,true);
-	multiFrame_.add(manButton_,120,200,false,true);
+	multiFrame_.add(manButton,120,200,false,true);
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
-		multiFrame_.setCurrentFrame(playFrameIndex_);
+		multiFrame_.setCurrentFrame(waitToConnectFrameIndex_);
 		std::stringstream stream;
-		stream << customPlayWidth_->getText() << " ";
-		stream << customPlayHeight_->getText() << " ";
-		int width, height;
-		stream >> width >> height;
-		createCustomGame(width,height,20);
+		stream << portBox_->getText();
+		int port;
+		stream >> port;
+		createClientGame(port,ipBox_->getText());
+		resumeButton_->setVisible(false);
 	});
 
 	multiFrame_.add(button,0,250,false,true);
@@ -639,15 +688,18 @@ void GuiWindow::initCreateClientFrame() {
 }
 
 void GuiWindow::initWaitToConnectFrame() {
+	multiFrame_.setCurrentFrame(waitToConnectFrameIndex_);
+
 	gui::ButtonPtr menu = createButton("Abort connection", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
+		abortGame();
 	});
 
 	multiFrame_.add(menu,0,0,false,true);
 
 	gui::TextItemPtr textItem = gui::createTextItem("Waiting for the server to accept connection!",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 
-	multiFrame_.add(menu,0,100,false,true);
+	multiFrame_.add(textItem,0,100,false,true);
 }
 
 void GuiWindow::initNewHighScoreFrame() {
@@ -755,8 +807,9 @@ void GuiWindow::resize(int width, int height) {
 void GuiWindow::update(Uint32 deltaTime) {
 	multiFrame_.draw(deltaTime/1000.0);
 	if (isUpdatingGame()) {
-		updateGame(deltaTime);
+		drawGame(deltaTime);
 	}
+	updateGame(deltaTime);
 }
 
 // Override mw::Window

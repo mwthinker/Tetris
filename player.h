@@ -9,6 +9,7 @@
 
 #include <string>
 #include <queue>
+#include <memory>
 
 class Player {
 public:
@@ -167,8 +168,10 @@ private:
 	int nbrOfClearedRows_; // Number of rows the player cleared.
 	std::string name_;     // The name of the player.
 	const int id_;
-	int levelUpCounter_;	// Is used to determen when to level up.
+	int levelUpCounter_;	// Is used to determine when to level up.
 	std::queue<TetrisBoard::Move> moves_;
 };
+
+typedef std::shared_ptr<Player> PlayerPtr;
 
 #endif // PLAYER_H

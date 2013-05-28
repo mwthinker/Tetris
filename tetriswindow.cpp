@@ -78,6 +78,7 @@ void TetrisWindow::createServerGame(int port) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
+	tetrisGame_.closeGame();
 	tetrisGame_.createServerGame(tmpDevices,port);
 }
 
@@ -88,11 +89,16 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
+	tetrisGame_.closeGame();
 	tetrisGame_.createClientGame(tmpDevices,port,ip);
 }
 
 void TetrisWindow::restartGame() {
 	tetrisGame_.restartGame();
+}
+
+void TetrisWindow::startGame() {
+	tetrisGame_.startGame();
 }
 
 void TetrisWindow::createCustomGame(int width, int height, int maxLevel) {
@@ -119,7 +125,9 @@ void TetrisWindow::changeReadyState() {
 
 void TetrisWindow::updateGame(Uint32 deltaTime) {
 	tetrisGame_.update(deltaTime);
+}
 
+void TetrisWindow::drawGame(Uint32 deltaTime) {
 	glPushMatrix();
 	int w = getWidth();
 	int h = getHeight() - 30;
@@ -184,6 +192,30 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 		newConnection->iterate([&](int id, int nbrOfPlayers) {
 			networkLooby->addConnection(id,nbrOfPlayers);
 		});
+		
+		switch (newConnection->status_) {
+		case NewConnection::CLIENT:
+			gotoClientLoobyFrame();
+			break;
+		case NewConnection::SERVER:
+			gotoServerLoobyFrame();
+			break;
+		case NewConnection::LOCAL:
+			// Is no local looby.
+			break;
+		}
+	} else if (std::shared_ptr<GameStart> start = std::dynamic_pointer_cast<GameStart>(nEvent)) {
+		switch (start->status_) {
+		case GameStart::LOCAL:
+			gotoLocalPlayFrame();
+			break;
+		case GameStart::CLIENT:
+			gotoClientPlayFrame();
+			break;
+		case GameStart::SERVER:
+			gotoServerPlayFrame();
+			break;
+		}
 	} else if (std::shared_ptr<GameReady> ready = std::dynamic_pointer_cast<GameReady>(nEvent)) {
 		auto networkLooby = getNetworkLoobyPtr();
 		networkLooby->setReady(ready->id_,ready->ready_);

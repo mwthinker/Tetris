@@ -32,6 +32,13 @@ protected:
 	virtual void setNumberOfLocalPlayers(int number) = 0;
 	virtual int getNumberOfLocalPlayers() const = 0;
 
+	void gotoLocalPlayFrame();
+	void gotoServerPlayFrame();
+	void gotoClientPlayFrame();
+
+	void gotoServerLoobyFrame();
+	void gotoClientLoobyFrame();
+
 private:
 	virtual void saveHighscore() = 0;
 
@@ -40,6 +47,7 @@ private:
 	void setDrawGame(bool drawGame);
 
 	virtual void updateGame(Uint32 deltaTime) = 0;
+	virtual void drawGame(Uint32 deltaTime) = 0;
 	virtual void updateGameEvent(const SDL_Event& windowEvent) = 0;
 
 	virtual void createCustomGame(int width, int height, int maxLevel) = 0;
@@ -55,6 +63,7 @@ private:
 	virtual void changeReadyState() = 0;
 
 	virtual void restartGame() = 0;
+	virtual void startGame() = 0;
 
 	void quit();
 
@@ -112,7 +121,6 @@ private:
 
 	// Attribute defined in initPlayFrame.
 	gui::TextButtonPtr pause_;
-	ManButtonPtr manButton_;
 
 	// Init in initServerLoobyFrame.
 	NetworkLoobyPtr networkLoobyPtr_;

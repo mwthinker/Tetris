@@ -15,6 +15,7 @@ private:
 	int getNumberOfLocalPlayers() const override;
 
 	void abortGame() override;
+	void startGame() override;
 	void restartGame() override;
 	void createCustomGame(int width, int height, int maxLevel) override;
 	void createLocalGame() override;
@@ -28,6 +29,9 @@ private:
 
 	// Override gui::GuiWindow
 	void updateGame(Uint32 deltaTime) override;
+
+	// Override gui::GuiWindow
+	void drawGame(Uint32 deltaTime) override;
 
 	// Override gui::GuiWindow
 	void updateGameEvent(const SDL_Event& windowEvent) override;

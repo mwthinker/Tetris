@@ -17,6 +17,10 @@
 #include <memory>
 
 class NetworkEvent {
+protected:
+	NetworkEvent() {
+	}
+
 public:
     virtual ~NetworkEvent() {
     }
@@ -24,6 +28,12 @@ public:
 
 class NewConnection : public NetworkEvent {
 public:
+	enum Status {LOCAL,SERVER,CLIENT};
+
+	NewConnection(Status status) {
+		status_ = status;
+	}
+
 	void add(int id, int nbrOfPlayers) {
 		pairIdNbrVector_.push_back(std::pair<int,int>(id, nbrOfPlayers));
 	}
@@ -34,12 +44,9 @@ public:
 		}
 	}
 	
+	Status status_;
 private:
 	std::vector<std::pair<int,int>> pairIdNbrVector_;
-};
-
-class ConnectedToServer : public NetworkEvent {
-public:
 };
 
 class GameReady : public NetworkEvent {
@@ -53,12 +60,15 @@ public:
 	int id_;
 };
 
-class Connecting : public NetworkEvent {
-public:
-};
-
 class GameStart : public NetworkEvent {
 public:
+	enum Status {LOCAL,SERVER,CLIENT};
+	
+	GameStart(Status status) {
+		status_ = status;
+	}
+
+	Status status_;
 };
 
 class GamePause : public NetworkEvent {
@@ -88,10 +98,10 @@ class ProtocolError {
 enum PacketType {
 	PACKET_INPUT,       // Tetrisboard updates.
 	PACKET_STARTGAME,   // The server starts the game. All user starts the game.
-	PACKET_READY,       // The server/client is ready to start.
-	PACKET_SERVERINFO,  // The info about players and tetrisboard conditions (e.g. length and width).
-	PACKET_TETRIS,      // Data describing when player adds rows..
-	PACKET_CLIENTINFO,  // Client send info to server.
+	PACKET_READY,       // The server/client is ready/unready to start.
+	PACKET_SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
+	PACKET_TETRIS,      // Data describing when player adds rows.
+	PACKET_CLIENTINFO,  // A client send client info to the server.
 	PACKET_STARTBLOCK,  // Sends the start current block and the next block.
 	PACKET_PAUSE        // Pause/Unpause the game for all users.
 };
@@ -158,6 +168,8 @@ private:
 	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
 
 	virtual void updateGame(double timeStep) = 0;
+
+	bool isAllUsersReady();
 
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value
@@ -237,6 +249,8 @@ private:
 	// Receives the starting block from remote player.
 	void receiveStartBlock(const mw::Packet& data, int id);
 
+	void clientStartGame();
+
 	mw::Signal<NetworkEventPtr> eventHandler_;
 	bool start_; // The game is started?
 	bool pause_; // Is game paused?
@@ -251,7 +265,7 @@ private:
     std::vector<DevicePtr> devices_;
 
 	mw::Network* network_; // The connection manager.
-	static int playerId_; // The id for the last added player.
+	int playerId_; // The id for the last added player.
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 	Status status_;
 };
