@@ -371,10 +371,12 @@ bool Protocol::sendThrough(const mw::Packet& packet, int fromId, int toId, Type 
 				break;
 			}
 		}
-		// Not started?
+		// Not started? Or has it ended?
 		if (!start_) {
-			remoteUsers_.erase(it);
-			sendServerInfo();
+			if (it != remoteUsers_.end()) {
+				remoteUsers_.erase(it);
+				sendServerInfo();
+			}
 		} else {
 			// Game is started. Set offline players to gameOver.
 			UserConnection* tmp = *it;

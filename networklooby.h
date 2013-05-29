@@ -16,6 +16,7 @@
 class NetworkLooby : public gui::GuiItem {
 public:
 	NetworkLooby();
+
 	void draw() override;
 	void addConnection(int id, int nbrOfPlayers);
 	void removeConnection(int id);
