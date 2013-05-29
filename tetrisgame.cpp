@@ -50,6 +50,10 @@ void TetrisGame::updatePlayer(PlayerPtr player, double deltaTime) {
     }
 }
 
+void TetrisGame::initGame(int nbrOfPlayers) {
+	nbrOfAlivePlayers_ = nbrOfPlayers;
+}
+
 void TetrisGame::draw() {
 	glPushMatrix();
 

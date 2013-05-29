@@ -623,13 +623,14 @@ void Protocol::serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet pack
 // char player2NId
 void Protocol::sendServerInfo() {
 	auto newConnection = std::make_shared<NewConnection>(NewConnection::SERVER);
-
+	nbrOfPlayers_ = 0;
 	// Add new player to all human players.
 	mw::Packet data;
 	data << PACKET_SERVERINFO;
 	iterateUserConnections([&](const UserConnection& user) {
 		data << user.getId();
 		data << user.getNbrOfPlayers();
+		nbrOfPlayers_ += user.getNbrOfPlayers();
 		newConnection->add(user.getId(),user.getNbrOfPlayers());
 		for (PlayerPtr player : user) {
 			data << player->getId();
@@ -869,7 +870,7 @@ void Protocol::clientStartGame() {
 
 	sendStartBlock();
 	std::cout << "\n" << "PACKET_STARTGAME" << std::endl;
-
+	initGame(nbrOfPlayers_);
 	// Signals the gui that the game is not paused.
 	signalEvent(std::make_shared<GamePause>(pause_));
 }

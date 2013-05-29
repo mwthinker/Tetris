@@ -154,6 +154,7 @@ public:
 	int getNbrOfPlayers() const;
 
 	Status getStatus() const;
+
 protected:
 	void signalEvent(NetworkEventPtr nEvent);
 
@@ -162,6 +163,8 @@ protected:
     void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
 
     void addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows);
+
+	virtual void initGame(int nbrOfPlayers) = 0;
 
 private:
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;

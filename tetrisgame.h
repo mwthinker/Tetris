@@ -24,6 +24,7 @@ private:
 	void applyRules(PlayerPtr player, GameEvent gameEvent);
 	void updateGame(double deltaTime) override;
 	void updatePlayer(PlayerPtr player, double deltaTime);
+	void initGame(int nbrOfPlayers);
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
 
