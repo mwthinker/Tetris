@@ -159,9 +159,9 @@ protected:
 
 	void connect(const std::vector<DevicePtr>& devices, Status status);
 
-    void iterateAllPlayers(std::function<bool(Player*)> nextPlayer) const;
+    void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
 
-    void addRowsToAllPlayersExcept(Player* player, int nbrOfRows);
+    void addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows);
 
 private:
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
@@ -178,7 +178,7 @@ private:
 
 	// Server receives info from a client with id (id) about the number (nbrOfPlayers)
 	// of local players.
-	void serverReceiveClientInfo(UserConnection* remote, mw::Packet packet);
+	void serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet packet);
 
 	// Sent by client to notify the server about number of local players.
 	void sendClientInfo();
@@ -260,7 +260,7 @@ private:
 	int connectToPort_; // The port on the remote server.
 	std::string connectToIp_; // The ip on the remote server.
 
-	std::vector<UserConnection*> remoteUsers_;  // All remote players.
+	std::vector<UserConnectionPtr> remoteUsers_;  // All remote players.
     UserConnection localUser_;
     std::vector<DevicePtr> devices_;
 

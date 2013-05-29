@@ -4,6 +4,7 @@
 #include <vector>
 
 class Player;
+typedef std::shared_ptr<Player> PlayerPtr;
 
 // Hold information about all local players on a client/server.
 class UserConnection {
@@ -30,7 +31,7 @@ public:
 		return ready_;
 	}
 
-	void add(Player* player) {
+	void add(PlayerPtr player) {
 		players_.push_back(player);
 	}
 
@@ -42,27 +43,29 @@ public:
 		return players_.size();
 	}
 
-    std::vector<Player*>::iterator begin() {
+    std::vector<PlayerPtr>::iterator begin() {
         return players_.begin();
     }
 
-    std::vector<Player*>::iterator end() {
+    std::vector<PlayerPtr>::iterator end() {
         return players_.end();
     }
 
-    std::vector<Player*>::const_iterator begin() const {
+    std::vector<PlayerPtr>::const_iterator begin() const {
         return players_.begin();
     }
 
-    std::vector<Player*>::const_iterator end() const {
+    std::vector<PlayerPtr>::const_iterator end() const {
         return players_.end();
     }
 
 private:
-	std::vector<Player*> players_;
+	std::vector<PlayerPtr> players_;
 
 	int id_; // Server/client id.
 	bool ready_; // Is ready to start.
 };
+
+typedef std::shared_ptr<UserConnection> UserConnectionPtr;
 
 #endif // USERCONNECTION_H

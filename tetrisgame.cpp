@@ -33,14 +33,14 @@ void TetrisGame::updateGame(double deltaTime) {
     accumulator_ += deltaTime;
     while (accumulator_ >= timeStep_) {
         accumulator_ -= timeStep_;
-        iterateAllPlayers([&](Player* player) {
+        iterateAllPlayers([&](PlayerPtr player) {
             updatePlayer(player, timeStep_);
             return true;
         });
     }
 }
 
-void TetrisGame::updatePlayer(Player* player, double deltaTime) {
+void TetrisGame::updatePlayer(PlayerPtr player, double deltaTime) {
     player->update(deltaTime);
 
     GameEvent gameEvent;
@@ -53,7 +53,7 @@ void TetrisGame::updatePlayer(Player* player, double deltaTime) {
 void TetrisGame::draw() {
 	glPushMatrix();
 
-    iterateAllPlayers([&](Player* player) {
+    iterateAllPlayers([&](PlayerPtr player) {
         player->draw();
 		glTranslated(player->getWidth(),0,0);
         return true;
@@ -64,7 +64,7 @@ void TetrisGame::draw() {
 
 double TetrisGame::getWidth() const {
     double width = 0;
-    iterateAllPlayers([&](Player* player) {
+    iterateAllPlayers([&](PlayerPtr player) {
         width += player->getWidth();
         return true;
     });
@@ -74,7 +74,7 @@ double TetrisGame::getWidth() const {
 
 double TetrisGame::getHeight() const {
 	double height = 400;
-    iterateAllPlayers([&](Player* player) {
+    iterateAllPlayers([&](PlayerPtr player) {
         height = player->getHeight();
         return false;
     });
@@ -110,7 +110,7 @@ void TetrisGame::soundEffects(GameEvent gameEvent) {
 	sound.play();
 }
 
-void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
+void TetrisGame::applyRules(PlayerPtr player, GameEvent gameEvent) {
 	// Warning a slight risk of being out of sync in multiplayer.
 	// However only effecting points and level and in very subtle ways.
 	// Nothing other than graphics is effected.
@@ -166,7 +166,7 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 
 			// All dead except one => End game!
 			if (nbrOfAlivePlayers_ == 1) {
-                iterateAllPlayers([](Player* tmpPlayer) {
+                iterateAllPlayers([](PlayerPtr tmpPlayer) {
                     // Will be noticed in the next call to PlayerManager::applyRules(...).
 					// Triggers only for not dead players.
 					tmpPlayer->triggerGameOverEvent();
@@ -197,7 +197,7 @@ void TetrisGame::applyRules(Player* player, GameEvent gameEvent) {
 			// Multiplayer
 
 			// Increase level up counter for all opponents to the current player.
-			iterateAllPlayers([&](Player* opponent) {
+			iterateAllPlayers([&](PlayerPtr opponent) {
                 if (opponent != player) {
 					// Compensates for more opponents which are also increasing counter
 					// Compared to singleplayer.
