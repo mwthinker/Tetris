@@ -16,20 +16,34 @@ NetworkLooby::NetworkLooby() {
 }
 
 void NetworkLooby::draw() {
+	glColor3d(1,1,1);
+	
+	glPushMatrix();
 	for (Connection& connection : ascList_) {
 		glPushMatrix();
 		connection.id_.draw();
 		glTranslated(50,0,0);
 		connection.numberOfPlayers_.draw();
-		glTranslated(150,0,0);
+		glTranslated(200,0,0);
 		connection.ready_.draw();
 		glPopMatrix();
 		glTranslated(0,fontDefault18->getCharacterSize()+2,0);
-	}	
+	}
+
+	glTranslated(0,4,0);
+	static mw::Text id("Id",fontDefault18);
+	id.draw();
+	glTranslated(50,0,0);
+	static mw::Text nbr("Number Of Players",fontDefault18);
+	nbr.draw();
+	glTranslated(200,0,0);
+	static mw::Text ready("Ready to Start?",fontDefault18);
+	ready.draw();
+	glPopMatrix();
 }
 
 void NetworkLooby::addConnection(int id, int nbrOfPlayers) {
-	ascList_.push_back(Connection(id,nbrOfPlayers));
+	ascList_.push_front(Connection(id,nbrOfPlayers));
 }
 
 void NetworkLooby::removeConnection(int id) {
