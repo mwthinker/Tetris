@@ -141,6 +141,7 @@
     <ClInclude Include="networklooby.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="protocol.h" />
+    <ClInclude Include="remoteplayer.h" />
     <ClInclude Include="rotationhandler.h" />
     <ClInclude Include="square.h" />
     <ClInclude Include="tetrisboard.h" />

@@ -233,5 +233,8 @@
     <ClInclude Include="networklooby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="remoteplayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
