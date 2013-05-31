@@ -10,7 +10,12 @@
 
 #include <random>
 
-std::default_random_engine TetrisBoard::generator_;
+namespace {
+
+	std::random_device rd;
+	std::default_random_engine generator(rd());
+
+}
 
 TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, double newLineSquaresPercenters) {
 	init(nbrOfRows,nbrOfColumns,newLineSquaresPercenters);
@@ -18,12 +23,9 @@ TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, double newLineSquaresP
 
 // First checks if the game is over. Then perform the move.
 void TetrisBoard::update(Move move) {
-	//std::cout << "\n" << current_.getRotationSquare().column << " " << current_.getRotationSquare().row;
-	
 	// Check if gameover
 	if (collision(current_)) {
 		triggerGameOverEvent();
-		//current_ = Block();
 	}
 
 	if (!isGameOver_) {
@@ -209,8 +211,7 @@ std::vector<BlockType> TetrisBoard::generateRow() const {
 	std::uniform_int_distribution<int> distribution(0,size-1);
 
 	for (unsigned int i = 0; i <  size * squaresPerLength_; ++i) {
-		//bool added = false;
-		int index = distribution(generator_);
+		int index = distribution(generator);
 		unsigned int nbr = 0;
 		while (nbr < size) {
 			if (!row[ (index+nbr) % size]) {
@@ -292,7 +293,7 @@ BlockType TetrisBoard::generateBlockType() const {
 	std::uniform_int_distribution<int> distribution(0,6);
 
 	if (decideRandom_) {	
-		int nbr = distribution(generator_);
+		int nbr = distribution(generator);
 
 		switch (nbr) {
 		case 0:

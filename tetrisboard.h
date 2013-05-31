@@ -6,7 +6,6 @@
 
 #include <vector>
 #include <queue>
-#include <random>
 
 enum GameEvent {
 	PLAYER_ROTATES_BLOCK,
@@ -82,9 +81,6 @@ private:
     int removeFilledRows();
     void removeSquares(int row);
     void moveRowsOneStepDown(int highestRow);
-
-	// Generater used in all random operations.
-	static std::default_random_engine generator_;
 
     Block next_;						// Next Block for the player to control.
 	Block current_;						// The current block for the player to control.
