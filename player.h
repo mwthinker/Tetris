@@ -10,12 +10,12 @@
 #include <string>
 #include <queue>
 #include <memory>
+#include <cassert>
 
 class Player {
 public:
-	friend class Protocol;
-
-	Player(int id) : graphicBoard_(tetrisBoard_), id_(id) {
+	Player(int id, bool remote) : graphicBoard_(tetrisBoard_), id_(id) {
+		tetrisBoard_.setDecideRandomBlockType(!remote);
 		init();
     }
 
@@ -99,18 +99,20 @@ public:
 		return tetrisBoard_;
 	}
 
+	virtual void update(double deltaTime) = 0;
+
 	void update(TetrisBoard::Move move) {
 		tetrisBoard_.update(move);
     }
 
-    virtual void update(double deltaTime) = 0;
-
 	void update(BlockType current, BlockType next) {
+		assert(!tetrisBoard_.isDecideRandomBlockType());
 		tetrisBoard_.setNonRandomCurrentBlockType(current);
 		tetrisBoard_.setNonRandomNextBlockType(next);
 	}
 
 	void update(TetrisBoard::Move move, BlockType next) {
+		//assert(!tetrisBoard_.isDecideRandomBlockType());
 		tetrisBoard_.setNonRandomNextBlockType(next);
 		tetrisBoard_.update(move);
     }
@@ -131,13 +133,15 @@ public:
 		tetrisBoard_.triggerGameOverEvent();
 	}
 
-protected:
-    // Pushed to a queue.
-    void pushMove(TetrisBoard::Move move) {
-        moves_.push(move);
-    }
+	BlockType getCurrentBlock() const {
+		return tetrisBoard_.currentBlock().blockType();
+	}
 
-    // Remove from the queue.
+	BlockType getNextBlock() const {
+		return tetrisBoard_.nextBlock().blockType();
+	}
+
+	// Remove from the queue.
     bool pollMove(TetrisBoard::Move& move) {
         if (moves_.empty()) {
             return false;
@@ -146,6 +150,12 @@ protected:
         move = moves_.front();
         moves_.pop();
         return true;
+    }
+
+protected:
+    // Pushed to a queue.
+    void pushMove(TetrisBoard::Move move) {
+        moves_.push(move);
     }
 
 private:

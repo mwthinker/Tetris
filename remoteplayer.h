@@ -5,7 +5,7 @@
 
 class RemotePlayer : public Player {
 public:
-    RemotePlayer(int id) : Player(id) {
+    RemotePlayer(int id) : Player(id,true) {
 
     }
 

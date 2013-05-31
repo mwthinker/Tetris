@@ -201,6 +201,7 @@ void Protocol::update(Uint32 deltaTime) {
 						TetrisBoard::Move move;
 						while (player->pollMove(move)) {
 							sendInput(player->getId(),move,player->getTetrisBoard().nextBlock().blockType());
+							player->update(move);
 						}
 						return true;
 					});
@@ -431,16 +432,18 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			BlockType next;
 			receivInput(data,playerId,move,next);
 
-			// Iterate until the player is found.
-			iterateAllPlayers([&](PlayerPtr player) {
-				bool findPlayer = false;
-				if (player->getId() == playerId) {
-					player->update(move, next);
-					findPlayer = true;
-				}
-				return !findPlayer;
-			});
-			//std::cout << "\n" << "PACKET_INPUT" << std::endl;
+			// Remote player?
+			if (network_->getId() != id) {
+				// Iterate until the player is found.
+				iterateAllPlayers([&](PlayerPtr player) {
+					bool findPlayer = false;
+					if (player->getId() == playerId) {
+						player->update(move, next);
+						findPlayer = true;
+					}
+					return !findPlayer;
+				});
+			}			
 		}
 		break;
 	case PACKET_READY:
@@ -487,6 +490,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 				bool findPlayer = false;
 				if (player->getId() == playerId) {
 					player->update(blockTypes);
+					findPlayer = true;
 				}
 				return !findPlayer;
 			});
@@ -605,7 +609,6 @@ void Protocol::serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet pack
 
 	for (int i = 0; i < nbrOfPlayers; ++i) {
 		PlayerPtr player(new RemotePlayer(++playerId_));
-		player->tetrisBoard_.setDecideRandomBlockType(false);
 		remote->add(player);
 	}
 }
@@ -674,7 +677,6 @@ void Protocol::clientReceiveStartInfo(mw::Packet data) {
 			for (int i = 0; i < nbrOfPlayers; ++i) {
 				int playerId = data[++index];
 				PlayerPtr player(new RemotePlayer(playerId));
-				player->tetrisBoard_.setDecideRandomBlockType(false);
 				// Add index.
 				user->add(player);
 			}
@@ -737,8 +739,8 @@ void Protocol::sendStartBlock() {
 	mw::Packet data;
 	data << PACKET_STARTBLOCK;
 	for (PlayerPtr player : localUser_) {
-		data << player->tetrisBoard_.currentBlock().blockType();
-		data << player->tetrisBoard_.nextBlock().blockType();
+		data << player->getCurrentBlock();
+		data << player->getNextBlock();
 	}
 	network_->pushToSendBuffer(data);
 
@@ -765,8 +767,7 @@ void Protocol::receiveStartBlock(const mw::Packet& data, int id) {
 
 		for (PlayerPtr player : *user) {
 			player->restart();
-			player->tetrisBoard_.setNonRandomCurrentBlockType(current);
-			player->tetrisBoard_.setNonRandomNextBlockType(next);
+			player->update(current,next);
 		}
 	}
 	std::cout << "\nReceiveStartBlock" << std::endl;
