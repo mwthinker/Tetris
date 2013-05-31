@@ -263,8 +263,8 @@ private:
 	int connectToPort_; // The port on the remote server.
 	std::string connectToIp_; // The ip on the remote server.
 
-	std::vector<UserConnectionPtr> remoteUsers_;  // All remote players.
-    UserConnection localUser_;
+	std::vector<UserConnectionPtr> users_;  // All users.
+    UserConnectionPtr localUser_;
     std::vector<DevicePtr> devices_;
 
 	mw::Network* network_; // The connection manager.

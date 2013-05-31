@@ -10,7 +10,6 @@
 #include <string>
 #include <queue>
 #include <memory>
-#include <cassert>
 
 class Player {
 public:
@@ -101,18 +100,27 @@ public:
 
 	virtual void update(double deltaTime) = 0;
 
+	bool updateBoard(TetrisBoard::Move& move, BlockType& next) {
+		TetrisBoard::Move polledMove;
+		bool polled = pollMove(polledMove);
+		if (polled) {
+			next = tetrisBoard_.nextBlock().blockType();
+			move = polledMove;
+			update(move);
+		}
+		return polled;
+	}
+
 	void update(TetrisBoard::Move move) {
 		tetrisBoard_.update(move);
     }
 
 	void update(BlockType current, BlockType next) {
-		assert(!tetrisBoard_.isDecideRandomBlockType());
 		tetrisBoard_.setNonRandomCurrentBlockType(current);
 		tetrisBoard_.setNonRandomNextBlockType(next);
 	}
 
 	void update(TetrisBoard::Move move, BlockType next) {
-		//assert(!tetrisBoard_.isDecideRandomBlockType());
 		tetrisBoard_.setNonRandomNextBlockType(next);
 		tetrisBoard_.update(move);
     }
@@ -141,6 +149,13 @@ public:
 		return tetrisBoard_.nextBlock().blockType();
 	}
 
+protected:
+    // Pushed to a queue.
+    void pushMove(TetrisBoard::Move move) {
+        moves_.push(move);
+    }
+
+private:
 	// Remove from the queue.
     bool pollMove(TetrisBoard::Move& move) {
         if (moves_.empty()) {
@@ -152,13 +167,6 @@ public:
         return true;
     }
 
-protected:
-    // Pushed to a queue.
-    void pushMove(TetrisBoard::Move move) {
-        moves_.push(move);
-    }
-
-private:
 	void init() {
 		level_ = 1;
         points_ = 0;
