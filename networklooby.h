@@ -18,7 +18,7 @@ public:
 	NetworkLooby();
 
 	void draw() override;
-	void addConnection(int id, int nbrOfPlayers);
+	void addConnection(int id, int nbrOfPlayers, bool boolReady);
 	void removeConnection(int id);
 	void setReady(int id, bool ready);
 	void clear();
@@ -26,12 +26,13 @@ public:
 private:
 	struct Connection {
 		Connection();
-		Connection(int intId, int intNbrOfPlayers);
+		Connection(int intId, int intNbrOfPlayers, bool boolReady);
 
 		int intId_;
 		int intNbrOfPlayers_;
 		bool boolReady_;
-		mw::Text id_, numberOfPlayers_, ready_;
+		mw::Text id_, numberOfPlayers_;
+		static mw::Text ready, unready;
 	};
 	
 	std::list<Connection> ascList_;

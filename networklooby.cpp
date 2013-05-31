@@ -25,7 +25,11 @@ void NetworkLooby::draw() {
 		glTranslated(50,0,0);
 		connection.numberOfPlayers_.draw();
 		glTranslated(200,0,0);
-		connection.ready_.draw();
+		if (connection.boolReady_) {
+			Connection::ready.draw();
+		} else {
+			Connection::unready.draw();
+		}
 		glPopMatrix();
 		glTranslated(0,fontDefault18->getCharacterSize()+2,0);
 	}
@@ -42,8 +46,8 @@ void NetworkLooby::draw() {
 	glPopMatrix();
 }
 
-void NetworkLooby::addConnection(int id, int nbrOfPlayers) {
-	ascList_.push_front(Connection(id,nbrOfPlayers));
+void NetworkLooby::addConnection(int id, int nbrOfPlayers, bool boolReady) {
+	ascList_.push_front(Connection(id,nbrOfPlayers,boolReady));
 }
 
 void NetworkLooby::removeConnection(int id) {
@@ -61,11 +65,6 @@ void NetworkLooby::setReady(int id, bool ready) {
 		Connection& c = *it;
 		if (c.boolReady_ != ready) {
 			c.boolReady_ = ready;
-			if (ready) {
-				c.ready_.setText("Ready");
-			} else {
-				c.ready_.setText("Unready");
-			}
 		}
 	}
 }
@@ -74,10 +73,13 @@ void NetworkLooby::clear() {
 	ascList_.clear();
 }
 
+mw::Text NetworkLooby::Connection::ready("Ready",fontDefault18);
+mw::Text NetworkLooby::Connection::unready("Unready",fontDefault18);
+
 NetworkLooby::Connection::Connection() {
 }
 
-NetworkLooby::Connection::Connection(int intId, int intNbrOfPlayers) {
+NetworkLooby::Connection::Connection(int intId, int intNbrOfPlayers, bool boolReady) {
 	intId_ = intId;
 	intNbrOfPlayers_ = intNbrOfPlayers;
 	std::stringstream stream;
@@ -86,9 +88,8 @@ NetworkLooby::Connection::Connection(int intId, int intNbrOfPlayers) {
 	stream.str("");
 	numberOfPlayers_ = mw::Text(stream.str(),fontDefault18);
 	stream << intNbrOfPlayers;
-	numberOfPlayers_ = mw::Text(stream.str(),fontDefault18);
-	ready_ = mw::Text("Unready",fontDefault18);
-	boolReady_ = false;
+	numberOfPlayers_ = mw::Text(stream.str(),fontDefault18);	
+	boolReady_ = boolReady;
 }
 
 NetworkLoobyPtr createNetworkLooby() {

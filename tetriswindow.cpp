@@ -189,8 +189,8 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 	} else if (std::shared_ptr<NewConnection> newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
 		auto networkLooby = getNetworkLoobyPtr();
 		networkLooby->clear();
-		newConnection->iterate([&](int id, int nbrOfPlayers) {
-			networkLooby->addConnection(id,nbrOfPlayers);
+		newConnection->iterate([&](int id, int nbrOfPlayers, bool ready) {
+			networkLooby->addConnection(id,nbrOfPlayers, ready);
 		});
 		
 		switch (newConnection->status_) {

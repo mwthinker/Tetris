@@ -257,7 +257,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			}
 			{
 				auto newConnection = std::make_shared<NewConnection>(NewConnection::SERVER);
-				newConnection->add(network_->getId(),localUser_->getNbrOfPlayers());
+				newConnection->add(network_->getId(),localUser_->getNbrOfPlayers(),localUser_->isReady());
 				signalEvent(newConnection);
 			}
 			break;
@@ -402,8 +402,8 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			// This is not a server?
 			if (network_->getId() != network_->getServerId()) {
 				// Only real clients (i.e. not server).
-				clientReceiveStartInfo(data);
-				std::cout << "\nClientReceiveStartInfo" << std::endl;
+				clientReceiveServerInfo(data);
+				std::cout << "\nClientReceiveServerInfo" << std::endl;
 			}
 
 			std::cout << "\nPACKET_SERVERINFO" << std::endl;
@@ -609,9 +609,10 @@ void Protocol::sendServerInfo() {
 	data << PACKET_SERVERINFO;
 	iterateUserConnections([&](const UserConnection& user) {
 		data << user.getId();
+		data << user.isReady();
 		data << user.getNbrOfPlayers();
 		nbrOfPlayers_ += user.getNbrOfPlayers();
-		newConnection->add(user.getId(),user.getNbrOfPlayers());
+		newConnection->add(user.getId(),user.getNbrOfPlayers(),user.isReady());
 		for (PlayerPtr player : user) {
 			data << player->getId();
 		}
@@ -623,7 +624,7 @@ void Protocol::sendServerInfo() {
 	std::cout << "\nSendStartInfo" << std::endl;
 }
 
-void Protocol::clientReceiveStartInfo(mw::Packet data) {
+void Protocol::clientReceiveServerInfo(mw::Packet data) {
 	if (data.size() < 3) {
 		throw ProtocolError();
 	}
@@ -635,10 +636,11 @@ void Protocol::clientReceiveStartInfo(mw::Packet data) {
 	int index = 0;
 	while (++index < data.size()) {
 		int id = data[index];
+		bool ready = data[++index] != 0;
 		int nbrOfPlayers = data[++index];
 		nbrOfPlayers_ += nbrOfPlayers;
 
-		newConnection->add(id,nbrOfPlayers);
+		newConnection->add(id,nbrOfPlayers,ready);
 
 		// This network (local)?
 		if (id == network_->getId()) {
@@ -648,6 +650,7 @@ void Protocol::clientReceiveStartInfo(mw::Packet data) {
 				int playerId = data[++index];
 				PlayerPtr player(new LocalPlayer(playerId,devices_[i]));
 				localUser_->add(player);
+				localUser_->setReady(ready);
 			}
 		} else {
 			UserConnectionPtr user(new UserConnection(id));
@@ -656,6 +659,7 @@ void Protocol::clientReceiveStartInfo(mw::Packet data) {
 				int playerId = data[++index];
 				PlayerPtr player(new RemotePlayer(playerId));
 				user->add(player);
+				user->setReady(ready);
 			}
 		}
 	}

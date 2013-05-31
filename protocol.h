@@ -34,19 +34,31 @@ public:
 		status_ = status;
 	}
 
-	void add(int id, int nbrOfPlayers) {
-		pairIdNbrVector_.push_back(std::pair<int,int>(id, nbrOfPlayers));
+	void add(int id, int nbrOfPlayers, bool ready) {
+		dataV.push_back(Data(id, nbrOfPlayers,ready));
 	}
 
-	void iterate(std::function<void(int id,int nbrOfPlayers)> funcIdPort) {
-		for (std::pair<int,int>& pair : pairIdNbrVector_) {
-			funcIdPort(pair.first,pair.second);
+	void iterate(std::function<void(int id,int nbrOfPlayers, bool ready)> funcIdPort) {
+		for (const Data& data : dataV) {
+			funcIdPort(data.id_,data.nbr_,data.ready_);
 		}
 	}
 	
 	Status status_;
 private:
-	std::vector<std::pair<int,int>> pairIdNbrVector_;
+	struct Data {
+		Data(int id, int nbr, bool ready) {
+			id_ = id;
+			nbr_ = nbr;
+			ready_ = ready;
+		}
+
+		int id_;
+		int nbr_;
+		bool ready_;
+	};
+
+	std::vector<Data> dataV;
 };
 
 class GameReady : public NetworkEvent {
@@ -244,7 +256,7 @@ private:
 
 	// Client received data from server. The server assignes id about all
 	// players in the game.
-	void clientReceiveStartInfo(mw::Packet data);
+	void clientReceiveServerInfo(mw::Packet data);
 
 	// Sends information about the start block and preview block of all local players.
 	void sendStartBlock();
