@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-LocalPlayer::LocalPlayer(int id, const DevicePtr& device) : Player(id,false) {
+LocalPlayer::LocalPlayer(int id, int width, int height, int maxLevel, const DevicePtr& device) : Player(id,width,height,maxLevel,false) {
 	int nbrOfRows = 20;
 	leftHandler_ = new MoveHandler(0.09); // 0.12
 	rightHandler_ = new MoveHandler(0.09); // 0.12

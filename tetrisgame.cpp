@@ -18,6 +18,9 @@ TetrisGame::TetrisGame() {
     nbrOfAlivePlayers_ = 0;
     timeStep_ = 0.017f; // Fix time step for physics update.
     accumulator_ = 0.0f; // Time accumulator.
+    width_ = 10;
+    height_ = 20;
+    maxLevel_ = 20;
 }
 
 TetrisGame::~TetrisGame() {
@@ -50,8 +53,11 @@ void TetrisGame::updatePlayer(PlayerInfoPtr player, double deltaTime) {
     }
 }
 
-void TetrisGame::initGame() {
+void TetrisGame::initGame(int width, int height, int maxLevel, bool local) {
 	nbrOfAlivePlayers_ = getNbrOfPlayers();
+	width_ = width;
+	height_ = height;
+	maxLevel_ = maxLevel;
 }
 
 void TetrisGame::draw() {
@@ -180,8 +186,8 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		} else {
 			// Singleplayer.
 			player->setGameOverMessage("Game over!");
-			// Is a local game?
-			if (getStatus() == Protocol::LOCAL) {
+			// Is local game? And is the correct settings?
+			if (local_ && width_ == 10 && height_ == 20 && maxLevel_ == 20) {
                 signalEvent(std::make_shared<GameOver>(player->getPoints()));
 			}
 		}
@@ -219,7 +225,7 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		}
 
 		// Set level to this player. Only when this players cleares a row.
-		int maxLevel = 20;
+		int maxLevel = player->getMaxLevel();
 		if (getNbrOfPlayers() > 1) {
 			// Multiplayer
 			// Higher counter bar to level up due to more players that contribute to

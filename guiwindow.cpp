@@ -49,8 +49,8 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	multiFrame_.setBackground(background,createServerFrameIndex_);
 	multiFrame_.setBackground(background,loobyClientFrameIndex_);
 	multiFrame_.setBackground(background,loobyServerFrameIndex_);
-	multiFrame_.setBackground(background,waitToConnectFrameIndex_);	
-	multiFrame_.setBackground(background,networkPlayFrameIndex_);	
+	multiFrame_.setBackground(background,waitToConnectFrameIndex_);
+	multiFrame_.setBackground(background,networkPlayFrameIndex_);
 
 	hDistance_ = 30;
 
@@ -162,7 +162,7 @@ void GuiWindow::initFrameMenu() {
 	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::GuiItem*) {
 		resumeButton_->setVisible(true);
 		abortGame();
-		createLocalGame();
+		createLocalGame(10,20,20);
 	});
 
 	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::GuiItem*) {
@@ -284,7 +284,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNumberOfLocalPlayers(newNbr);
 
-		createLocalGame();
+		createLocalGame(10,20,20);
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
@@ -378,7 +378,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(textItem2,140,50,false,true);
 	customPlayHeight_ = createTextBox(35);
 	customPlayHeight_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
-	customPlayHeight_->setText("10");
+	customPlayHeight_->setText("20");
 	multiFrame_.add(customPlayHeight_,200,50,false,true);
 
 	// Set max level -----------------------------------------------------
@@ -398,7 +398,7 @@ void GuiWindow::initCustomPlayFrame() {
 		stream << customPlaymaxLevel_->getText() << " ";
 		int width, height, maxLevel;
 		stream >> width >> height >> maxLevel;
-		createCustomGame(width,height,maxLevel);
+		createLocalGame(width,height,maxLevel);
 		resumeButton_->setVisible(true);
 	});
 
@@ -585,7 +585,7 @@ void GuiWindow::initCreateServerFrame() {
 		stream << portBox_->getText();
 		int width, height, port;
 		stream >> width >> height >> port;
-		createServerGame(port);
+		createServerGame(port, width, height);
 		resumeButton_->setVisible(false);
 		multiFrame_.setCurrentFrame(loobyServerFrameIndex_);
 	});

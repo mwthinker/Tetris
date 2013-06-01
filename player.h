@@ -13,7 +13,7 @@
 
 class PlayerInfo {
 public:
-	PlayerInfo(int id) : graphicBoard_(tetrisBoard_), id_(id) {
+	PlayerInfo(int id, int width, int height, int maxLevel) : tetrisBoard_(height,width,0.8), graphicBoard_(tetrisBoard_), maxLevel_(maxLevel), id_(id) {
 		reset();
     }
 
@@ -90,6 +90,10 @@ public:
         return graphicBoard_.getHeight();
     }
 
+    int getMaxLevel() const {
+        return maxLevel_;
+    }
+
 	// Return true when a gameEvent is polled otherwise false.
     bool pollGameEvent(GameEvent& gameEvent) {
         return tetrisBoard_.pollGameEvent(gameEvent);
@@ -157,6 +161,7 @@ private:
 	std::string name_;     // The name of the player.
 	int levelUpCounter_;   // Is used to determine when to level up.
 
+    const int maxLevel_;
 	const int id_;
 };
 
@@ -164,7 +169,7 @@ typedef std::shared_ptr<PlayerInfo> PlayerInfoPtr;
 
 class Player : public PlayerInfo {
 public:
-	Player(int id, bool remote) : PlayerInfo(id) {
+	Player(int id, int width, int height, int maxLevel, bool remote) : PlayerInfo(id,width,height,maxLevel) {
 		tetrisBoard_.setDecideRandomBlockType(!remote);
     }
 
@@ -175,7 +180,7 @@ public:
 	void restart() {
 		moves_ = std::queue<TetrisBoard::Move>();
 		bool random = tetrisBoard_.isDecideRandomBlockType();
-		tetrisBoard_ = TetrisBoard();
+		tetrisBoard_ = TetrisBoard(tetrisBoard_.getNbrOfRows(),tetrisBoard_.getNbrOfColumns());
 		tetrisBoard_.setDecideRandomBlockType(random);
 		reset();
 	}
@@ -226,7 +231,7 @@ private:
         moves_.pop();
         return true;
     }
-	
+
 	std::queue<TetrisBoard::Move> moves_;
 };
 

@@ -93,11 +93,17 @@ Protocol::~Protocol() {
 	delete network_;
 }
 
-void Protocol::createLocalGame(const std::vector<DevicePtr>& devices) {
+void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int width, int height, int maxLevel) {
+    width_ = width;
+	height_ = height;
+	maxLevel_ = maxLevel;
 	connect(devices,LOCAL);
 }
 
-void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int port) {
+void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int port, int width, int height) {
+	width_ = width;
+	height_ = height;
+	maxLevel_ = 20;
 	setServerPort(port);
 	connect(devices,SERVER);
 }
@@ -242,7 +248,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			users_.push_back(localUser_);
 			// Add new player to all local players.
 			for (const DevicePtr& device : devices) {
-				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_,device)));
+				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, maxLevel_, device)));
 			}
 			break;
 		case SERVER:
@@ -253,7 +259,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			users_.push_back(localUser_);
 			// Add new player to all local players.
 			for (const DevicePtr& device : devices) {
-				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_,device)));
+				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, maxLevel_, device)));
 			}
 			{
 				auto newConnection = std::make_shared<NewConnection>(NewConnection::SERVER);
@@ -589,7 +595,7 @@ void Protocol::serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet pack
 	remote->clear();
 
 	for (int i = 0; i < nbrOfPlayers; ++i) {
-		PlayerPtr player(new RemotePlayer(++playerId_));
+		PlayerPtr player(new RemotePlayer(++playerId_, width_, height_, maxLevel_));
 		remote->add(player);
 	}
 }
@@ -611,6 +617,7 @@ void Protocol::sendServerInfo() {
 	// Add new player to all human players.
 	mw::Packet data;
 	data << PACKET_SERVERINFO;
+	data << width_ << height_;
 	iterateUserConnections([&](const UserConnection& user) {
 		data << user.getId();
 		data << user.isReady();
@@ -636,8 +643,11 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 	users_.clear();
 	nbrOfPlayers_ = 0;
 	auto newConnection = std::make_shared<NewConnection>(NewConnection::CLIENT);
+    width_ = data[1];
+    height_ = data[2];
+    maxLevel_ = 20;
 
-	int index = 0;
+	int index = 2;
 	while (++index < data.size()) {
 		int id = data[index];
 		bool ready = data[++index] != 0;
@@ -652,7 +662,7 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 			users_.push_back(localUser_);
 			for (int i = 0; i < nbrOfPlayers; ++i) {
 				int playerId = data[++index];
-				PlayerPtr player(new LocalPlayer(playerId,devices_[i]));
+				PlayerPtr player(new LocalPlayer(playerId, width_, height_, maxLevel_,devices_[i]));
 				localUser_->add(player);
 				localUser_->setReady(ready);
 			}
@@ -661,7 +671,7 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 			users_.push_back(user);
 			for (int i = 0; i < nbrOfPlayers; ++i) {
 				int playerId = data[++index];
-				PlayerPtr player(new RemotePlayer(playerId));
+				PlayerPtr player(new RemotePlayer(playerId, width_, height_, maxLevel_));
 				user->add(player);
 				user->setReady(ready);
 			}
@@ -685,7 +695,7 @@ void Protocol::sendClientInfo() {
 // char type = STARTGAME
 void Protocol::serverSendStartGame() {
 	mw::Packet data;
-	data.push_back(PACKET_STARTGAME);	
+	data.push_back(PACKET_STARTGAME);
 	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 
 	std::cout << "\nServerSendStartGame!" << std::endl;
@@ -853,7 +863,7 @@ void Protocol::clientStartGame() {
 
 	sendStartBlock();
 	std::cout << "\nPACKET_STARTGAME" << std::endl;
-	initGame();
+	initGame(width_,height_,maxLevel_, status_ == LOCAL);
 	// Signals the gui that the game is not paused.
 	signalEvent(std::make_shared<GamePause>(pause_));
 }

@@ -10,7 +10,7 @@
 
 class LocalPlayer : public Player {
 public:
-    LocalPlayer(int id, const DevicePtr& device);
+    LocalPlayer(int id, int width, int height, int maxLevel, const DevicePtr& device);
     ~LocalPlayer();
 
     void update(double deltaTime);

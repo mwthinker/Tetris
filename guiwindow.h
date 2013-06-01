@@ -50,11 +50,9 @@ private:
 	virtual void drawGame(Uint32 deltaTime) = 0;
 	virtual void updateGameEvent(const SDL_Event& windowEvent) = 0;
 
-	virtual void createCustomGame(int width, int height, int maxLevel) = 0;
-
-	virtual void abortGame() = 0;
-    virtual void createLocalGame() = 0;
-	virtual void createServerGame(int port) = 0;
+    virtual void abortGame() = 0;
+    virtual void createLocalGame(int width, int height, int maxLevel) = 0;
+	virtual void createServerGame(int port, int width, int height) = 0;
 	virtual void createClientGame(int port, std::string ip) = 0;
 
 	virtual bool isPaused() const = 0;

@@ -17,9 +17,8 @@ private:
 	void abortGame() override;
 	void startGame() override;
 	void restartGame() override;
-	void createCustomGame(int width, int height, int maxLevel) override;
-	void createLocalGame() override;
-	void createServerGame(int port) override;
+	void createLocalGame(int width = 10, int height = 20, int maxLevel = 20) override;
+	void createServerGame(int port, int width, int height) override;
 	void createClientGame(int port, std::string ip) override;
 
 	bool isPaused() const override;

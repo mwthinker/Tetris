@@ -43,7 +43,7 @@ public:
 			funcIdPort(data.id_,data.nbr_,data.ready_);
 		}
 	}
-	
+
 	Status status_;
 private:
 	struct Data {
@@ -75,7 +75,7 @@ public:
 class GameStart : public NetworkEvent {
 public:
 	enum Status {LOCAL,SERVER,CLIENT};
-	
+
 	GameStart(Status status) {
 		status_ = status;
 	}
@@ -139,8 +139,8 @@ public:
 
 	void update(Uint32 deltaTime);
 
-	void createLocalGame(const std::vector<DevicePtr>& devices);
-	void createServerGame(const std::vector<DevicePtr>& devices, int port);
+	void createLocalGame(const std::vector<DevicePtr>& devices, int width, int height, int maxLevel);
+	void createServerGame(const std::vector<DevicePtr>& devices, int port, int width, int height);
 	void createClientGame(const std::vector<DevicePtr>& devices, int port, std::string ip);
 
 	void startGame();
@@ -177,7 +177,7 @@ protected:
     void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
 	// Is called at the beginning of new round.
-	virtual void initGame() = 0;
+	virtual void initGame(int width, int height, int maxLevel, bool local) = 0;
 
 private:
 	void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
@@ -283,6 +283,7 @@ private:
 	int playerId_; // The id for the last added player.
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 	Status status_;
+	int width_, height_, maxLevel_;
 };
 
 #endif // PROTOCOL_H
