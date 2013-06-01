@@ -237,6 +237,9 @@ void GuiWindow::initPlayFrame() {
 	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem* item) {
 		multiFrame_.setCurrentFrame(0);
 		item->setFocus(false);
+		if (!isPaused()) {
+			changePauseState();
+		}
 	});
 	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
@@ -285,7 +288,7 @@ void GuiWindow::initPlayFrame() {
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
-		setPause(!isPaused());
+		changePauseState();
 		item->setFocus(false);
 	});
 	pause_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {

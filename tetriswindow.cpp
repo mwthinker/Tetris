@@ -109,10 +109,8 @@ bool TetrisWindow::isPaused() const {
 	return tetrisGame_.isPaused();
 }
 
-void TetrisWindow::setPause(bool pause) {
-	if (pause != tetrisGame_.isPaused()) {
-		tetrisGame_.pause();
-	}
+void TetrisWindow::changePauseState() {
+	tetrisGame_.pause();
 }
 
 bool TetrisWindow::isReady() const {

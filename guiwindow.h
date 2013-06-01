@@ -58,7 +58,7 @@ private:
 	virtual void createClientGame(int port, std::string ip) = 0;
 
 	virtual bool isPaused() const = 0;
-	virtual void setPause(bool pause) = 0;
+	virtual void changePauseState() = 0;
 	virtual bool isReady() const = 0;
 	virtual void changeReadyState() = 0;
 

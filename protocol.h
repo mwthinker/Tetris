@@ -176,7 +176,8 @@ protected:
 
     void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
-	virtual void initGame(int nbrOfPlayers) = 0;
+	// Is called at the beginning of new round.
+	virtual void initGame() = 0;
 
 private:
 	void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
@@ -243,8 +244,6 @@ private:
 
 	// Returns the ip to the server.
 	std::string getConnectToIp() const;
-
-	int getNumberOfPlayers(int connection) const;	
 
 	// @Override ServerFilter. Is only called in server/local mode.
 	// Data (data) is received from client (id). Type (type)

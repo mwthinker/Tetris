@@ -23,7 +23,7 @@ private:
 	void createClientGame(int port, std::string ip) override;
 
 	bool isPaused() const override;
-	void setPause(bool pause) override;
+	void changePauseState() override;
 	bool isReady() const override;
 	void changeReadyState() override;
 

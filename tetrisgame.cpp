@@ -50,8 +50,8 @@ void TetrisGame::updatePlayer(PlayerInfoPtr player, double deltaTime) {
     }
 }
 
-void TetrisGame::initGame(int nbrOfPlayers) {
-	nbrOfAlivePlayers_ = nbrOfPlayers;
+void TetrisGame::initGame() {
+	nbrOfAlivePlayers_ = getNbrOfPlayers();
 }
 
 void TetrisGame::draw() {

@@ -816,10 +816,6 @@ std::string Protocol::getConnectToIp() const {
 	return connectToIp_;
 }
 
-int Protocol::getNumberOfPlayers(int connection) const {
-	return users_[connection]->getNbrOfPlayers();
-}
-
 void Protocol::clientStartGame() {
 	// Game already started?
 	if (start_) {
@@ -857,7 +853,7 @@ void Protocol::clientStartGame() {
 
 	sendStartBlock();
 	std::cout << "\nPACKET_STARTGAME" << std::endl;
-	initGame(nbrOfPlayers_);
+	initGame();
 	// Signals the gui that the game is not paused.
 	signalEvent(std::make_shared<GamePause>(pause_));
 }
