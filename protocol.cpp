@@ -529,6 +529,10 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 	}
 }
 
+void Protocol::iterateAllPlayersInfo(std::function<bool(PlayerInfoPtr)> nextPlayer) const {
+	iterateAllPlayers(nextPlayer); // Is this dangerous??
+}
+
 void Protocol::iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const {
 	for (UserConnectionPtr user : users_) {
 		bool next = true;
@@ -760,7 +764,7 @@ void Protocol::receiveStartBlock(const mw::Packet& data, int id) {
 	std::cout << "\nReceiveStartBlock" << std::endl;
 }
 
-void Protocol::addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows) {
+void Protocol::addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows) {
 	for (PlayerPtr local : *localUser_) {
 		// Is the player to avoid?
 		if (player != local) {

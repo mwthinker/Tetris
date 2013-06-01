@@ -11,50 +11,56 @@
 #include <queue>
 #include <memory>
 
-class Player {
+class PlayerInfo {
 public:
-	Player(int id, bool remote) : graphicBoard_(tetrisBoard_), id_(id) {
-		tetrisBoard_.setDecideRandomBlockType(!remote);
-		init();
+	PlayerInfo(int id) : graphicBoard_(tetrisBoard_), id_(id) {
+		reset();
     }
 
-    virtual ~Player() {
+    virtual ~PlayerInfo() {
 	}
 
-	void restart() {
-		bool random = tetrisBoard_.isDecideRandomBlockType();
-		tetrisBoard_ = TetrisBoard();
-		tetrisBoard_.setDecideRandomBlockType(random);
-		init();
-	}
+	// Is supposed to call pushMove with the appropriate move.
+	// This will indirectly update the tetrisboard.
+	virtual void update(double deltaTime) = 0;
 
+	// Set the number of cleared rows.
+	// May not sync perfectly over network.
     void setNbrOfClearedRows(int nbr) {
         nbrOfClearedRows_ = nbr;
         graphicBoard_.setNbrOfClearedRows(nbr);
     }
 
+	// Get the number of cleared rows.
 	int getNbrOfClearedRows() const {
         return nbrOfClearedRows_;
     }
 
+	// Set the number of points.
+	// May not sync perfectly over network.
     void setPoints(int points) {
         points_ = points;
         graphicBoard_.setPoints(points);
     }
 
+	// Get the number of points.
 	int getPoints() const {
         return points_;
     }
 
+	// Set the level.
+	// May not sync perfectly over network.
     void setLevel(int level) {
         level_ = level;
         graphicBoard_.setLevel(level_);
     }
 
+	// Get the level.
 	int getLevel() const  {
         return level_;
     }
 
+	// Set the player name.
     void setName(std::string name) {
         name_ = name;
         graphicBoard_.setName(name);
@@ -94,11 +100,85 @@ public:
 		return id_;
 	}
 
+	// Returns the tetrisboard.
 	const TetrisBoard& getTetrisBoard() const {
 		return tetrisBoard_;
 	}
 
-	virtual void update(double deltaTime) = 0;
+	// Set the number for which the player should level up.
+	// May not sync perfectly over network.
+	void setLevelUpCounter(int value) {
+		levelUpCounter_ = value;
+	}
+
+	// Get the level up value.
+	int getLevelUpCounter() const {
+		return levelUpCounter_;
+	}
+
+	// Trigger the player to be game over.
+	// May not sync perfectly over network, and can cause
+	// the tetrisboard logic to behave out of sync.
+	void triggerGameOverEvent() {
+		tetrisBoard_.triggerGameOverEvent();
+	}
+
+	// Get the current block type for the board.
+	BlockType getCurrentBlock() const {
+		return tetrisBoard_.currentBlock().blockType();
+	}
+
+	// Get the next block type for the board.
+	BlockType getNextBlock() const {
+		return tetrisBoard_.nextBlock().blockType();
+	}
+
+protected:
+	TetrisBoard tetrisBoard_;
+
+	// Resets all values.
+	void reset() {
+		level_ = 1;
+        points_ = 0;
+        nbrOfClearedRows_ = 0;
+		levelUpCounter_ = 0;
+		graphicBoard_.setPoints(points_);
+		graphicBoard_.setLevel(level_);
+		graphicBoard_.setNbrOfClearedRows(nbrOfClearedRows_);
+		graphicBoard_.setGameOverMessage("Game over!");
+	}
+
+private:
+    GraphicBoard graphicBoard_;
+
+	int level_;			   // Current level.
+	int points_;		   // Number of points.
+	int nbrOfClearedRows_; // Number of rows the player cleared.
+	std::string name_;     // The name of the player.
+	int levelUpCounter_;   // Is used to determine when to level up.
+
+	const int id_;
+};
+
+typedef std::shared_ptr<PlayerInfo> PlayerInfoPtr;
+
+class Player : public PlayerInfo {
+public:
+	Player(int id, bool remote) : PlayerInfo(id) {
+		tetrisBoard_.setDecideRandomBlockType(!remote);
+    }
+
+    virtual ~Player() {
+	}
+
+	// Restart the player.
+	void restart() {
+		moves_ = std::queue<TetrisBoard::Move>();
+		bool random = tetrisBoard_.isDecideRandomBlockType();
+		tetrisBoard_ = TetrisBoard();
+		tetrisBoard_.setDecideRandomBlockType(random);
+		reset();
+	}
 
 	bool updateBoard(TetrisBoard::Move& move, BlockType& next) {
 		TetrisBoard::Move polledMove;
@@ -129,26 +209,6 @@ public:
 		tetrisBoard_.addRows(blockTypes);
 	}
 
-	void setLevelUpCounter(int value) {
-		levelUpCounter_ = value;
-	}
-
-	int getLevelUpCounter() const {
-		return levelUpCounter_;
-	}
-
-	void triggerGameOverEvent() {
-		tetrisBoard_.triggerGameOverEvent();
-	}
-
-	BlockType getCurrentBlock() const {
-		return tetrisBoard_.currentBlock().blockType();
-	}
-
-	BlockType getNextBlock() const {
-		return tetrisBoard_.nextBlock().blockType();
-	}
-
 protected:
     // Pushed to a queue.
     void pushMove(TetrisBoard::Move move) {
@@ -166,27 +226,7 @@ private:
         moves_.pop();
         return true;
     }
-
-	void init() {
-		level_ = 1;
-        points_ = 0;
-        nbrOfClearedRows_ = 0;
-		levelUpCounter_ = 0;
-		graphicBoard_.setPoints(points_);
-		graphicBoard_.setLevel(level_);
-		graphicBoard_.setNbrOfClearedRows(nbrOfClearedRows_);
-		graphicBoard_.setGameOverMessage("Game over!");
-	}
-
-    TetrisBoard tetrisBoard_;
-    GraphicBoard graphicBoard_;
-
-	int level_;			   // Current level.
-	int points_;		   // Number of points.
-	int nbrOfClearedRows_; // Number of rows the player cleared.
-	std::string name_;     // The name of the player.
-	const int id_;
-	int levelUpCounter_;	// Is used to determine when to level up.
+	
 	std::queue<TetrisBoard::Move> moves_;
 };
 

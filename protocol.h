@@ -172,13 +172,14 @@ protected:
 
 	void connect(const std::vector<DevicePtr>& devices, Status status);
 
-    void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
+	void iterateAllPlayersInfo(std::function<bool(PlayerInfoPtr)> nextPlayer) const;
 
-    void addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows);
+    void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
 	virtual void initGame(int nbrOfPlayers) = 0;
 
 private:
+	void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
 	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
 

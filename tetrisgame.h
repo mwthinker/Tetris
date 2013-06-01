@@ -21,9 +21,9 @@ public:
 
 private:
     void soundEffects(GameEvent gameEvent);
-	void applyRules(PlayerPtr player, GameEvent gameEvent);
+	void applyRules(PlayerInfoPtr player, GameEvent gameEvent);
 	void updateGame(double deltaTime) override;
-	void updatePlayer(PlayerPtr player, double deltaTime);
+	void updatePlayer(PlayerInfoPtr player, double deltaTime);
 	void initGame(int nbrOfPlayers);
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
