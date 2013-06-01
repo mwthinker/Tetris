@@ -624,7 +624,7 @@ void Protocol::sendServerInfo() {
 	});
 
 	signalEvent(newConnection);
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 	std::cout << "\nSendStartInfo" << std::endl;
 }
 
@@ -677,7 +677,7 @@ void Protocol::sendClientInfo() {
 	mw::Packet data;
 	data << PACKET_CLIENTINFO;
 	data << devices_.size();
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 
 	std::cout << "\nSendClientInfo" << std::endl;
 }
@@ -686,7 +686,7 @@ void Protocol::sendClientInfo() {
 void Protocol::serverSendStartGame() {
 	mw::Packet data;
 	data.push_back(PACKET_STARTGAME);	
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 
 	std::cout << "\nServerSendStartGame!" << std::endl;
 }
@@ -694,7 +694,7 @@ void Protocol::serverSendStartGame() {
 void Protocol::sendReady() {
 	mw::Packet data;
 	data.push_back(PACKET_READY);
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 
 	std::cout << "\nSendReady!" << std::endl;
 }
@@ -709,7 +709,7 @@ void Protocol::sendInput(char playerId, TetrisBoard::Move move, BlockType next) 
 	data << playerId;
 	data << move;
 	data << next;
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 }
 
 void Protocol::receivInput(mw::Packet packet, char& playerId, TetrisBoard::Move& move, BlockType& next) {
@@ -727,7 +727,7 @@ void Protocol::sendStartBlock() {
 		data << player->getCurrentBlock();
 		data << player->getNextBlock();
 	}
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 
 	std::cout << "\nSendStartBlock" << std::endl;
 }
@@ -783,13 +783,13 @@ void Protocol::sendTetrisInfo(int playerId, const std::vector<BlockType>& blockT
 	data.push_back(PACKET_TETRIS);
 	data.push_back(playerId);
 	data.insert(data.end(),blockTypes.begin(), blockTypes.end());
-	network_->pushToSendBuffer(mw::Packet(data));
+	network_->pushToSendBuffer(mw::Packet(data), mw::PacketType::RELIABLE);
 }
 
 void Protocol::sendPause() {
 	mw::Packet data;
 	data << PACKET_PAUSE;
-	network_->pushToSendBuffer(data);
+	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 }
 
 void Protocol::setConnectToPort(int port) {

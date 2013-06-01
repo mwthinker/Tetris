@@ -135,7 +135,7 @@ public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
 	Protocol();
-	~Protocol();
+	virtual ~Protocol();
 
 	void update(Uint32 deltaTime);
 
