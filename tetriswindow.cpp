@@ -34,7 +34,7 @@ TetrisWindow::TetrisWindow() {
 		std::cout << joystick->getName() << std::endl;
 		DevicePtr device(new InputJoystick(joystick, 0, 1));
 		devices_.push_back(device);
-	}	
+	}
 
 	loadHighscore();
 }
@@ -190,7 +190,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 		newConnection->iterate([&](int id, int nbrOfPlayers, bool ready) {
 			networkLooby->addConnection(id,nbrOfPlayers, ready);
 		});
-		
+
 		switch (newConnection->status_) {
 		case NewConnection::CLIENT:
 			gotoClientLoobyFrame();

@@ -180,7 +180,10 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		} else {
 			// Singleplayer.
 			player->setGameOverMessage("Game over!");
-			signalEvent(std::make_shared<GameOver>(player->getPoints()));
+			// Is a local game?
+			if (getStatus() == Protocol::LOCAL) {
+                signalEvent(std::make_shared<GameOver>(player->getPoints()));
+			}
 		}
 		break;
 	default:
