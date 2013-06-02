@@ -59,6 +59,18 @@ void TetrisWindow::abortGame() {
 	tetrisGame_.closeGame();
 }
 
+void TetrisWindow::createLocalGame() {
+	const int size = devices_.size();
+	std::vector<DevicePtr> tmpDevices;
+	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+		tmpDevices.push_back(devices_[i]);
+	}
+
+	tetrisGame_.closeGame();
+	tetrisGame_.createLocalGame(tmpDevices);
+	tetrisGame_.startGame();
+}
+
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;

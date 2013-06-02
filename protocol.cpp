@@ -93,6 +93,10 @@ Protocol::~Protocol() {
 	delete network_;
 }
 
+void Protocol::createLocalGame(const std::vector<DevicePtr>& devices) { 
+	connect(devices,LOCAL);
+}
+
 void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int width, int height, int maxLevel) {
     width_ = width;
 	height_ = height;

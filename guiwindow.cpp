@@ -284,7 +284,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNumberOfLocalPlayers(newNbr);
 
-		createLocalGame(10,20,20);
+		createLocalGame();
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {

@@ -139,6 +139,7 @@ public:
 
 	void update(Uint32 deltaTime);
 
+	void createLocalGame(const std::vector<DevicePtr>& devices);
 	void createLocalGame(const std::vector<DevicePtr>& devices, int width, int height, int maxLevel);
 	void createServerGame(const std::vector<DevicePtr>& devices, int port, int width, int height);
 	void createClientGame(const std::vector<DevicePtr>& devices, int port, std::string ip);
