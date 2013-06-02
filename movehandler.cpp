@@ -26,3 +26,7 @@ bool MoveHandler::doAction() {
 	}
 	return false;
 }
+
+double MoveHandler::getWaitingTime() const {
+    return waitingTime_;
+}

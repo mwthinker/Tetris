@@ -2,6 +2,7 @@
 #define LOCALPLAYER_H
 
 #include "actionhandler.h"
+#include "movehandler.h"
 #include "device.h"
 #include "tetrisboard.h"
 #include "player.h"
@@ -24,7 +25,7 @@ private:
     // Controls how the moving block is moved
     ActionHandler* leftHandler_;
     ActionHandler* rightHandler_;
-    ActionHandler* downHandler_;
+    MoveHandler* downHandler_;
     ActionHandler* rotateHandler_;
 
     DevicePtr device_;

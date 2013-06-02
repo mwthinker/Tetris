@@ -8,6 +8,7 @@ public:
 	MoveHandler(double waitingTime);
 	void update(double timeStep, bool action);
 	bool doAction();
+	double getWaitingTime() const;
 private:
 	bool action_;
 	double lastTime_, waitingTime_, time_;

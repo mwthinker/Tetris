@@ -10,7 +10,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, int maxLevel, const Devi
 	int nbrOfRows = 20;
 	leftHandler_ = new MoveHandler(0.09); // 0.12
 	rightHandler_ = new MoveHandler(0.09); // 0.12
-	downHandler_ = new MoveHandler(nbrOfRows/20.0 * 0.05);
+	downHandler_ = new MoveHandler(nbrOfRows/20.0 * 0.055);
 	rotateHandler_ = new RotationHandler();
 
 	time_ = 0.0;
@@ -46,7 +46,9 @@ void LocalPlayer::update(double deltaTime) {
 		pushMove(TetrisBoard::RIGHT);
 	}
 
-	downHandler_->update(deltaTime,input.down);
+    // This calulates a new deltaTime so that the downHandler and gravity together has the max speed of the downHandler.
+	double newDeltaTime = deltaTime/(1.0 - downHandler_->getWaitingTime()/downTime);
+	downHandler_->update(newDeltaTime,input.down);
 	if (downHandler_->doAction()) {
 		pushMove(TetrisBoard::DOWN);
 	}
