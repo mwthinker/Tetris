@@ -16,11 +16,13 @@
 
 TetrisGame::TetrisGame() {
     nbrOfAlivePlayers_ = 0;
-    timeStep_ = 0.017f; // Fix time step for physics update.
-    accumulator_ = 0.0f; // Time accumulator.
-    width_ = 10;
-    height_ = 20;
+    timeStep_ = 0.017; // Fix time step for physics update.
+    accumulator_ = 0.0; // Time accumulator.
+    colums_ = 10;
+    rows_ = 20;
     maxLevel_ = 20;
+	width_ = 400;
+	height_ = 400;
 }
 
 TetrisGame::~TetrisGame() {
@@ -53,19 +55,30 @@ void TetrisGame::updatePlayer(PlayerInfoPtr player, double deltaTime) {
     }
 }
 
-void TetrisGame::initGame(int width, int height, int maxLevel, bool local) {
+void TetrisGame::initGame(int colums, int rows, int maxLevel, bool local) {
 	nbrOfAlivePlayers_ = getNbrOfPlayers();
-	width_ = width;
-	height_ = height;
+	int nbr = nbrOfAlivePlayers_;
+	iterateAllPlayersInfo([&](PlayerInfoPtr player) {        
+		width_ = nbrOfAlivePlayers_ * player->getWidth();
+		height_ = player->getHeight();
+		std::stringstream stream;
+		stream << "Player " << nbrOfAlivePlayers_ - nbr + 1;
+		player->setName(stream.str());
+		--nbr;
+        return true;
+    });	
+	
+	colums_ = colums;
+	rows_ = rows;
 	maxLevel_ = maxLevel;
 }
 
 void TetrisGame::draw() {
 	glPushMatrix();
-
+	glTranslated(width_,0,0);
     iterateAllPlayersInfo([&](PlayerInfoPtr player) {
+		glTranslated(-player->getWidth(),0,0);
         player->draw();
-		glTranslated(player->getWidth(),0,0);
         return true;
     });
 
@@ -73,13 +86,7 @@ void TetrisGame::draw() {
 }
 
 double TetrisGame::getWidth() const {
-    double width = 0;
-    iterateAllPlayersInfo([&](PlayerInfoPtr player) {
-        width += player->getWidth();
-        return true;
-    });
-
-	return width;
+	return width_;
 }
 
 double TetrisGame::getHeight() const {

@@ -24,14 +24,15 @@ private:
 	void applyRules(PlayerInfoPtr player, GameEvent gameEvent);
 	void updateGame(double deltaTime) override;
 	void updatePlayer(PlayerInfoPtr player, double deltaTime);
-	void initGame(int width, int height, int maxLevel, bool local) override;
+	void initGame(int colums, int rows, int maxLevel, bool local) override;
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
 
 	// Fix timestep.
     double timeStep_;
 	double accumulator_;
-	int width_, height_, maxLevel_;
+	double width_, height_;
+	int rows_, colums_, maxLevel_;
 	bool local_;
 };
 
