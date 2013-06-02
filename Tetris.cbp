@@ -56,7 +56,6 @@
 		<Unit filename="block.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
-		<Unit filename="choosenbrofplayers.h" />
 		<Unit filename="device.cpp" />
 		<Unit filename="device.h" />
 		<Unit filename="devicejoystick.cpp" />
