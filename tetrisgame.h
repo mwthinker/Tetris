@@ -13,7 +13,7 @@ public:
 	// Draws the game.
 	void draw();
 
-	// Returns the width in piĵxels.
+	// Returns the width in pixels.
     double getWidth() const;
 
 	// Returns the width in pixels.
