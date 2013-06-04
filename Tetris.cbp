@@ -61,8 +61,6 @@
 		<Unit filename="devicejoystick.cpp" />
 		<Unit filename="devicejoystick.h" />
 		<Unit filename="devicekeyboard.h" />
-		<Unit filename="drawboard.cpp" />
-		<Unit filename="drawboard.h" />
 		<Unit filename="frame.cpp" />
 		<Unit filename="frame.h" />
 		<Unit filename="gamefont.cpp" />
@@ -98,7 +96,6 @@
 		<Unit filename="player.h" />
 		<Unit filename="playerinfo.cpp" />
 		<Unit filename="playerinfo.h" />
-		<Unit filename="portformatter.h" />
 		<Unit filename="protocol.cpp" />
 		<Unit filename="protocol.h" />
 		<Unit filename="remoteplayer.h" />
