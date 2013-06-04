@@ -31,7 +31,6 @@ private:
 	// Fix timestep.
     double timeStep_;
 	double accumulator_;
-	double width_, height_;
 	int rows_, columns_, maxLevel_;
 	bool local_;
 };

@@ -21,8 +21,6 @@ TetrisGame::TetrisGame() {
     columns_ = 10;
     rows_ = 20;
     maxLevel_ = 20;
-	width_ = 400;
-	height_ = 400;
 }
 
 TetrisGame::~TetrisGame() {
@@ -59,8 +57,6 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 	nbrOfAlivePlayers_ = getNbrOfPlayers();
 	int nbr = nbrOfAlivePlayers_;
 	iterateAllPlayersInfo([&](PlayerInfoPtr player) {
-		width_ = nbrOfAlivePlayers_ * player->getWidth();
-		height_ = player->getHeight();
 		std::stringstream stream;
 		stream << "Player " << nbrOfAlivePlayers_ - nbr + 1;
 		player->setName(stream.str());
@@ -74,19 +70,25 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 }
 
 void TetrisGame::draw() {
-	glPushMatrix();
-	glTranslated(width_,0,0);
+	int nbr = getNbrOfPlayers();
+    int i = 0;
     iterateAllPlayersInfo([&](PlayerInfoPtr player) {
-		glTranslated(-player->getWidth(),0,0);
+        ++i;
+        glPushMatrix();
+		glTranslated(player->getWidth() * (nbr-i), 0, 0);
         player->draw();
+        glPopMatrix();
         return true;
     });
-
-	glPopMatrix();
 }
 
 double TetrisGame::getWidth() const {
-	return width_;
+	double width = 400;
+    iterateAllPlayersInfo([&](PlayerInfoPtr player) {
+        width = player->getWidth() * getNbrOfPlayers();
+        return false;
+    });
+    return width;
 }
 
 double TetrisGame::getHeight() const {
