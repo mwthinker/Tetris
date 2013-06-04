@@ -11,7 +11,7 @@
 #include <SDL_opengl.h>
 #include <sstream>
 
-GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetrisBoard) {	
+GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetrisBoard) {
 	height_ = 800; // height for the board
 	voidHeight_ = 10;
 	borderLineThickness_ = 7; // Should be lower than voidHeight_
@@ -63,7 +63,7 @@ void GraphicBoard::draw() {
 	glTranslated(voidHeight_,voidHeight_,0.0);
 	drawBoard();
 	drawInfo();
-	glPopMatrix();	
+	glPopMatrix();
 
 	if (tetrisBoard_.isGameOver()) {
 		glPushMatrix();
@@ -73,7 +73,7 @@ void GraphicBoard::draw() {
 		gameOverMessage_.draw();
 		glPopMatrix();
 	}
-	
+
 	drawBorder();
 }
 
@@ -81,7 +81,6 @@ double GraphicBoard::getWidth() const {
 	if (previwBorderSizeInSquares_*pixlePerSquare_ > text1_.getWidth()) {
 		return tetrisBoard_.getNbrOfColumns()*pixlePerSquare_ + horizontalDistanceToText_ + previwBorderSizeInSquares_*pixlePerSquare_ + voidHeight_*2;
 	} else {
-		std::cout << text1_.getWidth() << "\n";
 		return tetrisBoard_.getNbrOfColumns()*pixlePerSquare_ + horizontalDistanceToText_ + text1_.getWidth() + voidHeight_*2;
 	}
 }
@@ -91,17 +90,15 @@ double GraphicBoard::getHeight() const {
 }
 
 // Private
-void GraphicBoard::drawBorder() {
+void GraphicBoard::drawBorder() const {
 	glPushMatrix();
 	color_.glColor4d();
 	drawFrame(0,0,getWidth(),getHeight(), borderLineThickness_);
-	//drawFrame(100,100,200,200, 7);
 	glPopMatrix();
 }
 
 void GraphicBoard::drawInfo() {
 	glPushMatrix();
-	//glScaled(pixlePerSquare_,pixlePerSquare_,1.0);
 	glTranslated(pixlePerSquare_ * tetrisBoard_.getNbrOfColumns() + horizontalDistanceToText_ + voidHeight_,0,0);
 	glTranslated(0,getHeight() - text1_.getCharacterSize() - 30,0);
 	text1_.setText(name_);
@@ -116,21 +113,21 @@ void GraphicBoard::drawInfo() {
 
 	glTranslated(0,-650,0);
 	std::stringstream ss;
-	ss << "Level " << level_;//tetrisBoard_->getLevel();
+	ss << "Level " << level_;
 	text2_.setText(ss.str());
 	glColorWhite();
 	text2_.draw();
 	glTranslated(0,-40,0);
 
 	ss.str("");
-	ss << "Points " << points_;//tetrisBoard_->getPoints();
+	ss << "Points " << points_;
 	text3_.setText(ss.str());
 	text3_.draw();
 	glTranslated(0,-40,0);
 
 
 	ss.str("");
-	ss << "Rows " << nbrOfClearedRows_;//tetrisBoard_->nbrOfClearedRows();
+	ss << "Rows " << nbrOfClearedRows_;
 	text4_.setText(ss.str());
 	text4_.draw();
 	glPopMatrix();
@@ -179,7 +176,7 @@ void GraphicBoard::drawBoard() {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawBeginArea() {
+void GraphicBoard::drawBeginArea() const {
 	int rows = tetrisBoard_.getNbrOfRows();
 	int columns = tetrisBoard_.getNbrOfColumns();
 
@@ -251,16 +248,12 @@ void GraphicBoard::drawSquare(BlockType blockType) {
 	sprite.draw();
 }
 
-void GraphicBoard::drawGrid() {
+void GraphicBoard::drawGrid() const {
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glColor4d(1,0.5,0.5,0.5);
-
 	int rows = tetrisBoard_.getNbrOfRows();
 	int colons = tetrisBoard_.getNbrOfColumns();
-
-	//std::cout << "\n" << rows << " " << colons;
 
 	for (int row = 0; row < rows; ++row) {
 		for (int colon = 0; colon < colons; ++colon) {
@@ -277,7 +270,7 @@ void GraphicBoard::drawGrid() {
 	drawBeginArea();
 }
 
-void GraphicBoard::drawGridSquare() {
+void GraphicBoard::drawGridSquare() const {
 	double red = 0.8, green = 0.2, blue = 0.3;
 
 	// Draws the outer square
@@ -308,7 +301,7 @@ void GraphicBoard::glColorWhite() const {
 	glColor4d(1,1,1,1);
 }
 
-void GraphicBoard::drawFrame(double x1, double y1, double x2, double y2, double width) {
+void GraphicBoard::drawFrame(double x1, double y1, double x2, double y2, double width) const {
 	glBegin(GL_QUADS);
 	glVertex2d(x1, y1);
 	glVertex2d(x2, y1);

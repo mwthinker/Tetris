@@ -2,7 +2,6 @@
 #define GRAPHICBOARD_H
 
 #include "tetrisboard.h"
-#include "drawboard.h"
 
 #include <mw/text.h>
 #include <mw/color.h>
@@ -28,38 +27,38 @@ public:
 
 	// Returns the width the graphic requires to draw (draw()) everything.
     double getWidth() const;
-    
+
 	// Returns the height the graphic requires to draw (draw()) everything.
 	double getHeight() const;
 private:
-    void drawBorder();
+    void drawBorder() const;
     void drawInfo();
     void drawPreviewBlock();
     void drawBoard();
-    void drawBeginArea();
+    void drawBeginArea() const;
     void drawBlock(const Block& block);
     void drawSquare(const Square& square);
     void drawSquare(BlockType blockType);
-    void drawGrid();
-    void drawGridSquare();
+    void drawGrid() const;
+    void drawGridSquare() const;
     void glColorWhite() const;
-    void drawFrame(double x1, double y1, double x2, double y2, double width);
-    
+    void drawFrame(double x1, double y1, double x2, double y2, double width) const;
+
     mw::Text text1_;
     mw::Text text2_;
     mw::Text text3_;
     mw::Text text4_;
-    
-	mw::Text gameOverMessage_;	
-	
+
+	mw::Text gameOverMessage_;
+
 	double pixlePerSquare_;
     const TetrisBoard& tetrisBoard_;
-    
+
     mw::Color color_;
 
     double height_; // Height for the board
 	double voidHeight_; // Height between board and outside screen, up/down and to the left.
-	double borderLineThickness_; // Line thickness for the border. 
+	double borderLineThickness_; // Line thickness for the border.
 	double previwBorderSizeInSquares_; // The preview border size in number of squares.
 	double horizontalDistanceToText_; // Text horizontal distance between board and text.
 
