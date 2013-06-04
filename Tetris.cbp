@@ -82,7 +82,6 @@
 		<Unit filename="highscore.h" />
 		<Unit filename="imagebackground.h" />
 		<Unit filename="inputformatter.h" />
-		<Unit filename="inputipformatter.h" />
 		<Unit filename="inputnumberformatter.h" />
 		<Unit filename="localplayer.cpp" />
 		<Unit filename="localplayer.h" />
@@ -97,6 +96,9 @@
 		<Unit filename="networklooby.h" />
 		<Unit filename="player.cpp" />
 		<Unit filename="player.h" />
+		<Unit filename="playerinfo.cpp" />
+		<Unit filename="playerinfo.h" />
+		<Unit filename="portformatter.h" />
 		<Unit filename="protocol.cpp" />
 		<Unit filename="protocol.h" />
 		<Unit filename="remoteplayer.h" />
@@ -109,6 +111,7 @@
 		<Unit filename="tetrisgame.h" />
 		<Unit filename="tetriswindow.cpp" />
 		<Unit filename="tetriswindow.h" />
+		<Unit filename="textbox.cpp" />
 		<Unit filename="textbox.h" />
 		<Unit filename="textboxdraw.cpp" />
 		<Unit filename="textboxdraw.h" />
