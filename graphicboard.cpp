@@ -18,7 +18,6 @@ GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetris
 	previwBorderSizeInSquares_ = 5;
 	horizontalDistanceToText_ = 40;
 
-	pixlePerSquare_ = 800.0 / (tetrisBoard_.getNbrOfRows() + 2);
 	color_ = mw::Color(237/256.0,78/256.0,8/256.0);
 
 	text1_ = mw::Text("Player",fontDefault);
@@ -59,6 +58,7 @@ void GraphicBoard::setGameOverMessage(std::string message) {
 }
 
 void GraphicBoard::draw() {
+    pixlePerSquare_ = height_ / (tetrisBoard_.getNbrOfRows() + 2);
 	glPushMatrix();
 	glTranslated(voidHeight_,voidHeight_,0.0);
 	drawBoard();
