@@ -24,7 +24,7 @@ private:
 	void applyRules(PlayerInfoPtr player, GameEvent gameEvent);
 	void updateGame(double deltaTime) override;
 	void updatePlayer(PlayerInfoPtr player, double deltaTime);
-	void initGame(int colums, int rows, int maxLevel, bool local) override;
+	void initGame(int columns, int rows, int maxLevel, bool local) override;
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
 
@@ -32,7 +32,7 @@ private:
     double timeStep_;
 	double accumulator_;
 	double width_, height_;
-	int rows_, colums_, maxLevel_;
+	int rows_, columns_, maxLevel_;
 	bool local_;
 };
 

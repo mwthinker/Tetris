@@ -18,7 +18,7 @@ TetrisGame::TetrisGame() {
     nbrOfAlivePlayers_ = 0;
     timeStep_ = 0.017; // Fix time step for physics update.
     accumulator_ = 0.0; // Time accumulator.
-    colums_ = 10;
+    columns_ = 10;
     rows_ = 20;
     maxLevel_ = 20;
 	width_ = 400;
@@ -55,10 +55,10 @@ void TetrisGame::updatePlayer(PlayerInfoPtr player, double deltaTime) {
     }
 }
 
-void TetrisGame::initGame(int colums, int rows, int maxLevel, bool local) {
+void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 	nbrOfAlivePlayers_ = getNbrOfPlayers();
 	int nbr = nbrOfAlivePlayers_;
-	iterateAllPlayersInfo([&](PlayerInfoPtr player) {        
+	iterateAllPlayersInfo([&](PlayerInfoPtr player) {
 		width_ = nbrOfAlivePlayers_ * player->getWidth();
 		height_ = player->getHeight();
 		std::stringstream stream;
@@ -66,9 +66,9 @@ void TetrisGame::initGame(int colums, int rows, int maxLevel, bool local) {
 		player->setName(stream.str());
 		--nbr;
         return true;
-    });	
-	
-	colums_ = colums;
+    });
+
+	columns_ = columns;
 	rows_ = rows;
 	maxLevel_ = maxLevel;
 }
@@ -194,7 +194,7 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 			// Singleplayer.
 			player->setGameOverMessage("Game over!");
 			// Is local game? And is the correct settings?
-			if (local_ && width_ == 10 && height_ == 20 && maxLevel_ == 20) {
+			if (local_ && rows_ == 20 && columns_ == 10 && maxLevel_ == 20) {
                 signalEvent(std::make_shared<GameOver>(player->getPoints()));
 			}
 		}
