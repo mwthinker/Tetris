@@ -6,6 +6,7 @@
 #include "highscore.h"
 #include "manbutton.h"
 #include "networklooby.h"
+#include "device.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -21,6 +22,8 @@ public:
 	GuiWindow();
 
 protected:
+	void initOptionFrame(std::vector<DevicePtr>& devices);
+
 	SDLKey pauseKey_;
 	SDLKey restartKey_;
 
@@ -74,7 +77,6 @@ private:
 	void initPlayFrame();
 	void initHighscoreFrame();
 	void initCustomPlayFrame();
-	void initOptionFrame();
 	void initCreateServerFrame();
 	void initCreateClientFrame();
 	void initServerLoobyFrame();

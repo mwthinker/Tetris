@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 
+#include <string>
 #include <memory>
 
 struct Input {
@@ -28,6 +29,7 @@ public:
 
 	virtual Input currentInput() = 0;
 
+	virtual std::string getName() const = 0;
 private:
     virtual void eventUpdate(const SDL_Event& windowEvent) = 0;
 };

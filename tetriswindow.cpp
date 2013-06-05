@@ -3,8 +3,8 @@
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisgame.h"
-#include "devicejoystick.h"
-#include "devicekeyboard.h"
+#include "joystick.h"
+#include "keyboard.h"
 
 #include "textbutton.h"
 #include "highscore.h"
@@ -23,16 +23,16 @@ TetrisWindow::TetrisWindow() {
 	});
 
 	// Initializes default keybord devices for two players.
-	DevicePtr device1(new InputKeyboard(SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
+	DevicePtr device1(new Keyboard("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
 	devices_.push_back(device1);
-	DevicePtr device2(new InputKeyboard(SDLK_s, SDLK_a, SDLK_d, SDLK_w));
+	DevicePtr device2(new Keyboard("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w));
 	devices_.push_back(device2);
 
 	// Init joysticks!
-	auto joystics = mw::Joystick::getJoystics();
-	for (mw::JoystickPtr& joystick : joystics) {
+	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();
+	for (const mw::JoystickPtr& joystick : joystics) {
 		std::cout << joystick->getName() << std::endl;
-		DevicePtr device(new InputJoystick(joystick, 0, 1));
+		DevicePtr device(new Joystick(joystick, 0, 1));
 		devices_.push_back(device);
 	}
 

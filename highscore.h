@@ -9,7 +9,6 @@
 #include <list>
 #include <string>
 #include <memory>
-#include <functional>
 
 class Highscore : public gui::GuiItem {
 public:
@@ -18,11 +17,9 @@ public:
 	void draw() override;
 
 	bool isNewRecord(int record) const;
-
 	void addNewRecord(std::string name, std::string date);
 
 	void setNextRecord(int record);
-
 	int getNextRecord() const;
 
 	void iterateRecords(std::function<void(int points, std::string name, std::string date)> func) const;

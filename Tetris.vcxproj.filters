@@ -45,9 +45,6 @@
     <ClCompile Include="tetrisgame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="actionhandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="protocol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gamefont.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="drawboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="barcolor.cpp">
@@ -87,12 +81,6 @@
     <ClCompile Include="highscore.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
-    <ClCompile Include="devicejoystick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="device.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="localplayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,6 +94,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="networklooby.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="playerinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="joystick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -140,9 +140,6 @@
     <ClInclude Include="graphicboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inputipformatter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="protocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -153,9 +150,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gamefont.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="drawboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="multiframe.h">
@@ -212,12 +206,6 @@
     <ClInclude Include="device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="devicekeyboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="devicejoystick.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="localplayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -234,6 +222,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="remoteplayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="playerinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="joystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

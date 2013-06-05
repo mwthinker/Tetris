@@ -11,6 +11,7 @@
 #include "manbutton.h"
 #include "highscore.h"
 #include "networklooby.h"
+#include "device.h"
 
 #include "gamesprite.h"
 #include "gamefont.h"
@@ -58,7 +59,6 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	initHighscoreFrame();
 	initPlayFrame();
 	initCustomPlayFrame();
-	initOptionFrame();
 	initNewHighScoreFrame();
 	initCreateServerFrame();
 	initCreateClientFrame();
@@ -415,7 +415,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(group,0,0,false,false);
 }
 
-void GuiWindow::initOptionFrame() {
+void GuiWindow::initOptionFrame(std::vector<DevicePtr>& devices) {
 	multiFrame_.setCurrentFrame(optionFrameIndex_);
 
 	// Upper bar.
@@ -437,6 +437,11 @@ void GuiWindow::initOptionFrame() {
 			}
 		}
 	});
+
+	int size = devices.size();
+	for (int i = 0; i < size; ++i) {
+
+	}
 
 	multiFrame_.add(b1,0,0,false,true);
 }

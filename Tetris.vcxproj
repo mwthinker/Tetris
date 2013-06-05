@@ -79,11 +79,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="actionhandler.cpp" />
     <ClCompile Include="barcolor.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="button.cpp" />
-    <ClCompile Include="drawboard.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="gamefont.cpp" />
     <ClCompile Include="gamesound.cpp" />
@@ -91,8 +89,8 @@
     <ClCompile Include="graphicboard.cpp" />
     <ClCompile Include="guiwindow.cpp" />
     <ClCompile Include="highscore.cpp" />
-    <ClCompile Include="device.cpp" />
-    <ClCompile Include="devicejoystick.cpp" />
+    <ClCompile Include="joystick.cpp" />
+    <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="localplayer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manbutton.cpp" />
@@ -100,11 +98,13 @@
     <ClCompile Include="multiframe.cpp" />
     <ClCompile Include="networklooby.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="playerinfo.cpp" />
     <ClCompile Include="rotationhandler.cpp" />
     <ClCompile Include="protocol.cpp" />
     <ClCompile Include="tetrisboard.cpp" />
     <ClCompile Include="tetrisgame.cpp" />
     <ClCompile Include="tetriswindow.cpp" />
+    <ClCompile Include="textbox.cpp" />
     <ClCompile Include="textboxdraw.cpp" />
     <ClCompile Include="textbutton.cpp" />
     <ClCompile Include="textitem.cpp" />
@@ -117,7 +117,6 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="manbutton.h" />
-    <ClInclude Include="drawboard.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gamefont.h" />
     <ClInclude Include="gamesound.h" />
@@ -131,15 +130,15 @@
     <ClInclude Include="imagebackground.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="inputformatter.h" />
-    <ClInclude Include="inputipformatter.h" />
-    <ClInclude Include="devicejoystick.h" />
-    <ClInclude Include="devicekeyboard.h" />
+    <ClInclude Include="joystick.h" />
+    <ClInclude Include="keyboard.h" />
     <ClInclude Include="inputnumberformatter.h" />
     <ClInclude Include="localplayer.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
     <ClInclude Include="networklooby.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="playerinfo.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="remoteplayer.h" />
     <ClInclude Include="rotationhandler.h" />

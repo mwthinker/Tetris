@@ -4,8 +4,8 @@
 #include "player.h"
 #include "localplayer.h"
 #include "device.h"
-#include "devicekeyboard.h"
-#include "devicejoystick.h"
+#include "keyboard.h"
+#include "joystick.h"
 
 #include <mw/sound.h>
 
