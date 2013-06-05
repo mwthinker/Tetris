@@ -67,6 +67,7 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 	columns_ = columns;
 	rows_ = rows;
 	maxLevel_ = maxLevel;
+	local_ = local;
 }
 
 void TetrisGame::draw() {
