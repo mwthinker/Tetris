@@ -415,11 +415,9 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(group,0,0,false,false);
 }
 
-void GuiWindow::initOptionFrame(std::vector<DevicePtr>& devices) {
-	multiFrame_.setCurrentFrame(optionFrameIndex_);
-
+void GuiWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 	// Upper bar.
-	multiFrame_.addBar(createUpperBar());
+	multiFrame_.addBar(createUpperBar(),optionFrameIndex_);
 
 	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
@@ -438,12 +436,17 @@ void GuiWindow::initOptionFrame(std::vector<DevicePtr>& devices) {
 		}
 	});
 
+	gui::TextItemPtr textItem1 = gui::createTextItem("Connected players", fontDefault, 30, mw::Color(1.0,1.0,1.0));
+	multiFrame_.add(textItem1, 0, hDistance_, false, true, optionFrameIndex_);
 	int size = devices.size();
 	for (int i = 0; i < size; ++i) {
-
+		std::stringstream stream;
+		stream << "Player " << 1+i << ": " << devices[i]->getName();
+		gui::TextItemPtr textItem2 = gui::createTextItem(stream.str(), fontDefault18, 18, mw::Color(1.0,1.0,1.0));
+		multiFrame_.add(textItem2, 0, 70 + i * 30, false, true, optionFrameIndex_);
 	}
 
-	multiFrame_.add(b1,0,0,false,true);
+	multiFrame_.add(b1,0,0,false,true,optionFrameIndex_);
 }
 
 void GuiWindow::initServerLoobyFrame() {
@@ -615,7 +618,7 @@ void GuiWindow::initCreateClientFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::TextItemPtr header = gui::createTextItem("Client",fontDefault,30,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr header = gui::createTextItem("Client", fontDefault, hDistance_, mw::Color(1.0,1.0,1.0));
 
 	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);

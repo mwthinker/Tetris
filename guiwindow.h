@@ -22,7 +22,7 @@ public:
 	GuiWindow();
 
 protected:
-	void initOptionFrame(std::vector<DevicePtr>& devices);
+	void initOptionFrame(const std::vector<DevicePtr>& devices);
 
 	SDLKey pauseKey_;
 	SDLKey restartKey_;

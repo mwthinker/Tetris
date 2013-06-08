@@ -37,6 +37,7 @@ TetrisWindow::TetrisWindow() {
 	}
 
 	loadHighscore();
+	initOptionFrame(devices_);
 }
 
 TetrisWindow::~TetrisWindow() {
