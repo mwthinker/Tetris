@@ -586,7 +586,7 @@ void GuiWindow::initCreateServerFrame() {
 	multiFrame_.add(manButton,120,200,false,true);
 
 	// Create game -----------------------------------------------------
-	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Create", 30, [&](gui::GuiItem*) {
 		std::stringstream stream;
 		stream << customPlayWidth_->getText() << " ";
 		stream << customPlayHeight_->getText() << " ";
@@ -675,7 +675,7 @@ void GuiWindow::initCreateClientFrame() {
 	multiFrame_.add(manButton,120,200,false,true);
 
 	// Create game -----------------------------------------------------
-	gui::ButtonPtr button = createButton("Connect", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Join", 30, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(waitToConnectFrameIndex_);
 		std::stringstream stream;
 		stream << portBox_->getText();
