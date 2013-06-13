@@ -46,7 +46,6 @@
 			<Add option="-lGLU" />
 			<Add directory="../SDK/MwLibrary" />
 		</Linker>
-		<Unit filename="actionhandler.cpp" />
 		<Unit filename="actionhandler.h" />
 		<Unit filename="background.h" />
 		<Unit filename="bar.h" />
@@ -56,11 +55,7 @@
 		<Unit filename="block.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
-		<Unit filename="device.cpp" />
 		<Unit filename="device.h" />
-		<Unit filename="devicejoystick.cpp" />
-		<Unit filename="devicejoystick.h" />
-		<Unit filename="devicekeyboard.h" />
 		<Unit filename="frame.cpp" />
 		<Unit filename="frame.h" />
 		<Unit filename="gamefont.cpp" />
@@ -81,6 +76,10 @@
 		<Unit filename="imagebackground.h" />
 		<Unit filename="inputformatter.h" />
 		<Unit filename="inputnumberformatter.h" />
+		<Unit filename="joystick.cpp" />
+		<Unit filename="joystick.h" />
+		<Unit filename="keyboard.cpp" />
+		<Unit filename="keyboard.h" />
 		<Unit filename="localplayer.cpp" />
 		<Unit filename="localplayer.h" />
 		<Unit filename="main.cpp" />
