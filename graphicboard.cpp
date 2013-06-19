@@ -146,7 +146,7 @@ void GraphicBoard::drawPreviewBlock() {
 	}
 
 	glScaled(pixlePerSquare_,pixlePerSquare_,1.0);
-	glTranslated(-x+0.5,-y+0.5,0); // Why +0.5?
+	glTranslated(-x - 0.5,-y - 0.5,0);
 	drawBlock(block);
 	glPopMatrix();
 	glPushMatrix();
@@ -164,10 +164,13 @@ void GraphicBoard::drawBoard() {
 
 	drawGrid();
 
-	const Squares& squares = tetrisBoard_.getGameBoard();
-	for (Squares::const_iterator it = squares.begin(); it != squares.end(); ++it) {
-		const Square& square = *it;
-		drawSquare(square);
+	for (int row = 0; row < tetrisBoard_.getNbrOfRows(); ++row) {
+		for (int column = 0; column < tetrisBoard_.getNbrOfColumns(); ++column) {
+			BlockType type = tetrisBoard_.getBlockFromBoard(row,column);
+			if (BLOCK_TYPE_EMPTY != type) {
+				drawSquare(column, row, type);
+			}
+		}
 	}
 
 	drawBlock(tetrisBoard_.currentBlock());
@@ -205,19 +208,16 @@ void GraphicBoard::drawBeginArea() const {
 void GraphicBoard::drawBlock(const Block& block) {
 	for (int i = 0; i < block.nbrOfSquares(); ++i) {
 		Square square = block[i];
-		drawSquare(square);
+		drawSquare(square.column, square.row, square.blockType);
 	}
 }
 
-void GraphicBoard::drawSquare(const Square& square) {
-	int column = square.column;
-	int row = square.row;
-
+void GraphicBoard::drawSquare(int column, int row, BlockType blockType) {
 	glColor4d(1,1,1,1);
 	glPushMatrix();
-	glTranslated(column-1,row-1,0);
+	glTranslated(column,row,0);
 	glTranslated(0.5,0.5,0.0);
-	drawSquare(square.blockType);
+	drawSquare(blockType);
 	glPopMatrix();
 }
 

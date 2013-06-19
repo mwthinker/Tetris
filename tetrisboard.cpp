@@ -7,6 +7,7 @@
 #include <queue>
 #include <algorithm>
 #include <iostream>
+#include <map>
 
 #include <random>
 
@@ -86,7 +87,7 @@ void TetrisBoard::update(Move move) {
 			// Collision detected, add squares to gameboard.
 			int nbrOfSquares = current_.nbrOfSquares();
 			for (int i = 0; i < nbrOfSquares; ++i) {
-				gameboard_.push_back(current_[i]);
+				getBlockFromBoard(current_[i].row, current_[i].column) = current_.blockType();
 			}
 
 			// Add rows due to some external event.
@@ -95,12 +96,12 @@ void TetrisBoard::update(Move move) {
 			}
 			addRows_ = 0;
 
+			// Remove any filled rows on the gameboard.
+			int nbr = removeFilledRows(current_);
+
 			// Updates the user controlled block.
 			current_ = next_;
 			next_ = generateBlock();
-
-			// Remove any filled rows on the gameboard.
-			int nbr = removeFilledRows();
 
 			// Add Game event
 			gameEvents_.push(BLOCK_COLLISION);
@@ -122,7 +123,7 @@ void TetrisBoard::update(Move move) {
 		} else {
 			// no collision, its journey can continue.
 			current_ = block;
-		}		
+		}
 	}
 }
 
@@ -145,7 +146,7 @@ bool TetrisBoard::isGameOver() const {
 	return isGameOver_;
 }
 
-const Squares& TetrisBoard::getGameBoard() const {
+const std::vector<BlockType>& TetrisBoard::getGameBoard() const {
 	return gameboard_;
 }
 
@@ -249,43 +250,12 @@ void TetrisBoard::init(int nbrOfRows, int nbrOfColumns, double newLineSquaresPer
 
 	nonRandomCurrentBlock_ = BLOCK_TYPE_I;
 	nonRandomNextBlock_ = BLOCK_TYPE_I;
+
+	gameboard_ = std::vector<BlockType>((nbrOfRows+4)*(nbrOfColumns), BLOCK_TYPE_EMPTY);
 }
 
 void TetrisBoard::addRow() {
-	// Moves all current rows up one step in order to make rome to add one row at the bottom.
-	for (std::vector<Square>::iterator it = gameboard_.begin(); it != gameboard_.end(); ++it) {
-		Square& square = *it;
-		square.row += 1;
-	}
-
-	const unsigned int size = getNbrOfColumns();
-	if (squaresToAdd_.size() > 0) {
-		// Adds the square to the row
-		for (unsigned int i = 0; i < size; ++i) {
-			BlockType type = squaresToAdd_[i];
-			if (type != BLOCK_TYPE_EMPTY) {
-				Square square(type,1,i+1);
-				fillRow(square);
-			}
-		}
-
-		// Removes the added squares from the add row vector.
-		if (squaresToAdd_.size() >= 2*size) {
-			std::vector<BlockType> tmp(squaresToAdd_.begin()+size,squaresToAdd_.end());
-			squaresToAdd_ = tmp;
-		} else {
-			squaresToAdd_.clear();
-		}
-	}
-}
-
-void TetrisBoard::fillRow(const Square& square) {
-	std::vector<Square>::iterator it = std::find(gameboard_.begin(),gameboard_.end(),square);
-	if (it != gameboard_.end()) {
-		*it = square;
-	} else {
-		gameboard_.push_back(square);
-	}
+	std::vector<BlockType> upperBoard(squaresToAdd_.begin(), squaresToAdd_.end());
 }
 
 BlockType TetrisBoard::generateBlockType() const {
@@ -324,89 +294,76 @@ BlockType TetrisBoard::generateBlockType() const {
 }
 
 Block TetrisBoard::generateBlock() const {	
-	return Block(generateBlockType(),nbrOfRows_+1,nbrOfColumns_/2);;
+	return Block(generateBlockType(),nbrOfRows_,nbrOfColumns_/2 - 1);;
 }
 
 bool TetrisBoard::collision(Block block) const {
 	bool collision = false;
-	// checks if the block is inside any square on the gameboard
-	for (std::vector<Square>::const_iterator it = gameboard_.begin(); it != gameboard_.end(); ++it) {
-		Square square = *it;
-		collision = block.collision(square);
-		if (collision) {
-			break;
-		}
-	}
-
-	// checks if the block is outside the gameboard
 	int nbrOfSquares = block.nbrOfSquares();
 
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		Square square = block[i];
-		if (square.row < 1) {
+		if (square.row < 0) {
 			collision = true;
 			break;
 		}
-		if (square.column < 1 || square.column > nbrOfColumns_) {
+		if (square.column < 0 || square.column >= nbrOfColumns_) {
+			collision = true;
+			break;
+		}
+		if (getBlockFromBoard(block[i].row,block[i].column) != BLOCK_TYPE_EMPTY) {
 			collision = true;
 			break;
 		}
 	}
-
+	
 	return collision;
 }
 
-int TetrisBoard::removeFilledRows() {
-	std::vector<int> filledRows(nbrOfRows_+1);
+BlockType TetrisBoard::getBlockFromBoard(int row, int column) const {
+	return gameboard_[row*nbrOfColumns_ + column];
+}
 
-	// Counts the number of squares in each row
-	for (std::vector<Square>::iterator it = gameboard_.begin(); it != gameboard_.end(); ++it) {
-		Square square = *it;
-		// Will enter every time except for the last block when the game becomes game over
-		if (square.row < nbrOfRows_ + 1) {
-			++filledRows[square.row];
-		}
-	}
+BlockType& TetrisBoard::getBlockFromBoard(int row, int column) {
+	return gameboard_[row*nbrOfColumns_ + column];
+}
 
-	// Filled rows removed and rows abowe are moved down to fill the gap
+int TetrisBoard::removeFilledRows(const Block& block) {
+	int row = block.getLowestRow();
+
 	int nbr = 0;
-	for (int row = 1; row < nbrOfRows_ + 1; ++row) {
-		if (filledRows[row] == nbrOfColumns_) {
-			removeSquares(row-nbr);
-			moveRowsOneStepDown(row-nbr);
+	int nbrOfSquares = current_.nbrOfSquares();
+	for (int i = 0; i < 4; ++i) {
+		bool filled = true;
+		if (row >= 0) {
+			for (int column = 0; column < nbrOfColumns_; ++column) {
+				if (getBlockFromBoard(row, column) == BLOCK_TYPE_EMPTY) {
+					filled = false;
+					break;
+				}
+			}
+		} else {
+			filled = false;
+		}
+		if (filled) {
+			moveRowsOneStepDown(row);
 			++nbr;
+		} else {
+			++row;
 		}
 	}
-
+	
 	return nbr;
 }
 
-void TetrisBoard::removeSquares(int row) {
-	int nbr = 0;
-	int size = gameboard_.size();
-	// find all squares in the specified row puts them last in the vector
-	for (int i = 0; i < size - nbr; ++i) {
-		Square& square = gameboard_[i];
-		if (square.row == row) {
-			std::swap(square, gameboard_[size-nbr-1]);
-			++nbr;
-			--i;
-		}
-		if (nbr == size) {
-			break;
-		}
-	}
-	// all the squares in the specified row is removed
-	for (int i = 0; i < nbr; ++i) {
-		gameboard_.pop_back();
-	}
-}
-
-void TetrisBoard::moveRowsOneStepDown(int highestRow) {
-	for (std::vector<Square>::iterator it = gameboard_.begin(); it != gameboard_.end(); ++it) {
-		Square& square = *it;
-		if (square.row >= highestRow) {
-			--square.row;
-		}
-	}
+void TetrisBoard::moveRowsOneStepDown(int rowToRemove) {
+	int indexStartOfRow = rowToRemove * nbrOfColumns_;
+	// Copy all rows abowe the row to be removed.
+	std::vector<BlockType> upperBoard(gameboard_.begin() + indexStartOfRow + nbrOfColumns_, gameboard_.end());
+	// Erase the row to be removed and all rows abowe.
+	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.end());
+	// Insert the rows that were abowe the row to be removed.
+	gameboard_.insert(gameboard_.end(), upperBoard.begin(), upperBoard.end());
+	// Add a empty row at the top in order of replacing the row that were removed.
+	gameboard_.resize(gameboard_.size() + nbrOfColumns_,BLOCK_TYPE_EMPTY);
 }

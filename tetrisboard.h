@@ -47,7 +47,7 @@ public:
     bool isGameOver() const;
 
 	// Returns all non moving squares on the board.
-    const Squares& getGameBoard() const;
+    const std::vector<BlockType>& getGameBoard() const;
 
 	// Return the moving block.
     Block currentBlock() const;
@@ -70,23 +70,26 @@ public:
 	
 	// Generate a vector 
 	std::vector<BlockType> generateRow() const;
+
+	BlockType getBlockFromBoard(int row, int column) const;
+
 private:
 	void init(int nbrOfRows, int nbrOfColumns, double newLineSquaresPercenters);
     void addRow();
-    void fillRow(const Square& square);
     BlockType generateBlockType() const;
     Block generateBlock() const;
     bool collision(Block block) const;
 
-    int removeFilledRows();
-    void removeSquares(int row);
-    void moveRowsOneStepDown(int highestRow);
+	BlockType& getBlockFromBoard(int row, int column);
+
+    int removeFilledRows(const Block& block);
+    void moveRowsOneStepDown(int rowToRemove);
 
     Block next_;						// Next Block for the player to control.
 	Block current_;						// The current block for the player to control.
 
 	double squaresPerLength_;           // Added row is filled by squaresPerLength_% of new squares.
-	Squares gameboard_;		            // Containing all non moving squares on the board
+	std::vector<BlockType> gameboard_;  // Containing all non moving squares on the board
 
     int addRows_;
 	std::vector<BlockType> squaresToAdd_;

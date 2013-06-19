@@ -23,13 +23,14 @@ public:
 	void setGameOverMessage(std::string message);
 
 	// Draws player info and the board. Using opengl.
-    void draw();
+	void draw();
 
 	// Returns the width the graphic requires to draw (draw()) everything.
-    double getWidth() const;
+	double getWidth() const;
 
 	// Returns the height the graphic requires to draw (draw()) everything.
 	double getHeight() const;
+
 private:
     void drawBorder() const;
     void drawInfo();
@@ -37,7 +38,7 @@ private:
     void drawBoard();
     void drawBeginArea() const;
     void drawBlock(const Block& block);
-    void drawSquare(const Square& square);
+	void drawSquare(int column, int row, BlockType blockType);
     void drawSquare(BlockType blockType);
     void drawGrid() const;
     void drawGridSquare() const;
