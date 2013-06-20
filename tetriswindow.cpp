@@ -163,12 +163,8 @@ void TetrisWindow::drawGame(Uint32 deltaTime) {
 		height = h;
 	}
 
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(x,y,width,height);
 	tetrisGame_.draw();
 	glPopMatrix();
-
-	glDisable(GL_SCISSOR_TEST);
 }
 
 void TetrisWindow::updateGameEvent(const SDL_Event& windowEvent) {

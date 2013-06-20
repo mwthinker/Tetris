@@ -37,7 +37,7 @@ private:
     void drawPreviewBlock();
     void drawBoard();
     void drawBeginArea() const;
-    void drawBlock(const Block& block);
+    void drawBlock(const Block& block, int maxRow);
 	void drawSquare(int column, int row, BlockType blockType);
     void drawSquare(BlockType blockType);
     void drawGrid() const;

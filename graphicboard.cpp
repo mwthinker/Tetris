@@ -147,7 +147,7 @@ void GraphicBoard::drawPreviewBlock() {
 
 	glScaled(pixlePerSquare_,pixlePerSquare_,1.0);
 	glTranslated(-x - 0.5,-y - 0.5,0);
-	drawBlock(block);
+	drawBlock(block, tetrisBoard_.getNbrOfRows() + 100);
 	glPopMatrix();
 	glPushMatrix();
 	// Size is 5 squares.
@@ -173,7 +173,7 @@ void GraphicBoard::drawBoard() {
 		}
 	}
 
-	drawBlock(tetrisBoard_.currentBlock());
+	drawBlock(tetrisBoard_.currentBlock(), tetrisBoard_.getNbrOfRows() + 2);
 	drawBeginArea();
 
 	glPopMatrix();
@@ -205,10 +205,12 @@ void GraphicBoard::drawBeginArea() const {
 	glDisable(GL_BLEND);
 }
 
-void GraphicBoard::drawBlock(const Block& block) {
+void GraphicBoard::drawBlock(const Block& block, int maxRow) {
 	for (int i = 0; i < block.nbrOfSquares(); ++i) {
 		Square square = block[i];
-		drawSquare(square.column_, square.row_, square.blockType_);
+		if (square.row_ < maxRow) {
+			drawSquare(square.column_, square.row_, square.blockType_);
+		}
 	}
 }
 
