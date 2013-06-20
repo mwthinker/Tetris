@@ -10,5 +10,3 @@ const mw::Sprite spriteT("images/sq_purple.png");
 const mw::Sprite spriteZ("images/sq_green.png");
 const mw::Sprite spriteMan("images/man.png");
 const mw::Sprite spriteNoMan("images/noman.png");
-
-//mw::Sprite drawRoad = mw::Sprite("images/roadtile.jpg");

@@ -14,4 +14,4 @@ extern const mw::Sprite spriteZ;
 extern const mw::Sprite spriteMan;
 extern const mw::Sprite spriteNoMan;
 
-#endif // MAP_H
+#endif // GAMESPRITE_H
