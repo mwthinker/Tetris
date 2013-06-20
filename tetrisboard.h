@@ -90,6 +90,7 @@ private:
 
 	double squaresPerLength_;           // Added row is filled by squaresPerLength_% of new squares.
 	std::vector<BlockType> gameboard_;  // Containing all non moving squares on the board
+	std::vector<int> rowsFilled_;		// Index represents the row and the value represents the number of pieces on the row.
 
     int addRows_;
 	std::vector<BlockType> squaresToAdd_;
