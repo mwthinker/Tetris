@@ -1,7 +1,6 @@
 #ifndef TETRISBOARD_H
 #define TETRISBOARD_H
 
-#include "square.h"
 #include "block.h"
 
 #include <vector>
@@ -21,18 +20,21 @@ enum GameEvent {
 	GAME_OVER
 };
 
-typedef std::vector<Square> Squares;
-
-// Represent a tetris board.
+// Represents a tetris board.
 class TetrisBoard {
 public:
 	// Defines all valid ways of controlling the falling block.
     enum Move {ROTATE_LEFT, ROTATE_RIGHT, DOWN_GRAVITY, DOWN, LEFT, RIGHT};
 
-    TetrisBoard(int nbrOfRows = 20, int nbrOfColumns = 10, double newLineSquaresPercenters = 0.8);
+    TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
+
+	void restart(BlockType current, BlockType next);
 
 	// Add a move to the falling block.
     void update(Move move);
+
+	// Add next block.
+	void add(BlockType next);
 
 	// Triggers a gameover event to be added to the event queue.
 	void triggerGameOverEvent();
@@ -55,29 +57,17 @@ public:
 	// Return the next moving block.
     Block nextBlock() const;
 
-	void setNonRandomCurrentBlockType(BlockType blockType);
-	void setNonRandomNextBlockType(BlockType blockType);
-	BlockType getNonRandomCurrentBlockType() const;
-	BlockType getNonRandomNextBlockType() const;
-	void setDecideRandomBlockType(bool decideRandom);
-	bool isDecideRandomBlockType() const;
-
 	// Returns true as long as there are more game events to be poll to parameter (gameEvent).
     bool pollGameEvent(GameEvent& gameEvent);
 
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
-	
-	// Generate a vector 
-	std::vector<BlockType> generateRow() const;
 
 	BlockType getBlockFromBoard(int row, int column) const;
 
 private:
-	void init(int nbrOfRows, int nbrOfColumns, double newLineSquaresPercenters);
-    void addRow();
-    BlockType generateBlockType() const;
-    Block generateBlock() const;
+    void addExternalRows();
+	Block createBlock(BlockType blockType) const;
     bool collision(Block block) const;
 
 	BlockType& getBlockFromBoard(int row, int column);
@@ -85,23 +75,19 @@ private:
     int removeFilledRows(const Block& block);
     void moveRowsOneStepDown(int rowToRemove);
 
-    Block next_;						// Next Block for the player to control.
+    Block next_;						// Next block for the player to control.
 	Block current_;						// The current block for the player to control.
-
-	double squaresPerLength_;           // Added row is filled by squaresPerLength_% of new squares.
-	std::vector<BlockType> gameboard_;  // Containing all non moving squares on the board
+	
+	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	std::vector<int> rowsFilled_;		// Index represents the row and the value represents the number of pieces on the row.
 
-    int addRows_;
 	std::vector<BlockType> squaresToAdd_;
 	std::queue<GameEvent> gameEvents_;
 
     int nbrOfRows_, nbrOfColumns_;		// The size of the gameboard.
-    bool isGameOver_;                   // True when game is over, else false.
+    bool isGameOver_;					// True when game is over, else false.
 
-	BlockType nonRandomCurrentBlock_;
-	BlockType nonRandomNextBlock_;
-	bool decideRandom_;
+	std::queue<BlockType> nextBlockQueue_;
 };
 
 #endif // TETRISBOARD_H

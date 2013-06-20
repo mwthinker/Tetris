@@ -784,7 +784,7 @@ void Protocol::addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows) {
 		if (player != local) {
 			std::vector<BlockType> blockTypes;
 			for (int i = 0; i < nbrOfRows; ++i) {
-				std::vector<BlockType> tmp = local->getTetrisBoard().generateRow();
+				std::vector<BlockType> tmp = local->generateRow();
 				blockTypes.insert(blockTypes.begin(),tmp.begin(),tmp.end());
 			}
 			sendTetrisInfo(local->getId(), blockTypes);

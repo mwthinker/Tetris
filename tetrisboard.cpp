@@ -7,19 +7,27 @@
 #include <queue>
 #include <algorithm>
 #include <iostream>
-#include <map>
 
-#include <random>
+TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next) {
+	nbrOfRows_ = nbrOfRows;
+	nbrOfColumns_ = nbrOfColumns;
+	isGameOver_ = false;
 
-namespace {
+	current_ = createBlock(current);
+	next_ = createBlock(next);
 
-	std::random_device rd;
-	std::default_random_engine generator(rd());
-
+	gameboard_ = std::vector<BlockType>( (nbrOfRows + 4) * (nbrOfColumns) , BLOCK_TYPE_EMPTY);
+	rowsFilled_ = std::vector<int>(nbrOfRows + 4, 0);
 }
 
-TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, double newLineSquaresPercenters) {
-	init(nbrOfRows,nbrOfColumns,newLineSquaresPercenters);
+void TetrisBoard::restart(BlockType current, BlockType next) {
+	nextBlockQueue_ = std::queue<BlockType>();
+	gameEvents_ = std::queue<GameEvent>();
+	current_ = createBlock(current);
+	next_ = createBlock(next);
+	gameboard_ = std::vector<BlockType>( (nbrOfRows_ + 4) * nbrOfColumns_ , BLOCK_TYPE_EMPTY);
+	rowsFilled_ = std::vector<int>(nbrOfRows_ + 4, 0);
+	isGameOver_ = false;
 }
 
 // First checks if the game is over. Then perform the move.
@@ -95,17 +103,15 @@ void TetrisBoard::update(Move move) {
 			}
 
 			// Add rows due to some external event.
-			for (int i = 0; i < addRows_; ++i) {
-				addRow();
-			}
-			addRows_ = 0;
+			addExternalRows();
 
 			// Remove any filled rows on the gameboard.
 			int nbr = removeFilledRows(current_);
 
 			// Updates the user controlled block.
 			current_ = next_;
-			next_ = generateBlock();
+			next_ = createBlock(nextBlockQueue_.front());
+			nextBlockQueue_.pop();
 
 			// Add Game event
 			gameEvents_.push(BLOCK_COLLISION);
@@ -129,6 +135,10 @@ void TetrisBoard::update(Move move) {
 			current_ = block;
 		}
 	}
+}
+
+void TetrisBoard::add(BlockType next) {
+	nextBlockQueue_.push(next);
 }
 
 void TetrisBoard::triggerGameOverEvent() {
@@ -162,36 +172,6 @@ Block TetrisBoard::nextBlock() const {
 	return next_;
 }
 
-void TetrisBoard::setNonRandomCurrentBlockType(BlockType blockType) {
-	nonRandomCurrentBlock_ = blockType;
-	if (!decideRandom_) {
-		current_ = Block(blockType,nbrOfRows_+1,nbrOfColumns_/2);
-	}
-}
-
-void TetrisBoard::setNonRandomNextBlockType(BlockType blockType) {
-	nonRandomNextBlock_ = blockType;
-	if (!decideRandom_) {
-		next_ = Block(blockType,nbrOfRows_+1,nbrOfColumns_/2);
-	}
-}
-
-BlockType TetrisBoard::getNonRandomCurrentBlockType() const {
-	return nonRandomCurrentBlock_;
-}
-
-BlockType TetrisBoard::getNonRandomNextBlockType() const {
-	return nonRandomNextBlock_;	
-}
-
-void TetrisBoard::setDecideRandomBlockType(bool decideRandom) {
-	decideRandom_ = decideRandom;
-}
-
-bool TetrisBoard::isDecideRandomBlockType() const {
-	return decideRandom_;
-}
-
 bool TetrisBoard::pollGameEvent(GameEvent& gameEvent) {
 	if (gameEvents_.empty()) {
 		return false;
@@ -202,104 +182,17 @@ bool TetrisBoard::pollGameEvent(GameEvent& gameEvent) {
 }
 
 void TetrisBoard::addRows(const std::vector<BlockType>& blockTypes) {
-	addRows_ += blockTypes.size() / getNbrOfColumns();
 	squaresToAdd_.insert(squaresToAdd_.end(),blockTypes.begin(), blockTypes.end());
 }
 
-std::vector<BlockType> TetrisBoard::generateRow() const {
-	// Creates a row represented by a vector filled with true or false.
-	// True means it is filled with a square. False means empty.
-	// The percentage of true per row is squaresPerLength_.
-	
-	const unsigned int size = getNbrOfColumns();
-	std::vector<bool> row(size);
-	std::uniform_int_distribution<int> distribution(0,size-1);
-
-	for (unsigned int i = 0; i <  size * squaresPerLength_; ++i) {
-		int index = distribution(generator);
-		unsigned int nbr = 0;
-		while (nbr < size) {
-			if (!row[ (index+nbr) % size]) {
-				row[ (index+nbr) % size] = true;
-				break;
-			}
-			++nbr;
-		}
-	}
-
-	std::vector<BlockType> rows;
-
-	for (unsigned int i = 0; i < size; ++i) {
-		if (row[i]) {			
-			rows.push_back(generateBlockType());
-		} else {
-			rows.push_back(BLOCK_TYPE_EMPTY);
-		}
-	}
-	return rows;
+void TetrisBoard::addExternalRows() {
+	gameboard_.insert(gameboard_.begin(), squaresToAdd_.begin(), squaresToAdd_.end());
+	gameboard_.resize(gameboard_.size() - squaresToAdd_.size(), BLOCK_TYPE_EMPTY);
+	squaresToAdd_.clear();
 }
 
-// private
-
-void TetrisBoard::init(int nbrOfRows, int nbrOfColumns, double newLineSquaresPercenters) {
-	nbrOfRows_ = nbrOfRows;
-	nbrOfColumns_ = nbrOfColumns;
-	isGameOver_ = false;
-	squaresPerLength_ = newLineSquaresPercenters;
-
-	decideRandom_ = true; // Must be defined before call to generateBlock();
-	current_ = generateBlock();
-	next_ = generateBlock();
-	addRows_ = 0;
-
-	nonRandomCurrentBlock_ = BLOCK_TYPE_I;
-	nonRandomNextBlock_ = BLOCK_TYPE_I;
-
-	gameboard_ = std::vector<BlockType>((nbrOfRows+4)*(nbrOfColumns), BLOCK_TYPE_EMPTY);
-	rowsFilled_ = std::vector<int>(nbrOfRows+4, 0);
-}
-
-void TetrisBoard::addRow() {
-	std::vector<BlockType> upperBoard(squaresToAdd_.begin(), squaresToAdd_.end());
-}
-
-BlockType TetrisBoard::generateBlockType() const {
-	BlockType blockType = nonRandomNextBlock_;
-	std::uniform_int_distribution<int> distribution(0,6);
-
-	if (decideRandom_) {	
-		int nbr = distribution(generator);
-
-		switch (nbr) {
-		case 0:
-			blockType = BLOCK_TYPE_I;
-			break;
-		case 1:
-			blockType = BLOCK_TYPE_J;
-			break;
-		case 2:
-			blockType = BLOCK_TYPE_L;
-			break;
-		case 3:
-			blockType = BLOCK_TYPE_O;
-			break;
-		case 4:
-			blockType = BLOCK_TYPE_S;
-			break;
-		case 5:
-			blockType = BLOCK_TYPE_T;
-			break;
-		case 6:
-			blockType = BLOCK_TYPE_Z;
-			break;
-		}
-	}
-
-	return blockType;
-}
-
-Block TetrisBoard::generateBlock() const {	
-	return Block(generateBlockType(),nbrOfRows_,nbrOfColumns_/2 - 1);;
+Block TetrisBoard::createBlock(BlockType blockType) const {
+	return Block(blockType,nbrOfRows_,nbrOfColumns_/2 - 1);
 }
 
 bool TetrisBoard::collision(Block block) const {
