@@ -101,12 +101,12 @@ void TetrisBoard::update(Move move) {
 			for (int i = 0; i < nbrOfSquares; ++i) {
 				getBlockFromBoard(current_[i].row_, current_[i].column_) = current_.blockType();
 			}
+			
+			// Remove any filled rows on the gameboard.
+			int nbr = removeFilledRows(current_);
 
 			// Add rows due to some external event.
 			addExternalRows();
-
-			// Remove any filled rows on the gameboard.
-			int nbr = removeFilledRows(current_);
 
 			// Updates the user controlled block.
 			current_ = next_;

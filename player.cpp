@@ -35,10 +35,11 @@ bool Player::updateBoard(TetrisBoard::Move& move, BlockType& next) {
     TetrisBoard::Move polledMove;
     bool polled = pollMove(polledMove);
     if (polled) {
-        next = tetrisBoard_.nextBlock().blockType();
+		BlockType blockType = generateBlockType();
+		next = blockType;
+		tetrisBoard_.add(blockType);
         move = polledMove;
         update(move);
-		tetrisBoard_.add(generateBlockType());
     }
     return polled;
 }
