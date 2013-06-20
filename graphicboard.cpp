@@ -141,8 +141,8 @@ void GraphicBoard::drawPreviewBlock() {
 	double x = 0, y = 0;
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		Square square = block[i];
-		x += square.column*1.0/nbrOfSquares;
-		y += square.row*1.0/nbrOfSquares;
+		x += square.column_ * 1.0 / nbrOfSquares;
+		y += square.row_ * 1.0 / nbrOfSquares;
 	}
 
 	glScaled(pixlePerSquare_,pixlePerSquare_,1.0);
@@ -164,7 +164,7 @@ void GraphicBoard::drawBoard() {
 
 	drawGrid();
 
-	for (int row = 0; row < tetrisBoard_.getNbrOfRows(); ++row) {
+	for (int row = 0; row < tetrisBoard_.getNbrOfRows() + 2; ++row) {
 		for (int column = 0; column < tetrisBoard_.getNbrOfColumns(); ++column) {
 			BlockType type = tetrisBoard_.getBlockFromBoard(row,column);
 			if (BLOCK_TYPE_EMPTY != type) {
@@ -208,7 +208,7 @@ void GraphicBoard::drawBeginArea() const {
 void GraphicBoard::drawBlock(const Block& block) {
 	for (int i = 0; i < block.nbrOfSquares(); ++i) {
 		Square square = block[i];
-		drawSquare(square.column, square.row, square.blockType);
+		drawSquare(square.column_, square.row_, square.blockType_);
 	}
 }
 
@@ -252,15 +252,13 @@ void GraphicBoard::drawGrid() const {
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	int rows = tetrisBoard_.getNbrOfRows();
+	int rows = tetrisBoard_.getNbrOfRows() + 2;
 	int colons = tetrisBoard_.getNbrOfColumns();
 
 	for (int row = 0; row < rows; ++row) {
 		for (int colon = 0; colon < colons; ++colon) {
 			glPushMatrix();
 			glTranslated(colon,row,0);
-			//glScaled(0.5,0.5,0.5);
-
 			drawGridSquare();
 			glPopMatrix();
 		}

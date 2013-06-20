@@ -89,21 +89,21 @@ void Block::move() {
 void Block::moveLeft() {
 	for (int i = 0; i != nbrOfSquares_; ++i) {
 		Square& sq = squares_[i];
-		--sq.column;
+		--sq.column_;
 	}
 }
 
 void Block::moveRight() {
 	for (int i = 0; i != nbrOfSquares_; ++i) {
 		Square& sq = squares_[i];
-		++sq.column;
+		++sq.column_;
 	}
 }
 
 void Block::moveUp() {
 	for (int i = 0; i != nbrOfSquares_; ++i) {
 		Square& sq = squares_[i];
-		++sq.row;
+		++sq.row_;
 	}
 	++lowestRow_;
 }
@@ -111,14 +111,14 @@ void Block::moveUp() {
 void Block::moveDown() {
 	for (int i = 0; i != nbrOfSquares_; ++i) {
 		Square& sq = squares_[i];
-		--sq.row;
+		--sq.row_;
 	}
 	--lowestRow_;
 }
 
 void Block::rotateLeft() {
-	int row = squares_[rotationSquareIndex_].row;
-	int column = squares_[rotationSquareIndex_].column;
+	int row = squares_[rotationSquareIndex_].row_;
+	int column = squares_[rotationSquareIndex_].column_;
 	currentRotation_ = (currentRotation_ + 1) % 4;
 
 	// Rotate back to start orientation?
@@ -133,8 +133,8 @@ void Block::rotateLeft() {
 			Square sq = squares_[i];
 			Square tmp = sq;
 
-			tmp.column = column + row - sq.row;
-			tmp.row = sq.column + row - column;
+			tmp.column_ = column + row - sq.row_;
+			tmp.row_ = sq.column_ + row - column;
 
 			squares_[i] = tmp;
 		}
@@ -142,14 +142,14 @@ void Block::rotateLeft() {
 }
 
 void Block::rotateRight() {
-	int row = squares_[rotationSquareIndex_].row;
-	int column = squares_[rotationSquareIndex_].column;
+	int row = squares_[rotationSquareIndex_].row_;
+	int column = squares_[rotationSquareIndex_].column_;
 	for (int i = 0; i != nbrOfSquares_; ++i) {
 		Square sq = squares_[i];
 		Square tmp = sq;
 
-		tmp.column = sq.row + column - row;
-		tmp.row = column + row - sq.column;
+		tmp.column_ = sq.row_ + column - row;
+		tmp.row_ = column + row - sq.column_;
 
 		squares_[i] = tmp;
 	}

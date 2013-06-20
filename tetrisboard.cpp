@@ -87,7 +87,7 @@ void TetrisBoard::update(Move move) {
 			// Collision detected, add squares to gameboard.
 			int nbrOfSquares = current_.nbrOfSquares();
 			for (int i = 0; i < nbrOfSquares; ++i) {
-				getBlockFromBoard(current_[i].row, current_[i].column) = current_.blockType();
+				getBlockFromBoard(current_[i].row_, current_[i].column_) = current_.blockType();
 			}
 
 			// Add rows due to some external event.
@@ -303,15 +303,15 @@ bool TetrisBoard::collision(Block block) const {
 
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		Square square = block[i];
-		if (square.row < 0) {
+		if (square.row_ < 0) {
 			collision = true;
 			break;
 		}
-		if (square.column < 0 || square.column >= nbrOfColumns_) {
+		if (square.column_ < 0 || square.column_ >= nbrOfColumns_) {
 			collision = true;
 			break;
 		}
-		if (getBlockFromBoard(block[i].row,block[i].column) != BLOCK_TYPE_EMPTY) {
+		if (getBlockFromBoard(block[i].row_, block[i].column_) != BLOCK_TYPE_EMPTY) {
 			collision = true;
 			break;
 		}

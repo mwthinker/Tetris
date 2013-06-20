@@ -1,31 +1,35 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-enum BlockType {BLOCK_TYPE_I,BLOCK_TYPE_J,BLOCK_TYPE_L,BLOCK_TYPE_O,
-	BLOCK_TYPE_S, BLOCK_TYPE_T,BLOCK_TYPE_Z,BLOCK_TYPE_EMPTY};
+enum BlockType {
+	BLOCK_TYPE_I,
+	BLOCK_TYPE_J,
+	BLOCK_TYPE_L,
+	BLOCK_TYPE_O,
+	BLOCK_TYPE_S,
+	BLOCK_TYPE_T,
+	BLOCK_TYPE_Z,
+	BLOCK_TYPE_EMPTY
+};
 
-struct Square {
-	Square() {
-		row = -1;
-		column = -1;
+class Square {
+public:
+	inline Square() {
 	}
 
-	Square(BlockType blockType, int row, int column) {
-		this->row = row;
-		this->column = column;
-		this->blockType = blockType;
+	inline Square(BlockType blockType, int row, int column) : blockType_(blockType), row_(row), column_(column) {
 	}
 
-	BlockType blockType;
-	int row, column;
-
-	bool operator==(const Square& square) const {
-		return square.row == row && square.column == column;
+	inline bool operator==(const Square& square) const {
+		return square.row_ == row_ && square.column_ == column_;
 	}
 
-	bool operator!=(const Square& square) const {
-		return !operator==(square);
+	inline bool operator!=(const Square& square) const {
+		return square.row_ != row_ || square.column_ != column_;
 	}
+
+	BlockType blockType_;
+	int row_, column_;
 };
 
 #endif	// SQUARE_H
