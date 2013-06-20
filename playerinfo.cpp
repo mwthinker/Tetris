@@ -52,6 +52,10 @@ void PlayerInfo::setGameOverMessage(std::string message) {
     graphicBoard_.setGameOverMessage(message);
 }
 
+void PlayerInfo::setCountDownMessage(std::string message) {
+	graphicBoard_.setCountDownMessage(message);
+}
+
 void PlayerInfo::draw() {
     graphicBoard_.draw();
 }

@@ -25,8 +25,8 @@ GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetris
 	text3_ = mw::Text("Points",fontDefault);
 	text4_ = mw::Text("Rows",fontDefault);
 
-	gameOverMessage_ = mw::Text("",fontDefault);
-	gameOverMessage_.setCharacterSize(70);
+	gameOverMessage_ = mw::Text("", fontDefault,70);
+	countDown_ = mw::Text("", fontDefault,70);
 
 	nbrOfClearedRows_ = 0;
 	points_ = 0;
@@ -57,22 +57,27 @@ void GraphicBoard::setGameOverMessage(std::string message) {
 	gameOverMessage_.setText(message);
 }
 
+void GraphicBoard::setCountDownMessage(std::string countDown) {
+	countDown_.setText(countDown);
+}
+
 void GraphicBoard::draw() {
     pixlePerSquare_ = height_ / (tetrisBoard_.getNbrOfRows() + 2);
 	glPushMatrix();
 	glTranslated(voidHeight_,voidHeight_,0.0);
 	drawBoard();
 	drawInfo();
-	glPopMatrix();
-
+	glPopMatrix();	
+	
+	glPushMatrix();
+	// Put it in the middle.
+	glTranslated(getWidth()*0.5-gameOverMessage_.getWidth()*0.5,getHeight()*0.5-gameOverMessage_.getHeight()*0.5,0.0);
+	glColor3d(1,1,1);
 	if (tetrisBoard_.isGameOver()) {
-		glPushMatrix();
-		// Put it in the middle.
-		glTranslated(getWidth()*0.5-gameOverMessage_.getWidth()*0.5,getHeight()*0.5-gameOverMessage_.getHeight()*0.5,0.0);
-		glColor3d(1,1,1);
 		gameOverMessage_.draw();
-		glPopMatrix();
 	}
+	countDown_.draw();
+	glPopMatrix();	
 
 	drawBorder();
 }

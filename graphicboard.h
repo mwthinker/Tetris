@@ -21,6 +21,7 @@ public:
     void setLevel(int level);
     void setName(std::string name);
 	void setGameOverMessage(std::string message);
+	void setCountDownMessage(std::string countDown);
 
 	// Draws player info and the board. Using opengl.
 	void draw();
@@ -45,12 +46,8 @@ private:
     void glColorWhite() const;
     void drawFrame(double x1, double y1, double x2, double y2, double width) const;
 
-    mw::Text text1_;
-    mw::Text text2_;
-    mw::Text text3_;
-    mw::Text text4_;
-
-	mw::Text gameOverMessage_;
+    mw::Text text1_, text2_, text3_, text4_;
+	mw::Text gameOverMessage_, countDown_;	
 
 	double pixlePerSquare_;
     const TetrisBoard& tetrisBoard_;

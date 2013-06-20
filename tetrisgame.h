@@ -33,6 +33,7 @@ private:
 	double accumulator_;
 	int rows_, columns_, maxLevel_;
 	bool local_;
+	double countDown_;
 };
 
 #endif // TETRISGAME_H

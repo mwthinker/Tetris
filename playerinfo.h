@@ -44,6 +44,8 @@ public:
 	std::string getName() const;
 
 	void setGameOverMessage(std::string message);
+	
+	void setCountDownMessage(std::string message);
 
 	// Draws the tetrisboard.
     void draw();
