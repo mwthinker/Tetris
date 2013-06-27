@@ -14,106 +14,110 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Header Files\gui">
-      <UniqueIdentifier>{469d0d25-f462-4906-9897-019825b7cbd9}</UniqueIdentifier>
+      <UniqueIdentifier>{9274f2e3-b0fe-4d9b-8024-27c6b1654cd0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gui">
-      <UniqueIdentifier>{57271a6e-77ee-4b6a-8940-aacf3155bdd6}</UniqueIdentifier>
+      <UniqueIdentifier>{7169f8e2-48b6-47d2-aeb3-3c58819a0962}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="graphicboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="movehandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rotationhandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tetrisboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tetrisgame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="protocol.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gamesound.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gamesprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gamefont.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="barcolor.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="button.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="frame.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="multiframe.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="textitem.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="textboxdraw.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="guiwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="highscore.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="localplayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tetriswindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="textbutton.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="manbutton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="networklooby.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="playerinfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="textbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="joystick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="keyboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="textboxdraw.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="textbutton.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="textitem.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="background.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="bar.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="barcolor.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="frame.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="group.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="guiitem.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="guitypedefs.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="imagebackground.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="inputformatter.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="inputnumberformatter.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="textbox.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="actionhandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamefont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamesound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamesprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphicboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="guiwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="joystick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="localplayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manbutton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="movehandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="networklooby.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="playerinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="remoteplayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rotationhandler.h">
@@ -131,107 +135,103 @@
     <ClInclude Include="tetriswindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="actionhandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="block.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="graphicboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="protocol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gamesound.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gamesprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gamefont.h">
+    <ClInclude Include="userconnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="multiframe.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
-    <ClInclude Include="barcolor.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="bar.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="background.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="button.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="group.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="frame.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="guiitem.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="imagebackground.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="textitem.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="textbutton.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="textbox.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="textboxdraw.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="inputnumberformatter.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="guitypedefs.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="guiwindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="highscore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="device.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="localplayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="userconnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inputformatter.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="manbutton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="networklooby.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="remoteplayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="playerinfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="joystick.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="keyboard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="barcolor.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="button.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="frame.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="textbox.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="textboxdraw.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="textbutton.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="textitem.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamefont.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamesound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamesprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="guiwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="joystick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="localplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="manbutton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="movehandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="networklooby.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="playerinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rotationhandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tetrisboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tetrisgame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tetriswindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="multiframe.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="highscore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
