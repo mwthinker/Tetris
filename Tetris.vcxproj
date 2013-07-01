@@ -39,12 +39,18 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\SDL\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\enet\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwLibrary\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwExtra\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwEnet\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\SDL\lib;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\enet\lib\debug;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwLibrary\lib-d;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwExtra\lib-d;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwEnet\lib-d;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\SDK\SDL\include;..\SDK\enet\include;..\SDK\MwLibrary\include;..\SDK\MwExtra\include;..\SDK\MwEnet\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\SDK\SDL\lib;..\SDK\enet\lib\debug;..\SDK\MwLibrary\lib-d;..\SDK\MwExtra\lib-d;..\SDK\MwEnet\lib-d;$(LibraryPath)</LibraryPath>
+    <TargetName>MWetris</TargetName>
+    <OutDir>$(SolutionDir)DebugBuildSdl1\</OutDir>
+    <IntDir>DebugSdl1\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\SDL\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\enet\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwLibrary\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwExtra\include;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwEnet\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\SDL\lib;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\enet\lib;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwLibrary\lib-r;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwExtra\lib-r;C:\Users\Marcus\Documents\Visual Studio 2012\Projects\SDK\MwEnet\lib-r;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\SDK\SDL\include;..\SDK\enet\include;..\SDK\MwLibrary\include;..\SDK\MwExtra\include;..\SDK\MwEnet\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\SDK\SDL\lib;..\SDK\enet\lib;..\SDK\MwLibrary\lib-r;..\SDK\MwExtra\lib-r;..\SDK\MwEnet\lib-r;$(LibraryPath)</LibraryPath>
+    <TargetName>MWetris</TargetName>
+    <OutDir>$(SolutionDir)ReleaseBuildSdl1\</OutDir>
+    <IntDir>ReleaseSdl1\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

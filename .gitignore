@@ -11,6 +11,14 @@
 *.layout
 *.depend
 *highscore
+*DebugSdl1
+*DebugBuildSdl1
+*ReleaseSdl1
+*ReleaseBuildSdl1
+*DebugSdl2
+*DebugBuildSdl2
+*ReleaseSdl2
+*ReleaseBuildSdl2
 
 #################
 ## Eclipse
