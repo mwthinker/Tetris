@@ -829,8 +829,6 @@ void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
 	switch (windowEvent.type) {
 	case SDL_KEYDOWN:
 		switch (windowEvent.key.keysym.sym) {
-		case SDLK_f:
-			// Fall through!
 		case SDLK_F11:
 			mw::Window::setFullScreen(!mw::Window::isFullScreen());
 			break;

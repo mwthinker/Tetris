@@ -2,16 +2,27 @@
 #define INPUTFORMATTER_H
 
 #include <sstream> // std::ostringstream
-#include <cstring> // memmove
+#include <cstring> // std::memmove
 
 #include <memory>
 
 namespace gui {
 
+	class InputFormatter;
+	typedef std::shared_ptr<InputFormatter> InputFormatterPtr;
+
 	class InputFormatter {
 	public:
-		enum Input {INPUT_MOVE_MARKER_LEFT,INPUT_MOVE_MARKER_RIGHT,INPUT_ERASE_LEFT,INPUT_ERASE_RIGHT}; //,INPUT_PASTE,INPUT_COPY};
-		static int const MAX_SIZE = 100;		// Max number of input characters.
+		static int const MAX_SIZE = 100; // Max number of input characters.
+
+		enum Input {
+			INPUT_MOVE_MARKER_HOME,
+			INPUT_MOVE_MARKER_END,
+			INPUT_MOVE_MARKER_LEFT,
+			INPUT_MOVE_MARKER_RIGHT,
+			INPUT_ERASE_LEFT,
+			INPUT_ERASE_RIGHT
+		};
 
 		InputFormatter(int maxLimit = 30) {
 			clear();
@@ -31,7 +42,7 @@ namespace gui {
 			return stream.str();
 		}
 
-		// Cleares the current input.
+		// Clears the current input.
 		void clear() {
 			size_ = 0;
 			marker_ = 0;
@@ -76,11 +87,17 @@ namespace gui {
 						++marker_;
 					}
 					break;
+				case INPUT_MOVE_MARKER_HOME:
+					marker_ = 0;
+					break;
+				case INPUT_MOVE_MARKER_END:
+					marker_ = size_;
+					break;
 				}
 			}
 		}
 
-		// Enables/disable the update functions.
+		// Enable/disable the update function.
 		void setWritable(bool isWritable) {
 			isWritable_ = isWritable;
 		}
@@ -117,7 +134,7 @@ namespace gui {
 				return true;
             }
 
-			// Swedish keyboard.
+			// Swedish keyboard. Warning, platform dependent code!
 			if (key == 'å' || key == 'ä' || key == 'ö' || key == 'Å' || key == 'Ä' || key == 'Ö') {
 				return true;
 			}
@@ -133,7 +150,7 @@ namespace gui {
 		}
 
 		void setSize(int size) {
-			if (size < MAX_SIZE) {
+			if (size >= 0 && size < MAX_SIZE) {
 				size_ = size;
 			}
 		}
@@ -151,8 +168,6 @@ namespace gui {
 		int size_;				// Size of string input.
 		int marker_;			// Marker position.
 	};
-
-	typedef std::shared_ptr<InputFormatter> InputFormatterPtr;
 
 } // Namespace gui.
 
