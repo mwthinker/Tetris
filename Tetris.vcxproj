@@ -91,6 +91,7 @@
     <ClInclude Include="barcolor.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="button.h" />
+    <ClInclude Include="computer.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gamefont.h" />
