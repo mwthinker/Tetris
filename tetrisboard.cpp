@@ -45,7 +45,7 @@ void TetrisBoard::update(Move move) {
 
 		switch (move) {
 		case DOWN_GRAVITY:
-			block.move();
+			block.moveDown();
 			gravityCollision = collision(block);
 			if (!gravityCollision) {
 				gameEvents_.push(GRAVITY_MOVES_BLOCK);
@@ -97,9 +97,8 @@ void TetrisBoard::update(Move move) {
 
 		if (gravityCollision) {
 			// Collision detected, add squares to gameboard.
-			int nbrOfSquares = current_.nbrOfSquares();
-			for (int i = 0; i < nbrOfSquares; ++i) {
-				getBlockFromBoard(current_[i].row_, current_[i].column_) = current_.blockType();
+			for (const Square& sq : current_) {
+				getBlockFromBoard(sq.row_, sq.column_) = current_.blockType();
 			}
 			
 			// Remove any filled rows on the gameboard.
@@ -192,7 +191,7 @@ void TetrisBoard::addExternalRows() {
 }
 
 Block TetrisBoard::createBlock(BlockType blockType) const {
-	return Block(blockType,nbrOfRows_,nbrOfColumns_/2 - 1);
+	return Block(blockType, nbrOfRows_, nbrOfColumns_/2 - 1);
 }
 
 bool TetrisBoard::collision(Block block) const {
@@ -219,19 +218,19 @@ bool TetrisBoard::collision(Block block) const {
 }
 
 BlockType TetrisBoard::getBlockFromBoard(int row, int column) const {
-	return gameboard_[row*nbrOfColumns_ + column];
+	return gameboard_[row * nbrOfColumns_ + column];
 }
 
 BlockType& TetrisBoard::getBlockFromBoard(int row, int column) {
-	return gameboard_[row*nbrOfColumns_ + column];
+	return gameboard_[row * nbrOfColumns_ + column];
 }
 
 int TetrisBoard::removeFilledRows(const Block& block) {
 	int row = block.getLowestRow();
 
 	int nbr = 0;
-	int nbrOfSquares = current_.nbrOfSquares();
-	for (int i = 0; i < 4; ++i) {
+	const int nbrOfSquares = current_.nbrOfSquares();
+	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
 		if (row >= 0) {
 			rowsFilled_[row] = 0;

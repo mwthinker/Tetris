@@ -3,14 +3,13 @@
 
 #include "square.h"
 
-#include <vector>
+#include <array>
 
 class Block {
 public:
     Block();
 	Block(BlockType blockType, int bottomRow, int leftColumn);
-
-	void move();
+	
 	void moveLeft();
 	void moveRight();
 	void moveUp();
@@ -27,10 +26,25 @@ public:
 	// Returns the lowest possible row for the block when rotating.
 	int getLowestRow() const;
 
+	inline std::array<Square, 4>::const_iterator begin() const {
+		return squares_.begin();
+	}
+
+	inline std::array<Square, 4>::const_iterator end() const {
+		return squares_.end();
+	}
+
+	inline int getNumberOfRotations() const {
+		return maxRotations_;
+	}
+
+	inline int getCurrentRotation() const {
+		return currentRotation_;
+	}
+
 private:
 	int rotationSquareIndex_;
-	Square squares_[4];
-	int nbrOfSquares_;
+	std::array<Square, 4> squares_;
 	int maxRotations_, currentRotation_;
 	BlockType blockType_;
 	int lowestRow_;

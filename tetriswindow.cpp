@@ -5,6 +5,7 @@
 #include "tetrisgame.h"
 #include "joystick.h"
 #include "keyboard.h"
+#include "computer.h"
 
 #include "textbutton.h"
 #include "highscore.h"

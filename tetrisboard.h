@@ -28,6 +28,7 @@ public:
 
     TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
 
+	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
 	void restart(BlockType current, BlockType next);
 
 	// Add a move to the falling block.
@@ -48,7 +49,8 @@ public:
 	// Return true if the game is over else false.
     bool isGameOver() const;
 
-	// Returns all non moving squares on the board.
+	// Returns all non moving squares on the board. Index 0 to (rows+4)*columns-1.
+	// All squares are saved in row major order.
     const std::vector<BlockType>& getGameBoard() const;
 
 	// Return the moving block.
@@ -64,6 +66,11 @@ public:
 	void addRows(const std::vector<BlockType>& blockTypes);
 
 	BlockType getBlockFromBoard(int row, int column) const;
+
+	// Number of rows is in range [0,rows+3].
+	inline int nbrOfSquares(int row) const {
+		return rowsFilled_[row];
+	}
 
 private:
     void addExternalRows();
