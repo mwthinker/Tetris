@@ -91,15 +91,11 @@ void TetrisBoard::update(Move move) {
 				}
 				break;
 			}
-		default:
-			break;
 		}
 
 		if (gravityCollision) {
 			// Collision detected, add squares to gameboard.
-			for (const Square& sq : current_) {
-				getBlockFromBoard(sq.row_, sq.column_) = current_.blockType();
-			}
+			addBlockToBoard(current_);
 			
 			// Remove any filled rows on the gameboard.
 			int nbr = removeFilledRows(current_);
@@ -133,6 +129,13 @@ void TetrisBoard::update(Move move) {
 			// no collision, its journey can continue.
 			current_ = block;
 		}
+	}
+}
+
+void TetrisBoard::addBlockToBoard(const Block& block) {
+	// All squares in the block to be added to the board.
+	for (const Square& sq :block) {
+		getBlockFromBoard(sq.row_, sq.column_) = sq.blockType_;
 	}
 }
 
@@ -194,7 +197,7 @@ Block TetrisBoard::createBlock(BlockType blockType) const {
 	return Block(blockType, nbrOfRows_, nbrOfColumns_/2 - 1);
 }
 
-bool TetrisBoard::collision(Block block) const {
+bool TetrisBoard::collision(const Block& block) const {
 	bool collision = false;
 	int nbrOfSquares = block.nbrOfSquares();
 

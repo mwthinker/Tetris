@@ -34,6 +34,11 @@ public:
 	// Add a move to the falling block.
     void update(Move move);
 
+	// Adds a block directly to the board.
+	// I.e. Block becomes a part of the board.
+	// Warning! No check is done before adding squares to board.
+	void addBlockToBoard(const Block& block);
+
 	// Add next block.
 	void add(BlockType next);
 
@@ -72,10 +77,13 @@ public:
 		return rowsFilled_[row];
 	}
 
+	// Returns true if block is outside or on an allready occupied square on the board.
+	// Else it returns false.
+	bool collision(const Block& block) const;
+
 private:
     void addExternalRows();
 	Block createBlock(BlockType blockType) const;
-    bool collision(Block block) const;
 
 	BlockType& getBlockFromBoard(int row, int column);
 

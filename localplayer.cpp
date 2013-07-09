@@ -62,4 +62,3 @@ void LocalPlayer::update(double deltaTime) {
 double LocalPlayer::calculateDownSpeed(int level) const {
 	return 1+level*0.5;
 }
-

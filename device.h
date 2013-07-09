@@ -20,6 +20,9 @@ struct Input {
 	bool right;
 };
 
+class Device;
+typedef std::shared_ptr<Device> DevicePtr;
+
 class Device {
 public:
 	friend class TetrisWindow;
@@ -34,7 +37,5 @@ public:
 private:
     virtual void eventUpdate(const SDL_Event& windowEvent) = 0;
 };
-
-typedef std::shared_ptr<Device> DevicePtr;
 
 #endif // DEVICE_H
