@@ -220,10 +220,6 @@ bool TetrisBoard::collision(const Block& block) const {
 	return collision;
 }
 
-BlockType TetrisBoard::getBlockFromBoard(int row, int column) const {
-	return gameboard_[row * nbrOfColumns_ + column];
-}
-
 BlockType& TetrisBoard::getBlockFromBoard(int row, int column) {
 	return gameboard_[row * nbrOfColumns_ + column];
 }

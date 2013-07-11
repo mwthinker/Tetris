@@ -70,7 +70,9 @@ public:
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
 
-	BlockType getBlockFromBoard(int row, int column) const;
+	inline BlockType getBlockFromBoard(int row, int column) const {
+		return gameboard_[row * nbrOfColumns_ + column];
+	}
 
 	// Number of rows is in range [0,rows+3].
 	inline int nbrOfSquares(int row) const {
