@@ -8,16 +8,16 @@
 
 struct Input {
 	Input() {
-		rotate = false;
-		down = false;
-		left = false;
-		right = false;
+		rotate_ = false;
+		down_ = false;
+		left_ = false;
+		right_ = false;
 	}
 
-	bool rotate;
-	bool down;
-	bool left;
-	bool right;
+	bool rotate_;
+	bool down_;
+	bool left_;
+	bool right_;
 };
 
 class Device;

@@ -25,13 +25,10 @@ void Joystick::eventUpdate(const SDL_Event& windowEvent) {
 		switch (windowEvent.type) {
 		case SDL_JOYAXISMOTION:  // Handle Joystick Motion
 			if ( ( windowEvent.jaxis.value < -3200 ) || (windowEvent.jaxis.value > 3200 ) ) {
-				if( windowEvent.jaxis.axis == 0) 
-				{
+				if( windowEvent.jaxis.axis == 0) {
 					std::cout << "\n LEFT/RIGHT";
 				}
-
-				if( windowEvent.jaxis.axis == 1) 
-				{
+				if( windowEvent.jaxis.axis == 1) {
 					std::cout << "\n UP/DOWN";
 				}				
 			}
@@ -39,43 +36,36 @@ void Joystick::eventUpdate(const SDL_Event& windowEvent) {
 		case SDL_JOYHATMOTION:
 			if ( windowEvent.jhat.value & SDL_HAT_LEFT ) {
 				//std::cout << "\n SDL_HAT_LEFT";
-				input_.left = true;
+				input_.left_ = true;
 			} else {
-				input_.left = false;
+				input_.left_ = false;
 			}
 
-			if ( windowEvent.jhat.value & SDL_HAT_RIGHT)
-			{
-				input_.right = true;
+			if ( windowEvent.jhat.value & SDL_HAT_RIGHT) {
+				input_.right_ = true;
 			} else {
-				input_.right = false;
+				input_.right_ = false;
 			}
-
-			if (windowEvent.jhat.value & SDL_HAT_DOWN)
-			{
-				input_.down = true;
+			if (windowEvent.jhat.value & SDL_HAT_DOWN) {
+				input_.down_ = true;
 			} else {
-				input_.down = false;
+				input_.down_ = false;
 			}
 			break;
 		case SDL_JOYBUTTONDOWN:  // Handle Joystick Button Presses
-			if (windowEvent.jbutton.button == rotateButton_) 
-			{
-				input_.rotate = true;
+			if (windowEvent.jbutton.button == rotateButton_) {
+				input_.rotate_ = true;
 			}
-			if (windowEvent.jbutton.button == downButton_) 
-			{
-				input_.down = true;
+			if (windowEvent.jbutton.button == downButton_) {
+				input_.down_ = true;
 			}
 			break;
 		case SDL_JOYBUTTONUP:  // Handle Joystick Button Presses
-			if (windowEvent.jbutton.button == rotateButton_) 
-			{
-				input_.rotate = false;
+			if (windowEvent.jbutton.button == rotateButton_) {
+				input_.rotate_ = false;
 			}
-			if (windowEvent.jbutton.button == downButton_) 
-			{
-				input_.down = false;
+			if (windowEvent.jbutton.button == downButton_) {
+				input_.down_ = false;
 			}
 			break;
 		default:

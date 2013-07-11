@@ -25,13 +25,13 @@ mw::Packet& operator>>(mw::Packet& packet, PacketType& net) {
 }
 
 mw::Packet& operator<<(mw::Packet& packet, const Input& input) {
-	char data = input.rotate;
+	char data = input.rotate_;
 	data <<= 1;
-	data += input.down;
+	data += input.down_;
 	data <<= 1;
-	data += input.left;
+	data += input.left_;
 	data <<= 1;
-	data += input.right;
+	data += input.right_;
 	packet << data;
 	return packet;
 }
@@ -40,13 +40,13 @@ mw::Packet& operator>>(mw::Packet& packet, Input& input) {
 	char data;
 	packet >> data;
 	char bit = 1;
-	input.right = (bit & data) > 0;
+	input.right_ = (bit & data) > 0;
 	bit <<= 1;
-	input.left = (bit & data) > 0;
+	input.left_ = (bit & data) > 0;
 	bit <<= 1;
-	input.down = (bit & data) > 0;
+	input.down_ = (bit & data) > 0;
 	bit <<= 1;
-	input.rotate = (bit & data) > 0;
+	input.rotate_ = (bit & data) > 0;
 	return packet;
 }
 

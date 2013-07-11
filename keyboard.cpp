@@ -24,24 +24,24 @@ void Keyboard::eventUpdate(const SDL_Event& windowEvent) {
 	switch (windowEvent.type) {
 	case SDL_KEYDOWN:
 		if (key == down_) {
-			input_.down = true;
+			input_.down_ = true;
 		} else if (key == left_) {
-			input_.left = true;
+			input_.left_ = true;
 		} else if (key == right_) {
-			input_.right = true;
+			input_.right_ = true;
 		} else if (key == rotate_) {
-			input_.rotate = true;
+			input_.rotate_ = true;
 		}
 		break;
 	case SDL_KEYUP:
 		if (key == down_) {
-			input_.down = false;
+			input_.down_ = false;
 		} else if (key == left_) {
-			input_.left = false;
+			input_.left_ = false;
 		} else if (key == right_) {
-			input_.right = false;
+			input_.right_ = false;
 		} else if (key == rotate_) {
-			input_.rotate = false;
+			input_.rotate_ = false;
 		}
 		break;
 	default:
