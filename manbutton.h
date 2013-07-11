@@ -6,9 +6,12 @@
 #include <mw/sprite.h>
 #include <memory>
 
+class ManButton;
+typedef std::shared_ptr<ManButton> ManButtonPtr;
+
 class ManButton : public gui::Button {
 public:	
-	ManButton(int pixelSize);
+	ManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross);
 
 	unsigned int getNbr() const;
 
@@ -22,12 +25,10 @@ private:
 	bool mouseOver_;
 	unsigned int nbr_;
 
-	mw::Sprite man_, noMan_;		
+	mw::Sprite man_, cross_;
 	int pixelSize_;
 };
 
-typedef std::shared_ptr<ManButton> ManButtonPtr;
-
-ManButtonPtr createManButton(int pixelSize);
+ManButtonPtr createManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross);
 
 #endif // MANBUTTON_H

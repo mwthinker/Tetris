@@ -85,11 +85,6 @@ private:
 		}
 	}
 
-	bool hasFloor(Block block) const {
-		block.moveDown();
-		return board_.collision(block);
-	}
-
 	int findLowesEmptyRow(const TetrisBoard& board) const {
 		int maxRow = board_.getNbrOfRows();
 		for (int row = 0; row < maxRow; ++row) {

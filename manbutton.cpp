@@ -1,12 +1,10 @@
 #include "manbutton.h"
-#include "gamesprite.h"
 
-#include <mw/texture.h>
 #include <mw/sprite.h>
 
-ManButton::ManButton(int pixelSize) {
-	man_ = spriteMan;
-	noMan_ = spriteNoMan;
+ManButton::ManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross) {
+	man_ = man;
+	cross_ = cross;
 
 	pixelSize_ = pixelSize;
 	nbr_ = 1;
@@ -31,7 +29,8 @@ void ManButton::draw() {
 	glPushMatrix();
 
 	if (nbr_ == 0) {
-		drawPlayer(noMan_);
+		drawPlayer(man_);
+		drawPlayer(cross_);
 	} else {
 		for (unsigned int i = 0; i < nbr_; ++i) {
 			drawPlayer(man_);
@@ -53,6 +52,6 @@ void ManButton::drawPlayer(mw::Sprite& sprite) {
 	glPopMatrix();
 }
 
-ManButtonPtr createManButton(int pixelSize) {
-	return ManButtonPtr(new ManButton(pixelSize));
+ManButtonPtr createManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross) {
+	return ManButtonPtr(new ManButton(pixelSize, man, cross));
 }

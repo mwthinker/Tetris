@@ -270,7 +270,7 @@ void GuiWindow::initPlayFrame() {
 		}
 	});
 
-	auto manButton = createManButton(hDistance_);
+	auto manButton = createManButton(hDistance_, spriteMan, spriteCross);
 	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
@@ -550,7 +550,7 @@ void GuiWindow::initCreateServerFrame() {
 	multiFrame_.add(header,0,50,false,true);
 	multiFrame_.add(b1,80,0,false,true);
 
-	auto manButton = createManButton(hDistance_);
+	auto manButton = createManButton(hDistance_, spriteMan, spriteCross);
 	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
@@ -644,7 +644,7 @@ void GuiWindow::initCreateClientFrame() {
 	multiFrame_.add(header,0,50,false,true);
 	multiFrame_.add(b1,80,0,false,true);
 
-	auto manButton = createManButton(hDistance_);
+	auto manButton = createManButton(hDistance_, spriteMan, spriteCross);
 	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();

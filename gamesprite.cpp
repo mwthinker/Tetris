@@ -9,4 +9,5 @@ const mw::Sprite spriteS("images/sq_red.png");
 const mw::Sprite spriteT("images/sq_purple.png");
 const mw::Sprite spriteZ("images/sq_green.png");
 const mw::Sprite spriteMan("images/man.png");
-const mw::Sprite spriteNoMan("images/noman.png");
+const mw::Sprite spriteComputer("images/computer.png");
+const mw::Sprite spriteCross("images/cross.png");

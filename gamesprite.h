@@ -12,6 +12,7 @@ extern const mw::Sprite spriteS;
 extern const mw::Sprite spriteT;
 extern const mw::Sprite spriteZ;
 extern const mw::Sprite spriteMan;
-extern const mw::Sprite spriteNoMan;
+extern const mw::Sprite spriteComputer;
+extern const mw::Sprite spriteCross;
 
 #endif // GAMESPRITE_H
