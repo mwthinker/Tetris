@@ -11,8 +11,10 @@ public:
 	~TetrisWindow();
 
 private:
-    void setNumberOfLocalPlayers(int number) override;
-	int getNumberOfLocalPlayers() const override;
+    void setNbrOfHumanPlayers(int number) override;
+	int getNbrOfHumanPlayers() const override;
+	void setNbrOfComputerPlayers(int number) override;
+	int getNbrOfComputerPlayers() const override;
 
 	void abortGame() override;
 	void startGame() override;
@@ -43,7 +45,7 @@ private:
 
 	TetrisGame tetrisGame_;
 	std::vector<DevicePtr> devices_;
-	int numberOfLocalPlayers_;
+	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
 };
 
 #endif // TETRISWINDOW_H

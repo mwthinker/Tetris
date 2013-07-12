@@ -40,6 +40,7 @@ bool Player::updateBoard(TetrisBoard::Move& move, BlockType& next) {
 		tetrisBoard_.add(blockType);
         move = polledMove;
         update(move);
+		updateAi();
     }
     return polled;
 }

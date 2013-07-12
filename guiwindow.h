@@ -32,8 +32,10 @@ protected:
 	NetworkLoobyPtr getNetworkLoobyPtr() const;
 	gui::TextButtonPtr getReadyPtr() const;
 
-	virtual void setNumberOfLocalPlayers(int number) = 0;
-	virtual int getNumberOfLocalPlayers() const = 0;
+	virtual void setNbrOfHumanPlayers(int number) = 0;
+	virtual int getNbrOfHumanPlayers() const = 0;
+	virtual void setNbrOfComputerPlayers(int number) = 0;
+	virtual int getNbrOfComputerPlayers() const = 0;
 
 	void gotoLocalPlayFrame();
 	void gotoServerPlayFrame();

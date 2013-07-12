@@ -22,6 +22,9 @@ public:
 	void update(const std::vector<BlockType>& blockTypes);
 	std::vector<BlockType> generateRow() const;
 
+	virtual void updateAi() {
+	}
+
 protected:
     // Pushed to a queue.
     void pushMove(TetrisBoard::Move move);

@@ -9,12 +9,16 @@
 
 #include <memory>
 
+class LocalPlayer;
+typedef std::shared_ptr<LocalPlayer> LocalPlayerPtr;
+
 class LocalPlayer : public Player {
 public:
     LocalPlayer(int id, int width, int height, int maxLevel, const DevicePtr& device);
     ~LocalPlayer();
 
     void update(double deltaTime);
+	void updateAi() override;
 
 private:
 	double calculateDownSpeed(int level) const;
@@ -31,6 +35,6 @@ private:
     DevicePtr device_;
 };
 
-typedef std::shared_ptr<LocalPlayer> LocalPlayerPtr;
+
 
 #endif // LOCALPLAYER_H

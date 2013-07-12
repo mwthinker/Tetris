@@ -274,15 +274,50 @@ void GuiWindow::initPlayFrame() {
 	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
-		setNumberOfLocalPlayers(nbr+1);
-		int newNbr = getNumberOfLocalPlayers();
+		setNbrOfHumanPlayers(nbr+1);
+		int newNbr = getNbrOfHumanPlayers();
 
 		if (newNbr == nbr) {
             newNbr = 1;
 		}
 
 		nbrOfPlayers->setNbr(newNbr);
-		setNumberOfLocalPlayers(newNbr);
+		setNbrOfHumanPlayers(newNbr);
+
+		createLocalGame();
+	});
+
+	auto humanButton = createManButton(hDistance_, spriteMan, spriteCross);
+	humanButton->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNbrOfHumanPlayers(nbr+1);
+		int newNbr = getNbrOfHumanPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNbrOfHumanPlayers(newNbr);
+
+		createLocalGame();
+	});
+
+	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
+	computerButton->setNbr(0);
+	computerButton->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNbrOfComputerPlayers(nbr+1);
+		int newNbr = getNbrOfComputerPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNbrOfComputerPlayers(newNbr);
 
 		createLocalGame();
 	});
@@ -304,7 +339,8 @@ void GuiWindow::initPlayFrame() {
 
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
-	multiFrame_.add(manButton,80 + b2->getWidth(),0,false,true);
+	multiFrame_.add(humanButton, 80 + b2->getWidth(), 0, false, true);
+	multiFrame_.add(computerButton, 80 + b2->getWidth() + 150, 0, false, true);
 	multiFrame_.add(pause_,0,0,true,true);
 }
 
@@ -554,15 +590,15 @@ void GuiWindow::initCreateServerFrame() {
 	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
-		setNumberOfLocalPlayers(nbr+1);
-		int newNbr = getNumberOfLocalPlayers();
+		setNbrOfHumanPlayers(nbr+1);
+		int newNbr = getNbrOfHumanPlayers();
 
 		if (newNbr == nbr) {
             newNbr = 0;
 		}
 
 		nbrOfPlayers->setNbr(newNbr);
-		setNumberOfLocalPlayers(newNbr);
+		setNbrOfHumanPlayers(newNbr);
 	});
 
 	// Set board size ------------------------------------------------------
@@ -648,15 +684,15 @@ void GuiWindow::initCreateClientFrame() {
 	manButton->addOnClickListener([&](gui::GuiItem* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
-		setNumberOfLocalPlayers(nbr+1);
-		int newNbr = getNumberOfLocalPlayers();
+		setNbrOfHumanPlayers(nbr+1);
+		int newNbr = getNbrOfHumanPlayers();
 
 		if (newNbr == nbr) {
             newNbr = 0;
 		}
 
 		nbrOfPlayers->setNbr(newNbr);
-		setNumberOfLocalPlayers(newNbr);
+		setNbrOfHumanPlayers(newNbr);
 	});
 
     gui::TextItemPtr textItem = gui::createTextItem("Connect to ip",fontDefault18,18,mw::Color(1.0,1.0,1.0));

@@ -93,30 +93,30 @@ Protocol::~Protocol() {
 	delete network_;
 }
 
-void Protocol::createLocalGame(const std::vector<DevicePtr>& devices) { 
-	connect(devices,LOCAL);
+void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers) { 
+	connect(devices, nbrOfComputers, LOCAL);
 }
 
-void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int width, int height, int maxLevel) {
+void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel) {
     width_ = width;
 	height_ = height;
 	maxLevel_ = maxLevel;
-	connect(devices,LOCAL);
+	connect(devices, nbrOfComputers, LOCAL);
 }
 
-void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int port, int width, int height) {
+void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height) {
 	width_ = width;
 	height_ = height;
 	maxLevel_ = 20;
 	setServerPort(port);
-	connect(devices,SERVER);
+	connect(devices, nbrOfComputers, SERVER);
 }
 
-void Protocol::createClientGame(const std::vector<DevicePtr>& devices, int port, std::string ip) {
+void Protocol::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip) {
 	if (status_ == WAITING_TO_CONNECT) {
 		setConnectToIp(ip);
 		setConnectToPort(port);
-		connect(devices,CLIENT);
+		connect(devices, nbrOfComputers, CLIENT);
 	}
 }
 
@@ -230,8 +230,9 @@ void Protocol::update(Uint32 deltaTime) {
 }
 
 // Initiates the choosen connection.
-void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
+void Protocol::connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status) {
 	if (status_ == WAITING_TO_CONNECT) {
+		// Settings.
 		delete network_;
 		network_ = nullptr;
 		status_ = status;
@@ -239,6 +240,13 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 		devices_ = devices;
 		nbrOfPlayers_ = 0;
 		playerId_ = 0;
+
+		// Add computer players.
+		for (int i = 0; i < nbrOfComputerPlayers; ++i) {
+			devices_.push_back(DevicePtr(new Computer()));
+		}
+
+		nbrOfPlayers_ = devices_.size();
 
 		switch (status) {
 		case WAITING_TO_CONNECT:
@@ -251,7 +259,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			localUser_->setReady(true);
 			users_.push_back(localUser_);
 			// Add new player to all local players.
-			for (const DevicePtr& device : devices) {
+			for (const DevicePtr& device : devices_) {
 				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, maxLevel_, device)));
 			}
 			break;
@@ -262,7 +270,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			localUser_ = UserConnectionPtr(new UserConnection(network_->getId()));
 			users_.push_back(localUser_);
 			// Add new player to all local players.
-			for (const DevicePtr& device : devices) {
+			for (const DevicePtr& device : devices_) {
 				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, maxLevel_, device)));
 			}
 			{
@@ -277,7 +285,6 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, Status status) {
 			sendClientInfo();
 			break;
 		};
-		nbrOfPlayers_ = devices.size();
 	}
 }
 

@@ -16,6 +16,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, int maxLevel, const Devi
 	time_ = 0.0;
 	lastDownTime_ = 0.0;
 	device_ = device;
+	device_->update(getTetrisBoard());
 }
 
 LocalPlayer::~LocalPlayer() {
@@ -57,6 +58,10 @@ void LocalPlayer::update(double deltaTime) {
 	if (rotateHandler_->doAction()) {
 		pushMove(TetrisBoard::ROTATE_LEFT);
 	}
+}
+
+void LocalPlayer::updateAi() {
+	device_->update(getTetrisBoard());
 }
 
 double LocalPlayer::calculateDownSpeed(int level) const {

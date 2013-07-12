@@ -7,6 +7,7 @@
 
 #include "userconnection.h"
 #include "localplayer.h"
+#include "computer.h"
 #include "device.h"
 
 #include <mw/signal.h>
@@ -139,10 +140,10 @@ public:
 
 	void update(Uint32 deltaTime);
 
-	void createLocalGame(const std::vector<DevicePtr>& devices);
-	void createLocalGame(const std::vector<DevicePtr>& devices, int width, int height, int maxLevel);
-	void createServerGame(const std::vector<DevicePtr>& devices, int port, int width, int height);
-	void createClientGame(const std::vector<DevicePtr>& devices, int port, std::string ip);
+	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers);
+	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel);
+	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height);
+	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip);
 
 	void startGame();
 	void closeGame();
@@ -171,7 +172,7 @@ public:
 protected:
 	void signalEvent(NetworkEventPtr nEvent);
 
-	void connect(const std::vector<DevicePtr>& devices, Status status);
+	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
 
 	void iterateAllPlayersInfo(std::function<bool(PlayerInfoPtr)> nextPlayer) const;
 

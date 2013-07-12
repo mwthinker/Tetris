@@ -5,27 +5,41 @@
 #include "tetrisboard.h"
 
 #include <vector>
+#include <string>
 
-class Computer {
+class Computer : public Device {
 public:
-	Computer(const TetrisBoard& board) : board_(board) {
+	Computer() {
 	}
 
+	Input currentInput() override {
+		return Input();
+	}
+
+	std::string getName() const override {
+		return "Computer";
+	}
+
+	void update(const TetrisBoard& board) override {
+		//updateD(board);
+	}
+
+private:
 	// Find all possible positions for the block.
-	void update(const Block& current) {
-		int row = findLowesEmptyRow(board_);
+	void updateD(const TetrisBoard& board) {
+		int row = findLowestEmptyRow(board);
+		Block current = board.currentBlock();
 		int diff = current.getLowestRow() - row;
+		
 		if (diff >= 0) {
 			Block newBlock = current;
 			for (int i = 0; i < diff; ++i) {
 				newBlock.moveDown();
 			}
-
-			getAllPossiblePositions(newBlock);
+			getAllPossiblePositions(board, current);
 		}
 	}
 
-private:
 	struct State {
 		State(int down, int left, int rotations) : down_(down), left_(left), rotations_(rotations) {
 		}
@@ -37,33 +51,35 @@ private:
 
 	typedef  std::vector<State> Path;
 
-	std::vector<State>& getAllPossiblePositions(Block& block) {
+	std::vector<State> getAllPossiblePositions(const TetrisBoard& board, const Block& block) {
 		State state(0,0,0);
 		Path path(1, state);
 		std::vector<Path> paths;
-		calculateAllPossiblePositions(block, paths, path);
+		calculateAllPossiblePositions(board, block, paths, path);
+
+		return std::vector<State>();
 	}
 
 	// Saves all (path) to valid position in (paths) and block is the current block.
-	void calculateAllPossiblePositions(Block block, std::vector<Path>& paths, const Path& currentPath) {
+	void calculateAllPossiblePositions(const TetrisBoard& board, Block block, std::vector<Path>& paths, const Path& currentPath) {
 		State state = currentPath.back();
 		block.moveDown();
 		++state.down_;
-		if (!board_.collision(block)) {
+		if (!board.collision(block)) {
 			paths.push_back(currentPath);
 
 			// Go through all rotations for the block.
-			for (; state.rotations_ < block.getNumberOfRotations(); ++state.rotations_, block.rotateLeft()) {
+			for (; state.rotations_ <= block.getNumberOfRotations(); ++state.rotations_, block.rotateLeft()) {
 				// Go left.
 				Path lPath = currentPath;
 				Block tmp = block;
 				tmp.moveLeft();
 				State lState = state;
-				while (!board_.collision(tmp)) {
+				while (!board.collision(tmp)) {
 					++lState.left_;
-					Path lPath = currentPath;
+					//Path lPath = currentPath;
 					lPath.push_back(state);
-					calculateAllPossiblePositions(block, paths, lPath);
+					calculateAllPossiblePositions(board, tmp, paths, lPath);
 					tmp.moveLeft();
 				}
 
@@ -72,11 +88,11 @@ private:
 				tmp = block;
 				tmp.moveRight();
 				State rState = state;
-				while (!board_.collision(tmp)) {
+				while (!board.collision(tmp)) {
 					++rState.left_;
 					Path rPath = currentPath;
-					rPath.push_back(state);
-					calculateAllPossiblePositions(block, paths, rPath);
+					//rPath.push_back(state);
+					calculateAllPossiblePositions(board, tmp, paths, rPath);
 					tmp.moveRight();
 				}
 			}
@@ -85,17 +101,15 @@ private:
 		}
 	}
 
-	int findLowesEmptyRow(const TetrisBoard& board) const {
-		int maxRow = board_.getNbrOfRows();
+	int findLowestEmptyRow(const TetrisBoard& board) const {
+		int maxRow = board.getNbrOfRows();
 		for (int row = 0; row < maxRow; ++row) {
-			if (board_.nbrOfSquares(row) == 0) {
+			if (board.nbrOfSquares(row) == 0) {
 				return row;
 			}
 		}
 		return maxRow;
-	}
-
-	const TetrisBoard& board_;
+	}	
 };
 
 #endif // CUMPUTER_H

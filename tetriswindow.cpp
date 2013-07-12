@@ -18,7 +18,8 @@
 #include <sstream>
 
 TetrisWindow::TetrisWindow() {
-    numberOfLocalPlayers_ = 1;
+    nbrOfHumanPlayers_ = 1;
+	nbrOfComputerPlayers_ = 0;
 	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
 		handleConnectionEvent(nEvent);
 	});
@@ -44,17 +45,29 @@ TetrisWindow::TetrisWindow() {
 TetrisWindow::~TetrisWindow() {
 }
 
-void TetrisWindow::setNumberOfLocalPlayers(int number) {
+void TetrisWindow::setNbrOfHumanPlayers(int number) {
     const int size = devices_.size();
     if (number <= size) {
-        numberOfLocalPlayers_ = number;
+        nbrOfHumanPlayers_ = number;
     } else {
-        numberOfLocalPlayers_ = size;
+        nbrOfHumanPlayers_ = size;
     }
 }
 
-int TetrisWindow::getNumberOfLocalPlayers() const {
-    return numberOfLocalPlayers_;
+int TetrisWindow::getNbrOfHumanPlayers() const {
+    return nbrOfHumanPlayers_;
+}
+
+void TetrisWindow::setNbrOfComputerPlayers(int number) {
+    if (number <= 4) {
+        nbrOfComputerPlayers_ = number;
+    } else {
+        nbrOfComputerPlayers_ = 4;
+    }
+}
+
+int TetrisWindow::getNbrOfComputerPlayers() const {
+    return nbrOfComputerPlayers_;
 }
 
 void TetrisWindow::abortGame() {
@@ -64,47 +77,47 @@ void TetrisWindow::abortGame() {
 void TetrisWindow::createLocalGame() {
 	const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.createLocalGame(tmpDevices);
+	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_);
 	tetrisGame_.startGame();
 }
 
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.createLocalGame(tmpDevices, width, height, maxLevel);
+	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
 	tetrisGame_.startGame();
 }
 
 void TetrisWindow::createServerGame(int port, int width, int height) {
     const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.createServerGame(tmpDevices,port, width, height);
+	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height);
 }
 
 void TetrisWindow::createClientGame(int port, std::string ip) {
     const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < numberOfLocalPlayers_ && i < size; ++i) {
+	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.createClientGame(tmpDevices,port,ip);
+	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip);
 }
 
 void TetrisWindow::restartGame() {
