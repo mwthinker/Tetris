@@ -13,7 +13,7 @@ public:
 	}
 
 	Input currentInput() override {
-		return Input();
+		return input_;
 	}
 
 	std::string getName() const override {
@@ -21,26 +21,15 @@ public:
 	}
 
 	void update(const TetrisBoard& board) override {
-		//updateD(board);
+		State state = calculateBestState(board);
+		input_ = calculateInput(state);
 	}
 
 private:
-	// Find all possible positions for the block.
-	void updateD(const TetrisBoard& board) {
-		int row = findLowestEmptyRow(board);
-		Block current = board.currentBlock();
-		int diff = current.getLowestRow() - row;
-		
-		if (diff >= 0) {
-			Block newBlock = current;
-			for (int i = 0; i < diff; ++i) {
-				newBlock.moveDown();
-			}
-			getAllPossiblePositions(board, current);
-		}
-	}
-
 	struct State {
+		State() : down_(0), left_(0), rotations_(0) {
+		}
+
 		State(int down, int left, int rotations) : down_(down), left_(left), rotations_(rotations) {
 		}
 
@@ -49,58 +38,129 @@ private:
 		int rotations_;
 	};
 
-	typedef  std::vector<State> Path;
-
-	std::vector<State> getAllPossiblePositions(const TetrisBoard& board, const Block& block) {
-		State state(0,0,0);
-		Path path(1, state);
-		std::vector<Path> paths;
-		calculateAllPossiblePositions(board, block, paths, path);
-
-		return std::vector<State>();
+	int calculateValue(const TetrisBoard& board) const {
+		int value = 0;
+		const int MAXROWS = board.getNbrOfRows();
+		for (int row = 0; row < MAXROWS; ++row) {
+			int nbr = board.nbrOfSquares(row); 
+			value -= nbr * row;
+		}
+		return value;
 	}
 
-	// Saves all (path) to valid position in (paths) and block is the current block.
-	void calculateAllPossiblePositions(const TetrisBoard& board, Block block, std::vector<Path>& paths, const Path& currentPath) {
-		State state = currentPath.back();
-		block.moveDown();
-		++state.down_;
-		if (!board.collision(block)) {
-			paths.push_back(currentPath);
+	// Calulate and return the best input to ashieve the current state.
+	Input calculateInput(State state) const {
+		Input input;
+		if (state.rotations_ > 0) {
+			input.rotate_ = true;
+		}
+		if (state.left_ > 0) {
+			input.left_ = true;
+		} else if (state.left_ < 0) {
+			input.right_ = true;
+		}
+		if (state.down_ != 0 && state.left_ == 0 && state.rotations_ == 0) {
+			input.down_ = true;
+		}
+		return input;
+	}
 
-			// Go through all rotations for the block.
-			for (; state.rotations_ <= block.getNumberOfRotations(); ++state.rotations_, block.rotateLeft()) {
-				// Go left.
-				Path lPath = currentPath;
-				Block tmp = block;
-				tmp.moveLeft();
-				State lState = state;
-				while (!board.collision(tmp)) {
-					++lState.left_;
-					//Path lPath = currentPath;
-					lPath.push_back(state);
-					calculateAllPossiblePositions(board, tmp, paths, lPath);
-					tmp.moveLeft();
-				}
+	// Find the best state for the block to move.
+	State calculateBestState(const TetrisBoard& board) {
+		std::vector<State> states = calculateAllPossibleStates(board, board.currentBlock());
 
-				// Go right.
-				Path rPath = currentPath;
-				tmp = block;
-				tmp.moveRight();
-				State rState = state;
-				while (!board.collision(tmp)) {
-					++rState.left_;
-					Path rPath = currentPath;
-					//rPath.push_back(state);
-					calculateAllPossiblePositions(board, tmp, paths, rPath);
-					tmp.moveRight();
+		int highestValue = -100000;
+		int hIndex = -1;
+		for (unsigned int index = 0; index < states.size(); ++index) {
+			State state = states[index];
+			TetrisBoard childBoard = board;
+			childBoard.add(BlockType::BLOCK_TYPE_EMPTY);
+				
+			for (int i = 0; i < state.rotations_; ++i) {
+				childBoard.update(TetrisBoard::ROTATE_LEFT);
+			}
+				
+			while (state.left_ != 0) {
+				if (state.left_ < 0) {
+					childBoard.update(TetrisBoard::RIGHT);
+					++state.left_;
+				} else if (state.left_ > 0) {
+					childBoard.update(TetrisBoard::LEFT);
+					--state.left_;
 				}
 			}
-		} else {
-			paths.push_back(currentPath);
+
+			for (int i = 0; i <= state.down_; ++i) {
+				childBoard.update(TetrisBoard::DOWN_GRAVITY);
+			}
+
+			int value = calculateValue(childBoard);
+			if (value > highestValue) {
+				hIndex = index;
+				highestValue = value;
+			}
 		}
+
+		if (hIndex >= 0) {
+			return states[hIndex];
+		}
+		return State();
 	}
 
+	// Calculates and returns all posible states from the point of view from the block provided.
+	// The algortihm rotates and goes left or rigth with the block which then fall to the ground.
+	// I.e. The possible state.
+	std::vector<State> calculateAllPossibleStates(const TetrisBoard& board, Block block) const {
+		std::vector<State> states;
+		// Valid block position?
+		if (!board.collision(block)) {
+			State state;
+
+			// Go through all rotations for the block.
+			for (int rotations = 0; rotations <= block.getNumberOfRotations(); ++rotations, block.rotateLeft()) {
+				// Go left.
+				Block horizontal = block;
+				horizontal.moveLeft();
+								
+				int stepsLeft = 1;
+				// Go left until obstacle.
+				while (!board.collision(horizontal)) {
+					Block vertical = horizontal;
+					int stepsDown = 1;
+					vertical.moveDown();
+					while (!board.collision(vertical)) {
+						++stepsDown;
+						vertical.moveDown();
+					}
+					states.push_back(State(stepsDown, stepsLeft, rotations));
+
+					++stepsLeft;
+					horizontal.moveLeft();
+				}
+
+				stepsLeft = 0;
+
+				horizontal = block;
+				// Go right until obstacle.
+				while (!board.collision(horizontal)) {
+					Block vertical = horizontal;
+					int stepsDown = 1;
+					vertical.moveDown();
+					while (!board.collision(vertical)) {
+						++stepsDown;
+						vertical.moveDown();
+					}
+					states.push_back(State(stepsDown, stepsLeft, rotations));
+
+					--stepsLeft;
+					horizontal.moveRight();
+				}
+			}
+		}
+		return states;
+	}
+	
+	// Returns the lowest empty row on the board.
 	int findLowestEmptyRow(const TetrisBoard& board) const {
 		int maxRow = board.getNbrOfRows();
 		for (int row = 0; row < maxRow; ++row) {
@@ -109,7 +169,9 @@ private:
 			}
 		}
 		return maxRow;
-	}	
+	}
+
+	Input input_;
 };
 
 #endif // CUMPUTER_H
