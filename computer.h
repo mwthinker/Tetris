@@ -10,6 +10,7 @@
 class Computer : public Device {
 public:
 	Computer() {
+		latestId_ = -1;
 	}
 
 	Input currentInput() override {
@@ -21,8 +22,27 @@ public:
 	}
 
 	void update(const TetrisBoard& board) override {
-		State state = calculateBestState(board);
-		input_ = calculateInput(state);
+		// New block appears?
+		if (latestId_ != board.getNbrOfUpdates()) {
+			latestId_ = board.getNbrOfUpdates();
+			latestState_ = calculateBestState(board);
+			input_ = calculateInput(latestState_);
+			latestBlock_ = board.currentBlock();
+		} else {
+			Block current = board.currentBlock();
+			Square currentSq = current.getRotationSquare();
+			Square sq = latestBlock_.getRotationSquare();
+			
+			if (latestState_.left_ == sq.column_ - currentSq.column_) {
+				latestState_.left_ = 0;
+			}
+
+			if (latestState_.rotations_ == current.getCurrentRotation() - latestBlock_.getCurrentRotation()) {
+				latestState_.rotations_ = 0;
+			}
+			
+			input_ = calculateInput(latestState_);
+		}
 	}
 
 private:
@@ -38,28 +58,64 @@ private:
 		int rotations_;
 	};
 
-	int calculateValue(const TetrisBoard& board) const {
+	double calculateValue(const TetrisBoard& board) const {
 		int value = 0;
 		const int MAXROWS = board.getNbrOfRows();
 		for (int row = 0; row < MAXROWS; ++row) {
 			int nbr = board.nbrOfSquares(row); 
-			value -= nbr * row;
+			value -= nbr * row * 0;
 		}
-		return value;
+
+		int lowestRow = findLowestEmptyRow(board);
+		int nbrOfHoles = 0;
+
+		double rowRoughness = 0;
+		for (int row = 0; row < lowestRow; ++row) {
+			BlockType lastType;
+			for (int column = 0; column < board.getNbrOfColumns(); ++column) {
+				BlockType type = board.getBlockFromBoard(row, column);
+				if (column == 0) {
+					lastType = type;
+				} else {
+					if (lastType != type) {
+						rowRoughness += -10;
+					}
+					lastType = type;
+				}
+			}
+		}
+		
+		double columnRoughness = 0;	
+		for (int column = 0; column < board.getNbrOfColumns(); ++column) {
+			BlockType lastType;
+			for (int row = 0; row < lowestRow; ++row) {			
+				BlockType type = board.getBlockFromBoard(row, column);
+				if (row == 0) {
+					lastType = type;
+				} else {
+					if (lastType != type) {
+						columnRoughness += -5;
+					}
+					lastType = type;
+				}
+			}
+		}
+
+		return value + rowRoughness + columnRoughness - lowestRow * 10;
 	}
 
-	// Calulate and return the best input to ashieve the current state.
+	// Calculate and return the best input to achieve the current state.
 	Input calculateInput(State state) const {
 		Input input;
 		if (state.rotations_ > 0) {
-			input.rotate_ = true;
+			input.rotate_ = !input_.rotate_;
 		}
 		if (state.left_ > 0) {
 			input.left_ = true;
 		} else if (state.left_ < 0) {
 			input.right_ = true;
 		}
-		if (state.down_ != 0 && state.left_ == 0 && state.rotations_ == 0) {
+		if (state.left_ == 0 && state.rotations_ == 0) {
 			input.down_ = true;
 		}
 		return input;
@@ -69,7 +125,7 @@ private:
 	State calculateBestState(const TetrisBoard& board) {
 		std::vector<State> states = calculateAllPossibleStates(board, board.currentBlock());
 
-		int highestValue = -100000;
+		double highestValue = -100000;
 		int hIndex = -1;
 		for (unsigned int index = 0; index < states.size(); ++index) {
 			State state = states[index];
@@ -94,7 +150,7 @@ private:
 				childBoard.update(TetrisBoard::DOWN_GRAVITY);
 			}
 
-			int value = calculateValue(childBoard);
+			double value = calculateValue(childBoard);
 			if (value > highestValue) {
 				hIndex = index;
 				highestValue = value;
@@ -171,7 +227,10 @@ private:
 		return maxRow;
 	}
 
+	int latestId_;
 	Input input_;
+	State latestState_;
+	Block latestBlock_;
 };
 
 #endif // CUMPUTER_H

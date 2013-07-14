@@ -12,6 +12,7 @@ TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, Blo
 	nbrOfRows_ = nbrOfRows;
 	nbrOfColumns_ = nbrOfColumns;
 	isGameOver_ = false;
+	nbrOfUpdates_ = 0;
 
 	current_ = createBlock(current);
 	next_ = createBlock(next);
@@ -28,6 +29,7 @@ void TetrisBoard::restart(BlockType current, BlockType next) {
 	gameboard_ = std::vector<BlockType>( (nbrOfRows_ + 4) * nbrOfColumns_ , BLOCK_TYPE_EMPTY);
 	rowsFilled_ = std::vector<int>(nbrOfRows_ + 4, 0);
 	isGameOver_ = false;
+	nbrOfUpdates_ = 0;
 }
 
 // First checks if the game is over. Then perform the move.
@@ -107,6 +109,7 @@ void TetrisBoard::update(Move move) {
 			current_ = next_;
 			next_ = createBlock(nextBlockQueue_.front());
 			nextBlockQueue_.pop();
+			++nbrOfUpdates_;
 
 			// Add Game event
 			gameEvents_.push(BLOCK_COLLISION);

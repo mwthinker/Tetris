@@ -83,6 +83,10 @@ public:
 	// Else it returns false.
 	bool collision(const Block& block) const;
 
+	inline int getNbrOfUpdates() const {
+		return nbrOfUpdates_;
+	}
+
 private:
     void addExternalRows();
 	Block createBlock(BlockType blockType) const;
@@ -103,6 +107,7 @@ private:
 
     int nbrOfRows_, nbrOfColumns_;		// The size of the gameboard.
     bool isGameOver_;					// True when game is over, else false.
+	int nbrOfUpdates_;
 
 	std::queue<BlockType> nextBlockQueue_;
 };
