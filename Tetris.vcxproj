@@ -133,6 +133,7 @@
     <ClCompile Include="barcolor.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="button.cpp" />
+    <ClCompile Include="computer.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="gamefont.cpp" />
     <ClCompile Include="gamesound.cpp" />
