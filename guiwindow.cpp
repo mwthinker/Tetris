@@ -340,7 +340,7 @@ void GuiWindow::initPlayFrame() {
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
 	multiFrame_.add(humanButton, 80 + b2->getWidth(), 0, false, true);
-	multiFrame_.add(computerButton, 80 + b2->getWidth() + 150, 0, false, true);
+	multiFrame_.add(computerButton, 100 + b2->getWidth() + 150, 0, false, true);
 	multiFrame_.add(pause_,0,0,true,true);
 }
 
@@ -601,6 +601,22 @@ void GuiWindow::initCreateServerFrame() {
 		setNbrOfHumanPlayers(newNbr);
 	});
 
+	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
+	computerButton->setNbr(0);
+	computerButton->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNbrOfComputerPlayers(nbr+1);
+		int newNbr = getNbrOfComputerPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNbrOfComputerPlayers(newNbr);
+	});
+
 	// Set board size ------------------------------------------------------
 	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem,0,100,false,true);
@@ -620,6 +636,7 @@ void GuiWindow::initCreateServerFrame() {
 	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem4,0,200,false,true);
 	multiFrame_.add(manButton,120,200,false,true);
+	multiFrame_.add(computerButton,260,200,false,true);
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Create", 30, [&](gui::GuiItem*) {
@@ -695,6 +712,22 @@ void GuiWindow::initCreateClientFrame() {
 		setNbrOfHumanPlayers(newNbr);
 	});
 
+	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
+	computerButton->setNbr(0);
+	computerButton->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNbrOfComputerPlayers(nbr+1);
+		int newNbr = getNbrOfComputerPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNbrOfComputerPlayers(newNbr);
+	});
+
     gui::TextItemPtr textItem = gui::createTextItem("Connect to ip",fontDefault18,18,mw::Color(1.0,1.0,1.0));
     ipBox_ = createTextBox(260);
 	ipBox_->setInputFormatter(std::make_shared<gui::InputFormatter>(15));
@@ -709,6 +742,7 @@ void GuiWindow::initCreateClientFrame() {
 	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem4,0,200,false,true);
 	multiFrame_.add(manButton,120,200,false,true);
+	multiFrame_.add(computerButton,260,200,false,true);
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Join", 30, [&](gui::GuiItem*) {
