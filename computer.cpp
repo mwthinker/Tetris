@@ -20,7 +20,7 @@ void Computer::update(const TetrisBoard& board) {
 	// New block appears?
 	if (latestId_ != board.getNbrOfUpdates()) {
 		latestId_ = board.getNbrOfUpdates();
-		latestState_ = calculateBestState(board);
+		latestState_ = calculateBestState(board, 2);
 		input_ = calculateInput(latestState_);
 		latestBlock_ = board.currentBlock();
 	} else {
@@ -41,33 +41,20 @@ void Computer::update(const TetrisBoard& board) {
 }
 
 double Computer::calculateValue(const RawTetrisBoard& board, const Block& block) const {
-	int value = 0;
-	const int MAXROWS = board.getNbrOfRows();
-	for (int row = 0; row < MAXROWS; ++row) {
-		//int nbr = board.nbrOfSquares(row);
-		//value -= nbr * row * 0;
-	}
-
-	int lowestRow = board.getNbrOfRows() +4;
-	int nbrOfHoles = 0;
-
+	int lowestRow = board.getNbrOfRows() + 4;
 	double meanHeight = 0;
 	int nbrOfSquares = 0;
 
 	double rowRoughness = 0;
 	for (int row = 0; row < lowestRow; ++row) {
-		BlockType lastType;
+		bool lastHole = false;
 		for (int column = 0; column < board.getNbrOfColumns(); ++column) {
-			BlockType type = board.getBlockType(row, column);
-			if (column == 0) {
-				lastType = type;
-			} else {
-				if (lastType != type) {
-					rowRoughness += -5;
-				}
-				lastType = type;
+			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
+			if (lastHole != hole) {
+				rowRoughness += -5;
+				lastHole = hole;
 			}
-			if (type != BlockType::EMPTY) {
+			if (!hole) {
 				meanHeight += row;
 				++nbrOfSquares;
 			}
@@ -78,31 +65,28 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 
 	double columnRoughness = 0;	
 	for (int column = 0; column < board.getNbrOfColumns(); ++column) {
-		BlockType lastType;
-		for (int row = 0; row < lowestRow; ++row) {			
-			BlockType type = board.getBlockType(row, column);
-			if (row == 0) {
-				lastType = type;
-			} else {
-				if (lastType != type) {
-					columnRoughness += -10;
-				}
-				lastType = type;
+		bool lastHole = false;
+		for (int row = 0; row < lowestRow; ++row) {
+			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
+			if (lastHole != hole) {
+				columnRoughness += -10;
+				lastHole = hole;
 			}
 		}
 	}
 
 	int edges = 0;
 	int blockMeanHeight = 0;
+	int value = 0;
 	for (const Square& sq : block) {
 		board.getBlockType(sq.row_, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
-		board.getBlockType(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : value -= 5;
+		board.getBlockType(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
 		board.getBlockType(sq.row_, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
 		blockMeanHeight += sq.row_;
 	}
 	blockMeanHeight /= 4;
 
-	return rowRoughness + columnRoughness + (meanHeight - blockMeanHeight) * 0.5 * board.getNbrOfRows() + edges;
+	return rowRoughness + columnRoughness + (meanHeight - blockMeanHeight) * 0.5 * board.getNbrOfRows() + edges * 0;
 }
 
 // Calculate and return the best input to achieve the current state.
@@ -123,48 +107,60 @@ Input Computer::calculateInput(State state) const {
 }
 
 // Find the best state for the block to move.
-Computer::State Computer::calculateBestState(const TetrisBoard& board) {
-	std::vector<State> states = calculateAllPossibleStates(board, board.currentBlock());
+Computer::State Computer::calculateBestState(RawTetrisBoard board, int depth) {
+	if (depth != 0) {
+		std::vector<State> states = calculateAllPossibleStates(board, board.currentBlock());
 
-	double highestValue = -100000;
-	int hIndex = -1;
-	for (unsigned int index = 0; index < states.size(); ++index) {
-		State state = states[index];
-		RawTetrisBoard childBoard = board;
+		double highestValue = -100000;
+		int hIndex = -1;
+		for (unsigned int index = 0; index < states.size(); ++index) {
+			State state = states[index];
+			RawTetrisBoard childBoard = board;
 
-		for (int i = 0; i < state.rotations_; ++i) {
-			childBoard.update(Move::ROTATE_LEFT);
-		}
+			for (int i = 0; i < state.rotations_; ++i) {
+				childBoard.update(Move::ROTATE_LEFT);
+			}
 
-		while (state.left_ != 0) {
-			if (state.left_ < 0) {
-				childBoard.update(Move::RIGHT);
-				++state.left_;
-			} else if (state.left_ > 0) {
-				childBoard.update(Move::LEFT);
-				--state.left_;
+			while (state.left_ != 0) {
+				if (state.left_ < 0) {
+					childBoard.update(Move::RIGHT);
+					++state.left_;
+				} else if (state.left_ > 0) {
+					childBoard.update(Move::LEFT);
+					--state.left_;
+				}
+			}
+
+			// Move down the block and stop just before impact.
+			for (int i = 0; i < state.down_-1; ++i) {
+				childBoard.update(Move::DOWN_GRAVITY);
+			}
+			// Save the current block before impact.
+			Block block = childBoard.currentBlock();
+			// Impact, the block is now a part of the board.
+			childBoard.update(Move::DOWN_GRAVITY);
+
+			if (depth > 1) {
+				calculateBestState(childBoard, depth - 1);
+				double value = calculateValue(childBoard, block);
+
+				if (value > highestValue) {
+					hIndex = index;
+					highestValue = value;
+				}
+			} else {
+				double value = calculateValue(childBoard, block);
+
+				if (value > highestValue) {
+					hIndex = index;
+					highestValue = value;
+				}
 			}
 		}
 
-		// Move down the block and stop just before impact.
-		for (int i = 0; i < state.down_-1; ++i) {
-			childBoard.update(Move::DOWN_GRAVITY);
+		if (hIndex >= 0) {
+			return states[hIndex];
 		}
-		// Save the current block before impact.
-		Block block = childBoard.currentBlock();
-		// Impact, the block is now a part of the board.
-		childBoard.update(Move::DOWN_GRAVITY);
-
-		double value = calculateValue(childBoard, block);
-
-		if (value > highestValue) {
-			hIndex = index;
-			highestValue = value;
-		}
-	}
-
-	if (hIndex >= 0) {
-		return states[hIndex];
 	}
 	return State();
 }

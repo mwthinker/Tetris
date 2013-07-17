@@ -37,7 +37,7 @@ private:
 	Input calculateInput(State state) const;
 
 	// Find the best state for the block to move.
-	State calculateBestState(const TetrisBoard& board);
+	State calculateBestState(RawTetrisBoard board, int depth);
 
 	// Calculates and returns all posible states from the point of view from the block provided.
 	// The algortihm rotates and goes left or rigth with the block which then fall to the ground.

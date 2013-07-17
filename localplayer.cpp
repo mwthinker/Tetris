@@ -10,7 +10,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, int maxLevel, const Devi
 	int nbrOfRows = 20;
 	leftHandler_ = new MoveHandler(0.09); // 0.12
 	rightHandler_ = new MoveHandler(0.09); // 0.12
-	downHandler_ = new MoveHandler(nbrOfRows/20.0 * 0.055);
+	downHandler_ = new MoveHandler(nbrOfRows/20.0 * 0.040);
 	rotateHandler_ = new RotationHandler();
 
 	time_ = 0.0;
