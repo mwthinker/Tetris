@@ -1,15 +1,15 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-enum BlockType {
-	BLOCK_TYPE_I,
-	BLOCK_TYPE_J,
-	BLOCK_TYPE_L,
-	BLOCK_TYPE_O,
-	BLOCK_TYPE_S,
-	BLOCK_TYPE_T,
-	BLOCK_TYPE_Z,
-	BLOCK_TYPE_EMPTY
+enum class BlockType : char {
+	I,
+	J,
+	L,
+	O,
+	S,
+	T,
+	Z,
+	EMPTY
 };
 
 class Square {

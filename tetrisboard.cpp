@@ -17,8 +17,7 @@ TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, Blo
 	current_ = createBlock(current);
 	next_ = createBlock(next);
 
-	gameboard_ = std::vector<BlockType>( (nbrOfRows + 4) * (nbrOfColumns) , BLOCK_TYPE_EMPTY);
-	rowsFilled_ = std::vector<int>(nbrOfRows + 4, 0);
+	gameboard_ = std::vector<BlockType>( (nbrOfRows + 4) * (nbrOfColumns) , BlockType::EMPTY);
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
@@ -26,8 +25,7 @@ void TetrisBoard::restart(BlockType current, BlockType next) {
 	gameEvents_ = std::queue<GameEvent>();
 	current_ = createBlock(current);
 	next_ = createBlock(next);
-	gameboard_ = std::vector<BlockType>( (nbrOfRows_ + 4) * nbrOfColumns_ , BLOCK_TYPE_EMPTY);
-	rowsFilled_ = std::vector<int>(nbrOfRows_ + 4, 0);
+	gameboard_ = std::vector<BlockType>( (nbrOfRows_ + 4) * nbrOfColumns_ , BlockType::EMPTY);
 	isGameOver_ = false;
 	nbrOfUpdates_ = 0;
 }
@@ -46,50 +44,50 @@ void TetrisBoard::update(Move move) {
 		bool gravityCollision = false;
 
 		switch (move) {
-		case DOWN_GRAVITY:
+		case Move::DOWN_GRAVITY:
 			block.moveDown();
 			gravityCollision = collision(block);
 			if (!gravityCollision) {
-				gameEvents_.push(GRAVITY_MOVES_BLOCK);
+				gameEvents_.push(GameEvent::GRAVITY_MOVES_BLOCK);
 			}
 			break;
-		case LEFT:
+		case Move::LEFT:
 			{
 				Block tmp = block;
 				tmp.moveLeft();
 				if (!collision(tmp)) {
 					block = tmp;
-					gameEvents_.push(PLAYER_MOVES_BLOCK_LEFT);
+					gameEvents_.push(GameEvent::PLAYER_MOVES_BLOCK_LEFT);
 				}
 				break;
 			}
-		case RIGHT:
+		case Move::RIGHT:
 			{
 				Block tmp = block;
 				tmp.moveRight();
 				if (!collision(tmp)) {
 					block = tmp;
-					gameEvents_.push(PLAYER_MOVES_BLOCK_RIGHT);
+					gameEvents_.push(GameEvent::PLAYER_MOVES_BLOCK_RIGHT);
 				}
 				break;
 			}
-		case DOWN:
+		case Move::DOWN:
 			{
 				Block tmp = block;
 				tmp.moveDown();
 				if (!collision(tmp)) {
 					block = tmp;
-					gameEvents_.push(PLAYER_MOVES_BLOCK_DOWN);
+					gameEvents_.push(GameEvent::PLAYER_MOVES_BLOCK_DOWN);
 				}
 				break;
 			}
-		case ROTATE_LEFT:
+		case Move::ROTATE_LEFT:
 			{
 				Block tmp = block;
 				tmp.rotateLeft();
 				if (!collision(tmp)) {
 					block = tmp;
-					gameEvents_.push(PLAYER_ROTATES_BLOCK);
+					gameEvents_.push(GameEvent::PLAYER_ROTATES_BLOCK);
 				}
 				break;
 			}
@@ -112,20 +110,20 @@ void TetrisBoard::update(Move move) {
 			++nbrOfUpdates_;
 
 			// Add Game event
-			gameEvents_.push(BLOCK_COLLISION);
+			gameEvents_.push(GameEvent::BLOCK_COLLISION);
 
 			switch (nbr) {
 			case 1:
-				gameEvents_.push(ONE_ROW_REMOVED);
+				gameEvents_.push(GameEvent::ONE_ROW_REMOVED);
 				break;
 			case 2:
-				gameEvents_.push(TWO_ROW_REMOVED);
+				gameEvents_.push(GameEvent::TWO_ROW_REMOVED);
 				break;
 			case 3:
-				gameEvents_.push(THREE_ROW_REMOVED);
+				gameEvents_.push(GameEvent::THREE_ROW_REMOVED);
 				break;
 			case 4:
-				gameEvents_.push(FOUR_ROW_REMOVED);
+				gameEvents_.push(GameEvent::FOUR_ROW_REMOVED);
 				break;
 			}
 		} else {
@@ -148,7 +146,7 @@ void TetrisBoard::add(BlockType next) {
 
 void TetrisBoard::triggerGameOverEvent() {
 	if (!isGameOver_) {
-		gameEvents_.push(GAME_OVER);
+		gameEvents_.push(GameEvent::GAME_OVER);
 		isGameOver_ = true;
 	}
 }
@@ -192,7 +190,7 @@ void TetrisBoard::addRows(const std::vector<BlockType>& blockTypes) {
 
 void TetrisBoard::addExternalRows() {
 	gameboard_.insert(gameboard_.begin(), squaresToAdd_.begin(), squaresToAdd_.end());
-	gameboard_.resize(gameboard_.size() - squaresToAdd_.size(), BLOCK_TYPE_EMPTY);
+	gameboard_.resize(gameboard_.size() - squaresToAdd_.size(), BlockType::EMPTY);
 	squaresToAdd_.clear();
 }
 
@@ -214,7 +212,7 @@ bool TetrisBoard::collision(const Block& block) const {
 			collision = true;
 			break;
 		}
-		if (getBlockFromBoard(block[i].row_, block[i].column_) != BLOCK_TYPE_EMPTY) {
+		if (getBlockFromBoard(block[i].row_, block[i].column_) != BlockType::EMPTY) {
 			collision = true;
 			break;
 		}
@@ -235,11 +233,9 @@ int TetrisBoard::removeFilledRows(const Block& block) {
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
 		if (row >= 0) {
-			rowsFilled_[row] = 0;
 			for (int column = 0; column < nbrOfColumns_; ++column) {
-				if (getBlockFromBoard(row, column) == BLOCK_TYPE_EMPTY) {
+				if (getBlockFromBoard(row, column) == BlockType::EMPTY) {
 					filled = false;
-					++rowsFilled_[row];
 				}
 			}
 		} else {
@@ -265,10 +261,5 @@ void TetrisBoard::moveRowsOneStepDown(int rowToRemove) {
 	// Insert the rows that were abowe the row to be removed.
 	gameboard_.insert(gameboard_.end(), upperBoard.begin(), upperBoard.end());
 	// Add a empty row at the top in order of replacing the row that were removed.
-	gameboard_.resize(gameboard_.size() + nbrOfColumns_,BLOCK_TYPE_EMPTY);
-
-	// Move down.
-	rowsFilled_.erase(rowsFilled_.begin() + rowToRemove);
-	// Replace the removed row.
-	rowsFilled_.push_back(0);
+	gameboard_.resize(gameboard_.size() + nbrOfColumns_, BlockType::EMPTY);
 }

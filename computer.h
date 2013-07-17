@@ -62,11 +62,11 @@ private:
 		int value = 0;
 		const int MAXROWS = board.getNbrOfRows();
 		for (int row = 0; row < MAXROWS; ++row) {
-			int nbr = board.nbrOfSquares(row); 
-			value -= nbr * row * 0;
+			//int nbr = board.nbrOfSquares(row);
+			//value -= nbr * row * 0;
 		}
 
-		int lowestRow = findLowestEmptyRow(board);
+		int lowestRow = board.getNbrOfRows() +4;
 		int nbrOfHoles = 0;
 
 		double rowRoughness = 0;
@@ -78,7 +78,7 @@ private:
 					lastType = type;
 				} else {
 					if (lastType != type) {
-						rowRoughness += -10;
+						rowRoughness += -5;
 					}
 					lastType = type;
 				}
@@ -94,7 +94,7 @@ private:
 					lastType = type;
 				} else {
 					if (lastType != type) {
-						columnRoughness += -5;
+						columnRoughness += -10;
 					}
 					lastType = type;
 				}
@@ -130,27 +130,36 @@ private:
 		for (unsigned int index = 0; index < states.size(); ++index) {
 			State state = states[index];
 			TetrisBoard childBoard = board;
-			childBoard.add(BlockType::BLOCK_TYPE_EMPTY);
+			childBoard.add(BlockType::EMPTY);
 				
 			for (int i = 0; i < state.rotations_; ++i) {
-				childBoard.update(TetrisBoard::ROTATE_LEFT);
+				childBoard.update(TetrisBoard::Move::ROTATE_LEFT);
 			}
 				
 			while (state.left_ != 0) {
 				if (state.left_ < 0) {
-					childBoard.update(TetrisBoard::RIGHT);
+					childBoard.update(TetrisBoard::Move::RIGHT);
 					++state.left_;
 				} else if (state.left_ > 0) {
-					childBoard.update(TetrisBoard::LEFT);
+					childBoard.update(TetrisBoard::Move::LEFT);
 					--state.left_;
 				}
 			}
 
-			for (int i = 0; i <= state.down_; ++i) {
-				childBoard.update(TetrisBoard::DOWN_GRAVITY);
+			for (int i = 0; i < state.down_-1; ++i) {
+				childBoard.update(TetrisBoard::Move::DOWN_GRAVITY);
 			}
+			const TetrisBoard& tmp = childBoard;
+			Block block = childBoard.currentBlock();
+			int edges = 0;
+			for (const Square& sq : block) {
+				tmp.getBlockFromBoard(sq.row_-1, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
+				tmp.getBlockFromBoard(sq.row_-1, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
+			}
+			childBoard.update(TetrisBoard::Move::DOWN_GRAVITY);
 
-			double value = calculateValue(childBoard);
+			double value = calculateValue(childBoard) + edges;
+			
 			if (value > highestValue) {
 				hIndex = index;
 				highestValue = value;
@@ -217,6 +226,7 @@ private:
 	}
 	
 	// Returns the lowest empty row on the board.
+	/*
 	int findLowestEmptyRow(const TetrisBoard& board) const {
 		int maxRow = board.getNbrOfRows();
 		for (int row = 0; row < maxRow; ++row) {
@@ -226,6 +236,7 @@ private:
 		}
 		return maxRow;
 	}
+	*/
 
 	int latestId_;
 	Input input_;

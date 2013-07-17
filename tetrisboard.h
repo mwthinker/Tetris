@@ -6,7 +6,7 @@
 #include <vector>
 #include <queue>
 
-enum GameEvent {
+enum class GameEvent : char {
 	PLAYER_ROTATES_BLOCK,
 	PLAYER_MOVES_BLOCK_LEFT,
 	PLAYER_MOVES_BLOCK_RIGHT,
@@ -24,7 +24,7 @@ enum GameEvent {
 class TetrisBoard {
 public:
 	// Defines all valid ways of controlling the falling block.
-    enum Move {ROTATE_LEFT, ROTATE_RIGHT, DOWN_GRAVITY, DOWN, LEFT, RIGHT};
+    enum class Move : char {ROTATE_LEFT, ROTATE_RIGHT, DOWN_GRAVITY, DOWN, LEFT, RIGHT};
 
     TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
 
@@ -71,12 +71,10 @@ public:
 	void addRows(const std::vector<BlockType>& blockTypes);
 
 	inline BlockType getBlockFromBoard(int row, int column) const {
-		return gameboard_[row * nbrOfColumns_ + column];
-	}
-
-	// Number of rows is in range [0,rows+3].
-	inline int nbrOfSquares(int row) const {
-		return rowsFilled_[row];
+		if (row >= 0 && row < nbrOfRows_+4 && column >= 0 && column < nbrOfColumns_) {
+			return gameboard_[row * nbrOfColumns_ + column];
+		}
+		return BlockType::EMPTY;
 	}
 
 	// Returns true if block is outside or on an allready occupied square on the board.
@@ -100,7 +98,6 @@ private:
 	Block current_;						// The current block for the player to control.
 	
 	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
-	std::vector<int> rowsFilled_;		// Index represents the row and the value represents the number of pieces on the row.
 
 	std::vector<BlockType> squaresToAdd_;
 	std::queue<GameEvent> gameEvents_;

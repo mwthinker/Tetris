@@ -108,27 +108,27 @@ class ProtocolError {
 };
 
 // Value of first byte sent over network. Defines the packet content.
-enum PacketType {
-	PACKET_INPUT,       // Tetrisboard updates.
-	PACKET_STARTGAME,   // The server starts the game. All user starts the game.
-	PACKET_READY,       // The server/client is ready/unready to start.
-	PACKET_SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
-	PACKET_TETRIS,      // Data describing when player adds rows.
-	PACKET_CLIENTINFO,  // A client send client info to the server.
-	PACKET_STARTBLOCK,  // Sends the start current block and the next block.
-	PACKET_PAUSE        // Pause/Unpause the game for all users.
+enum class PacketType : char {
+	INPUT,       // Tetrisboard updates.
+	STARTGAME,   // The server starts the game. All user starts the game.
+	READY,       // The server/client is ready/unready to start.
+	SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
+	TETRIS,      // Data describing when player adds rows.
+	CLIENTINFO,  // A client send client info to the server.
+	STARTBLOCK,  // Sends the start current block and the next block.
+	PAUSE        // Pause/Unpause the game for all users.
 };
-
-mw::Packet& operator<<(mw::Packet& packet, const PacketType& type);
-mw::Packet& operator>>(mw::Packet& packet, PacketType& type);
 
 mw::Packet& operator<<(mw::Packet& packet, const Input& input);
 mw::Packet& operator>>(mw::Packet& packet, Input& input);
 
-mw::Packet& operator<<(mw::Packet& packet, const TetrisBoard::Move& move);
+mw::Packet& operator<<(mw::Packet& packet, PacketType type);
+mw::Packet& operator>>(mw::Packet& packet, PacketType& type);
+
+mw::Packet& operator<<(mw::Packet& packet, TetrisBoard::Move move);
 mw::Packet& operator>>(mw::Packet& packet, TetrisBoard::Move& move);
 
-mw::Packet& operator<<(mw::Packet& packet, const BlockType& type);
+mw::Packet& operator<<(mw::Packet& packet, BlockType type);
 mw::Packet& operator>>(mw::Packet& packet, BlockType& type);
 
 class Protocol : public mw::ServerFilter {
@@ -222,7 +222,7 @@ private:
 	// tetris event (4 rows removal at once). The rows to be transformed to
 	// all opponent players is saved in vector (blockTypes) which must be
 	// in complete rows. With the upper left and block and row first.
-	void sendTetrisInfo(int playerId, const std::vector<BlockType>& blockTypes);
+	void sendTetrisInfo(char playerId, const std::vector<BlockType>& blockTypes);
 
 	// Sets the port which PlayerManager should connect to if status
 	// is CLIENT. I.e. calling connect(humans, Status::CLIENT).

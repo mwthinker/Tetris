@@ -88,7 +88,7 @@ std::vector<BlockType> Player::generateRow() const {
 		if (row[i]) {
 			rows.push_back(generateBlockType());
 		} else {
-			rows.push_back(BLOCK_TYPE_EMPTY);
+			rows.push_back(BlockType::EMPTY);
 		}
 	}
 	return rows;
@@ -101,28 +101,28 @@ void Player::pushMove(TetrisBoard::Move move) {
 BlockType Player::generateBlockType() const {
 	std::uniform_int_distribution<int> distribution(0,6);
 	int nbr = distribution(generator);
-	BlockType blockType = BLOCK_TYPE_EMPTY;
+	BlockType blockType = BlockType::EMPTY;
 	switch (nbr) {
 	case 0:
-		blockType = BLOCK_TYPE_I;
+		blockType = BlockType::I;
 		break;
 	case 1:
-		blockType = BLOCK_TYPE_J;
+		blockType = BlockType::J;
 		break;
 	case 2:
-		blockType = BLOCK_TYPE_L;
+		blockType = BlockType::L;
 		break;
 	case 3:
-		blockType = BLOCK_TYPE_O;
+		blockType = BlockType::O;
 		break;
 	case 4:
-		blockType = BLOCK_TYPE_S;
+		blockType = BlockType::S;
 		break;
 	case 5:
-		blockType = BLOCK_TYPE_T;
+		blockType = BlockType::T;
 		break;
 	case 6:
-		blockType = BLOCK_TYPE_Z;
+		blockType = BlockType::Z;
 		break;
 	}
 

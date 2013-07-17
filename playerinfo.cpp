@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 
-PlayerInfo::PlayerInfo(int id, int width, int height, int maxLevel) : tetrisBoard_(height,width,BLOCK_TYPE_I,BLOCK_TYPE_I), graphicBoard_(tetrisBoard_), maxLevel_(maxLevel), id_(id) {
+PlayerInfo::PlayerInfo(int id, int width, int height, int maxLevel) : tetrisBoard_(height,width, BlockType::I, BlockType::I), graphicBoard_(tetrisBoard_), maxLevel_(maxLevel), id_(id) {
     reset();
 }
 

@@ -6,7 +6,7 @@ Block::Block() {
 	maxRotations_ = 0;
 	currentRotation_ = 0;
 	rotationSquareIndex_ = 0;
-	blockType_ = BLOCK_TYPE_EMPTY;
+	blockType_ = BlockType::EMPTY;
 	lowestRow_ = 0;
 }
 
@@ -17,10 +17,10 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 	blockType_ = blockType;
 	int nbrOfSquares = 0;
     switch (blockType) {
-	case BLOCK_TYPE_EMPTY:
+	case BlockType::EMPTY:
 		maxRotations_ = 0;
 		break;
-	case BLOCK_TYPE_I:
+	case BlockType::I:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 3, leftColumn);
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 2, leftColumn);
 		rotationSquareIndex_ = nbrOfSquares;
@@ -29,7 +29,7 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 		maxRotations_ = 1;
 		lowestRow_ = bottomRow;
 		break;
-	case BLOCK_TYPE_J:
+	case BlockType::J:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 2, leftColumn + 1);
 		rotationSquareIndex_ = nbrOfSquares;
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn + 1);
@@ -37,7 +37,7 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow, leftColumn);
 		lowestRow_ = bottomRow;
 		break;
-	case BLOCK_TYPE_L:
+	case BlockType::L:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 2, leftColumn);
 		rotationSquareIndex_ = nbrOfSquares;
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn);
@@ -45,7 +45,7 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow, leftColumn + 1);
 		lowestRow_ = bottomRow;
 		break;
-	case BLOCK_TYPE_O:
+	case BlockType::O:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn);
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn + 1);
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow, leftColumn);
@@ -53,7 +53,7 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 		maxRotations_ = 0;
 		lowestRow_ = bottomRow;
 		break;
-	case BLOCK_TYPE_S:
+	case BlockType::S:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn + 1);
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn);
 		rotationSquareIndex_ = nbrOfSquares;
@@ -62,7 +62,7 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 		maxRotations_ = 1;
 		lowestRow_ = bottomRow - 1;
 		break;
-	case BLOCK_TYPE_T:
+	case BlockType::T:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn);
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow, leftColumn + 1);
 		rotationSquareIndex_ = nbrOfSquares;
@@ -70,7 +70,7 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow, leftColumn - 1);
 		lowestRow_ = bottomRow - 1;
 		break;
-	case BLOCK_TYPE_Z:
+	case BlockType::Z:
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn - 1);
 		squares_[nbrOfSquares++] = Square(blockType_, bottomRow + 1, leftColumn);
 		rotationSquareIndex_ = nbrOfSquares;

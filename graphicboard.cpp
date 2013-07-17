@@ -172,7 +172,7 @@ void GraphicBoard::drawBoard() {
 	for (int row = 0; row < tetrisBoard_.getNbrOfRows() + 2; ++row) {
 		for (int column = 0; column < tetrisBoard_.getNbrOfColumns(); ++column) {
 			BlockType type = tetrisBoard_.getBlockFromBoard(row,column);
-			if (BLOCK_TYPE_EMPTY != type) {
+			if (BlockType::EMPTY != type) {
 				drawSquare(column, row, type);
 			}
 		}
@@ -231,22 +231,22 @@ void GraphicBoard::drawSquare(int column, int row, BlockType blockType) {
 void GraphicBoard::drawSquare(BlockType blockType) {
 	mw::Sprite sprite = spriteI;
 	switch (blockType) {
-	case BLOCK_TYPE_J:
+	case BlockType::J:
 		sprite = spriteJ;
 		break;
-	case BLOCK_TYPE_L:
+	case BlockType::L:
 		sprite = spriteL;
 		break;
-	case BLOCK_TYPE_O:
+	case BlockType::O:
 		sprite = spriteO;
 		break;
-	case BLOCK_TYPE_S:
+	case BlockType::S:
 		sprite = spriteS;
 		break;
-	case BLOCK_TYPE_T:
+	case BlockType::T:
 		sprite = spriteT;
 		break;
-	case BLOCK_TYPE_Z:
+	case BlockType::Z:
 		sprite = spriteZ;
 		break;
 	default:

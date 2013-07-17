@@ -117,24 +117,24 @@ double TetrisGame::getHeight() const {
 void TetrisGame::soundEffects(GameEvent gameEvent) {
 	mw::Sound sound;
 	switch (gameEvent) {
-	case GRAVITY_MOVES_BLOCK:
+	case GameEvent::GRAVITY_MOVES_BLOCK:
 		break;
-	case BLOCK_COLLISION:
+	case GameEvent::BLOCK_COLLISION:
 		sound = soundBlockCollision;
 		break;
-	case PLAYER_ROTATES_BLOCK:
+	case GameEvent::PLAYER_ROTATES_BLOCK:
 		break;
-	case ONE_ROW_REMOVED:
+	case GameEvent::ONE_ROW_REMOVED:
 		// Fall through
-	case TWO_ROW_REMOVED:
+	case GameEvent::TWO_ROW_REMOVED:
 		// Fall through
-	case THREE_ROW_REMOVED:
+	case GameEvent::THREE_ROW_REMOVED:
 		sound = soundRowRemoved;
 		break;
-	case FOUR_ROW_REMOVED:
+	case GameEvent::FOUR_ROW_REMOVED:
 		sound = soundTetris;
 		break;
-	case GAME_OVER:
+	case GameEvent::GAME_OVER:
 		break;
 	default:
 		break;
@@ -148,16 +148,16 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 	// Nothing other than graphics is effected.
 	int rows = 0;
 	switch (gameEvent) {
-	case ONE_ROW_REMOVED:
+	case GameEvent::ONE_ROW_REMOVED:
 		rows = 1;
 		break;
-	case TWO_ROW_REMOVED:
+	case GameEvent::TWO_ROW_REMOVED:
 		rows = 2;
 		break;
-	case THREE_ROW_REMOVED:
+	case GameEvent::THREE_ROW_REMOVED:
 		rows = 3;
 		break;
-	case FOUR_ROW_REMOVED:
+	case GameEvent::FOUR_ROW_REMOVED:
 		{
 			rows = 4;
 			int nbrOfPlayers = getNbrOfPlayers();
@@ -176,7 +176,7 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 			}
 			break;
 		}
-	case GAME_OVER:
+	case GameEvent::GAME_OVER:
 		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
 			std::stringstream stream;
