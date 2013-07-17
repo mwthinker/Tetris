@@ -40,7 +40,7 @@ void Computer::update(const TetrisBoard& board) {
 	}
 }
 
-double Computer::calculateValue(const TetrisBoard& board) const {
+double Computer::calculateValue(const TetrisBoard& board, const Block& block) const {
 	int value = 0;
 	const int MAXROWS = board.getNbrOfRows();
 	for (int row = 0; row < MAXROWS; ++row) {
@@ -50,6 +50,9 @@ double Computer::calculateValue(const TetrisBoard& board) const {
 
 	int lowestRow = board.getNbrOfRows() +4;
 	int nbrOfHoles = 0;
+
+	double meanHeight = 0;
+	int nbrOfSquares = 0;
 
 	double rowRoughness = 0;
 	for (int row = 0; row < lowestRow; ++row) {
@@ -64,8 +67,14 @@ double Computer::calculateValue(const TetrisBoard& board) const {
 				}
 				lastType = type;
 			}
+			if (type != BlockType::EMPTY) {
+				meanHeight += row;
+				++nbrOfSquares;
+			}
 		}
 	}
+
+	meanHeight /= nbrOfSquares;
 
 	double columnRoughness = 0;	
 	for (int column = 0; column < board.getNbrOfColumns(); ++column) {
@@ -83,7 +92,17 @@ double Computer::calculateValue(const TetrisBoard& board) const {
 		}
 	}
 
-	return value + rowRoughness + columnRoughness - lowestRow * 10;
+	int edges = 0;
+	int blockMeanHeight = 0;
+	for (const Square& sq : block) {
+		board.getBlockFromBoard(sq.row_, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockFromBoard(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : value -= 5;
+		board.getBlockFromBoard(sq.row_, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
+		blockMeanHeight += sq.row_;
+	}
+	blockMeanHeight /= 4;
+
+	return rowRoughness + columnRoughness + (meanHeight - blockMeanHeight) * 0.5 * board.getNbrOfRows() + edges;
 }
 
 // Calculate and return the best input to achieve the current state.
@@ -128,19 +147,16 @@ Computer::State Computer::calculateBestState(const TetrisBoard& board) {
 			}
 		}
 
+		// Move down the block and stop just before impact.
 		for (int i = 0; i < state.down_-1; ++i) {
 			childBoard.update(TetrisBoard::Move::DOWN_GRAVITY);
 		}
-		const TetrisBoard& tmp = childBoard;
+		// Save the current block before impact.
 		Block block = childBoard.currentBlock();
-		int edges = 0;
-		for (const Square& sq : block) {
-			tmp.getBlockFromBoard(sq.row_-1, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
-			tmp.getBlockFromBoard(sq.row_-1, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
-		}
+		// Impact, the block is now a part of the board.
 		childBoard.update(TetrisBoard::Move::DOWN_GRAVITY);
 
-		double value = calculateValue(childBoard) + edges;
+		double value = calculateValue(childBoard, block);
 
 		if (value > highestValue) {
 			hIndex = index;

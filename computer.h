@@ -30,7 +30,7 @@ private:
 		int rotations_;
 	};
 
-	double calculateValue(const TetrisBoard& board) const;
+	double calculateValue(const TetrisBoard& board, const Block&) const;
 
 	// Calculate and return the best input to achieve the current state.
 	Input calculateInput(State state) const;
