@@ -4,7 +4,6 @@
 #include "block.h"
 
 #include <vector>
-#include <queue>
 
 enum class GameEvent : char {
 	PLAYER_ROTATES_BLOCK,
@@ -34,6 +33,12 @@ enum class Move : char {
 class RawTetrisBoard {
 public:
     RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
+	
+	inline virtual ~RawTetrisBoard() {
+	}
+
+	// Triggers a gameover event to be added to the event queue.
+	void triggerGameOverEvent();
 
 	// Add a move to the falling block.
     void update(Move move);
@@ -71,33 +76,40 @@ public:
 	// Else it returns false.
 	bool collision(const Block& block) const;	
 
-protected:	
+protected:
+	// Set all squares on the board to empty.
+	// Game over is set to false.
+	void clearBoard();
+
+	void setNextBlock(BlockType next);
+	void setCurrentBlock(BlockType current);
+
 	inline BlockType& blockType(int row, int column) {
 		return gameboard_[row * nbrOfColumns_ + column];
 	}
 
+	Block createBlock(BlockType blockType) const;
+
+private:
 	virtual void triggerEvent(GameEvent gameEvent) {
 	}
 
-	virtual void addExternalRows() {
+	virtual std::vector<BlockType> addExternalRows() {
+		return std::vector<BlockType>();
 	}
 
-	bool isGameOver_;		// True when game is over, else false.
-	Block next_;			// Next block for the player to control.
-	Block current_;			// The current block for the player to control.
-
-	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
-
-private:
 	// Adds a block directly to the board.
 	// I.e. Block becomes a part of the board.
 	void addBlockToBoard(const Block& block);
-	Block createBlock(BlockType blockType) const;
 
     int removeFilledRows(const Block& block);
     void moveRowsOneStepDown(int rowToRemove);
-
-    char nbrOfRows_, nbrOfColumns_;	// The size of the gameboard.
+    
+	bool isGameOver_;					// True when game is over, else false.
+	Block next_;						// Next block for the player to control.
+	Block current_;						// The current block for the player to control.
+	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
+	int nbrOfRows_, nbrOfColumns_;		// The size of the gameboard.
 };
 
 #endif // RAWTETRISBOARD_H

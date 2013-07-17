@@ -1,10 +1,8 @@
 #include "rawtetrisboard.h"
-
 #include "square.h"
 #include "block.h"
 
 #include <vector>
-#include <algorithm>
 
 RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next) {
 	nbrOfRows_ = nbrOfRows;
@@ -21,7 +19,7 @@ RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType curren
 void RawTetrisBoard::update(Move move) {
 	// Check if gameover
 	if (collision(current_)) {
-		triggerEvent(GameEvent::GAME_OVER);
+		triggerGameOverEvent();
 	}
 
 	if (!isGameOver_) {
@@ -88,7 +86,9 @@ void RawTetrisBoard::update(Move move) {
 			int nbr = removeFilledRows(current_);
 
 			// Add rows due to some external event.
-			addExternalRows();
+			std::vector<BlockType> squares = addExternalRows();
+			gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
+			gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
 
 			// Updates the user controlled block.
 			current_ = next_;
@@ -117,6 +117,13 @@ void RawTetrisBoard::update(Move move) {
 	}
 }
 
+void RawTetrisBoard::triggerGameOverEvent() {
+	if (!isGameOver_) {
+		triggerEvent(GameEvent::GAME_OVER);
+		isGameOver_ = true;
+	}
+}
+
 int RawTetrisBoard::getNbrOfRows() const {
 	return nbrOfRows_;
 }
@@ -139,6 +146,14 @@ Block RawTetrisBoard::currentBlock() const {
 
 Block RawTetrisBoard::nextBlock() const {
 	return next_;
+}
+
+void RawTetrisBoard::setNextBlock(BlockType next) {
+	next_ = createBlock(next);
+}
+
+void RawTetrisBoard::setCurrentBlock(BlockType current) {
+	current_ = createBlock(current);
 }
 
 void RawTetrisBoard::addBlockToBoard(const Block& block) {
@@ -173,6 +188,11 @@ bool RawTetrisBoard::collision(const Block& block) const {
 	}
 	
 	return collision;
+}
+
+void RawTetrisBoard::clearBoard() {
+	gameboard_ = std::vector<BlockType>( (nbrOfRows_ + 4) * (nbrOfColumns_) , BlockType::EMPTY);
+	isGameOver_ = false;
 }
 
 int RawTetrisBoard::removeFilledRows(const Block& block) {
