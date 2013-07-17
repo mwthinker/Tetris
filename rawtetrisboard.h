@@ -52,7 +52,7 @@ public:
 
 	// Returns all non moving squares on the board. Index 0 to (rows+4)*columns-1.
 	// All squares are saved in row major order.
-    const std::vector<bool>& getRawBoard() const;
+    const std::vector<BlockType>& getBoardVector() const;
 
 	// Return the moving block.
     Block currentBlock() const;
@@ -60,17 +60,20 @@ public:
 	// Return the next moving block.
     Block nextBlock() const;
 
-	/*inline bool isBlocked(int row, int column) const {
-		return gameboard_[row * nbrOfColumns_ + column];
-	}*/
+	inline BlockType getBlockType(int row, int column) const {
+		if (row >= 0 && row < nbrOfRows_+4 && column >= 0 && column < nbrOfColumns_) {
+			return gameboard_[row * nbrOfColumns_ + column];
+		}
+		return BlockType::EMPTY;
+	}
 
 	// Returns true if block is outside or on an allready occupied square on the board.
 	// Else it returns false.
 	bool collision(const Block& block) const;	
 
-protected:
-	inline int toIndex(int row, int column) {
-		return row * nbrOfColumns_ + column;
+protected:	
+	inline BlockType& blockType(int row, int column) {
+		return gameboard_[row * nbrOfColumns_ + column];
 	}
 
 	virtual void triggerEvent(GameEvent gameEvent) {
