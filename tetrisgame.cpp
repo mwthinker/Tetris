@@ -20,7 +20,7 @@ TetrisGame::TetrisGame() {
     accumulator_ = 0.0; // Time accumulator.
     columns_ = 10;
     rows_ = 20;
-    maxLevel_ = 20;
+    maxLevel_ = 40;
 }
 
 TetrisGame::~TetrisGame() {
