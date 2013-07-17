@@ -136,7 +136,7 @@ void TetrisBoard::update(Move move) {
 void TetrisBoard::addBlockToBoard(const Block& block) {
 	// All squares in the block to be added to the board.
 	for (const Square& sq :block) {
-		getBlockFromBoard(sq.row_, sq.column_) = sq.blockType_;
+		blockType(sq.row_, sq.column_) = sq.blockType_;
 	}
 }
 
@@ -212,7 +212,7 @@ bool TetrisBoard::collision(const Block& block) const {
 			collision = true;
 			break;
 		}
-		if (getBlockFromBoard(block[i].row_, block[i].column_) != BlockType::EMPTY) {
+		if (getBlockType(block[i].row_, block[i].column_) != BlockType::EMPTY) {
 			collision = true;
 			break;
 		}
@@ -221,7 +221,7 @@ bool TetrisBoard::collision(const Block& block) const {
 	return collision;
 }
 
-BlockType& TetrisBoard::getBlockFromBoard(int row, int column) {
+BlockType& TetrisBoard::blockType(int row, int column) {
 	return gameboard_[row * nbrOfColumns_ + column];
 }
 
@@ -234,7 +234,7 @@ int TetrisBoard::removeFilledRows(const Block& block) {
 		bool filled = true;
 		if (row >= 0) {
 			for (int column = 0; column < nbrOfColumns_; ++column) {
-				if (getBlockFromBoard(row, column) == BlockType::EMPTY) {
+				if (blockType(row, column) == BlockType::EMPTY) {
 					filled = false;
 				}
 			}

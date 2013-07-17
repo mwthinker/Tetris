@@ -6,7 +6,7 @@
 #include <vector>
 #include <queue>
 
-enum GameEvent {
+enum class GameEvent : char {
 	PLAYER_ROTATES_BLOCK,
 	PLAYER_MOVES_BLOCK_LEFT,
 	PLAYER_MOVES_BLOCK_RIGHT,
@@ -20,28 +20,32 @@ enum GameEvent {
 	GAME_OVER
 };
 
+// Defines all valid ways of controlling the falling block.
+enum class Move : char {
+	ROTATE_LEFT,
+	ROTATE_RIGHT,
+	DOWN_GRAVITY,
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
 // Represents a tetris board.
 class RawTetrisBoard {
 public:
-	// Defines all valid ways of controlling the falling block.
-    enum Move {ROTATE_LEFT, ROTATE_RIGHT, DOWN_GRAVITY, DOWN, LEFT, RIGHT};
-
-    RawTetrisBoard(char nbrOfRows, char nbrOfColumns, BlockType current, BlockType next);
-
-	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
-	virtual void restart(BlockType current, BlockType next);
+    RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
 
 	// Add a move to the falling block.
     void update(Move move);
 
 	// Add next block.
-	void add(BlockType next);	
+	void add(BlockType next);
     
 	// Return the number of rows.
-	char getNbrOfRows() const;
+	int getNbrOfRows() const;
     
 	// Return the number of columns.
-	char getNbrOfColumns() const;
+	int getNbrOfColumns() const;
 	
 	// Return true if the game is over else false.
     bool isGameOver() const;
@@ -56,9 +60,9 @@ public:
 	// Return the next moving block.
     Block nextBlock() const;
 
-	inline bool isBlocked(int row, int column) const {
+	/*inline bool isBlocked(int row, int column) const {
 		return gameboard_[row * nbrOfColumns_ + column];
-	}
+	}*/
 
 	// Returns true if block is outside or on an allready occupied square on the board.
 	// Else it returns false.
@@ -79,7 +83,7 @@ protected:
 	Block next_;			// Next block for the player to control.
 	Block current_;			// The current block for the player to control.
 
-	std::vector<bool> gameboard_;	// Containing all non moving squares on the board.
+	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 
 private:
 	// Adds a block directly to the board.

@@ -15,10 +15,10 @@ public:
 	// Restart the player.
 	void restart();
 
-	bool updateBoard(TetrisBoard::Move& move, BlockType& next);
-	void update(TetrisBoard::Move move);
+	bool updateBoard(Move& move, BlockType& next);
+	void update(Move move);
 	void update(BlockType current, BlockType next);
-	void update(TetrisBoard::Move move, BlockType next);
+	void update(Move move, BlockType next);
 	void update(const std::vector<BlockType>& blockTypes);
 	std::vector<BlockType> generateRow() const;
 
@@ -27,14 +27,14 @@ public:
 
 protected:
     // Pushed to a queue.
-    void pushMove(TetrisBoard::Move move);
+    void pushMove(Move move);
 
 private:
 	BlockType generateBlockType() const;
 
 	// Remove from the queue.
-    bool pollMove(TetrisBoard::Move& move);
-	std::queue<TetrisBoard::Move> moves_;
+    bool pollMove(Move& move);
+	std::queue<Move> moves_;
 
 	double squaresPerLength_;
 };

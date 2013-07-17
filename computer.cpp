@@ -58,7 +58,7 @@ double Computer::calculateValue(const TetrisBoard& board, const Block& block) co
 	for (int row = 0; row < lowestRow; ++row) {
 		BlockType lastType;
 		for (int column = 0; column < board.getNbrOfColumns(); ++column) {
-			BlockType type = board.getBlockFromBoard(row, column);
+			BlockType type = board.getBlockType(row, column);
 			if (column == 0) {
 				lastType = type;
 			} else {
@@ -80,7 +80,7 @@ double Computer::calculateValue(const TetrisBoard& board, const Block& block) co
 	for (int column = 0; column < board.getNbrOfColumns(); ++column) {
 		BlockType lastType;
 		for (int row = 0; row < lowestRow; ++row) {			
-			BlockType type = board.getBlockFromBoard(row, column);
+			BlockType type = board.getBlockType(row, column);
 			if (row == 0) {
 				lastType = type;
 			} else {
@@ -95,9 +95,9 @@ double Computer::calculateValue(const TetrisBoard& board, const Block& block) co
 	int edges = 0;
 	int blockMeanHeight = 0;
 	for (const Square& sq : block) {
-		board.getBlockFromBoard(sq.row_, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
-		board.getBlockFromBoard(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : value -= 5;
-		board.getBlockFromBoard(sq.row_, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : value -= 5;
+		board.getBlockType(sq.row_, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
 		blockMeanHeight += sq.row_;
 	}
 	blockMeanHeight /= 4;
@@ -134,27 +134,27 @@ Computer::State Computer::calculateBestState(const TetrisBoard& board) {
 		childBoard.add(BlockType::EMPTY);
 
 		for (int i = 0; i < state.rotations_; ++i) {
-			childBoard.update(TetrisBoard::Move::ROTATE_LEFT);
+			childBoard.update(Move::ROTATE_LEFT);
 		}
 
 		while (state.left_ != 0) {
 			if (state.left_ < 0) {
-				childBoard.update(TetrisBoard::Move::RIGHT);
+				childBoard.update(Move::RIGHT);
 				++state.left_;
 			} else if (state.left_ > 0) {
-				childBoard.update(TetrisBoard::Move::LEFT);
+				childBoard.update(Move::LEFT);
 				--state.left_;
 			}
 		}
 
 		// Move down the block and stop just before impact.
 		for (int i = 0; i < state.down_-1; ++i) {
-			childBoard.update(TetrisBoard::Move::DOWN_GRAVITY);
+			childBoard.update(Move::DOWN_GRAVITY);
 		}
 		// Save the current block before impact.
 		Block block = childBoard.currentBlock();
 		// Impact, the block is now a part of the board.
-		childBoard.update(TetrisBoard::Move::DOWN_GRAVITY);
+		childBoard.update(Move::DOWN_GRAVITY);
 
 		double value = calculateValue(childBoard, block);
 

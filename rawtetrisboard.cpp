@@ -1,11 +1,10 @@
-/*
 #include "rawtetrisboard.h"
 
 #include "square.h"
 #include "block.h"
 
 #include <algorithm>
-
+/*
 RawTetrisBoard::RawTetrisBoard(char nbrOfRows, char nbrOfColumns, BlockType current, BlockType next) {
 	nbrOfRows_ = nbrOfRows;
 	nbrOfColumns_ = nbrOfColumns;

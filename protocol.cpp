@@ -50,15 +50,15 @@ mw::Packet& operator>>(mw::Packet& packet, PacketType& type) {
 	return packet;
 }
 
-mw::Packet& operator<<(mw::Packet& packet, TetrisBoard::Move move) {
+mw::Packet& operator<<(mw::Packet& packet, Move move) {
 	packet << static_cast<char>(move);
 	return packet;
 }
 
-mw::Packet& operator>>(mw::Packet& packet, TetrisBoard::Move& move) {
+mw::Packet& operator>>(mw::Packet& packet, Move& move) {
 	char tmp;
 	packet >> tmp;
-	move = static_cast<TetrisBoard::Move>(tmp);
+	move = static_cast<Move>(tmp);
 	return packet;
 }
 
@@ -205,7 +205,7 @@ void Protocol::update(Uint32 deltaTime) {
 
 				if (isStarted()) {
 					for (PlayerPtr& player : *localUser_) {
-						TetrisBoard::Move move;
+						Move move;
 						BlockType next;
 						// Update the local player tetris board and send the input to all remote players.
 						while (player->updateBoard(move,next)) {
@@ -438,7 +438,7 @@ void Protocol::receiveData(const mw::Packet& data, int id) {
 			}
 
 			char playerId;
-			TetrisBoard::Move move;
+			Move move;
 			BlockType next;
 			receivInput(data,playerId,move,next);
 
@@ -724,7 +724,7 @@ void Protocol::sendReady() {
 // char playerId
 // char move
 // char nextBlockType, before move has taken effect
-void Protocol::sendInput(char playerId, TetrisBoard::Move move, BlockType next) {
+void Protocol::sendInput(char playerId, Move move, BlockType next) {
 	mw::Packet data;
 	data << PacketType::INPUT;
 	data << playerId;
@@ -733,7 +733,7 @@ void Protocol::sendInput(char playerId, TetrisBoard::Move move, BlockType next) 
 	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 }
 
-void Protocol::receivInput(mw::Packet packet, char& playerId, TetrisBoard::Move& move, BlockType& next) {
+void Protocol::receivInput(mw::Packet packet, char& playerId, Move& move, BlockType& next) {
 	PacketType type;
 	packet >> type;
 	packet >> playerId;

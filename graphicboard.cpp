@@ -171,7 +171,7 @@ void GraphicBoard::drawBoard() {
 
 	for (int row = 0; row < tetrisBoard_.getNbrOfRows() + 2; ++row) {
 		for (int column = 0; column < tetrisBoard_.getNbrOfColumns(); ++column) {
-			BlockType type = tetrisBoard_.getBlockFromBoard(row,column);
+			BlockType type = tetrisBoard_.getBlockType(row,column);
 			if (BlockType::EMPTY != type) {
 				drawSquare(column, row, type);
 			}

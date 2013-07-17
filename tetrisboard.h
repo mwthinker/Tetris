@@ -2,30 +2,14 @@
 #define TETRISBOARD_H
 
 #include "block.h"
+#include "rawtetrisboard.h"
 
 #include <vector>
 #include <queue>
 
-enum class GameEvent : char {
-	PLAYER_ROTATES_BLOCK,
-	PLAYER_MOVES_BLOCK_LEFT,
-	PLAYER_MOVES_BLOCK_RIGHT,
-	PLAYER_MOVES_BLOCK_DOWN,
-	GRAVITY_MOVES_BLOCK,
-	BLOCK_COLLISION,
-	ONE_ROW_REMOVED,
-	TWO_ROW_REMOVED,
-	THREE_ROW_REMOVED,
-	FOUR_ROW_REMOVED,
-	GAME_OVER
-};
-
 // Represents a tetris board.
 class TetrisBoard {
 public:
-	// Defines all valid ways of controlling the falling block.
-    enum class Move : char {ROTATE_LEFT, ROTATE_RIGHT, DOWN_GRAVITY, DOWN, LEFT, RIGHT};
-
     TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
 
 	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
@@ -70,7 +54,7 @@ public:
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
 
-	inline BlockType getBlockFromBoard(int row, int column) const {
+	inline BlockType getBlockType(int row, int column) const {
 		if (row >= 0 && row < nbrOfRows_+4 && column >= 0 && column < nbrOfColumns_) {
 			return gameboard_[row * nbrOfColumns_ + column];
 		}
@@ -89,7 +73,7 @@ private:
     void addExternalRows();
 	Block createBlock(BlockType blockType) const;
 
-	BlockType& getBlockFromBoard(int row, int column);
+	BlockType& blockType(int row, int column);
 
     int removeFilledRows(const Block& block);
     void moveRowsOneStepDown(int rowToRemove);

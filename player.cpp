@@ -26,13 +26,13 @@ Player::~Player() {
 }
 
 void Player::restart() {
-    moves_ = std::queue<TetrisBoard::Move>();
+    moves_ = std::queue<Move>();
 	update(generateBlockType(),generateBlockType());
     reset();
 }
 
-bool Player::updateBoard(TetrisBoard::Move& move, BlockType& next) {
-    TetrisBoard::Move polledMove;
+bool Player::updateBoard(Move& move, BlockType& next) {
+    Move polledMove;
     bool polled = pollMove(polledMove);
     if (polled) {
 		BlockType blockType = generateBlockType();
@@ -45,7 +45,7 @@ bool Player::updateBoard(TetrisBoard::Move& move, BlockType& next) {
     return polled;
 }
 
-void Player::update(TetrisBoard::Move move) {
+void Player::update(Move move) {
     tetrisBoard_.update(move);
 }
 
@@ -53,7 +53,7 @@ void Player::update(BlockType current, BlockType next) {
 	tetrisBoard_ .restart(current, next);
 }
 
-void Player::update(TetrisBoard::Move move, BlockType next) {
+void Player::update(Move move, BlockType next) {
     tetrisBoard_.add(next);
     tetrisBoard_.update(move);
 }
@@ -94,7 +94,7 @@ std::vector<BlockType> Player::generateRow() const {
 	return rows;
 }
 
-void Player::pushMove(TetrisBoard::Move move) {
+void Player::pushMove(Move move) {
     moves_.push(move);
 }
 
@@ -129,7 +129,7 @@ BlockType Player::generateBlockType() const {
 	return blockType;
 }
 
-bool Player::pollMove(TetrisBoard::Move& move) {
+bool Player::pollMove(Move& move) {
     if (moves_.empty()) {
         return false;
     }

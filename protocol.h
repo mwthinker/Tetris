@@ -125,8 +125,8 @@ mw::Packet& operator>>(mw::Packet& packet, Input& input);
 mw::Packet& operator<<(mw::Packet& packet, PacketType type);
 mw::Packet& operator>>(mw::Packet& packet, PacketType& type);
 
-mw::Packet& operator<<(mw::Packet& packet, TetrisBoard::Move move);
-mw::Packet& operator>>(mw::Packet& packet, TetrisBoard::Move& move);
+mw::Packet& operator<<(mw::Packet& packet, Move move);
+mw::Packet& operator>>(mw::Packet& packet, Move& move);
 
 mw::Packet& operator<<(mw::Packet& packet, BlockType type);
 mw::Packet& operator>>(mw::Packet& packet, BlockType& type);
@@ -211,9 +211,9 @@ private:
 
 	// Send the current input (input) and tetrisboard move (move) from player local player
 	// with id (id).
-	void sendInput(char playerId, TetrisBoard::Move move, BlockType next);
+	void sendInput(char playerId, Move move, BlockType next);
 
-	void receivInput(mw::Packet packet, char& playerId, TetrisBoard::Move& move, BlockType& next);
+	void receivInput(mw::Packet packet, char& playerId, Move& move, BlockType& next);
 
 	// Pause/Unpause the game.
 	void sendPause();
