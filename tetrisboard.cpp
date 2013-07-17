@@ -14,6 +14,7 @@ TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, Blo
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
+	squaresToAdd_.clear();
 	nextBlockQueue_ = std::queue<BlockType>();
 	gameEvents_ = std::queue<GameEvent>();
 	setCurrentBlock(current);
