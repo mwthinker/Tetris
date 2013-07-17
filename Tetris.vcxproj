@@ -116,6 +116,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="playerinfo.h" />
     <ClInclude Include="protocol.h" />
+    <ClInclude Include="rawtetrisboard.h" />
     <ClInclude Include="remoteplayer.h" />
     <ClInclude Include="rotationhandler.h" />
     <ClInclude Include="square.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="playerinfo.cpp" />
     <ClCompile Include="protocol.cpp" />
+    <ClCompile Include="rawtetrisboard.cpp" />
     <ClCompile Include="rotationhandler.cpp" />
     <ClCompile Include="tetrisboard.cpp" />
     <ClCompile Include="tetrisgame.cpp" />

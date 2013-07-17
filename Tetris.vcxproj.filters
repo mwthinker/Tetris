@@ -147,6 +147,9 @@
     <ClInclude Include="computer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rawtetrisboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="barcolor.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files\gui</Filter>
     </ClCompile>
     <ClCompile Include="highscore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rawtetrisboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
