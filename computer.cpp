@@ -40,7 +40,7 @@ void Computer::update(const TetrisBoard& board) {
 	}
 }
 
-double Computer::calculateValue(const TetrisBoard& board, const Block& block) const {
+double Computer::calculateValue(const RawTetrisBoard& board, const Block& block) const {
 	int value = 0;
 	const int MAXROWS = board.getNbrOfRows();
 	for (int row = 0; row < MAXROWS; ++row) {
@@ -130,8 +130,7 @@ Computer::State Computer::calculateBestState(const TetrisBoard& board) {
 	int hIndex = -1;
 	for (unsigned int index = 0; index < states.size(); ++index) {
 		State state = states[index];
-		TetrisBoard childBoard = board;
-		childBoard.add(BlockType::EMPTY);
+		RawTetrisBoard childBoard = board;
 
 		for (int i = 0; i < state.rotations_; ++i) {
 			childBoard.update(Move::ROTATE_LEFT);
@@ -173,7 +172,7 @@ Computer::State Computer::calculateBestState(const TetrisBoard& board) {
 // Calculates and returns all posible states from the point of view from the block provided.
 // The algortihm rotates and goes left or rigth with the block which then fall to the ground.
 // I.e. The possible state.
-std::vector<Computer::State> Computer::calculateAllPossibleStates(const TetrisBoard& board, Block block) const {
+std::vector<Computer::State> Computer::calculateAllPossibleStates(const RawTetrisBoard& board, Block block) const {
 	std::vector<State> states;
 	// Valid block position?
 	if (!board.collision(block)) {

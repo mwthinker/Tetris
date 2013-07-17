@@ -42,9 +42,6 @@ public:
 
 	// Add a move to the falling block.
     void update(Move move);
-
-	// Add next block.
-	void add(BlockType next);
     
 	// Return the number of rows.
 	int getNbrOfRows() const;
