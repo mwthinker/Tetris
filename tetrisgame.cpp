@@ -20,7 +20,7 @@ TetrisGame::TetrisGame() {
     accumulator_ = 0.0; // Time accumulator.
     columns_ = 10;
     rows_ = 20;
-    maxLevel_ = 40;
+    maxLevel_ = 20;
 }
 
 TetrisGame::~TetrisGame() {
@@ -209,7 +209,7 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 			// Singleplayer.
 			player->setGameOverMessage("Game over!");
 			// Is local game? And is the correct settings?
-			if (local_ && rows_ == 20 && columns_ == 10 && maxLevel_ == 20) {
+			if (local_ && rows_ == 20 && columns_ == 10 && maxLevel_ == 40) {
                 signalEvent(std::make_shared<GameOver>(player->getPoints()));
 			}
 		}

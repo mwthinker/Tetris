@@ -112,6 +112,7 @@
     <ClInclude Include="manbutton.h" />
     <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
+    <ClInclude Include="networkevent.h" />
     <ClInclude Include="networklooby.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="playerinfo.h" />

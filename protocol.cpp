@@ -93,10 +93,6 @@ Protocol::~Protocol() {
 	delete network_;
 }
 
-void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers) { 
-	connect(devices, nbrOfComputers, LOCAL);
-}
-
 void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel) {
     width_ = width;
 	height_ = height;
@@ -107,7 +103,7 @@ void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfC
 void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height) {
 	width_ = width;
 	height_ = height;
-	maxLevel_ = 20;
+	maxLevel_ = 40;
 	setServerPort(port);
 	connect(devices, nbrOfComputers, SERVER);
 }
@@ -656,7 +652,7 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 	auto newConnection = std::make_shared<NewConnection>(NewConnection::CLIENT);
     width_ = data[1];
     height_ = data[2];
-    maxLevel_ = 20;
+    maxLevel_ = 40;
 
 	int index = 2;
 	while (++index < data.size()) {

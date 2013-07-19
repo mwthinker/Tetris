@@ -74,18 +74,6 @@ void TetrisWindow::abortGame() {
 	tetrisGame_.closeGame();
 }
 
-void TetrisWindow::createLocalGame() {
-	const int size = devices_.size();
-	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
-		tmpDevices.push_back(devices_[i]);
-	}
-
-	tetrisGame_.closeGame();
-	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_);
-	tetrisGame_.startGame();
-}
-
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
@@ -240,11 +228,11 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 }
 
 void TetrisWindow::loadHighscore() {
-	std::string line;
 	std::ifstream file("highscore");
 	if (file.is_open()) {
 		HighscorePtr highscore = getHighscorePtr();
 		while (file.good()) {
+			std::string line;
 			std::getline(file, line);
 			if (line.size() < 6) {
 				break;
@@ -260,7 +248,7 @@ void TetrisWindow::loadHighscore() {
 			std::stringstream strStream(line);
 			std::string date;
 			int record;
-			strStream >> date >> record;
+			strStream >> date >> record; // date = "2013-05-19". record = 2340.
 
 			highscore->setNextRecord(record);
 			highscore->addNewRecord(name, date);
