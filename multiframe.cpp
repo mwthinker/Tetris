@@ -27,7 +27,9 @@ void MultiFrame::unfocus(int indexFrame) {
 
 // Creates a new frame at the back.
 int MultiFrame::addFrameBack() {
-	frames_.push_back(std::make_shared<Frame>());
+	FramePtr frame(new Frame);
+	frame->setBackground(defaultBackground_);
+	frames_.push_back(frame);
 	return frames_.size() - 1;
 }
 
@@ -43,6 +45,17 @@ void MultiFrame::add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY, int
 // Is called in order to update all items in the active frame.
 void MultiFrame::eventUpdate(const SDL_Event& windowEvent) {
 	frames_[currentFrame_]->eventUpdate(windowEvent);
+}
+
+void MultiFrame::setDefaultBackground(BackgroundPtr background) {
+	// Check all frames if a background is set.
+	for (FramePtr& frame : frames_) {
+		// Background not set?
+		if (!frame->getBackground()) {
+			frame->setBackground(background);
+		}
+	}
+	defaultBackground_ = background;
 }
 
 void MultiFrame::setBackground(BackgroundPtr background) {

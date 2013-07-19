@@ -1,5 +1,4 @@
 #include "guiwindow.h"
-
 #include "barcolor.h"
 #include "imagebackground.h"
 #include "textbutton.h"
@@ -39,19 +38,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	networkPlayFrameIndex_ = multiFrame_.addFrameBack();
 
 	auto background = gui::createImageBackground(spriteBackground);
-	multiFrame_.setBackground(background,0);
-	multiFrame_.setBackground(background,networkFrameIndex_);
-	multiFrame_.setBackground(background,playFrameIndex_);
-	multiFrame_.setBackground(background,highscoreFrameIndex_);
-	multiFrame_.setBackground(background,customFrameIndex_);
-	multiFrame_.setBackground(background,optionFrameIndex_);
-	multiFrame_.setBackground(background,newHighscoreFrameIndex_);
-	multiFrame_.setBackground(background,createClientFrameIndex_);
-	multiFrame_.setBackground(background,createServerFrameIndex_);
-	multiFrame_.setBackground(background,loobyClientFrameIndex_);
-	multiFrame_.setBackground(background,loobyServerFrameIndex_);
-	multiFrame_.setBackground(background,waitToConnectFrameIndex_);
-	multiFrame_.setBackground(background,networkPlayFrameIndex_);
+	multiFrame_.setDefaultBackground(background);
 
 	hDistance_ = 30;
 
@@ -284,7 +271,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNbrOfHumanPlayers(newNbr);
 
-		createLocalGame();
+		createLocalGame(10, 20, 40);
 	});
 
 	auto humanButton = createManButton(hDistance_, spriteMan, spriteCross);
@@ -301,7 +288,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNbrOfHumanPlayers(newNbr);
 
-		createLocalGame();
+		createLocalGame(10, 20, 40);
 	});
 
 	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
@@ -319,7 +306,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNbrOfComputerPlayers(newNbr);
 
-		createLocalGame();
+		createLocalGame(10, 20, 40);
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
@@ -422,7 +409,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(textItem3,45,100,false,true);
 	customPlaymaxLevel_ = createTextBox(35);
 	customPlaymaxLevel_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
-	customPlaymaxLevel_->setText("20");
+	customPlaymaxLevel_->setText("40");
 	multiFrame_.add(customPlaymaxLevel_,140,100,false,true);
 
 	// Create game -----------------------------------------------------

@@ -27,6 +27,9 @@ namespace gui {
 
 		// Is called in order to update all items in the active frame.
 		void eventUpdate(const SDL_Event& windowEvent);
+
+		// Will be used automaticly in all frames as background if other background is not set.
+		void setDefaultBackground(BackgroundPtr background);
 		void setBackground(BackgroundPtr background);
 		void setBackground(BackgroundPtr background, int frameIndex);
 
@@ -42,6 +45,7 @@ namespace gui {
 	private:
 		std::vector<FramePtr> frames_;
 		int currentFrame_;
+		BackgroundPtr defaultBackground_;
 	};
 
 } // Namespace gui.

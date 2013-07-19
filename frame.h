@@ -25,6 +25,9 @@ namespace gui {
 		// Sets the current background.
 		void setBackground(BackgroundPtr background);
 
+		// Gets the current background.
+		BackgroundPtr getBackground() const;
+
 		// Add a bar.
 		void addBar(BarPtr bar);
 

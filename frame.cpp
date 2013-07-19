@@ -42,6 +42,10 @@ namespace gui {
 		background_ = background;
 	}
 
+	BackgroundPtr Frame::getBackground() const {
+		return background_;
+	}
+
 	void Frame::addBar(BarPtr bar) {
 		GuiProperties properties;
 
