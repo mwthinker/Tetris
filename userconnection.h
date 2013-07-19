@@ -1,10 +1,12 @@
 #ifndef USERCONNECTION_H
 #define USERCONNECTION_H
 
+#include "player.h"
+
 #include <vector>
 
-class Player;
-typedef std::shared_ptr<Player> PlayerPtr;
+class UserConnection;
+typedef std::shared_ptr<UserConnection> UserConnectionPtr;
 
 // Hold information about all local players on a client/server.
 class UserConnection {
@@ -17,8 +19,7 @@ public:
 		ready_ = false;
 	}
 
-	// Returns the id. The id should be unique for all NetworkPlayers.
-	// Is decided by the server.
+	// Returns the id. It will never change.
 	int getId() const {
 		return id_;
 	}
@@ -31,14 +32,17 @@ public:
 		return ready_;
 	}
 
+	// Add a player.
 	void add(PlayerPtr player) {
 		players_.push_back(player);
 	}
 
+	// Removes all players.
 	void clear() {
 		players_.clear();
 	}
 
+	// Returns the number of players contain.
 	int getNbrOfPlayers() const {
 		return players_.size();
 	}
@@ -62,10 +66,8 @@ public:
 private:
 	std::vector<PlayerPtr> players_;
 
-	int id_; // Server/client id.
+	const int id_; // Server/client id.
 	bool ready_; // Is ready to start.
 };
-
-typedef std::shared_ptr<UserConnection> UserConnectionPtr;
 
 #endif // USERCONNECTION_H

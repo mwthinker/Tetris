@@ -1,11 +1,10 @@
 #ifndef LOCALPLAYER_H
 #define LOCALPLAYER_H
 
-#include "actionhandler.h"
-#include "movehandler.h"
-#include "device.h"
-#include "tetrisboard.h"
 #include "player.h"
+#include "tetrisboard.h"
+#include "actionhandler.h"
+#include "device.h"
 
 #include <memory>
 
@@ -15,26 +14,21 @@ typedef std::shared_ptr<LocalPlayer> LocalPlayerPtr;
 class LocalPlayer : public Player {
 public:
     LocalPlayer(int id, int width, int height, int maxLevel, const DevicePtr& device);
-    ~LocalPlayer();
 
     void update(double deltaTime);
 	void updateAi() override;
 
 private:
 	double calculateDownSpeed(int level) const;
+	void polledGameEvent(GameEvent gameEvent);
 
-    double time_; // Gametime
-	double lastDownTime_; // The gametime for the last "gravity" move.
+	ActionHandler gravityMove_;
 
-    // Controls how the moving block is moved
-    ActionHandler* leftHandler_;
-    ActionHandler* rightHandler_;
-    MoveHandler* downHandler_;
-    ActionHandler* rotateHandler_;
+    // Controls how the moving block is moved.
+	ActionHandler downHandler_, leftHandler_, rightHandler_, rotateHandler_;
 
     DevicePtr device_;
+	double fastestDownTime_;
 };
-
-
 
 #endif // LOCALPLAYER_H

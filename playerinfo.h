@@ -7,6 +7,9 @@
 #include <string>
 #include <memory>
 
+class PlayerInfo;
+typedef std::shared_ptr<PlayerInfo> PlayerInfoPtr;
+
 class PlayerInfo {
 public:
 	PlayerInfo(int id, int width, int height, int maxLevel);
@@ -92,6 +95,9 @@ protected:
 	void reset();
 
 private:
+	virtual void polledGameEvent(GameEvent gameEvent) {
+	}
+
     GraphicBoard graphicBoard_;
 
 	int level_;			   // Current level.
@@ -103,7 +109,5 @@ private:
     const int maxLevel_;
 	const int id_;
 };
-
-typedef std::shared_ptr<PlayerInfo> PlayerInfoPtr;
 
 #endif // PLAYERINFO_H

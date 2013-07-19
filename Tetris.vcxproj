@@ -110,7 +110,6 @@
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="localplayer.h" />
     <ClInclude Include="manbutton.h" />
-    <ClInclude Include="movehandler.h" />
     <ClInclude Include="multiframe.h" />
     <ClInclude Include="networkevent.h" />
     <ClInclude Include="networklooby.h" />
@@ -119,7 +118,6 @@
     <ClInclude Include="protocol.h" />
     <ClInclude Include="rawtetrisboard.h" />
     <ClInclude Include="remoteplayer.h" />
-    <ClInclude Include="rotationhandler.h" />
     <ClInclude Include="square.h" />
     <ClInclude Include="tetrisboard.h" />
     <ClInclude Include="tetrisgame.h" />
@@ -147,14 +145,13 @@
     <ClCompile Include="localplayer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manbutton.cpp" />
-    <ClCompile Include="movehandler.cpp" />
+    <ClCompile Include="actionhandler.cpp" />
     <ClCompile Include="multiframe.cpp" />
     <ClCompile Include="networklooby.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="playerinfo.cpp" />
     <ClCompile Include="protocol.cpp" />
     <ClCompile Include="rawtetrisboard.cpp" />
-    <ClCompile Include="rotationhandler.cpp" />
     <ClCompile Include="tetrisboard.cpp" />
     <ClCompile Include="tetrisgame.cpp" />
     <ClCompile Include="tetriswindow.cpp" />

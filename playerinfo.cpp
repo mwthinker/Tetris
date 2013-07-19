@@ -73,7 +73,11 @@ int PlayerInfo::getMaxLevel() const {
 }
 
 bool PlayerInfo::pollGameEvent(GameEvent& gameEvent) {
-    return tetrisBoard_.pollGameEvent(gameEvent);
+	bool polled = tetrisBoard_.pollGameEvent(gameEvent);
+	if (polled) {
+		polledGameEvent(gameEvent);
+	}
+    return polled;
 }
 
 int PlayerInfo::getId() const {

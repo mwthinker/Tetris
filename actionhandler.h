@@ -3,13 +3,21 @@
 
 class ActionHandler {
 public:
-	/* Called every cycle with a timestep in time difference.
-	   Action true when the "block" want to move.*/
-	virtual void update(double timeStep, bool action) = 0;
+	ActionHandler();
+	ActionHandler(double waitingTime, bool rebound);
+	
+	void update(double timeStep, bool action);
+	bool doAction();
+	double getWaitingTime() const;
+	void setWaitingTime(double waitingTime);
 
-	/* Returns true when the "block" is allowed to move. */
-	virtual bool doAction() = 0;
-	inline virtual ~ActionHandler() {}
+	void reset();
+
+private:
+	bool action_;
+	double lastTime_, waitingTime_, time_;
+	bool rebound_;
+	bool lastAction_;
 };
 
 #endif // ACTIONHANDLER_H

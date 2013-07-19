@@ -102,9 +102,6 @@
     <ClInclude Include="manbutton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="movehandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="networklooby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -118,9 +115,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="remoteplayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rotationhandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="square.h">
@@ -209,9 +203,6 @@
     <ClCompile Include="manbutton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="movehandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="networklooby.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -222,9 +213,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="protocol.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rotationhandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tetrisboard.cpp">
@@ -246,6 +234,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="computer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="actionhandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
