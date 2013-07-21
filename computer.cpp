@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-Computer::Computer() {
+Computer::Computer() : Device(true) {
 	latestId_ = -1;
 }
 

@@ -121,6 +121,7 @@
     <ClInclude Include="square.h" />
     <ClInclude Include="tetrisboard.h" />
     <ClInclude Include="tetrisgame.h" />
+    <ClInclude Include="tetrisparameters.h" />
     <ClInclude Include="tetriswindow.h" />
     <ClInclude Include="textbox.h" />
     <ClInclude Include="textboxdraw.h" />

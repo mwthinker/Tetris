@@ -7,6 +7,7 @@
 #include "manbutton.h"
 #include "networklooby.h"
 #include "device.h"
+#include "tetrisparameters.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -53,7 +54,11 @@ private:
 	virtual void drawGame(Uint32 deltaTime) = 0;
 	virtual void updateGameEvent(const SDL_Event& windowEvent) = 0;
 
-    virtual void abortGame() = 0;	
+    virtual void abortGame() = 0;
+
+	// Use the same settings used in last call to 
+	// createLocalGame(int width, int height, int maxLevel).
+	virtual void createLocalGame() = 0;
     virtual void createLocalGame(int width, int height, int maxLevel) = 0;
 	virtual void createServerGame(int port, int width, int height) = 0;
 	virtual void createClientGame(int port, std::string ip) = 0;

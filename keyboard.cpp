@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-Keyboard::Keyboard(std::string name, SDLKey down, SDLKey left, SDLKey right, SDLKey rotate) {		
+Keyboard::Keyboard(std::string name, SDLKey down, SDLKey left, SDLKey right, SDLKey rotate) : Device(false) {		
 	name_ = name;
 	down_ = down;
 	right_ = right;

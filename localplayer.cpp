@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-LocalPlayer::LocalPlayer(int id, int width, int height, int maxLevel, const DevicePtr& device) : Player(id,width,height,maxLevel,false) {
+LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device) : Player(id, width,height ,false) {
 	leftHandler_ = ActionHandler(0.10 , false);
 	rightHandler_ = ActionHandler(0.10, false);
 	rotateHandler_ = ActionHandler(0.0, true);

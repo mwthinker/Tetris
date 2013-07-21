@@ -9,7 +9,7 @@
 
 class Player : public PlayerInfo {
 public:
-	Player(int id, int width, int height, int maxLevel, bool remote);
+	Player(int id, int width, int height, bool remote);
     virtual ~Player();
 
 	// Restart the player.

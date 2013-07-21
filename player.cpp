@@ -15,7 +15,7 @@ namespace {
 
 }
 
-Player::Player(int id, int width, int height, int maxLevel, bool remote) : PlayerInfo(id,width,height,maxLevel) {
+Player::Player(int id, int width, int height, bool remote) : PlayerInfo(id,width,height) {
 	if (!remote) {
 		update(generateBlockType(), generateBlockType());
 	}

@@ -1,5 +1,5 @@
 #include "tetriswindow.h"
-
+#include "tetrisparameters.h"
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisgame.h"
@@ -47,7 +47,9 @@ TetrisWindow::~TetrisWindow() {
 
 void TetrisWindow::setNbrOfHumanPlayers(int number) {
     const int size = devices_.size();
-    if (number <= size) {
+	if (number < 0) {
+		nbrOfHumanPlayers_ = 0;
+	} else if (number <= size) {
         nbrOfHumanPlayers_ = number;
     } else {
         nbrOfHumanPlayers_ = size;
@@ -86,6 +88,18 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	tetrisGame_.startGame();
 }
 
+void TetrisWindow::createLocalGame() {
+	const int size = devices_.size();
+	std::vector<DevicePtr> tmpDevices;
+	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
+		tmpDevices.push_back(devices_[i]);
+	}
+
+	tetrisGame_.closeGame();
+	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_);
+	tetrisGame_.startGame();
+}
+
 void TetrisWindow::createServerGame(int port, int width, int height) {
     const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
@@ -94,7 +108,7 @@ void TetrisWindow::createServerGame(int port, int width, int height) {
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height);
+	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::createClientGame(int port, std::string ip) {
@@ -105,7 +119,7 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip);
+	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::restartGame() {

@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 
-PlayerInfo::PlayerInfo(int id, int width, int height, int maxLevel) : tetrisBoard_(height,width, BlockType::I, BlockType::I), graphicBoard_(tetrisBoard_), maxLevel_(maxLevel), id_(id) {
+PlayerInfo::PlayerInfo(int id, int width, int height) : tetrisBoard_(height,width, BlockType::I, BlockType::I), graphicBoard_(tetrisBoard_), id_(id) {
     reset();
 }
 
@@ -66,10 +66,6 @@ double PlayerInfo::getWidth() const {
 
 double PlayerInfo::getHeight() const {
     return graphicBoard_.getHeight();
-}
-
-int PlayerInfo::getMaxLevel() const {
-    return maxLevel_;
 }
 
 bool PlayerInfo::pollGameEvent(GameEvent& gameEvent) {

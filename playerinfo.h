@@ -12,7 +12,7 @@ typedef std::shared_ptr<PlayerInfo> PlayerInfoPtr;
 
 class PlayerInfo {
 public:
-	PlayerInfo(int id, int width, int height, int maxLevel);
+	PlayerInfo(int id, int width, int height);
     virtual ~PlayerInfo();
 
 	// Is supposed to call pushMove with the appropriate move.
@@ -59,8 +59,6 @@ public:
 	// Returns the draw height in pixels.
     double getHeight() const;
 
-    int getMaxLevel() const;
-
 	// Return true when a gameEvent is polled otherwise false.
     bool pollGameEvent(GameEvent& gameEvent);
 
@@ -86,13 +84,17 @@ public:
 	BlockType getCurrentBlock() const;
 
 	// Get the next block type for the board.
-	BlockType getNextBlock() const;
+	BlockType getNextBlock() const;	
 
 protected:
 	TetrisBoard tetrisBoard_;
 
 	// Resets all values.
 	void reset();
+
+	inline void setAi(bool ai) {
+		ai_ = ai;
+	}
 
 private:
 	virtual void polledGameEvent(GameEvent gameEvent) {
@@ -105,8 +107,8 @@ private:
 	int nbrOfClearedRows_; // Number of rows the player cleared.
 	std::string name_;     // The name of the player.
 	int levelUpCounter_;   // Is used to determine when to level up.
+	bool ai_;
 
-    const int maxLevel_;
 	const int id_;
 };
 

@@ -6,6 +6,7 @@
 #include "device.h"
 #include "keyboard.h"
 #include "joystick.h"
+#include "tetrisparameters.h"
 
 #include <mw/sound.h>
 
@@ -167,9 +168,9 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 				if (nbrOfPlayers == 2) {
 					nbrOfRowsToAdd = 4;
 				} else if (nbrOfPlayers == 3) {
-					nbrOfRowsToAdd = 2;
+					nbrOfRowsToAdd = 3;
 				} else {
-					nbrOfRowsToAdd = 1;
+					nbrOfRowsToAdd = 2;
 				}
 
 				addRowsToAllPlayersExcept(player,nbrOfRowsToAdd);
@@ -208,9 +209,13 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		} else {
 			// Singleplayer.
 			player->setGameOverMessage("Game over!");
-			// Is local game? And is the correct settings?
-			if (local_ && rows_ == 20 && columns_ == 10 && maxLevel_ == 40) {
-                signalEvent(std::make_shared<GameOver>(player->getPoints()));
+			//And is the correct settings?
+			if (rows_ == TETRIS_HEIGHT && columns_ == TETRIS_WIDTH && maxLevel_ == TETRIS_MAX_LEVEL) {
+				auto local = std::dynamic_pointer_cast<LocalPlayer>(player);
+				// Is local and a human player?
+				if (local && !local->getDevice()->isAi()) {
+					signalEvent(std::make_shared<GameOver>(player->getPoints()));
+				}
 			}
 		}
 		break;
@@ -247,7 +252,7 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		}
 
 		// Set level to this player. Only when this players cleares a row.
-		int maxLevel = player->getMaxLevel();
+		int maxLevel = getMaxLevel();
 		if (getNbrOfPlayers() > 1) {
 			// Multiplayer
 			// Higher counter bar to level up due to more players that contribute to

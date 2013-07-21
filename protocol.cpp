@@ -93,6 +93,10 @@ Protocol::~Protocol() {
 	delete network_;
 }
 
+void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers) {
+	connect(devices, nbrOfComputers, LOCAL);
+}
+
 void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel) {
     width_ = width;
 	height_ = height;
@@ -100,15 +104,15 @@ void Protocol::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfC
 	connect(devices, nbrOfComputers, LOCAL);
 }
 
-void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height) {
+void Protocol::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height, int maxLevel) {
 	width_ = width;
 	height_ = height;
-	maxLevel_ = 40;
+	maxLevel_ = maxLevel;
 	setServerPort(port);
 	connect(devices, nbrOfComputers, SERVER);
 }
 
-void Protocol::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip) {
+void Protocol::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip, int maxLevel) {
 	if (status_ == WAITING_TO_CONNECT) {
 		setConnectToIp(ip);
 		setConnectToPort(port);
@@ -256,7 +260,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, int nbrOfComputerP
 			users_.push_back(localUser_);
 			// Add new player to all local players.
 			for (const DevicePtr& device : devices_) {
-				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, maxLevel_, device)));
+				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, device)));
 			}
 			break;
 		case SERVER:
@@ -267,7 +271,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, int nbrOfComputerP
 			users_.push_back(localUser_);
 			// Add new player to all local players.
 			for (const DevicePtr& device : devices_) {
-				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, maxLevel_, device)));
+				localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, device)));
 			}
 			{
 				auto newConnection = std::make_shared<NewConnection>(NewConnection::SERVER);
@@ -602,7 +606,7 @@ void Protocol::serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet pack
 	remote->clear();
 
 	for (int i = 0; i < nbrOfPlayers; ++i) {
-		PlayerPtr player(new RemotePlayer(++playerId_, width_, height_, maxLevel_));
+		PlayerPtr player(new RemotePlayer(++playerId_, width_, height_));
 		remote->add(player);
 	}
 }
@@ -652,7 +656,6 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 	auto newConnection = std::make_shared<NewConnection>(NewConnection::CLIENT);
     width_ = data[1];
     height_ = data[2];
-    maxLevel_ = 40;
 
 	int index = 2;
 	while (++index < data.size()) {
@@ -669,7 +672,7 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 			users_.push_back(localUser_);
 			for (int i = 0; i < nbrOfPlayers; ++i) {
 				int playerId = data[++index];
-				PlayerPtr player(new LocalPlayer(playerId, width_, height_, maxLevel_,devices_[i]));
+				PlayerPtr player(new LocalPlayer(playerId, width_, height_, devices_[i]));
 				localUser_->add(player);
 				localUser_->setReady(ready);
 			}
@@ -678,7 +681,7 @@ void Protocol::clientReceiveServerInfo(mw::Packet data) {
 			users_.push_back(user);
 			for (int i = 0; i < nbrOfPlayers; ++i) {
 				int playerId = data[++index];
-				PlayerPtr player(new RemotePlayer(playerId, width_, height_, maxLevel_));
+				PlayerPtr player(new RemotePlayer(playerId, width_, height_));
 				user->add(player);
 				user->setReady(ready);
 			}

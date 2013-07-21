@@ -27,6 +27,9 @@ typedef std::shared_ptr<Device> DevicePtr;
 
 class Device {
 public:
+	Device(bool ai) : ai_(ai) {
+	}
+
 	virtual ~Device() {
 	}
 
@@ -39,6 +42,13 @@ public:
 
 	virtual void eventUpdate(const SDL_Event& windowEvent) {
 	}
+
+	inline bool isAi() const {
+		return ai_;
+	}
+
+private:
+	const bool ai_;
 };
 
 #endif // DEVICE_H

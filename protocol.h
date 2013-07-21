@@ -55,9 +55,11 @@ public:
 
 	void update(Uint32 deltaTime);
 	
+	// Uses the same settings as last call.
+	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers);
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel);
-	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height);
-	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip);
+	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height, int maxLevel);
+	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip, int maxLevel);
 
 	void startGame();
 	void closeGame();
@@ -82,6 +84,10 @@ public:
 	int getNbrOfPlayers() const;
 
 	Status getStatus() const;
+
+	inline int getMaxLevel() const {
+		return maxLevel_;
+	}
 
 protected:
 	void signalEvent(NetworkEventPtr nEvent);

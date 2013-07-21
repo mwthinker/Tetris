@@ -19,6 +19,8 @@ private:
 	void abortGame() override;
 	void startGame() override;
 	void restartGame() override;
+
+	void createLocalGame() override;
 	void createLocalGame(int width, int height, int maxLevel) override;
 	void createServerGame(int port, int width, int height) override;
 	void createClientGame(int port, std::string ip) override;

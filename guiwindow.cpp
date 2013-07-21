@@ -149,7 +149,7 @@ void GuiWindow::initFrameMenu() {
 	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::GuiItem*) {
 		resumeButton_->setVisible(true);
 		abortGame();
-		createLocalGame(10,20,20);
+		createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
 	});
 
 	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::GuiItem*) {
@@ -271,7 +271,7 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNbrOfHumanPlayers(newNbr);
 
-		createLocalGame(10, 20, 40);
+		createLocalGame();
 	});
 
 	auto humanButton = createManButton(hDistance_, spriteMan, spriteCross);
@@ -288,7 +288,35 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNbrOfHumanPlayers(newNbr);
 
-		createLocalGame(10, 20, 40);
+		createLocalGame();
+	});
+
+	humanButton->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		switch (sdlEvent.type) {
+		case SDL_MOUSEBUTTONUP:
+			switch (sdlEvent.button.button) {
+			case SDL_BUTTON_RIGHT:
+				if (nbrOfPlayers->isMouseInside()) {
+					int nbr = nbrOfPlayers->getNbr();
+					if (nbr == 0) {
+						int newNbr = getNbrOfHumanPlayers();
+						setNbrOfHumanPlayers(newNbr);
+						while (newNbr == nbr) {
+							++newNbr;
+							setNbrOfHumanPlayers(newNbr);
+							nbrOfPlayers->setNbr(newNbr);
+							newNbr = getNbrOfHumanPlayers();
+							nbr = nbrOfPlayers->getNbr();
+						}
+					}
+
+					setNbrOfHumanPlayers(nbr-1);
+					nbrOfPlayers->setNbr(nbr-1);
+					createLocalGame();
+				}
+			}
+		}
 	});
 
 	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
@@ -306,7 +334,34 @@ void GuiWindow::initPlayFrame() {
 		nbrOfPlayers->setNbr(newNbr);
 		setNbrOfComputerPlayers(newNbr);
 
-		createLocalGame(10, 20, 40);
+		createLocalGame();
+	});
+	computerButton->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		switch (sdlEvent.type) {
+		case SDL_MOUSEBUTTONUP:
+			switch (sdlEvent.button.button) {
+			case SDL_BUTTON_RIGHT:
+				if (nbrOfPlayers->isMouseInside()) {
+					int nbr = nbrOfPlayers->getNbr();
+					if (nbr == 0) {
+						int newNbr = getNbrOfComputerPlayers();
+						setNbrOfComputerPlayers(newNbr);
+						while (newNbr == nbr) {
+							++newNbr;
+							setNbrOfComputerPlayers(newNbr);
+							nbrOfPlayers->setNbr(newNbr);
+							newNbr = getNbrOfComputerPlayers();
+							nbr = nbrOfPlayers->getNbr();
+						}
+					}
+
+					setNbrOfComputerPlayers(nbr-1);
+					nbrOfPlayers->setNbr(nbr-1);
+					createLocalGame();
+				}
+			}
+		}
 	});
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
@@ -327,7 +382,7 @@ void GuiWindow::initPlayFrame() {
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
 	multiFrame_.add(humanButton, 80 + b2->getWidth(), 0, false, true);
-	multiFrame_.add(computerButton, 100 + b2->getWidth() + 150, 0, false, true);
+	multiFrame_.add(computerButton, 100 + b2->getWidth() + 130, 0, false, true);
 	multiFrame_.add(pause_,0,0,true,true);
 }
 
@@ -389,19 +444,23 @@ void GuiWindow::initCustomPlayFrame() {
 
 	multiFrame_.add(menu,0,0,false,true);
 
+	std::stringstream stream;
 	// Set board size ------------------------------------------------------
 	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem,45,50,false,true);
 	customPlayWidth_ = createTextBox(35);
 	customPlayWidth_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
-	customPlayWidth_->setText("10");
+	stream << TETRIS_WIDTH;
+	customPlayWidth_->setText(stream.str());
 	multiFrame_.add(customPlayWidth_,100,50,false,true);
 
 	gui::TextItemPtr textItem2 = gui::createTextItem("Height",fontDefault18,18,mw::Color(1.0,1.0,1.0));
 	multiFrame_.add(textItem2,140,50,false,true);
 	customPlayHeight_ = createTextBox(35);
 	customPlayHeight_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
-	customPlayHeight_->setText("20");
+	stream.str("");
+	stream << TETRIS_HEIGHT;
+	customPlayHeight_->setText(stream.str());
 	multiFrame_.add(customPlayHeight_,200,50,false,true);
 
 	// Set max level -----------------------------------------------------
@@ -409,7 +468,9 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(textItem3,45,100,false,true);
 	customPlaymaxLevel_ = createTextBox(35);
 	customPlaymaxLevel_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
-	customPlaymaxLevel_->setText("40");
+	stream.str("");
+	stream << TETRIS_MAX_LEVEL;
+	customPlaymaxLevel_->setText(stream.str());
 	multiFrame_.add(customPlaymaxLevel_,140,100,false,true);
 
 	// Create game -----------------------------------------------------

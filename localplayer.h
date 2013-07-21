@@ -13,11 +13,13 @@ typedef std::shared_ptr<LocalPlayer> LocalPlayerPtr;
 
 class LocalPlayer : public Player {
 public:
-    LocalPlayer(int id, int width, int height, int maxLevel, const DevicePtr& device);
+    LocalPlayer(int id, int width, int height, const DevicePtr& device);
 
     void update(double deltaTime);
 	void updateAi() override;
-
+	inline const DevicePtr& getDevice() const {
+		return device_;
+	}
 private:
 	double calculateDownSpeed(int level) const;
 	void polledGameEvent(GameEvent gameEvent);
