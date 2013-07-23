@@ -131,6 +131,7 @@
     <ClInclude Include="userconnection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ai.cpp" />
     <ClCompile Include="barcolor.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="button.cpp" />

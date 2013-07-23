@@ -19,6 +19,10 @@ namespace gui {
 
 		virtual void draw() override;
 
+		inline mw::Text getText() const {
+			return text_;
+		}
+
 	private:
 		mw::Text text_;
 		mw::Color color_;

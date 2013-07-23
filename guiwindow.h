@@ -8,10 +8,12 @@
 #include "networklooby.h"
 #include "device.h"
 #include "tetrisparameters.h"
+#include "ai.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
 #include <mw/window.h>
+#include <mw/color.h>
 
 #include <string>
 #include <functional>
@@ -43,7 +45,26 @@ protected:
 	void gotoServerLoobyFrame();
 	void gotoClientLoobyFrame();
 
+	inline Ai getAi1() const {
+		return ai1_;
+	}
+
+	inline Ai getAi12() const {
+		return ai2_;
+	}
+
+	inline Ai getAi3() const {
+		return ai3_;
+	}
+
+	inline Ai getAi4() const {
+		return ai4_;
+	}
+
 private:
+	void loadAllSettings();
+	void saveAllSettings();
+
 	virtual void saveHighscore() = 0;
 
 	bool isUpdatingGame() const;
@@ -87,6 +108,7 @@ private:
 	void initClientLoobyFrame();
 	void initWaitToConnectFrame();
 	void initNetworkPlayFrame();
+	void initAiFrame();
 
 	void initNewHighScoreFrame();
 
@@ -114,6 +136,7 @@ private:
 	int loobyServerFrameIndex_;
 	int waitToConnectFrameIndex_;
 	int networkPlayFrameIndex_;
+	int aiFrameIndex_;
 
 	// Attribute defined in initCreateServerMenu.
 	gui::TextBoxPtr portBox_, ipBox_;
@@ -136,6 +159,15 @@ private:
 
 	// Attributes defined in initNewHighScoreFrame.
 	gui::TextBoxPtr nameBox_;
+
+	// Attributes defined in initAiFrame.
+	gui::TextItemPtr aiText1_, aiText2_, aiText3_, aiText4_;
+
+	// All ai:s.
+	Ai ai1_, ai2_, ai3_, ai4_;
+	std::vector<Ai> ais_;
+
+	mw::Color textColor_;
 };
 
 #endif // GUIWINDOW_H

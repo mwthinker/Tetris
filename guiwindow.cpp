@@ -20,10 +20,18 @@
 #include <mw/window.h>
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <string>
 #include <ctime>
 
 GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
+	textColor_ = mw::Color(1,1,1);
+	hDistance_ = 30;
+
+	auto background = gui::createImageBackground(spriteBackground);
+	multiFrame_.setDefaultBackground(background);
+
 	playFrameIndex_ = multiFrame_.addFrameBack();
 	highscoreFrameIndex_ = multiFrame_.addFrameBack();
 	customFrameIndex_ = multiFrame_.addFrameBack();
@@ -36,11 +44,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	loobyServerFrameIndex_ = multiFrame_.addFrameBack();
 	waitToConnectFrameIndex_ = multiFrame_.addFrameBack();
 	networkPlayFrameIndex_ = multiFrame_.addFrameBack();
-
-	auto background = gui::createImageBackground(spriteBackground);
-	multiFrame_.setDefaultBackground(background);
-
-	hDistance_ = 30;
+	aiFrameIndex_ = multiFrame_.addFrameBack();
 
 	initFrameMenu();
 	initHighscoreFrame();
@@ -53,6 +57,7 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	initClientLoobyFrame();
 	initWaitToConnectFrame();
 	initNetworkPlayFrame();
+	initAiFrame();
 
 	multiFrame_.setCurrentFrame(0);
 	mw::Window::setUnicodeInputEnable(true);
@@ -107,10 +112,10 @@ bool GuiWindow::isUpdatingGame() const {
 }
 
 gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
-	mw::Color textColor(1.0,0.1,0.1);
+	mw::Color textColor(1.0, 0.1, 0.1);
 	mw::Color focus(0.8, 0.1, 0, 0.3);
 	mw::Color onHover(0.6, 0.1, 0.1);
-	mw::Color notHover(0.4, 0.0, 0.0,0.0);
+	mw::Color notHover(0.4, 0.0, 0.0, 0.0);
 	mw::Color pushed(0.8, 0.0, 0, 0.7);
 	gui::TextButtonPtr button = gui::createTextButton(text, size, fontDefault,
 		textColor,focus,onHover,notHover,pushed);
@@ -131,8 +136,8 @@ gui::BarColorPtr GuiWindow::createUpperBar() {
 
 void GuiWindow::initFrameMenu() {
 	multiFrame_.setCurrentFrame(0);
-	multiFrame_.add(gui::createTextItem("MWetris",fontDefault50,80,mw::Color(1,1,1)),10,50,false,true);//Color(0.9,0.2,0,0.9)
-	multiFrame_.add(gui::createTextItem("Made by Marcus Welander",fontDefault18,12,mw::Color(1,1,1)),0,0,true,false);
+	multiFrame_.add(gui::createTextItem("MWetris", fontDefault50,80, textColor_),10,50,false,true);
+	multiFrame_.add(gui::createTextItem("Made by Marcus Welander", fontDefault18, 12, textColor_),0,0,true,false);
 
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
@@ -409,7 +414,7 @@ void GuiWindow::initHighscoreFrame() {
 		}
 	});
 
-	highscorePtr_ = createHighscore(10,mw::Color(1,1,1));
+	highscorePtr_ = createHighscore(10, textColor_);
 	highscorePtr_->addOnClickListener([&](gui::GuiItem* item) {
         multiFrame_.setCurrentFrame(newHighscoreFrameIndex_);
 	});
@@ -442,11 +447,11 @@ void GuiWindow::initCustomPlayFrame() {
 		}
 	});
 
-	multiFrame_.add(menu,0,0,false,true);
+	multiFrame_.add(menu, 0, 0, false, true);
 
 	std::stringstream stream;
 	// Set board size ------------------------------------------------------
-	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem = gui::createTextItem("Width", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem,45,50,false,true);
 	customPlayWidth_ = createTextBox(35);
 	customPlayWidth_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
@@ -454,7 +459,7 @@ void GuiWindow::initCustomPlayFrame() {
 	customPlayWidth_->setText(stream.str());
 	multiFrame_.add(customPlayWidth_,100,50,false,true);
 
-	gui::TextItemPtr textItem2 = gui::createTextItem("Height",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem2 = gui::createTextItem("Height", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem2,140,50,false,true);
 	customPlayHeight_ = createTextBox(35);
 	customPlayHeight_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
@@ -464,7 +469,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(customPlayHeight_,200,50,false,true);
 
 	// Set max level -----------------------------------------------------
-	gui::TextItemPtr textItem3 = gui::createTextItem("Max Level",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem3 = gui::createTextItem("Max Level", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem3,45,100,false,true);
 	customPlaymaxLevel_ = createTextBox(35);
 	customPlaymaxLevel_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(2));
@@ -501,7 +506,7 @@ void GuiWindow::initCustomPlayFrame() {
 
 void GuiWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 	// Upper bar.
-	multiFrame_.addBar(createUpperBar(),optionFrameIndex_);
+	multiFrame_.addBar(createUpperBar(), optionFrameIndex_);
 
 	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
@@ -520,17 +525,22 @@ void GuiWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 		}
 	});
 
-	gui::TextItemPtr textItem1 = gui::createTextItem("Connected players", fontDefault, 30, mw::Color(1.0,1.0,1.0));
+	gui::ButtonPtr b2 = createButton("AI", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(aiFrameIndex_);
+	});
+
+	gui::TextItemPtr textItem1 = gui::createTextItem("Connected players", fontDefault, 30, textColor_);
 	multiFrame_.add(textItem1, 0, hDistance_, false, true, optionFrameIndex_);
 	int size = devices.size();
 	for (int i = 0; i < size; ++i) {
 		std::stringstream stream;
 		stream << "Player " << 1+i << ": " << devices[i]->getName();
-		gui::TextItemPtr textItem2 = gui::createTextItem(stream.str(), fontDefault18, 18, mw::Color(1.0,1.0,1.0));
+		gui::TextItemPtr textItem2 = gui::createTextItem(stream.str(), fontDefault18, 18, textColor_);
 		multiFrame_.add(textItem2, 0, 70 + i * 30, false, true, optionFrameIndex_);
 	}
 
-	multiFrame_.add(b1,0,0,false,true,optionFrameIndex_);
+	multiFrame_.add(b1, 0, 0, false, true, optionFrameIndex_);
+	multiFrame_.add(b2, 80, 0, false, true, optionFrameIndex_);
 }
 
 void GuiWindow::initServerLoobyFrame() {
@@ -608,7 +618,7 @@ void GuiWindow::initCreateServerFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::TextItemPtr header = gui::createTextItem("Server",fontDefault,30,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr header = gui::createTextItem("Server", fontDefault, 30, textColor_);
 
 	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
@@ -666,22 +676,22 @@ void GuiWindow::initCreateServerFrame() {
 	});
 
 	// Set board size ------------------------------------------------------
-	gui::TextItemPtr textItem = gui::createTextItem("Width",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem = gui::createTextItem("Width", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem,0,100,false,true);
 	multiFrame_.add(customPlayWidth_,55,100,false,true);
 
-	gui::TextItemPtr textItem2 = gui::createTextItem("Height",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem2 = gui::createTextItem("Height", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem2,95,100,false,true);
 	multiFrame_.add(customPlayHeight_,155,100,false,true);
 
-	gui::TextItemPtr textItem3 = gui::createTextItem("Port",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem3 = gui::createTextItem("Port", fontDefault18, 18, textColor_);
 	portBox_ = createTextBox(105);
 	portBox_->setInputFormatter(std::make_shared<gui::InputNumberFormatter>(6));
 	portBox_->setText("11155");
 	multiFrame_.add(textItem3,0,150,false,true);
 	multiFrame_.add(portBox_,55,150,false,true);
 
-	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem4,0,200,false,true);
 	multiFrame_.add(manButton,120,200,false,true);
 	multiFrame_.add(computerButton,260,200,false,true);
@@ -719,7 +729,7 @@ void GuiWindow::initCreateClientFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::TextItemPtr header = gui::createTextItem("Client", fontDefault, hDistance_, mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr header = gui::createTextItem("Client", fontDefault, hDistance_, textColor_);
 
 	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(0);
@@ -776,18 +786,18 @@ void GuiWindow::initCreateClientFrame() {
 		setNbrOfComputerPlayers(newNbr);
 	});
 
-    gui::TextItemPtr textItem = gui::createTextItem("Connect to ip",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+    gui::TextItemPtr textItem = gui::createTextItem("Connect to ip", fontDefault18, 18, textColor_);
     ipBox_ = createTextBox(260);
 	ipBox_->setInputFormatter(std::make_shared<gui::InputFormatter>(15));
 	ipBox_->setText("127.0.0.1");
 	multiFrame_.add(textItem,0,100,false,true);
 	multiFrame_.add(ipBox_,120,100,false,true);
 
-	gui::TextItemPtr textItem3 = gui::createTextItem("Port",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem3 = gui::createTextItem("Port", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem3,0,150,false,true);
 	multiFrame_.add(portBox_,55,150,false,true);
 
-	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem4,0,200,false,true);
 	multiFrame_.add(manButton,120,200,false,true);
 	multiFrame_.add(computerButton,260,200,false,true);
@@ -826,7 +836,7 @@ void GuiWindow::initWaitToConnectFrame() {
 
 	multiFrame_.add(menu,0,0,false,true);
 
-	gui::TextItemPtr textItem = gui::createTextItem("Waiting for the server to accept connection!",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem = gui::createTextItem("Waiting for the server to accept connection!", fontDefault18,18, textColor_);
 
 	multiFrame_.add(textItem,0,100,false,true);
 }
@@ -837,7 +847,7 @@ void GuiWindow::initNewHighScoreFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::TextItemPtr textItem = gui::createTextItem("Name",fontDefault18,18,mw::Color(1.0,1.0,1.0));
+	gui::TextItemPtr textItem = gui::createTextItem("Name", fontDefault18,18, textColor_);
 	nameBox_ = createTextBox(250);
 	nameBox_->setInputFormatter(std::make_shared<gui::InputFormatter>(7));
 	nameBox_->setFocus(true);
@@ -921,6 +931,227 @@ void GuiWindow::initNetworkPlayFrame() {
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
 	multiFrame_.add(pause_,0,0,true,true);
+}
+
+void GuiWindow::initAiFrame() {
+	multiFrame_.setCurrentFrame(aiFrameIndex_);
+	
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+
+	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(0);
+	});
+	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+		case SDL_QUIT:
+			item->click();
+			break;
+		case SDL_KEYDOWN:
+			SDLKey key = sdlEvent.key.keysym.sym;
+			if (key == SDLK_ESCAPE) {
+				item->click();
+				break;
+			}
+		}
+	});
+	gui::ButtonPtr b2 = createButton("Option", hDistance_, [&](gui::GuiItem*) {
+		multiFrame_.setCurrentFrame(optionFrameIndex_);
+	});
+
+	aiText1_ = gui::createTextItem("Ai1:", fontDefault18, 18, textColor_);
+	aiText2_ = gui::createTextItem("Ai2:", fontDefault18, 18, textColor_);
+	aiText3_ = gui::createTextItem("Ai3:", fontDefault18, 18, textColor_);
+	aiText4_ = gui::createTextItem("Ai4:", fontDefault18, 18, textColor_);
+
+	gui::ButtonPtr ai1Button = createButton(ai1_.getName(), hDistance_, [&](gui::GuiItem* item) {
+		gui::TextButton* button = (gui::TextButton*) item;
+		int index = -1;
+		
+		// Ai found?
+		for (unsigned int i = 0; i < ais_.size(); ++i) {
+			if (ais_[i].getName() == button->getText()) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != -1) {
+			// Next ai in vector.
+			ai1_ = ais_[(index+1)%ais_.size()];
+			button->setText(ai1_.getName());
+		} else {
+			// Default ai.
+			ai1_ = Ai();
+		}
+		saveAllSettings();
+	});
+
+	gui::ButtonPtr ai2Button = createButton(ai2_.getName(), hDistance_, [&](gui::GuiItem* item) {
+		gui::TextButton* button = (gui::TextButton*) item;
+		int index = -1;
+		
+		// Ai found?
+		for (unsigned int i = 0; i < ais_.size(); ++i) {
+			if (ais_[i].getName() == button->getText()) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != -1) {
+			// Next ai in vector.
+			ai2_ = ais_[(index+1)%ais_.size()];
+			button->setText(ai2_.getName());
+		} else {
+			// Default ai.
+			ai2_ = Ai();
+		}
+		saveAllSettings();
+	});
+
+	gui::ButtonPtr ai3Button = createButton(ai3_.getName(), hDistance_, [&](gui::GuiItem* item) {
+		gui::TextButton* button = (gui::TextButton*) item;
+		int index = -1;
+		
+		// Ai found?
+		for (unsigned int i = 0; i < ais_.size(); ++i) {
+			if (ais_[i].getName() == button->getText()) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != -1) {
+			// Next ai in vector.
+			ai3_ = ais_[(index+1)%ais_.size()];
+			button->setText(ai3_.getName());
+		} else {
+			// Default ai.
+			ai3_ = Ai();
+		}
+		saveAllSettings();
+	});
+
+	gui::ButtonPtr ai4Button = createButton(ai4_.getName(), hDistance_, [&](gui::GuiItem* item) {
+		gui::TextButton* button = (gui::TextButton*) item;
+		int index = -1;
+		
+		// Ai found?
+		for (unsigned int i = 0; i < ais_.size(); ++i) {
+			if (ais_[i].getName() == button->getText()) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != -1) {
+			// Next ai in vector.
+			ai4_ = ais_[(index+1)%ais_.size()];
+			button->setText(ai4_.getName());
+		} else {
+			// Default ai.
+			ai4_ = Ai();
+		}
+		saveAllSettings();
+	});
+
+	gui::ButtonPtr reloadAis = createButton("Reload Ai:s", hDistance_, [&](gui::GuiItem*) {
+		loadAllSettings();
+		bool ai1 = false, ai2 = false, ai3 = false, ai4 = false;
+		for (const Ai& ai : ais_) {
+			if (ai.getName() == aiText1_->getText().getText()) {
+				ai1 = true;
+			}
+			if (ai.getName() == aiText2_->getText().getText()) {
+				ai2 = true;
+			}
+			if (ai.getName() == aiText3_->getText().getText()) {
+				ai3 = true;
+			}
+			if (ai.getName() == aiText4_->getText().getText()) {
+				ai4 = true;
+			}
+		}
+		if (!ai1) {
+			// Set to default ai.
+			ai1_ = Ai();
+		}
+		if (!ai2) {
+			// Set to default ai.
+			ai2_ = Ai();
+		}
+		if (!ai3) {
+			// Set to default ai.
+			ai3_ = Ai();
+		}
+		if (!ai4) {
+			// Set to default ai.
+			ai4_ = Ai();
+		}
+	});
+
+	reloadAis->click();
+
+	multiFrame_.add(b1, 0, 0, false, true);
+	multiFrame_.add(b2, 80, 0, false, true);
+	multiFrame_.add(aiText1_, 10, hDistance_ + 10, false, true);
+	multiFrame_.add(aiText2_, 10, hDistance_ + 60, false, true);
+	multiFrame_.add(aiText3_, 10, hDistance_ + 110, false, true);
+	multiFrame_.add(aiText4_, 10, hDistance_ + 160, false, true);
+	multiFrame_.add(reloadAis, 10, hDistance_ + 210, false, true);
+
+	multiFrame_.add(ai1Button, 60, hDistance_ + 10, false, true);
+	multiFrame_.add(ai2Button, 60, hDistance_ + 60, false, true);
+	multiFrame_.add(ai3Button, 60, hDistance_ + 110, false, true);
+	multiFrame_.add(ai4Button, 60, hDistance_ + 160, false, true);
+}
+
+void GuiWindow::loadAllSettings() {
+	// Load all ais.
+	{
+		std::ifstream file("ais/ais");
+		if (file.is_open()) {
+			ais_.clear();
+			ais_.push_back(Ai());
+			std::string filename;
+			while (std::getline(file, filename)) {
+				Ai ai;
+				if (loadAi(ai, "ais/", filename)) {
+					ais_.push_back(ai);
+				}
+			}
+		}
+	}
+	// Load ais to ai1, ... and ai4.
+	{
+		std::ifstream file("settings");
+		if (file.is_open()) {
+			std::string filename;
+			// Load ai1.
+			std::getline(file, filename);
+			loadAi(ai1_, "ais/", filename);
+			// Load ai2.
+			std::getline(file, filename);
+			loadAi(ai2_, "ais/", filename);
+			// Load ai3.
+			std::getline(file, filename);
+			loadAi(ai3_, "ais/", filename);
+			// Load ai4.
+			std::getline(file, filename);
+			loadAi(ai4_, "ais/", filename);
+		}
+	}
+}
+
+void GuiWindow::saveAllSettings() {
+	std::ofstream file("settings");
+	if (file.is_open() && file.good()) {
+		file << ai1_.getName() << "\n";
+		file << ai2_.getName() << "\n";
+		file << ai3_.getName() << "\n";
+		file << ai4_.getName() << "\n";
+	}
 }
 
 void GuiWindow::resize(int width, int height) {
