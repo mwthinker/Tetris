@@ -15,22 +15,18 @@ class LocalPlayer : public Player {
 public:
     LocalPlayer(int id, int width, int height, const DevicePtr& device);
 
-    void update(double deltaTime);
+    void update(double deltaTime) override;
 	void updateAi() override;
+
 	inline const DevicePtr& getDevice() const {
 		return device_;
 	}
 private:
 	double calculateDownSpeed(int level) const;
-	void polledGameEvent(GameEvent gameEvent);
-
-	ActionHandler gravityMove_;
 
     // Controls how the moving block is moved.
-	ActionHandler downHandler_, leftHandler_, rightHandler_, rotateHandler_;
-
+	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
     DevicePtr device_;
-	double fastestDownTime_;
 };
 
 #endif // LOCALPLAYER_H

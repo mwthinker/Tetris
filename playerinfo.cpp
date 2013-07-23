@@ -69,11 +69,7 @@ double PlayerInfo::getHeight() const {
 }
 
 bool PlayerInfo::pollGameEvent(GameEvent& gameEvent) {
-	bool polled = tetrisBoard_.pollGameEvent(gameEvent);
-	if (polled) {
-		polledGameEvent(gameEvent);
-	}
-    return polled;
+    return tetrisBoard_.pollGameEvent(gameEvent);
 }
 
 int PlayerInfo::getId() const {

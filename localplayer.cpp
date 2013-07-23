@@ -5,16 +5,15 @@
 #include <memory>
 
 LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device) : Player(id, width,height ,false) {
-	leftHandler_ = ActionHandler(0.10 , false);
-	rightHandler_ = ActionHandler(0.10, false);
+	leftHandler_ = ActionHandler(0.09, false);
+	rightHandler_ = ActionHandler(0.09, false);
 	rotateHandler_ = ActionHandler(0.0, true);
 
 	// The time beetween each "gravity" move.
 	double downTime = 1.0 / calculateDownSpeed(getLevel());
 	gravityMove_ = ActionHandler(downTime, false);
-	fastestDownTime_ = 0.040;
-	downHandler_ = ActionHandler(1 / (1.0 / fastestDownTime_ - 1.0 / downTime), false);
-	
+	downHandler_ = ActionHandler(0.04, false);
+
 	device_ = device;
 	device_->update(getTetrisBoard());
 }
@@ -25,10 +24,10 @@ void LocalPlayer::update(double deltaTime) {
 	// The time beetween each "gravity" move.
 	double downTime = 1.0 / calculateDownSpeed(getLevel());
 	gravityMove_.setWaitingTime(downTime);
-	downHandler_.setWaitingTime(1 / (1.0 / fastestDownTime_ - 1.0 / downTime));
 	
 	gravityMove_.update(deltaTime, true);
 	if (gravityMove_.doAction()) {
+		downHandler_.reset();
 		pushMove(Move::DOWN_GRAVITY);
 	}
 
@@ -59,17 +58,4 @@ void LocalPlayer::updateAi() {
 
 double LocalPlayer::calculateDownSpeed(int level) const {
 	return 1+level*0.5;
-}
-
-void LocalPlayer::polledGameEvent(GameEvent gameEvent) {
-	switch (gameEvent) {
-	case GameEvent::BLOCK_COLLISION:
-		leftHandler_.reset();
-		rightHandler_.reset();
-		rotateHandler_.reset();
-		downHandler_.reset();
-		break;
-	default:
-		break;
-	}
 }

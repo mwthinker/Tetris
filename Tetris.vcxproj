@@ -86,6 +86,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="actionhandler.h" />
+    <ClInclude Include="ai.h" />
     <ClInclude Include="background.h" />
     <ClInclude Include="bar.h" />
     <ClInclude Include="barcolor.h" />

@@ -97,8 +97,6 @@ protected:
 	}
 
 private:
-	virtual void polledGameEvent(GameEvent gameEvent) {
-	}
 
     GraphicBoard graphicBoard_;
 

@@ -51,7 +51,7 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 		for (int column = 0; column < board.getNbrOfColumns(); ++column) {
 			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
 			if (lastHole != hole) {
-				rowRoughness += -5;
+				rowRoughness += 1;
 				lastHole = hole;
 			}
 			if (!hole) {
@@ -69,7 +69,7 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 		for (int row = 0; row < lowestRow; ++row) {
 			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
 			if (lastHole != hole) {
-				columnRoughness += -10;
+				columnRoughness += 1;
 				lastHole = hole;
 			}
 		}
@@ -85,8 +85,8 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 		blockMeanHeight += sq.row_;
 	}
 	blockMeanHeight /= 4;
-
-	return rowRoughness + columnRoughness + (meanHeight - blockMeanHeight) * 0.5 * board.getNbrOfRows() + edges * 0;
+	
+	return ai_.calculateValue(rowRoughness,columnRoughness,edges,meanHeight,blockMeanHeight,board.getNbrOfRows(),board.getNbrOfColumns());
 }
 
 // Calculate and return the best input to achieve the current state.

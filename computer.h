@@ -4,6 +4,7 @@
 #include "device.h"
 #include "block.h"
 #include "rawtetrisboard.h"
+#include "ai.h"
 
 #include <vector>
 #include <string>
@@ -43,24 +44,12 @@ private:
 	// The algortihm rotates and goes left or rigth with the block which then fall to the ground.
 	// I.e. The possible state.
 	std::vector<State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block) const;
-	
-	// Returns the lowest empty row on the board.
-	/*
-	int findLowestEmptyRow(const TetrisBoard& board) const {
-		int maxRow = board.getNbrOfRows();
-		for (int row = 0; row < maxRow; ++row) {
-			if (board.nbrOfSquares(row) == 0) {
-				return row;
-			}
-		}
-		return maxRow;
-	}
-	*/
 
 	int latestId_;
 	Input input_;
 	State latestState_;
 	Block latestBlock_;
+	Ai ai_;
 };
 
 #endif // CUMPUTER_H

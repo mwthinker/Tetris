@@ -15,7 +15,7 @@ ActionHandler::ActionHandler(double waitingTime, bool rebound) {
 void ActionHandler::update(double timeStep, bool action) {
     time_ += timeStep;
     if (action) {
-		if ( time_ - lastTime_ >= waitingTime_ && ( !rebound_ || (rebound_ && !lastAction_) ) ) {
+		if ( time_ - lastTime_ > waitingTime_ && ( !rebound_ || (rebound_ && !lastAction_) ) ) {
 			lastTime_ = time_;
 			action_ = true;
 		}
@@ -35,7 +35,7 @@ double ActionHandler::getWaitingTime() const {
     return waitingTime_;
 }
 
-void ActionHandler:: setWaitingTime(double waitingTime) {
+void ActionHandler::setWaitingTime(double waitingTime) {
 	waitingTime_ = waitingTime;
 }
 
