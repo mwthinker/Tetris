@@ -8,6 +8,12 @@ Computer::Computer() : Device(true) {
 	latestId_ = -1;
 }
 
+
+Computer::Computer(const Ai& ai) : Device(true) {
+	latestId_ = -1;
+	ai_ = ai;
+}
+
 Input Computer::currentInput() {
 	return input_;
 }

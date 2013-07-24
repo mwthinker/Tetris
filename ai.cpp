@@ -47,6 +47,6 @@ void saveAi(const Ai& ai, std::string dir) {
 		file << ai.meanHeight_ << "\n";
 		file << ai.blockMeanHeight_ << "\n";
 		file << ai.nbrOfRows_ << "\n";
-		file << ai.nbrOfColumns_;
+		file << ai.nbrOfColumns_ << "\n";;
 	}
 }

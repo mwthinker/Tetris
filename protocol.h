@@ -89,6 +89,13 @@ public:
 		return maxLevel_;
 	}
 
+	inline void setAis(Ai ai1, Ai ai2, Ai ai3, Ai ai4) {
+		ais_[0] = ai1;
+		ais_[1] = ai2;
+		ais_[2] = ai3;
+		ais_[3] = ai4;
+	}
+
 protected:
 	void signalEvent(NetworkEventPtr nEvent);
 
@@ -206,6 +213,7 @@ private:
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 	Status status_;
 	int width_, height_, maxLevel_;
+	std::array<Ai, 4> ais_;
 };
 
 #endif // PROTOCOL_H

@@ -84,6 +84,7 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	}
 
 	tetrisGame_.closeGame();
+	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
 	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
 	tetrisGame_.startGame();
 }
@@ -96,6 +97,7 @@ void TetrisWindow::createLocalGame() {
 	}
 
 	tetrisGame_.closeGame();
+	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
 	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_);
 	tetrisGame_.startGame();
 }
@@ -108,6 +110,7 @@ void TetrisWindow::createServerGame(int port, int width, int height) {
 	}
 
 	tetrisGame_.closeGame();
+	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
 	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
 }
 
@@ -119,6 +122,7 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	}
 
 	tetrisGame_.closeGame();
+	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
 	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
 }
 

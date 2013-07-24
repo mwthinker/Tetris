@@ -49,7 +49,7 @@ protected:
 		return ai1_;
 	}
 
-	inline Ai getAi12() const {
+	inline Ai getAi2() const {
 		return ai2_;
 	}
 

@@ -243,7 +243,7 @@ void Protocol::connect(const std::vector<DevicePtr>& devices, int nbrOfComputerP
 
 		// Add computer players.
 		for (int i = 0; i < nbrOfComputerPlayers; ++i) {
-			devices_.push_back(DevicePtr(new Computer()));
+			devices_.push_back(DevicePtr(new Computer(ais_[i])));
 		}
 
 		nbrOfPlayers_ = devices_.size();

@@ -964,7 +964,10 @@ void GuiWindow::initAiFrame() {
 	aiText3_ = gui::createTextItem("Ai3:", fontDefault18, 18, textColor_);
 	aiText4_ = gui::createTextItem("Ai4:", fontDefault18, 18, textColor_);
 
-	gui::ButtonPtr ai1Button = createButton(ai1_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	// Load all specific ai settings.
+	loadAllSettings();
+
+	gui::TextButtonPtr ai1Button = createButton(ai1_.getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -987,7 +990,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::ButtonPtr ai2Button = createButton(ai2_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai2Button = createButton(ai2_.getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -1010,7 +1013,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::ButtonPtr ai3Button = createButton(ai3_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai3Button = createButton(ai3_.getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -1033,7 +1036,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::ButtonPtr ai4Button = createButton(ai4_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai4Button = createButton(ai4_.getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -1060,38 +1063,40 @@ void GuiWindow::initAiFrame() {
 		loadAllSettings();
 		bool ai1 = false, ai2 = false, ai3 = false, ai4 = false;
 		for (const Ai& ai : ais_) {
-			if (ai.getName() == aiText1_->getText().getText()) {
+			if (ai.getName() == ai1Button->getText()) {
 				ai1 = true;
 			}
-			if (ai.getName() == aiText2_->getText().getText()) {
+			if (ai.getName() == ai2Button->getText()) {
 				ai2 = true;
 			}
-			if (ai.getName() == aiText3_->getText().getText()) {
+			if (ai.getName() == ai3Button->getText()) {
 				ai3 = true;
 			}
-			if (ai.getName() == aiText4_->getText().getText()) {
+			if (ai.getName() == ai4Button->getText()) {
 				ai4 = true;
 			}
 		}
 		if (!ai1) {
 			// Set to default ai.
 			ai1_ = Ai();
+			ai1Button->setText(ai1_.getName());
 		}
 		if (!ai2) {
 			// Set to default ai.
 			ai2_ = Ai();
+			ai1Button->setText(ai2_.getName());
 		}
 		if (!ai3) {
 			// Set to default ai.
 			ai3_ = Ai();
+			ai1Button->setText(ai3_.getName());
 		}
 		if (!ai4) {
 			// Set to default ai.
 			ai4_ = Ai();
+			ai1Button->setText(ai4_.getName());
 		}
 	});
-
-	reloadAis->click();
 
 	multiFrame_.add(b1, 0, 0, false, true);
 	multiFrame_.add(b2, 80, 0, false, true);
@@ -1150,7 +1155,7 @@ void GuiWindow::saveAllSettings() {
 		file << ai1_.getName() << "\n";
 		file << ai2_.getName() << "\n";
 		file << ai3_.getName() << "\n";
-		file << ai4_.getName() << "\n";
+		file << ai4_.getName() << "\n";;
 	}
 }
 

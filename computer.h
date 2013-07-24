@@ -13,6 +13,8 @@ class Computer : public Device {
 public:
 	Computer();
 
+	Computer(const Ai& ai);
+
 	Input currentInput() override;
 
 	std::string getName() const override;
