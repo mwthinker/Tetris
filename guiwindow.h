@@ -167,7 +167,7 @@ private:
 	Ai ai1_, ai2_, ai3_, ai4_;
 	std::vector<Ai> ais_;
 
-	mw::Color textColor_;
+	mw::Color barColor_, textButtonColor_, textColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_;
 };
 
 #endif // GUIWINDOW_H

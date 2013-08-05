@@ -27,6 +27,12 @@
 
 GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	textColor_ = mw::Color(1,1,1);
+	textButtonColor_ = mw::Color(1,.1,.1);
+	focusColor_ = mw::Color(.8, .1, 0, .3);
+	onHoverColor_ = mw::Color(.6, .1, .1);
+	notHoverColor_ = mw::Color(.4, .0, .0, .0);
+	pushedColor_ = mw::Color(.8, .0, 0, .7);
+	barColor_ = mw::Color(.5,0,0,.30);
 	hDistance_ = 30;
 
 	auto background = gui::createImageBackground(spriteBackground);
@@ -112,31 +118,23 @@ bool GuiWindow::isUpdatingGame() const {
 }
 
 gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
-	mw::Color textColor(1.0, 0.1, 0.1);
-	mw::Color focus(0.8, 0.1, 0, 0.3);
-	mw::Color onHover(0.6, 0.1, 0.1);
-	mw::Color notHover(0.4, 0.0, 0.0, 0.0);
-	mw::Color pushed(0.8, 0.0, 0, 0.7);
 	gui::TextButtonPtr button = gui::createTextButton(text, size, fontDefault,
-		textColor,focus,onHover,notHover,pushed);
+		textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);
 	button->addOnClickListener(onClick);
 	return button;
 }
 
 gui::TextBoxPtr GuiWindow::createTextBox(int size) {
-	mw::Color textColor(1.0,1.0,1.0);
-	mw::Color focus(0.8, 0.1, 0, 0.3);
-	mw::Color onHover(0.6, 0.1, 0.1);
-	return gui::createTextBoxDraw(size, fontDefault, 30, textColor, focus, onHover);
+	return gui::createTextBoxDraw(size, fontDefault, 30, textColor_, focusColor_, onHoverColor_);
 }
 
 gui::BarColorPtr GuiWindow::createUpperBar() {
-	return gui::createBarColor(gui::Bar::UP,hDistance_,mw::Color(0.5,0,0,0.30));
+	return gui::createBarColor(gui::Bar::UP, hDistance_, barColor_);
 }
 
 void GuiWindow::initFrameMenu() {
 	multiFrame_.setCurrentFrame(0);
-	multiFrame_.add(gui::createTextItem("MWetris", fontDefault50,80, textColor_),10,50,false,true);
+	multiFrame_.add(gui::createTextItem("MWetris", fontDefault50, 80, textColor_),10,50,false,true);
 	multiFrame_.add(gui::createTextItem("Made by Marcus Welander", fontDefault18, 12, textColor_),0,0,true,false);
 
 	// Upper bar.
