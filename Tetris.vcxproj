@@ -100,6 +100,7 @@
     <ClInclude Include="gamesprite.h" />
     <ClInclude Include="graphicboard.h" />
     <ClInclude Include="group.h" />
+    <ClInclude Include="guievent.h" />
     <ClInclude Include="guiitem.h" />
     <ClInclude Include="guitypedefs.h" />
     <ClInclude Include="guiwindow.h" />
