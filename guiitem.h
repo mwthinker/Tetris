@@ -2,7 +2,6 @@
 #define GUIITEM_H
 
 #include "guitypedefs.h"
-#include "guievent.h"
 
 #include <mw/signal.h>
 
@@ -39,7 +38,7 @@ namespace gui {
 		}
 
 		virtual void draw() {
-		}
+		}	
 
 		int getWidth() const {
 			return width_;
@@ -74,7 +73,7 @@ namespace gui {
 		void setWidth(int width) {
 			width_ = width;
 		}
-		
+
 		void setHeight(int height) {
 			height_ = height;
 		}
@@ -93,7 +92,7 @@ namespace gui {
 
 		void click() {
 			onClick_(this);
-		}
+		}	
 
 	private:
 		void eventUpdate(const SDL_Event& windowEvent) {
