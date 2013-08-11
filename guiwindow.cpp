@@ -73,10 +73,6 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	restartKey_ = SDLK_F2;
 }
 
-void GuiWindow::quit() {
-	setQuiting(true);
-}
-
 HighscorePtr GuiWindow::getHighscorePtr() const {
     return highscorePtr_;
 }

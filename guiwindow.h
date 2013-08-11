@@ -91,9 +91,7 @@ private:
 
 	virtual void restartGame() = 0;
 	virtual void startGame() = 0;
-
-	void quit();
-
+	
 	gui::TextButtonPtr createButton(std::string text, int width, std::function<void(gui::GuiItem*)> onClick);
 	gui::TextBoxPtr createTextBox(int width);
 	gui::BarColorPtr createUpperBar();

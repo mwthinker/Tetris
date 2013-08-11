@@ -36,7 +36,7 @@ void TetrisGame::updateGame(double deltaTime) {
 
     accumulator_ += deltaTime;
     while (accumulator_ >= timeStep_) {
-        accumulator_ -= timeStep_;		
+        accumulator_ -= timeStep_;
 		if (countDown_ > 0) {
 			countDown_ -= timeStep_;
 			std::stringstream stream;
