@@ -16,43 +16,75 @@ namespace gui {
 		}
 
 		void add(GuiItemPtr item) {
-			items_.push_back(item);
+			items_.push_back(item);			
 		}
 
 		void eventUpdate(const SDL_Event& windowEvent, int x, int y) override {
 			switch (windowEvent.type) {
 			case SDL_KEYDOWN:
-				SDLKey key = windowEvent.key.keysym.sym;
-				if (last_ == key) {
-					unsigned int index = lastFocusIndex_;
-					for (unsigned int i = 0; i < items_.size(); ++i) {
-						if (items_[i]->hasFocus()) {
-							index = (i - 1 + items_.size()) % items_.size();
+				{
+					SDLKey key = windowEvent.key.keysym.sym;
+					if (last_ == key) {
+						changeToNext(false);
+					} else if (next_ == key) {
+						changeToNext(true);
+					} else if (SDLK_RETURN == key) {
+						for (const GuiItemPtr& item : items_) {
+							if (item->hasFocus() && item->isVisible()) {
+								item->click();
+								break;
+							}
 						}
 					}
-					for (unsigned int i = 0; i < items_.size(); ++i) {
-						items_[i]->setFocus(false);
-					}
-					items_[index]->setFocus(true);
-					lastFocusIndex_ = index;
+					break;
 				}
-				if (next_ == key) {
-					unsigned int index = lastFocusIndex_;
-					for (unsigned int i = 0; i < items_.size(); ++i) {
-						if (items_[i]->hasFocus()) {
-							index = (i + 1) % items_.size();
-						}
-					}
-					for (unsigned int i = 0; i < items_.size(); ++i) {
-						items_[i]->setFocus(false);
-					}
-					items_[index]->setFocus(true);
-					lastFocusIndex_ = index;
+			default:
+				break;
+			}
+		}
+
+	private:
+		// Changes to next item if next is true else changes to the last item.
+		void changeToNext(bool nextItem) {
+			bool oneAtLeastVisible = false;
+			for (const GuiItemPtr& item : items_) {
+				if (item->isVisible()) {
+					oneAtLeastVisible = true;
+					break;
 				}
-				if (SDLK_RETURN == key) {
-					for (unsigned int i = 0; i < items_.size(); ++i) {
-						if (items_[i]->hasFocus()) {
-							items_[i]->click();
+			}
+			if (oneAtLeastVisible) {
+				unsigned int index = lastFocusIndex_;
+				bool findFocusedItem = false;
+				
+				for (unsigned int i = 0; i < items_.size(); ++i) {
+					if (nextItem) {
+						index = (lastFocusIndex_ + i + 1) % items_.size();						
+					} else {
+						index = (lastFocusIndex_ - i - 1 + items_.size()) % items_.size();
+					}
+					if (items_[index]->isVisible()) {
+						findFocusedItem = true;
+						break;
+					}
+				}
+			
+				// At least one unit has focus?
+				if (findFocusedItem) {
+					// Take focus from all items.
+					for (const GuiItemPtr& item : items_) {
+						item->setFocus(false);
+					}
+					// Give focus to next item.
+					if (items_[index]->isVisible()) {
+						items_[index]->setFocus(true);
+						lastFocusIndex_ = index;
+					}
+				} else {
+					// Find first visible item and give focus.
+					for (const GuiItemPtr& item : items_) {
+						if (item->isVisible()) {
+							item->setFocus(true);
 							break;
 						}
 					}
@@ -60,7 +92,6 @@ namespace gui {
 			}
 		}
 
-	private:
 		int lastFocusIndex_;
 
 		SDLKey last_, next_;

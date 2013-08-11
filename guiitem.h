@@ -36,7 +36,7 @@ namespace gui {
 		}
 
 		virtual void draw() {
-		}	
+		}
 
 		int getWidth() const {
 			return width_;
@@ -90,7 +90,7 @@ namespace gui {
 
 		void click() {
 			onClick_(this);
-		}	
+		}
 
 	private:
 		void eventUpdate(const SDL_Event& windowEvent) {
@@ -103,7 +103,7 @@ namespace gui {
 		int width_, height_;
 		bool focus_;
 		bool visible_;
-	};	
+	};
 
 } // Namespace gui.
 

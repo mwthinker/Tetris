@@ -150,6 +150,7 @@ void GuiWindow::initFrameMenu() {
 		abortGame();
 		createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
 	});
+	b2->setFocus(true);
 
 	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::GuiItem*) {
 		multiFrame_.setCurrentFrame(customFrameIndex_);
@@ -203,13 +204,13 @@ void GuiWindow::initFrameMenu() {
 
 	// Focus is switchable by the up and down arrow.
 	gui::GroupPtr group = gui::createGroup(SDLK_UP,SDLK_DOWN);
-	group->add(b1);
 	group->add(b2);
 	group->add(b3);
 	group->add(b7);
 	group->add(b4);
 	group->add(b5);
 	group->add(b6);
+	group->add(b1);
 
 	multiFrame_.add(group,0,0,false,false);
 }
