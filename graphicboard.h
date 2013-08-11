@@ -39,29 +39,20 @@ private:
     void drawBoard();
     void drawBeginArea() const;
     void drawBlock(const Block& block, int maxRow);
-	void drawSquare(int column, int row, BlockType blockType);
-    void drawSquare(BlockType blockType);
-    void drawGrid() const;
-    void drawGridSquare() const;
-    void glColorWhite() const;
-    void drawFrame(double x1, double y1, double x2, double y2, double width) const;
 
-    mw::Text text1_, text2_, text3_, text4_;
+    mw::Text name_, level_, points_, nbrOfClearedRows_;
 	mw::Text gameOverMessage_, countDown_;	
 
 	double pixlePerSquare_;
     const TetrisBoard& tetrisBoard_;
 
-    mw::Color color_;
+    mw::Color frameColor_;
 
     double height_; // Height for the board
 	double voidHeight_; // Height between board and outside screen, up/down and to the left.
 	double borderLineThickness_; // Line thickness for the border.
 	double previwBorderSizeInSquares_; // The preview border size in number of squares.
 	double horizontalDistanceToText_; // Text horizontal distance between board and text.
-
-    int nbrOfClearedRows_, points_, level_;
-    std::string name_;
 };
 
 #endif // GRAPHICBOARD_H

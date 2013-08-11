@@ -10,8 +10,6 @@
 #include <functional>
 #include <vector>
 
-#include <SDL.h>
-
 namespace gui {
 
 	// Identifies if the SDL_UserEvent is made by the "gui".
