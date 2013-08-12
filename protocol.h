@@ -50,10 +50,8 @@ class Protocol : public mw::ServerFilter {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
-	Protocol();
-	virtual ~Protocol();
-
-	void update(Uint32 deltaTime);
+	// Updates everything. Should be called each frame.
+	void update(Uint32 msDeltaTime);
 	
 	// Uses the same settings as last call.
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers);
@@ -83,8 +81,6 @@ public:
 
 	int getNbrOfPlayers() const;
 
-	Status getStatus() const;
-
 	inline int getMaxLevel() const {
 		return maxLevel_;
 	}
@@ -97,6 +93,9 @@ public:
 	}
 
 protected:
+	Protocol();
+	~Protocol();
+
 	void signalEvent(NetworkEventPtr nEvent);
 
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
@@ -113,7 +112,7 @@ private:
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
 	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
 
-	virtual void updateGame(double timeStep) = 0;
+	virtual void updateGame(Uint32 deltaTime) = 0;
 
 	bool isAllUsersReady();
 

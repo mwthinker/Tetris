@@ -173,10 +173,6 @@ bool Protocol::isStarted() const {
 	return start_;
 }
 
-Protocol::Status Protocol::getStatus() const {
-	return status_;
-}
-
 void Protocol::addCallback(mw::Signal<NetworkEventPtr>::Callback callback) {
 	eventHandler_.connect(callback);
 }
@@ -214,7 +210,7 @@ void Protocol::update(Uint32 deltaTime) {
 					}
 
 					if (!pause_) {
-						updateGame(deltaTime/1000.0);
+						updateGame(deltaTime);
 					}
 				}
 			}

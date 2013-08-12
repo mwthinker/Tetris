@@ -56,6 +56,9 @@ namespace gui {
 
 		void setVisible(bool visible) {
 			visible_ = visible;
+			if (!visible_) {
+				focus_ = false;
+			}
 		}
 
 		bool isVisible() const {

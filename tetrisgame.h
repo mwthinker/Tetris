@@ -22,18 +22,23 @@ public:
 private:
     void soundEffects(GameEvent gameEvent);
 	void applyRules(PlayerInfoPtr player, GameEvent gameEvent);
-	void updateGame(double deltaTime) override;
-	void updatePlayer(PlayerInfoPtr player, double deltaTime);
+	void updateGame(Uint32 deltaTime) override;
+	void updatePlayer(PlayerInfoPtr player, Uint32 deltaTime);
 	void initGame(int columns, int rows, int maxLevel, bool local) override;
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
 
+	static const int nbrOfRowsToLevelUp = 10;
+
 	// Fix timestep.
-    double timeStep_;
-	double accumulator_;
+    Uint32 timeStep_;
+	Uint32 accumulator_;
+
 	int rows_, columns_, maxLevel_;
 	bool local_;
-	double countDown_;
+	Uint32 countDown_;
+	
+	std::vector<PlayerInfoPtr> players_;
 };
 
 #endif // TETRISGAME_H

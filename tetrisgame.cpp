@@ -17,8 +17,8 @@
 
 TetrisGame::TetrisGame() {
     nbrOfAlivePlayers_ = 0;
-    timeStep_ = 0.017; // Fix time step for physics update.
-    accumulator_ = 0.0; // Time accumulator.
+    timeStep_ = 17; // Fix time step.
+    accumulator_ = 0; // Time accumulator.
     columns_ = 10;
     rows_ = 20;
     maxLevel_ = 20;
@@ -27,20 +27,20 @@ TetrisGame::TetrisGame() {
 TetrisGame::~TetrisGame() {
 }
 
-void TetrisGame::updateGame(double deltaTime) {
+void TetrisGame::updateGame(Uint32 deltaTime) {
     // DeltaTime to big?
-    if (deltaTime > 0.250) {
+    if (deltaTime > 250) {
         // To avoid spiral of death.
-        deltaTime = 0.250;
+        deltaTime = 250;
     }
 
     accumulator_ += deltaTime;
     while (accumulator_ >= timeStep_) {
         accumulator_ -= timeStep_;
-		if (countDown_ > 0) {
+		if (countDown_ >= timeStep_) {
 			countDown_ -= timeStep_;
 			std::stringstream stream;
-			stream << "Start in: " << (int) countDown_ + 1;
+			stream << "Start in: " << (countDown_ + 1000)/1000;
 			iterateAllPlayersInfo([&](PlayerInfoPtr player) {
 				player->setCountDownMessage(stream.str());
 				return true;
@@ -55,8 +55,8 @@ void TetrisGame::updateGame(double deltaTime) {
     }
 }
 
-void TetrisGame::updatePlayer(PlayerInfoPtr player, double deltaTime) {
-    player->update(deltaTime);
+void TetrisGame::updatePlayer(PlayerInfoPtr player, Uint32 deltaTime) {
+    player->update(deltaTime/1000.0);
 
     GameEvent gameEvent;
     while (player->pollGameEvent(gameEvent)) {
@@ -66,13 +66,17 @@ void TetrisGame::updatePlayer(PlayerInfoPtr player, double deltaTime) {
 }
 
 void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
+	players_.clear();
 	nbrOfAlivePlayers_ = getNbrOfPlayers();
 	int nbr = nbrOfAlivePlayers_;
+	
 	iterateAllPlayersInfo([&](PlayerInfoPtr player) {
 		std::stringstream stream;
 		stream << "Player " << nbrOfAlivePlayers_ - nbr + 1;
 		player->setName(stream.str());
 		--nbr;
+		players_.push_back(player);
+
         return true;
     });
 
@@ -80,7 +84,7 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 	rows_ = rows;
 	maxLevel_ = maxLevel;
 	local_ = local;
-	countDown_ = 2.99;
+	countDown_ = 3000;
 }
 
 void TetrisGame::draw() {
@@ -159,24 +163,13 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		rows = 3;
 		break;
 	case GameEvent::FOUR_ROW_REMOVED:
-		{
-			rows = 4;
-			int nbrOfPlayers = getNbrOfPlayers();
-			// Multiplayer?
-			if (nbrOfPlayers > 1) {
-				int nbrOfRowsToAdd = 4;
-				if (nbrOfPlayers == 2) {
-					nbrOfRowsToAdd = 4;
-				} else if (nbrOfPlayers == 3) {
-					nbrOfRowsToAdd = 3;
-				} else {
-					nbrOfRowsToAdd = 2;
-				}
-
-				addRowsToAllPlayersExcept(player,nbrOfRowsToAdd);
-			}
-			break;
+		rows = 4;
+		// Multiplayer?
+		if (getNbrOfPlayers() > 1) {
+			// Add two rows to all opponents.
+			addRowsToAllPlayersExcept(player, 2);
 		}
+		break;
 	case GameEvent::GAME_OVER:
 		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
@@ -228,14 +221,12 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		player->setNbrOfClearedRows(player->getNbrOfClearedRows() + rows);
 		player->setPoints(player->getPoints() + player->getLevel()*rows*rows);
 
-		int nbrOfRowsToLevelUp = 10;
-
 		// Increase level up counter.
 		// If assuming all players are equally good. Players should level up with the
 		// the same time in both single- and multiplayer game.
+		
+		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
-			// Multiplayer
-
 			// Increase level up counter for all opponents to the current player.
 			iterateAllPlayersInfo([&](PlayerInfoPtr opponent) {
                 if (opponent != player) {
@@ -246,24 +237,18 @@ void TetrisGame::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 				}
                 return true;
             });
-		} else {
-			// Singleplayer.
-			player->setLevelUpCounter(player->getLevelUpCounter() + rows);
-		}
 
-		// Set level to this player. Only when this players cleares a row.
-		int maxLevel = getMaxLevel();
-		if (getNbrOfPlayers() > 1) {
-			// Multiplayer
 			// Higher counter bar to level up due to more players that contribute to
 			// increase counter.
 			int level = player->getLevelUpCounter() / (nbrOfRowsToLevelUp*(getNbrOfPlayers()-1)) + 1;
-			if (level <= maxLevel) {
+			if (level <= getMaxLevel()) {
 				player->setLevel(level);
 			}
-		} else {
+		} else { // Singleplayer!
+			player->setLevelUpCounter(player->getLevelUpCounter() + rows);
+
 			int level = (player->getLevelUpCounter() / nbrOfRowsToLevelUp) + 1;
-			if (level <= maxLevel) {
+			if (level <= getMaxLevel()) {
 				player->setLevel(level);
 			}
 		}
