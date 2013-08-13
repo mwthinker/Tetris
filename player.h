@@ -9,8 +9,9 @@
 
 class Player : public PlayerInfo {
 public:
-	Player(int id, int width, int height, bool remote);
-    virtual ~Player();
+	Player(int id, int width, int height, bool remote, bool ai);
+    virtual ~Player() {
+	}
 
 	// Restart the player.
 	void restart();
@@ -25,18 +26,22 @@ public:
 	virtual void updateAi() {
 	}
 
+	// Returns the players id.
+	int getId() const;
+
 protected:
     // Pushed to a queue.
     void pushMove(Move move);
 
 private:
-	BlockType generateBlockType() const;
-
 	// Remove from the queue.
     bool pollMove(Move& move);
 	std::queue<Move> moves_;
 
 	double squaresPerLength_;
+	
+	const bool ai_;
+	const int id_;
 };
 
 typedef std::shared_ptr<Player> PlayerPtr;

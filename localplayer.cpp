@@ -4,25 +4,23 @@
 #include <string>
 #include <memory>
 
-LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device) : Player(id, width,height ,false) {
+LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device) : Player(id, width, height, false, device->isAi()) {
 	leftHandler_ = ActionHandler(0.09, false);
 	rightHandler_ = ActionHandler(0.09, false);
 	rotateHandler_ = ActionHandler(0.0, true);
-
-	// The time beetween each "gravity" move.
-	double downTime = 1.0 / calculateDownSpeed(getLevel());
-	gravityMove_ = ActionHandler(downTime, false);
+		
+	gravityMove_ = ActionHandler(1, false);
 	downHandler_ = ActionHandler(0.04, false);
 
 	device_ = device;
 	device_->update(getTetrisBoard());
 }
 
-void LocalPlayer::update(double deltaTime) {
+void LocalPlayer::update(double deltaTime, int level) {
     Input input = device_->currentInput();
 	
 	// The time beetween each "gravity" move.
-	double downTime = 1.0 / calculateDownSpeed(getLevel());
+	double downTime = 1.0 / calculateDownSpeed(level);
 	gravityMove_.setWaitingTime(downTime);
 	
 	gravityMove_.update(deltaTime, true);

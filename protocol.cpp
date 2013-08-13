@@ -11,6 +11,7 @@
 #include <mw/localnetwork.h>
 
 #include <algorithm>
+#include <iostream>
 
 mw::Packet& operator<<(mw::Packet& packet, const Input& input) {
 	char data = input.rotate_;

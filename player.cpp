@@ -13,22 +13,49 @@ namespace {
 	std::random_device rd;
 	std::default_random_engine generator(rd());
 
+	BlockType generateBlockType() {
+		std::uniform_int_distribution<int> distribution(0,6);
+		int nbr = distribution(generator);
+		BlockType blockType = BlockType::EMPTY;
+		switch (nbr) {
+		case 0:
+			blockType = BlockType::I;
+			break;
+		case 1:
+			blockType = BlockType::J;
+			break;
+		case 2:
+			blockType = BlockType::L;
+			break;
+		case 3:
+			blockType = BlockType::O;
+			break;
+		case 4:
+			blockType = BlockType::S;
+			break;
+		case 5:
+			blockType = BlockType::T;
+			break;
+		case 6:
+			blockType = BlockType::Z;
+			break;
+		}
+
+		return blockType;
+	}
+
 }
 
-Player::Player(int id, int width, int height, bool remote) : PlayerInfo(id,width,height) {
+Player::Player(int id, int width, int height, bool remote, bool ai) : PlayerInfo(width,height), ai_(ai), id_(id) {
 	if (!remote) {
 		update(generateBlockType(), generateBlockType());
 	}
 	squaresPerLength_ = 0.8;
 }
 
-Player::~Player() {
-}
-
 void Player::restart() {
     moves_ = std::queue<Move>();
 	update(generateBlockType(),generateBlockType());
-    reset();
 }
 
 bool Player::updateBoard(Move& move, BlockType& next) {
@@ -66,7 +93,6 @@ std::vector<BlockType> Player::generateRow() const {
 	// Creates a row represented by a vector filled with true or false.
 	// True means it is filled with a square. False means empty.
 	// The percentage of true per row is squaresPerLength_.
-	
 	const unsigned int size = tetrisBoard_.getNbrOfColumns();
 	std::vector<bool> row(size);
 	std::uniform_int_distribution<int> distribution(0,size-1);
@@ -98,37 +124,6 @@ void Player::pushMove(Move move) {
     moves_.push(move);
 }
 
-BlockType Player::generateBlockType() const {
-	std::uniform_int_distribution<int> distribution(0,6);
-	int nbr = distribution(generator);
-	BlockType blockType = BlockType::EMPTY;
-	switch (nbr) {
-	case 0:
-		blockType = BlockType::I;
-		break;
-	case 1:
-		blockType = BlockType::J;
-		break;
-	case 2:
-		blockType = BlockType::L;
-		break;
-	case 3:
-		blockType = BlockType::O;
-		break;
-	case 4:
-		blockType = BlockType::S;
-		break;
-	case 5:
-		blockType = BlockType::T;
-		break;
-	case 6:
-		blockType = BlockType::Z;
-		break;
-	}
-
-	return blockType;
-}
-
 bool Player::pollMove(Move& move) {
     if (moves_.empty()) {
         return false;
@@ -137,4 +132,8 @@ bool Player::pollMove(Move& move) {
     move = moves_.front();
     moves_.pop();
     return true;
+}
+
+int Player::getId() const {
+    return id_;
 }

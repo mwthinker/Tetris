@@ -5,11 +5,10 @@
 
 class RemotePlayer : public Player {
 public:
-    RemotePlayer(int id, int width, int height) : Player(id,width,height,true) {
-
+    RemotePlayer(int id, int width, int height) : Player(id, width, height, true, false) {
     }
 
-    void update(double deltaTime) {
+    void update(double deltaTime, int level) {
     }
 };
 

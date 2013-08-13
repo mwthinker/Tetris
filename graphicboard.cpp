@@ -1,4 +1,5 @@
 #include "graphicboard.h"
+#include "tetrisboard.h"
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisboard.h"
@@ -65,10 +66,9 @@ namespace {
 		glVertex2d(x1,         y2);
 		glEnd();
 	}
-
 }
 
-GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetrisBoard) {
+GraphicBoard::GraphicBoard() {
 	height_ = 800; // height for the board
 	voidHeight_ = 10;
 	borderLineThickness_ = 7; // Should be lower than voidHeight_
@@ -80,13 +80,8 @@ GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetris
 	name_ = mw::Text("Player", fontDefault, 40);
 	level_ = mw::Text("Level 1", fontDefault, 30);
 	points_ = mw::Text("Points 0", fontDefault, 30);
-	nbrOfClearedRows_ = mw::Text("Rows", fontDefault, 30);
-
-	gameOverMessage_ = mw::Text("", fontDefault, 70);
-	countDown_ = mw::Text("", fontDefault, 70);
-}
-
-GraphicBoard::~GraphicBoard() {
+	nbrOfClearedRows_ = mw::Text("Rows 0", fontDefault, 30);
+	middleMessage_ = mw::Text("", fontDefault, 70);
 }
 
 void GraphicBoard::setNbrOfClearedRows(int nbr) {
@@ -111,40 +106,36 @@ void GraphicBoard::setName(std::string name) {
 	name_.setText(name);
 }
 
-void GraphicBoard::setGameOverMessage(std::string message) {
-	gameOverMessage_.setText(message);
+void GraphicBoard::setMiddleMessage(std::string message) {
+	middleMessage_.setText(message);
 }
 
-void GraphicBoard::setCountDownMessage(std::string countDown) {
-	countDown_.setText(countDown);
-}
+void GraphicBoard::draw(const TetrisBoard& tetrisBoard) {
+	// Update current dimensions.
+	rows_ = tetrisBoard.getNbrOfRows();
+	columns_ = tetrisBoard.getNbrOfColumns();
 
-void GraphicBoard::draw() {
-    pixlePerSquare_ = height_ / (tetrisBoard_.getNbrOfRows() + 2);
+    pixlePerSquare_ = height_ / (tetrisBoard.getNbrOfRows() + 2);
 	glPushMatrix();
 	glTranslated(voidHeight_,voidHeight_,0.0);
-	drawBoard();
-	drawInfo();
+	drawBoard(tetrisBoard);
+	drawInfo(tetrisBoard);
 	glPopMatrix();	
 	
 	glPushMatrix();
 	// Put it in the middle.
-	glTranslated(getWidth()*0.5-gameOverMessage_.getWidth()*0.5,getHeight()*0.5-gameOverMessage_.getHeight()*0.5,0.0);
-	glColor3d(1,1,1);
-	if (tetrisBoard_.isGameOver()) {
-		gameOverMessage_.draw();
-	}
-	countDown_.draw();
-	glPopMatrix();	
-
+	glTranslated(getWidth()*0.5-middleMessage_.getWidth()*0.5,getHeight()*0.5-middleMessage_.getHeight()*0.5,0.0);
+	WHITE.glColor3d();
+	middleMessage_.draw();
+	glPopMatrix();
 	drawBorder();
 }
 
 double GraphicBoard::getWidth() const {
 	if (previwBorderSizeInSquares_*pixlePerSquare_ > name_.getWidth()) {
-		return tetrisBoard_.getNbrOfColumns()*pixlePerSquare_ + horizontalDistanceToText_ + previwBorderSizeInSquares_*pixlePerSquare_ + voidHeight_*2;
+		return columns_ * pixlePerSquare_ + horizontalDistanceToText_ + previwBorderSizeInSquares_*pixlePerSquare_ + voidHeight_*2;
 	} else {
-		return tetrisBoard_.getNbrOfColumns()*pixlePerSquare_ + horizontalDistanceToText_ + name_.getWidth() + voidHeight_*2;
+		return columns_ * pixlePerSquare_ + horizontalDistanceToText_ + name_.getWidth() + voidHeight_*2;
 	}
 }
 
@@ -160,9 +151,9 @@ void GraphicBoard::drawBorder() const {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawInfo() {
+void GraphicBoard::drawInfo(const TetrisBoard& tetrisBoard) {
 	glPushMatrix();
-	glTranslated(pixlePerSquare_ * tetrisBoard_.getNbrOfColumns() + horizontalDistanceToText_ + voidHeight_,0,0);
+	glTranslated(pixlePerSquare_ * columns_ + horizontalDistanceToText_ + voidHeight_,0,0);
 	glTranslated(0,getHeight() - name_.getCharacterSize() - 30,0);
 
 	WHITE.glColor4d();
@@ -170,7 +161,7 @@ void GraphicBoard::drawInfo() {
 
 	glPushMatrix();
 	glTranslated(80, -180,0);
-	drawPreviewBlock();
+	drawPreviewBlock(tetrisBoard.nextBlock());
 	glPopMatrix();
 
 	glTranslated(0,-650,0);
@@ -185,21 +176,21 @@ void GraphicBoard::drawInfo() {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawPreviewBlock() {
-	glPushMatrix();
-	const Block& block = tetrisBoard_.nextBlock();
+void GraphicBoard::drawPreviewBlock(const Block& block) {
+	glPushMatrix();	
 
 	int nbrOfSquares = block.nbrOfSquares();
 	double x = 0, y = 0;
-	for (int i = 0; i < nbrOfSquares; ++i) {
-		Square square = block[i];
-		x += square.column_ * 1.0 / nbrOfSquares;
-		y += square.row_ * 1.0 / nbrOfSquares;
+	for (const Square& sq : block) {
+		x += sq.column_;
+		y += sq.row_;
 	}
+	x /= 1.0 * block.nbrOfSquares();
+	y /= 1.0 * block.nbrOfSquares();
 
 	glScaled(pixlePerSquare_,pixlePerSquare_,1.0);
 	glTranslated(-x - 0.5,-y - 0.5,0);
-	drawBlock(block, tetrisBoard_.getNbrOfRows() + 100);
+	drawBlock(block, rows_ + 100);
 	glPopMatrix();
 	glPushMatrix();
 	// Size is 5 squares.
@@ -210,15 +201,15 @@ void GraphicBoard::drawPreviewBlock() {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawBoard() {
+void GraphicBoard::drawBoard(const TetrisBoard& tetrisBoard) {
 	glPushMatrix();
 	glScaled(pixlePerSquare_,pixlePerSquare_,1.0);
 
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	int rows = tetrisBoard_.getNbrOfRows() + 2;
-	int columns = tetrisBoard_.getNbrOfColumns();
+	int rows = rows_ + 2;
+	int columns = columns_;
 		
 	glBegin(GL_QUADS);		
 	// Draws the outer square.
@@ -248,7 +239,7 @@ void GraphicBoard::drawBoard() {
 	glEnable(GL_TEXTURE_2D);
 	for (int row = 0; row < rows; ++row) {
 		for (int column = 0; column < columns; ++column) {
-			BlockType type = tetrisBoard_.getBlockType(row, column);
+			BlockType type = tetrisBoard.getBlockType(row, column);
 			if (type != BlockType::EMPTY) {
 				bindTexture(type);
 				glBegin(GL_QUADS);
@@ -266,24 +257,21 @@ void GraphicBoard::drawBoard() {
 	}	
 	glDisable(GL_TEXTURE_2D);
 
-	drawBlock(tetrisBoard_.currentBlock(), tetrisBoard_.getNbrOfRows() + 2);
+	drawBlock(tetrisBoard.currentBlock(), tetrisBoard.getNbrOfRows() + 2);
 	drawBeginArea();
 
 	glPopMatrix();
 }
 
 void GraphicBoard::drawBeginArea() const {
-	int rows = tetrisBoard_.getNbrOfRows();
-	int columns = tetrisBoard_.getNbrOfColumns();
-
 	double red = 0.8, green = 0.2, blue = 0.3;
 
 	glEnable(GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glPushMatrix();
-	glTranslated(0,rows,0);
-	glScaled(columns,2,0);
+	glTranslated(0, rows_, 0);
+	glScaled(columns_, 2, 0);
 	// Draws the outer square
 	glColor4d(red*0.8,green*0.8,blue*0.8,0.5);
 	glBegin(GL_QUADS);
