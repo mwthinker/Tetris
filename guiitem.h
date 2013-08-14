@@ -19,7 +19,6 @@ namespace gui {
 
 	class GuiItem {
 	public:
-		friend class MultiFrame;
 		friend class Frame;
 
 		GuiItem() {
@@ -65,12 +64,6 @@ namespace gui {
 			return visible_;
 		}
 
-		static void windowSize(int& width, int& height) {
-			SDL_Surface* surface = SDL_GetVideoSurface();
-			width = surface->w;
-			height = surface->h;
-		}
-
 		void setWidth(int width) {
 			width_ = width;
 		}
@@ -96,7 +89,8 @@ namespace gui {
 		}
 
 	private:
-		void eventUpdate(const SDL_Event& windowEvent) {
+		// Updates the sdlEventhander.
+		void updateSdlEventHandler(const SDL_Event& windowEvent) {
 			sdlEventHandler_(this, windowEvent);
 		}
 

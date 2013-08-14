@@ -1,39 +1,32 @@
 #include "tetrisgame.h"
 #include "gamesound.h"
 #include "graphicboard.h"
-#include "player.h"
-#include "localplayer.h"
+#include "playerinfo.h"
 #include "device.h"
-#include "keyboard.h"
-#include "joystick.h"
 #include "tetrisparameters.h"
 
 #include <mw/sound.h>
 
-#include <iostream>
-#include <utility>
-#include <memory>
+#include <string>
 #include <sstream>
 
 TetrisGame::TetrisGame() {
-    nbrOfAlivePlayers_ = 0;
-    timeStep_ = 17; // Fix time step.
-    accumulator_ = 0; // Time accumulator.
-    columns_ = 10;
-    rows_ = 20;
-    maxLevel_ = 20;
+	nbrOfAlivePlayers_ = 0;
+	timeStep_ = 17; // Fix time step.
+	accumulator_ = 0; // Time accumulator.
+	maxLevel_ = 20;
 }
 
 void TetrisGame::updateGame(Uint32 deltaTime) {
-    // DeltaTime to big?
-    if (deltaTime > 250) {
-        // To avoid spiral of death.
-        deltaTime = 250;
-    }
+	// DeltaTime to big?
+	if (deltaTime > 250) {
+		// To avoid spiral of death.
+		deltaTime = 250;
+	}
 
-    accumulator_ += deltaTime;
-    while (accumulator_ >= timeStep_) {
-        accumulator_ -= timeStep_;
+	accumulator_ += deltaTime;
+	while (accumulator_ >= timeStep_) {
+		accumulator_ -= timeStep_;
 		if (countDown_ >= timeStep_) {
 			countDown_ -= timeStep_;
 			std::stringstream stream;
@@ -50,22 +43,22 @@ void TetrisGame::updateGame(Uint32 deltaTime) {
 				updatePlayer(playerData, timeStep_);
 			}
 		}
-    }
+	}
 }
 
 void TetrisGame::updatePlayer(PlayerData& playerData, Uint32 deltaTime) {
-	playerData.player_->update(deltaTime/1000.0, 1);
+	playerData.player_->update(deltaTime/1000.0, playerData.level_);
 
-    GameEvent gameEvent;
-    while (playerData.player_->pollGameEvent(gameEvent)) {
-        applyRules(playerData, gameEvent);
-        soundEffects(gameEvent);
-    }
+	GameEvent gameEvent;
+	while (playerData.player_->pollGameEvent(gameEvent)) {
+		applyRules(playerData, gameEvent);
+		soundEffects(gameEvent);
+	}
 }
 
 void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 	players_.clear();
-	
+
 	int nbr = 0;
 	iterateAllPlayersInfo([&](PlayerInfoPtr player) {
 		std::stringstream stream;
@@ -73,11 +66,9 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 		players_.push_back(player);
 		players_.back().graphic_.setName(stream.str());
 		return true;
-    });
+	});
 
 	nbrOfAlivePlayers_ = players_.size();
-	columns_ = columns;
-	rows_ = rows;
 	maxLevel_ = maxLevel;
 	local_ = local;
 	countDown_ = 3000; // 3 seconds.
@@ -85,13 +76,13 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 
 void TetrisGame::draw() {
 	int nbr = players_.size();
-    int i = 0;
+	int i = 0;
 	for (PlayerData& pair: players_) {
 		++i;
-        glPushMatrix();
+		glPushMatrix();
 		glTranslated(pair.graphic_.getWidth() * (nbr-i), 0, 0);
 		pair.graphic_.draw(pair.player_->getTetrisBoard());
-        glPopMatrix();
+		glPopMatrix();
 	}
 }
 
@@ -99,7 +90,7 @@ double TetrisGame::getWidth() const {
 	if (players_.size() > 0) {
 		return players_.front().graphic_.getWidth() * players_.size();
 	}
-    return 400;
+	return 400;
 }
 
 double TetrisGame::getHeight() const {
@@ -182,8 +173,8 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 
 			// All dead except one => End game!
 			if (nbrOfAlivePlayers_ == 1) {
-                for (PlayerData& tmp : players_) {
-                    // Will be noticed in the next call to PlayerManager::applyRules(...).
+				for (PlayerData& tmp : players_) {
+					// Will be noticed in the next call to PlayerManager::applyRules(...).
 					// Triggers only for not dead players.
 					tmp.player_->triggerGameOverEvent();
 				}
@@ -191,19 +182,22 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		} else { // Singleplayer.
 			playerData.graphic_.setMiddleMessage("Game over!");
 			//And is the correct settings?
-			if (rows_ == TETRIS_HEIGHT && columns_ == TETRIS_WIDTH && maxLevel_ == TETRIS_MAX_LEVEL) {
-				auto local = std::dynamic_pointer_cast<LocalPlayer>(playerData.player_);
-				// Is local and a human player?
-				if (local && !local->getDevice()->isAi()) {
-					signalEvent(std::make_shared<GameOver>(playerData.points_));
-				}
+			if (playerData.player_->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
+				&& playerData.player_->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
+				&& maxLevel_ == TETRIS_MAX_LEVEL) {
+
+					auto local = std::dynamic_pointer_cast<LocalPlayer>(playerData.player_);
+					// Is local and a human player?
+					if (local && !local->getDevice()->isAi()) {
+						signalEvent(std::make_shared<GameOver>(playerData.points_));
+					}
 			}
 		}
 		break;
 	default:
 		break;
 	}
-	
+
 	if (rows != 0) {
 		// Assign points and number of cleared rows.
 		playerData.nbrOfClearedRows_ += rows;
@@ -211,36 +205,26 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		playerData.graphic_.setPoints(playerData.points_);
 		playerData.graphic_.setNbrOfClearedRows(playerData.nbrOfClearedRows_);
 
-		// Increase level up counter.
-		// If assuming all players are equally good. Players should level up with the
-		// the same time in both single- and multiplayer game.
-		
+		int counter = 0;
 		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
 			// Increase level up counter for all opponents to the current player.
 			for (PlayerData& opponentData : players_) {
 				if (opponentData.player_ != playerData.player_) {
-					// Compensates for more opponents which are also increasing counter
-					// Compared to singleplayer.
-					int add = rows*(players_.size() - nbrOfAlivePlayers_ + 1);
-					opponentData.levelUpCounter_ += add;
+					opponentData.levelUpCounter_ += rows;
+					counter += opponentData.levelUpCounter_;
 				}
-            }
-
-			// Higher counter bar to level up due to more players that contribute to increase counter.
-			int level = playerData.levelUpCounter_ / (nbrOfRowsToLevelUp*(players_.size()-1)) + 1;
-			if (level <= getMaxLevel()) {
-				playerData.level_ = level;
-				playerData.graphic_.setLevel(level);
 			}
 		} else { // Singleplayer!
 			playerData.levelUpCounter_ += rows;
+			counter = playerData.levelUpCounter_;
+		}
 
-			int level = (playerData.levelUpCounter_ / nbrOfRowsToLevelUp) + 1;
-			if (level <= getMaxLevel()) {
-				playerData.level_ = level;
-				playerData.graphic_.setLevel(level);
-			}
+		// Set level.
+		int level = (counter / nbrOfRowsToLevelUp) + 1;
+		if (level <= getMaxLevel()) {
+			playerData.level_ = level;
+			playerData.graphic_.setLevel(level);
 		}
 	}
 }

@@ -42,6 +42,8 @@ namespace gui {
 		// Draws all elements in frame.
 		void draw();
 
+		static void windowSize(int& width, int& height);
+
 	private:
 		class GuiProperties {
 		public:
@@ -52,8 +54,6 @@ namespace gui {
 			int x_, y_;  // Global position.
 			bool invX_, invY_;  // Invert the x and y axis if true.	
 		};
-
-		static void windowSize(int& width, int& height);
 
 		static void mousePosition(int& x, int& y);
 

@@ -16,15 +16,6 @@ MultiFrame::MultiFrame() {
 	addFrameBack();
 }
 
-// Get the panel corrensponding to the frame with index (index).
-FramePtr MultiFrame::operator[](int index) {
-	return frames_[index];
-}
-
-void MultiFrame::unfocus(int indexFrame) {
-	frames_[indexFrame]->unfocusAll();
-}
-
 // Creates a new frame at the back.
 int MultiFrame::addFrameBack() {
 	FramePtr frame(new Frame);
@@ -33,12 +24,12 @@ int MultiFrame::addFrameBack() {
 	return frames_.size() - 1;
 }
 
-void MultiFrame::add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY) {
+void MultiFrame::add(const GuiItemPtr& guiItem, int x, int y, bool invX, bool invY) {
 	frames_[currentFrame_]->add(guiItem, x, y, invX, invY);
 }
 
 // Add item (item) to frame with index (frameIndex).
-void MultiFrame::add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY, int frameIndex) {
+void MultiFrame::add(const GuiItemPtr& guiItem, int x, int y, bool invX, bool invY, int frameIndex) {
 	frames_[frameIndex]->add(guiItem, x, y, invX, invY);
 }
 
@@ -47,7 +38,7 @@ void MultiFrame::eventUpdate(const SDL_Event& windowEvent) {
 	frames_[currentFrame_]->eventUpdate(windowEvent);
 }
 
-void MultiFrame::setDefaultBackground(BackgroundPtr background) {
+void MultiFrame::setDefaultBackground(const BackgroundPtr& background) {
 	// Check all frames if a background is set.
 	for (FramePtr& frame : frames_) {
 		// Background not set?
@@ -58,19 +49,19 @@ void MultiFrame::setDefaultBackground(BackgroundPtr background) {
 	defaultBackground_ = background;
 }
 
-void MultiFrame::setBackground(BackgroundPtr background) {
+void MultiFrame::setBackground(const BackgroundPtr& background) {
 	frames_[currentFrame_]->setBackground(background);
 }
 
-void MultiFrame::setBackground(BackgroundPtr background, int frameIndex) {
+void MultiFrame::setBackground(const BackgroundPtr& background, int frameIndex) {
 	frames_[frameIndex]->setBackground(background);
 }
 
-void MultiFrame::addBar(BarPtr bar) {
+void MultiFrame::addBar(const BarPtr& bar) {
 	frames_[currentFrame_]->addBar(bar);
 }
 
-void MultiFrame::addBar(BarPtr bar, int frameIndex) {
+void MultiFrame::addBar(const BarPtr& bar, int frameIndex) {
 	frames_[frameIndex]->addBar(bar);
 }
 
@@ -79,7 +70,7 @@ void MultiFrame::draw(double timeStep) {
 	glPushMatrix();
 	glLoadIdentity();
 	int windowsWidth, windowsHeight;
-	GuiItem::windowSize(windowsWidth,windowsHeight);
+	Frame::windowSize(windowsWidth, windowsHeight);
 	glViewport(0,0,windowsWidth,windowsHeight);		
 	glOrtho(0,windowsWidth,0,windowsHeight,-1,1);
 	glMatrixMode(GL_MODELVIEW);
@@ -120,4 +111,3 @@ void MultiFrame::setCurrentFrame(int index) {
 FramePtr MultiFrame::getCurrentFrame() const {
 	return frames_[currentFrame_];
 }
-

@@ -104,16 +104,16 @@ protected:
 
     void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
-	// Is called at the beginning of new round.
+private:
+	// Is called every frame when a game is running.
+	virtual void updateGame(Uint32 msDeltaTime) = 0;
+
+	// Is called at the beginning of every new game.
 	virtual void initGame(int width, int height, int maxLevel, bool local) = 0;
 
-private:
 	void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
 	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
-
-	virtual void updateGame(Uint32 deltaTime) = 0;
-
 	bool isAllUsersReady();
 
 	// Receives data (data) received from user with id (id).

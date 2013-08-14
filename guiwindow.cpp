@@ -26,6 +26,7 @@
 #include <ctime>
 
 GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
+	// Set colors.
 	textColor_ = mw::Color(1,1,1);
 	textButtonColor_ = mw::Color(1,.1,.1);
 	focusColor_ = mw::Color(.8, .1, 0, .3);
@@ -35,9 +36,15 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	barColor_ = mw::Color(.5,0,0,.30);
 	hDistance_ = 30;
 
+	// Set the keyboard keys.
+	pauseKey_ = SDLK_p;
+	restartKey_ = SDLK_F2;
+
+	// Set the same background to all frames.
 	auto background = gui::createImageBackground(spriteBackground);
 	multiFrame_.setDefaultBackground(background);
 
+	// Create all frames.
 	playFrameIndex_ = multiFrame_.addFrameBack();
 	highscoreFrameIndex_ = multiFrame_.addFrameBack();
 	customFrameIndex_ = multiFrame_.addFrameBack();
@@ -52,6 +59,10 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	networkPlayFrameIndex_ = multiFrame_.addFrameBack();
 	aiFrameIndex_ = multiFrame_.addFrameBack();
 
+	// Init buttons.
+	initManButtons();
+
+	// Init all frames.
 	initFrameMenu();
 	initHighscoreFrame();
 	initPlayFrame();
@@ -65,12 +76,13 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	initNetworkPlayFrame();
 	initAiFrame();
 
+	// Set the start frame.
 	multiFrame_.setCurrentFrame(0);
-	mw::Window::setUnicodeInputEnable(true);
-	resize(getWidth(),getHeight());
 
-	pauseKey_ = SDLK_p;
-	restartKey_ = SDLK_F2;
+	mw::Window::setUnicodeInputEnable(true);
+	
+	// Init the opengl settings.
+	resize(getWidth(),getHeight());
 }
 
 HighscorePtr GuiWindow::getHighscorePtr() const {
@@ -126,6 +138,106 @@ gui::TextBoxPtr GuiWindow::createTextBox(int size) {
 
 gui::BarColorPtr GuiWindow::createUpperBar() {
 	return gui::createBarColor(gui::Bar::UP, hDistance_, barColor_);
+}
+
+void GuiWindow::initManButtons() {
+	humanButton_ = createManButton(hDistance_, spriteMan, spriteCross);
+	humanButton_->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNbrOfHumanPlayers(nbr+1);
+		int newNbr = getNbrOfHumanPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNbrOfHumanPlayers(newNbr);
+
+		if (playFrameIndex_ == multiFrame_.getCurrentFrameIndex()) {
+			createLocalGame();
+		}
+	});
+
+	humanButton_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		switch (sdlEvent.type) {
+		case SDL_MOUSEBUTTONUP:
+			switch (sdlEvent.button.button) {
+			case SDL_BUTTON_RIGHT:
+				if (nbrOfPlayers->isMouseInside()) {
+					int nbr = nbrOfPlayers->getNbr();
+					if (nbr == 0) {
+						int newNbr = getNbrOfHumanPlayers();
+						setNbrOfHumanPlayers(newNbr);
+						while (newNbr == nbr) {
+							++newNbr;
+							setNbrOfHumanPlayers(newNbr);
+							nbrOfPlayers->setNbr(newNbr);
+							newNbr = getNbrOfHumanPlayers();
+							nbr = nbrOfPlayers->getNbr();
+						}
+					}
+
+					setNbrOfHumanPlayers(nbr-1);
+					nbrOfPlayers->setNbr(nbr-1);
+					if (playFrameIndex_ == multiFrame_.getCurrentFrameIndex()) {
+						createLocalGame();
+					}
+				}
+			}
+		}
+	});
+
+	computerButton_ = createManButton(hDistance_, spriteComputer, spriteCross);
+	computerButton_->setNbr(0);
+	computerButton_->addOnClickListener([&](gui::GuiItem* item) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		int nbr = nbrOfPlayers->getNbr();
+		setNbrOfComputerPlayers(nbr+1);
+		int newNbr = getNbrOfComputerPlayers();
+
+		if (newNbr == nbr) {
+            newNbr = 0;
+		}
+
+		nbrOfPlayers->setNbr(newNbr);
+		setNbrOfComputerPlayers(newNbr);
+
+		if (playFrameIndex_ == multiFrame_.getCurrentFrameIndex()) {
+			createLocalGame();
+		}
+	});
+	computerButton_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+		ManButton* nbrOfPlayers = (ManButton*) item;
+		switch (sdlEvent.type) {
+		case SDL_MOUSEBUTTONUP:
+			switch (sdlEvent.button.button) {
+			case SDL_BUTTON_RIGHT:
+				if (nbrOfPlayers->isMouseInside()) {
+					int nbr = nbrOfPlayers->getNbr();
+					if (nbr == 0) {
+						int newNbr = getNbrOfComputerPlayers();
+						setNbrOfComputerPlayers(newNbr);
+						while (newNbr == nbr) {
+							++newNbr;
+							setNbrOfComputerPlayers(newNbr);
+							nbrOfPlayers->setNbr(newNbr);
+							newNbr = getNbrOfComputerPlayers();
+							nbr = nbrOfPlayers->getNbr();
+						}
+					}
+
+					setNbrOfComputerPlayers(nbr-1);
+					nbrOfPlayers->setNbr(nbr-1);
+					if (playFrameIndex_ == multiFrame_.getCurrentFrameIndex()) {
+						createLocalGame();
+					}
+				}
+			}
+		}
+	});
 }
 
 void GuiWindow::initFrameMenu() {
@@ -255,114 +367,7 @@ void GuiWindow::initPlayFrame() {
 				break;
 			}
 		}
-	});
-
-	auto manButton = createManButton(hDistance_, spriteMan, spriteCross);
-	manButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfHumanPlayers(nbr+1);
-		int newNbr = getNbrOfHumanPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 1;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfHumanPlayers(newNbr);
-
-		createLocalGame();
-	});
-
-	auto humanButton = createManButton(hDistance_, spriteMan, spriteCross);
-	humanButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfHumanPlayers(nbr+1);
-		int newNbr = getNbrOfHumanPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 0;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfHumanPlayers(newNbr);
-
-		createLocalGame();
-	});
-
-	humanButton->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		switch (sdlEvent.type) {
-		case SDL_MOUSEBUTTONUP:
-			switch (sdlEvent.button.button) {
-			case SDL_BUTTON_RIGHT:
-				if (nbrOfPlayers->isMouseInside()) {
-					int nbr = nbrOfPlayers->getNbr();
-					if (nbr == 0) {
-						int newNbr = getNbrOfHumanPlayers();
-						setNbrOfHumanPlayers(newNbr);
-						while (newNbr == nbr) {
-							++newNbr;
-							setNbrOfHumanPlayers(newNbr);
-							nbrOfPlayers->setNbr(newNbr);
-							newNbr = getNbrOfHumanPlayers();
-							nbr = nbrOfPlayers->getNbr();
-						}
-					}
-
-					setNbrOfHumanPlayers(nbr-1);
-					nbrOfPlayers->setNbr(nbr-1);
-					createLocalGame();
-				}
-			}
-		}
-	});
-
-	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
-	computerButton->setNbr(0);
-	computerButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfComputerPlayers(nbr+1);
-		int newNbr = getNbrOfComputerPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 0;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfComputerPlayers(newNbr);
-
-		createLocalGame();
-	});
-	computerButton->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		switch (sdlEvent.type) {
-		case SDL_MOUSEBUTTONUP:
-			switch (sdlEvent.button.button) {
-			case SDL_BUTTON_RIGHT:
-				if (nbrOfPlayers->isMouseInside()) {
-					int nbr = nbrOfPlayers->getNbr();
-					if (nbr == 0) {
-						int newNbr = getNbrOfComputerPlayers();
-						setNbrOfComputerPlayers(newNbr);
-						while (newNbr == nbr) {
-							++newNbr;
-							setNbrOfComputerPlayers(newNbr);
-							nbrOfPlayers->setNbr(newNbr);
-							newNbr = getNbrOfComputerPlayers();
-							nbr = nbrOfPlayers->getNbr();
-						}
-					}
-
-					setNbrOfComputerPlayers(nbr-1);
-					nbrOfPlayers->setNbr(nbr-1);
-					createLocalGame();
-				}
-			}
-		}
-	});
+	});	
 
 	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
 		changePauseState();
@@ -381,8 +386,8 @@ void GuiWindow::initPlayFrame() {
 
 	multiFrame_.add(b1,0,0,false,true);
 	multiFrame_.add(b2,80,0,false,true);
-	multiFrame_.add(humanButton, 80 + b2->getWidth(), 0, false, true);
-	multiFrame_.add(computerButton, 100 + b2->getWidth() + 130, 0, false, true);
+	multiFrame_.add(humanButton_, 80 + b2->getWidth(), 0, false, true);
+	multiFrame_.add(computerButton_, 100 + b2->getWidth() + 130, 0, false, true);
 	multiFrame_.add(pause_,0,0,true,true);
 }
 
@@ -637,38 +642,7 @@ void GuiWindow::initCreateServerFrame() {
 
 	multiFrame_.add(menu,0,0,false,true);
 	multiFrame_.add(header,0,50,false,true);
-	multiFrame_.add(b1,80,0,false,true);
-
-	auto manButton = createManButton(hDistance_, spriteMan, spriteCross);
-	manButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfHumanPlayers(nbr+1);
-		int newNbr = getNbrOfHumanPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 0;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfHumanPlayers(newNbr);
-	});
-
-	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
-	computerButton->setNbr(0);
-	computerButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfComputerPlayers(nbr+1);
-		int newNbr = getNbrOfComputerPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 0;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfComputerPlayers(newNbr);
-	});
+	multiFrame_.add(b1,80,0,false,true);	
 
 	// Set board size ------------------------------------------------------
 	gui::TextItemPtr textItem = gui::createTextItem("Width", fontDefault18, 18, textColor_);
@@ -688,8 +662,8 @@ void GuiWindow::initCreateServerFrame() {
 
 	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem4,0,200,false,true);
-	multiFrame_.add(manButton,120,200,false,true);
-	multiFrame_.add(computerButton,260,200,false,true);
+	multiFrame_.add(humanButton_,120,200,false,true);
+	multiFrame_.add(computerButton_,260,200,false,true);
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Create", 30, [&](gui::GuiItem*) {
@@ -748,38 +722,7 @@ void GuiWindow::initCreateClientFrame() {
 
 	multiFrame_.add(menu,0,0,false,true);
 	multiFrame_.add(header,0,50,false,true);
-	multiFrame_.add(b1,80,0,false,true);
-
-	auto manButton = createManButton(hDistance_, spriteMan, spriteCross);
-	manButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfHumanPlayers(nbr+1);
-		int newNbr = getNbrOfHumanPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 0;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfHumanPlayers(newNbr);
-	});
-
-	auto computerButton = createManButton(hDistance_, spriteComputer, spriteCross);
-	computerButton->setNbr(0);
-	computerButton->addOnClickListener([&](gui::GuiItem* item) {
-		ManButton* nbrOfPlayers = (ManButton*) item;
-		int nbr = nbrOfPlayers->getNbr();
-		setNbrOfComputerPlayers(nbr+1);
-		int newNbr = getNbrOfComputerPlayers();
-
-		if (newNbr == nbr) {
-            newNbr = 0;
-		}
-
-		nbrOfPlayers->setNbr(newNbr);
-		setNbrOfComputerPlayers(newNbr);
-	});
+	multiFrame_.add(b1,80,0,false,true);	
 
     gui::TextItemPtr textItem = gui::createTextItem("Connect to ip", fontDefault18, 18, textColor_);
     ipBox_ = createTextBox(260);
@@ -794,8 +737,8 @@ void GuiWindow::initCreateClientFrame() {
 
 	gui::TextItemPtr textItem4 = gui::createTextItem("Local players:", fontDefault18, 18, textColor_);
 	multiFrame_.add(textItem4,0,200,false,true);
-	multiFrame_.add(manButton,120,200,false,true);
-	multiFrame_.add(computerButton,260,200,false,true);
+	multiFrame_.add(humanButton_,120,200,false,true);
+	multiFrame_.add(computerButton_,260,200,false,true);
 
 	// Create game -----------------------------------------------------
 	gui::ButtonPtr button = createButton("Join", 30, [&](gui::GuiItem*) {
@@ -960,9 +903,9 @@ void GuiWindow::initAiFrame() {
 	aiText4_ = gui::createTextItem("Ai4:", fontDefault18, 18, textColor_);
 
 	// Load all specific ai settings.
-	loadAllSettings();
+	loadAllSettings();	
 
-	gui::TextButtonPtr ai1Button = createButton(ai1_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai1Button = createButton(activeAis_[0].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -976,16 +919,16 @@ void GuiWindow::initAiFrame() {
 
 		if (index != -1) {
 			// Next ai in vector.
-			ai1_ = ais_[(index+1)%ais_.size()];
-			button->setText(ai1_.getName());
+			activeAis_[0] = ais_[(index+1)%ais_.size()];
+			button->setText(activeAis_[0].getName());
 		} else {
 			// Default ai.
-			ai1_ = Ai();
+			activeAis_[0] = Ai();
 		}
 		saveAllSettings();
 	});
 
-	gui::TextButtonPtr ai2Button = createButton(ai2_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai2Button = createButton(activeAis_[1].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -999,16 +942,16 @@ void GuiWindow::initAiFrame() {
 
 		if (index != -1) {
 			// Next ai in vector.
-			ai2_ = ais_[(index+1)%ais_.size()];
-			button->setText(ai2_.getName());
+			activeAis_[1] = ais_[(index+1)%ais_.size()];
+			button->setText(activeAis_[1].getName());
 		} else {
 			// Default ai.
-			ai2_ = Ai();
+			activeAis_[1] = Ai();
 		}
 		saveAllSettings();
 	});
 
-	gui::TextButtonPtr ai3Button = createButton(ai3_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai3Button = createButton(activeAis_[2].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -1022,16 +965,16 @@ void GuiWindow::initAiFrame() {
 
 		if (index != -1) {
 			// Next ai in vector.
-			ai3_ = ais_[(index+1)%ais_.size()];
-			button->setText(ai3_.getName());
+			activeAis_[2] = ais_[(index+1)%ais_.size()];
+			button->setText(activeAis_[2].getName());
 		} else {
 			// Default ai.
-			ai3_ = Ai();
+			activeAis_[2] = Ai();
 		}
 		saveAllSettings();
 	});
 
-	gui::TextButtonPtr ai4Button = createButton(ai4_.getName(), hDistance_, [&](gui::GuiItem* item) {
+	gui::TextButtonPtr ai4Button = createButton(activeAis_[3].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -1045,11 +988,11 @@ void GuiWindow::initAiFrame() {
 
 		if (index != -1) {
 			// Next ai in vector.
-			ai4_ = ais_[(index+1)%ais_.size()];
-			button->setText(ai4_.getName());
+			activeAis_[3] = ais_[(index+1)%ais_.size()];
+			button->setText(activeAis_[3].getName());
 		} else {
 			// Default ai.
-			ai4_ = Ai();
+			activeAis_[3] = Ai();
 		}
 		saveAllSettings();
 	});
@@ -1073,23 +1016,23 @@ void GuiWindow::initAiFrame() {
 		}
 		if (!ai1) {
 			// Set to default ai.
-			ai1_ = Ai();
-			ai1Button->setText(ai1_.getName());
+			activeAis_[0] = Ai();
+			ai1Button->setText(activeAis_[0].getName());
 		}
 		if (!ai2) {
 			// Set to default ai.
-			ai2_ = Ai();
-			ai1Button->setText(ai2_.getName());
+			activeAis_[1] = Ai();
+			ai1Button->setText(activeAis_[1].getName());
 		}
 		if (!ai3) {
 			// Set to default ai.
-			ai3_ = Ai();
-			ai1Button->setText(ai3_.getName());
+			activeAis_[2] = Ai();
+			ai1Button->setText(activeAis_[2].getName());
 		}
 		if (!ai4) {
 			// Set to default ai.
-			ai4_ = Ai();
-			ai1Button->setText(ai4_.getName());
+			activeAis_[3] = Ai();
+			ai1Button->setText(activeAis_[3].getName());
 		}
 	});
 
@@ -1123,23 +1066,15 @@ void GuiWindow::loadAllSettings() {
 			}
 		}
 	}
-	// Load ais to ai1, ... and ai4.
+	// Load all active ais.
 	{
 		std::ifstream file("settings");
 		if (file.is_open()) {
-			std::string filename;
-			// Load ai1.
-			std::getline(file, filename);
-			loadAi(ai1_, "ais/", filename);
-			// Load ai2.
-			std::getline(file, filename);
-			loadAi(ai2_, "ais/", filename);
-			// Load ai3.
-			std::getline(file, filename);
-			loadAi(ai3_, "ais/", filename);
-			// Load ai4.
-			std::getline(file, filename);
-			loadAi(ai4_, "ais/", filename);
+			for (Ai& ai : activeAis_) {
+				std::string filename;
+				std::getline(file, filename);
+				loadAi(ai, "ais/", filename);
+			}			
 		}
 	}
 }
@@ -1147,10 +1082,9 @@ void GuiWindow::loadAllSettings() {
 void GuiWindow::saveAllSettings() {
 	std::ofstream file("settings");
 	if (file.is_open() && file.good()) {
-		file << ai1_.getName() << "\n";
-		file << ai2_.getName() << "\n";
-		file << ai3_.getName() << "\n";
-		file << ai4_.getName() << "\n";;
+		for (const Ai& ai : activeAis_) {
+			file << ai.getName() << "\n";
+		}
 	}
 }
 

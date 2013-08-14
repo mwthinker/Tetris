@@ -2,7 +2,12 @@
 #define TETRISGAME_H
 
 #include "protocol.h"
+#include "playerinfo.h"
 #include "graphicboard.h"
+#include "tetrisboard.h"
+
+#include <vector>
+#include <string>
 
 // Is responsible of the all game components. It takes the sound, graphic,
 // input, network and connects it with the core tetris game.
@@ -55,7 +60,7 @@ private:
     Uint32 timeStep_;
 	Uint32 accumulator_;
 
-	int rows_, columns_, maxLevel_;
+	int maxLevel_;
 	bool local_;
 	Uint32 countDown_;
 	

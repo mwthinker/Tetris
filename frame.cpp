@@ -93,8 +93,8 @@ namespace gui {
 					yTemp = h - item.second.y_ - item.first->getHeight();
 				}
 
-				item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);
-				item.first->eventUpdate(windowEvent);
+				item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);				
+				item.first->updateSdlEventHandler(windowEvent);
 			}
 		}
 	}
@@ -157,7 +157,9 @@ namespace gui {
 	}
 
 	void Frame::windowSize(int& width, int& height) {
-		GuiItem::windowSize(width,height);
+		SDL_Surface* surface = SDL_GetVideoSurface();
+		width = surface->w;
+		height = surface->h;
 	}
 
 	void Frame::mousePosition(int& x, int& y) {

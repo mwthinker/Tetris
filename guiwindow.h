@@ -16,13 +16,13 @@
 #include <mw/color.h>
 
 #include <string>
+#include <array>
 #include <functional>
 
 class GuiWindow : public mw::Window {
-public:
+protected:
 	GuiWindow();
 
-protected:
 	void initOptionFrame(const std::vector<DevicePtr>& devices);
 
 	SDLKey pauseKey_;
@@ -31,12 +31,7 @@ protected:
     HighscorePtr getHighscorePtr() const;
 	gui::TextButtonPtr getPausePtr() const;
 	NetworkLoobyPtr getNetworkLoobyPtr() const;
-	gui::TextButtonPtr getReadyPtr() const;
-
-	virtual void setNbrOfHumanPlayers(int number) = 0;
-	virtual int getNbrOfHumanPlayers() const = 0;
-	virtual void setNbrOfComputerPlayers(int number) = 0;
-	virtual int getNbrOfComputerPlayers() const = 0;
+	gui::TextButtonPtr getReadyPtr() const;	
 
 	void gotoLocalPlayFrame();
 	void gotoServerPlayFrame();
@@ -46,55 +41,72 @@ protected:
 	void gotoClientLoobyFrame();
 
 	inline Ai getAi1() const {
-		return ai1_;
+		return activeAis_[0];
 	}
 
 	inline Ai getAi2() const {
-		return ai2_;
+		return activeAis_[1];
 	}
 
 	inline Ai getAi3() const {
-		return ai3_;
+		return activeAis_[2];
 	}
 
 	inline Ai getAi4() const {
-		return ai4_;
+		return activeAis_[3];
 	}
 
 private:
-	void loadAllSettings();
-	void saveAllSettings();
-
+	//--------------------- Is to be derived. -----------------------------
 	virtual void saveHighscore() = 0;
-
-	bool isUpdatingGame() const;
-	bool isDrawGame() const;
-	void setDrawGame(bool drawGame);
-
 	virtual void updateGame(Uint32 deltaTime) = 0;
 	virtual void drawGame(Uint32 deltaTime) = 0;
 	virtual void updateGameEvent(const SDL_Event& windowEvent) = 0;
 
-    virtual void abortGame() = 0;
+	virtual void setNbrOfHumanPlayers(int number) = 0;
+	virtual int getNbrOfHumanPlayers() const = 0;
+	virtual void setNbrOfComputerPlayers(int number) = 0;
+	virtual int getNbrOfComputerPlayers() const = 0;
 
-	// Use the same settings used in last call to 
-	// createLocalGame(int width, int height, int maxLevel).
+	// Aborts the current game.
+    virtual void abortGame() = 0;
+	
+	// Creates a local game whith default settings.
 	virtual void createLocalGame() = 0;
+	// Creates a local game with the settings defined in parameterts.
     virtual void createLocalGame(int width, int height, int maxLevel) = 0;
+	// Creates a server with the game settings defined in parameterts.
 	virtual void createServerGame(int port, int width, int height) = 0;
+	// Creates a client with the game settings defined at the remote server.
 	virtual void createClientGame(int port, std::string ip) = 0;
 
-	virtual bool isPaused() const = 0;
-	virtual void changePauseState() = 0;
+	// Returns true if the game is paused else false.
+	virtual bool isPaused() const = 0;	
+	// Change the current pause state.
+	virtual void changePauseState() = 0;	
+	// Returns true if the user is ready to for the game to start.
 	virtual bool isReady() const = 0;
+	// Change the current ready state.
 	virtual void changeReadyState() = 0;
 
+	// Restarts the current game.
 	virtual void restartGame() = 0;
+	// Starts a new game. Will only effect if the game is able to start.
 	virtual void startGame() = 0;
+
+	//---------------------------------------------------------------------
+	void loadAllSettings();
+	void saveAllSettings();
+	bool isUpdatingGame() const;
+	bool isDrawGame() const;
+	void setDrawGame(bool drawGame);
 	
-	gui::TextButtonPtr createButton(std::string text, int width, std::function<void(gui::GuiItem*)> onClick);
+	gui::TextButtonPtr createButton(std::string text, int width,
+		std::function<void(gui::GuiItem*)> onClick);
 	gui::TextBoxPtr createTextBox(int width);
 	gui::BarColorPtr createUpperBar();
+
+	void initManButtons();
 
 	void initFrameMenu();
 	void initPlayFrame();
@@ -107,9 +119,9 @@ private:
 	void initWaitToConnectFrame();
 	void initNetworkPlayFrame();
 	void initAiFrame();
-
 	void initNewHighScoreFrame();
 
+	// Override mw::Window
 	void resize(int width, int height) override;
 
 	// Override mw::Window
@@ -122,21 +134,16 @@ private:
 
 	gui::MultiFrame multiFrame_;
 
-	int playFrameIndex_;
-	int networkFrameIndex_;
-	int highscoreFrameIndex_;
-	int customFrameIndex_;
-	int optionFrameIndex_;
-	int newHighscoreFrameIndex_;
-	int createClientFrameIndex_;
-	int createServerFrameIndex_;
-	int loobyClientFrameIndex_;
-	int loobyServerFrameIndex_;
-	int waitToConnectFrameIndex_;
-	int networkPlayFrameIndex_;
-	int aiFrameIndex_;
+	int playFrameIndex_, networkFrameIndex_, highscoreFrameIndex_,
+		customFrameIndex_, optionFrameIndex_, newHighscoreFrameIndex_,
+		createClientFrameIndex_, createServerFrameIndex_, loobyClientFrameIndex_,
+		loobyServerFrameIndex_, waitToConnectFrameIndex_, networkPlayFrameIndex_,
+		aiFrameIndex_;
 
-	// Attribute defined in initCreateServerMenu.
+	// Attributes defined in initManButton.
+	ManButtonPtr humanButton_, computerButton_;
+
+	// Attributes defined in initCreateServerMenu.
 	gui::TextBoxPtr portBox_, ipBox_;
 
     // Attribute defined in initHighscoreMenu.
@@ -162,10 +169,11 @@ private:
 	gui::TextItemPtr aiText1_, aiText2_, aiText3_, aiText4_;
 
 	// All ai:s.
-	Ai ai1_, ai2_, ai3_, ai4_;
+	std::array<Ai, 4> activeAis_;
 	std::vector<Ai> ais_;
 
-	mw::Color barColor_, textButtonColor_, textColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_;
+	mw::Color barColor_, textButtonColor_, textColor_, focusColor_,
+		onHoverColor_, notHoverColor_, pushedColor_;
 };
 
 #endif // GUIWINDOW_H
