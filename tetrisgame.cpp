@@ -100,6 +100,17 @@ double TetrisGame::getHeight() const {
 	return 400;
 }
 
+TetrisGame::PlayerData::PlayerData(const PlayerInfoPtr& player) : player_(player) {
+	reset();
+}
+
+void TetrisGame::PlayerData::reset() {
+	level_ = 1;
+	points_ = 0;
+	nbrOfClearedRows_ = 0;
+	levelUpCounter_ = 0;
+}
+
 void TetrisGame::soundEffects(GameEvent gameEvent) {
 	mw::Sound sound;
 	switch (gameEvent) {
@@ -205,23 +216,20 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		playerData.graphic_.setPoints(playerData.points_);
 		playerData.graphic_.setNbrOfClearedRows(playerData.nbrOfClearedRows_);
 
-		int counter = 0;
 		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
 			// Increase level up counter for all opponents to the current player.
 			for (PlayerData& opponentData : players_) {
 				if (opponentData.player_ != playerData.player_) {
 					opponentData.levelUpCounter_ += rows;
-					counter += opponentData.levelUpCounter_;
 				}
 			}
 		} else { // Singleplayer!
 			playerData.levelUpCounter_ += rows;
-			counter = playerData.levelUpCounter_;
 		}
 
 		// Set level.
-		int level = (counter / nbrOfRowsToLevelUp) + 1;
+		int level = (playerData.levelUpCounter_ / ROWS_TO_LEVEL_UP) + 1;
 		if (level <= getMaxLevel()) {
 			playerData.level_ = level;
 			playerData.graphic_.setLevel(level);

@@ -26,16 +26,9 @@ public:
 
 private:
 	struct PlayerData {
-		PlayerData(const PlayerInfoPtr& player) : player_(player) {
-			reset();
-		}
+		PlayerData(const PlayerInfoPtr& player);
 
-		void reset() {
-			level_ = 1;
-			points_ = 0;
-			nbrOfClearedRows_ = 0;
-			levelUpCounter_ = 0;
-		}
+		void reset();
 
 		PlayerInfoPtr player_;
 		GraphicBoard graphic_;
@@ -53,8 +46,6 @@ private:
 	void initGame(int columns, int rows, int maxLevel, bool local) override;
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
-
-	static const int nbrOfRowsToLevelUp = 10;
 
 	// Fix timestep.
     Uint32 timeStep_;
