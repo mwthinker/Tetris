@@ -47,9 +47,9 @@ private:
 		Data(int id, int nbr, bool ready) : id_(id), nbr_(nbr), ready_(ready) {
 		}
 
-		const int id_;
-		const int nbr_;
-		const bool ready_;
+		int id_;
+		int nbr_;
+		bool ready_;
 	};
 
 	std::vector<Data> dataV;
@@ -60,8 +60,8 @@ public:
 	GameReady(int id, bool ready) : id_(id), ready_(ready) {
 	}
 
-	const bool ready_;
-	const int id_;
+    int id_;
+	bool ready_;
 };
 
 class GameStart : public NetworkEvent {
@@ -83,7 +83,7 @@ public:
 	GamePause(bool pause) : pause_(pause) {
 	}
 
-	const bool pause_;
+	bool pause_;
 };
 
 class GameOver : public NetworkEvent {
@@ -91,7 +91,7 @@ public:
     GameOver(int points) : points_(points) {
     }
 
-    const int points_;
+    int points_;
 };
 
 #endif // NETWORKEVENT_H

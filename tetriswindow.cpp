@@ -157,10 +157,7 @@ void TetrisWindow::updateGame(Uint32 deltaTime) {
 void TetrisWindow::drawGame(Uint32 deltaTime) {
 	glPushMatrix();
 	int w = getWidth();
-	int h = getHeight() - 30;
-
-	int x, y;
-	int width, height;
+	int h = getHeight() - 30; // Bar size, but should not be magic number!
 
 	// Centers the game and holds the correct proportions. The sides is transparent.
 	if (tetrisGame_.getWidth() / w > tetrisGame_.getHeight() / h) {
@@ -168,19 +165,11 @@ void TetrisWindow::drawGame(Uint32 deltaTime) {
 		double scale = w / tetrisGame_.getWidth();
 		glTranslated(0, (h - scale*tetrisGame_.getHeight()) * 0.5, 0);
 		glScaled(scale, scale, 1);
-		x = 0;
-		y = static_cast<int>((h - scale*tetrisGame_.getHeight()) * 0.5);
-		width = w;
-		height = static_cast<int>(scale*tetrisGame_.getHeight());
 	} else {
 		// Black sides, left and right.
 		double scale = h / tetrisGame_.getHeight();
 		glTranslated((w-scale*tetrisGame_.getWidth()) * 0.5, 0, 0);
 		glScaled(scale,scale,1);
-		x = static_cast<int>((w-scale*tetrisGame_.getWidth()) * 0.5);
-		y = 0;
-		width = static_cast<int>(scale*tetrisGame_.getWidth());
-		height = h;
 	}
 
 	tetrisGame_.draw();

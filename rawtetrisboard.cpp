@@ -44,8 +44,8 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_LEFT);
 				}
-				break;
 			}
+			break;
 		case Move::RIGHT:
 			{
 				Block tmp = block;
@@ -54,8 +54,8 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_RIGHT);
 				}
-				break;
 			}
+			break;
 		case Move::DOWN:
 			{
 				Block tmp = block;
@@ -64,8 +64,18 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_DOWN);
 				}
-				break;
 			}
+			break;
+        case Move::ROTATE_RIGHT:
+			{
+				Block tmp = block;
+				tmp.rotateRight();
+				if (!collision(tmp)) {
+					block = tmp;
+					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
+				}
+			}
+			break;
 		case Move::ROTATE_LEFT:
 			{
 				Block tmp = block;
@@ -74,8 +84,8 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
 				}
-				break;
 			}
+			break;
 		}
 
 		if (gravityCollision) {

@@ -83,7 +83,6 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 
 	int edges = 0;
 	int blockMeanHeight = 0;
-	int value = 0;
 	for (const Square& sq : block) {
 		board.getBlockType(sq.row_, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
 		board.getBlockType(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : 0;

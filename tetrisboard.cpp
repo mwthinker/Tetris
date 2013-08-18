@@ -31,6 +31,8 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 		nextBlockQueue_.pop();
 		++nbrOfUpdates_;
 		break;
+    default:
+        break;
 	}
 }
 

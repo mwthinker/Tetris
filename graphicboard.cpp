@@ -177,9 +177,8 @@ void GraphicBoard::drawInfo(const TetrisBoard& tetrisBoard) {
 }
 
 void GraphicBoard::drawPreviewBlock(const Block& block) {
-	glPushMatrix();	
+	glPushMatrix();
 
-	int nbrOfSquares = block.nbrOfSquares();
 	double x = 0, y = 0;
 	for (const Square& sq : block) {
 		x += sq.column_;

@@ -32,10 +32,14 @@
 			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="`sdl-config --cflags`" />
+			<Add directory="../SDK/MwEnet" />
+			<Add directory="../SDK/MwExtra" />
 			<Add directory="../SDK/MwLibrary" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --libs`" />
+			<Add option="-lMwEnet" />
+			<Add option="-lMwExtra" />
 			<Add option="-lMwLibrary" />
 			<Add option="-lSDL" />
 			<Add option="-lSDL_image" />
@@ -44,9 +48,14 @@
 			<Add option="-lenet" />
 			<Add option="-lGL" />
 			<Add option="-lGLU" />
+			<Add directory="../SDK/MwEnet" />
+			<Add directory="../SDK/MwExtra" />
 			<Add directory="../SDK/MwLibrary" />
 		</Linker>
+		<Unit filename="actionhandler.cpp" />
 		<Unit filename="actionhandler.h" />
+		<Unit filename="ai.cpp" />
+		<Unit filename="ai.h" />
 		<Unit filename="background.h" />
 		<Unit filename="bar.h" />
 		<Unit filename="barcolor.cpp" />
@@ -55,6 +64,8 @@
 		<Unit filename="block.h" />
 		<Unit filename="button.cpp" />
 		<Unit filename="button.h" />
+		<Unit filename="computer.cpp" />
+		<Unit filename="computer.h" />
 		<Unit filename="device.h" />
 		<Unit filename="frame.cpp" />
 		<Unit filename="frame.h" />
@@ -85,10 +96,9 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="manbutton.cpp" />
 		<Unit filename="manbutton.h" />
-		<Unit filename="movehandler.cpp" />
-		<Unit filename="movehandler.h" />
 		<Unit filename="multiframe.cpp" />
 		<Unit filename="multiframe.h" />
+		<Unit filename="networkevent.h" />
 		<Unit filename="networklooby.cpp" />
 		<Unit filename="networklooby.h" />
 		<Unit filename="player.cpp" />
@@ -97,14 +107,15 @@
 		<Unit filename="playerinfo.h" />
 		<Unit filename="protocol.cpp" />
 		<Unit filename="protocol.h" />
+		<Unit filename="rawtetrisboard.cpp" />
+		<Unit filename="rawtetrisboard.h" />
 		<Unit filename="remoteplayer.h" />
-		<Unit filename="rotationhandler.cpp" />
-		<Unit filename="rotationhandler.h" />
 		<Unit filename="square.h" />
 		<Unit filename="tetrisboard.cpp" />
 		<Unit filename="tetrisboard.h" />
 		<Unit filename="tetrisgame.cpp" />
 		<Unit filename="tetrisgame.h" />
+		<Unit filename="tetrisparameters.h" />
 		<Unit filename="tetriswindow.cpp" />
 		<Unit filename="tetriswindow.h" />
 		<Unit filename="textbox.cpp" />
