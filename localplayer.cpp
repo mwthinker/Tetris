@@ -9,7 +9,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 	rightHandler_ = ActionHandler(0.09, false);
 	rotateHandler_ = ActionHandler(0.0, true);
 		
-	gravityMove_ = ActionHandler(1, false);
+	gravityMove_ = ActionHandler(1, false); // Value does'nt matter! Changes every frame.
 	downHandler_ = ActionHandler(0.04, false);
 
 	device_ = device;
