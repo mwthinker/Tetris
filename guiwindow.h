@@ -18,6 +18,7 @@
 #include <string>
 #include <array>
 #include <functional>
+#include <queue>
 
 class GuiWindow : public mw::Window {
 protected:
@@ -129,10 +130,11 @@ private:
 
 	// Override mw::Window
 	void eventUpdate(const SDL_Event& windowEvent) override;
-
+	
 	int hDistance_;
 
 	gui::MultiFrame multiFrame_;
+	std::queue<SDL_Event> eventQueue_;
 
 	int playFrameIndex_, networkFrameIndex_, highscoreFrameIndex_,
 		customFrameIndex_, optionFrameIndex_, newHighscoreFrameIndex_,

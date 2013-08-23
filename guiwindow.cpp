@@ -1099,29 +1099,40 @@ void GuiWindow::resize(int width, int height) {
 
 // Override mw::Window
 void GuiWindow::update(Uint32 deltaTime) {
-	multiFrame_.draw(deltaTime/1000.0);
-	if (isUpdatingGame()) {
-		drawGame(deltaTime);
-	}
+	// Update first, in order for lag to be minimize between input and game logic.
 	updateGame(deltaTime);
-}
+	
+	// Perform non critical event updates.
+	while (!eventQueue_.empty()) {
+		SDL_Event windowEvent = eventQueue_.front();
+		eventQueue_.pop();
 
-// Override mw::Window
-void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
-	multiFrame_.eventUpdate(windowEvent);
-	switch (windowEvent.type) {
-	case SDL_KEYDOWN:
-		switch (windowEvent.key.keysym.sym) {
-		case SDLK_F11:
-			mw::Window::setFullScreen(!mw::Window::isFullScreen());
+		multiFrame_.eventUpdate(windowEvent);
+		switch (windowEvent.type) {
+		case SDL_KEYDOWN:
+			switch (windowEvent.key.keysym.sym) {
+			case SDLK_F11:
+				mw::Window::setFullScreen(!mw::Window::isFullScreen());
+				break;
+			default:
+				break;
+			}
 			break;
 		default:
 			break;
 		}
-		break;
-	default:
-		break;
 	}
+
+	multiFrame_.draw(deltaTime/1000.0);
+	if (isUpdatingGame()) {
+		drawGame(deltaTime);
+	}
+}
+
+// Override mw::Window
+void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
+	eventQueue_.push(windowEvent);
+	
 	if (isUpdatingGame()) {
 		updateGameEvent(windowEvent);
 	}
