@@ -199,20 +199,19 @@ void Protocol::update(Uint32 deltaTime) {
 				while ( (id = network_->pullFromReceiveBuffer(data)) != 0 ) {
 					receiveData(data, id);
 				}
-
-				if (isStarted()) {
-					for (PlayerPtr& player : *localUser_) {
-						Move move;
-						BlockType next;
-						// Update the local player tetris board and send the input to all remote players.
-						while (player->updateBoard(move,next)) {
-							sendInput(player->getId(),move,next);
-						}
+			}
+			if (isStarted()) {
+				for (PlayerPtr& player : *localUser_) {
+					Move move;
+					BlockType next;
+					// Update the local player tetris board and send the input to all remote players.
+					while (player->updateBoard(move,next)) {
+						sendInput(player->getId(),move,next);
 					}
+				}
 
-					if (!pause_) {
-						updateGame(deltaTime);
-					}
+				if (!pause_) {
+					updateGame(deltaTime);
 				}
 			}
 			break;

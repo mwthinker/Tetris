@@ -93,7 +93,7 @@ namespace gui {
 					yTemp = h - item.second.y_ - item.first->getHeight();
 				}
 
-				item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);				
+				item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);
 				item.first->updateSdlEventHandler(windowEvent);
 			}
 		}

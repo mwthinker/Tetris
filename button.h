@@ -13,7 +13,6 @@ namespace gui {
 	class Button : public GuiItem {
 	public:
 		Button();
-		Button(std::string text);		
 
 		void eventUpdate(const SDL_Event& windowEvent, int x, int y) override;
 

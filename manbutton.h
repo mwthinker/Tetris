@@ -14,15 +14,11 @@ public:
 	ManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross);
 
 	unsigned int getNbr() const;
-
 	void setNbr(unsigned int nbr);
 
 	void draw() override;
-
 private:
 	void drawPlayer(mw::Sprite& sprite);
-
-	bool mouseOver_;
 	unsigned int nbr_;
 
 	mw::Sprite man_, cross_;

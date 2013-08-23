@@ -8,7 +8,7 @@ ManButton::ManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross
 
 	pixelSize_ = pixelSize;
 	nbr_ = 1;
-	mouseOver_ = false;
+
 	setHeight(pixelSize_);
 	setWidth(pixelSize_);
 }
@@ -20,8 +20,10 @@ unsigned int ManButton::getNbr() const {
 void ManButton::setNbr(unsigned int nbr) {
 	nbr_ = nbr;
 	if (nbr == 0) {
+		// Over crossed button has still the size of one button.
 		nbr = 1;
 	}
+	// Set the correct size of the button.
 	setWidth(pixelSize_*nbr);
 }
 
