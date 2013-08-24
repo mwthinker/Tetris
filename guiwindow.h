@@ -168,7 +168,7 @@ private:
 	gui::TextBoxPtr nameBox_;
 
 	// Attributes defined in initAiFrame.
-	gui::TextItemPtr aiText1_, aiText2_, aiText3_, aiText4_;
+	gui::TextButtonPtr ai1Button_, ai2Button_, ai3Button_, ai4Button_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

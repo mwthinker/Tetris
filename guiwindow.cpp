@@ -897,15 +897,15 @@ void GuiWindow::initAiFrame() {
 		multiFrame_.setCurrentFrame(optionFrameIndex_);
 	});
 
-	aiText1_ = gui::createTextItem("Ai1:", fontDefault18, 18, textColor_);
-	aiText2_ = gui::createTextItem("Ai2:", fontDefault18, 18, textColor_);
-	aiText3_ = gui::createTextItem("Ai3:", fontDefault18, 18, textColor_);
-	aiText4_ = gui::createTextItem("Ai4:", fontDefault18, 18, textColor_);
+	gui::TextItemPtr aiText1 = gui::createTextItem("Ai1:", fontDefault18, 18, textColor_);
+	gui::TextItemPtr aiText2 = gui::createTextItem("Ai2:", fontDefault18, 18, textColor_);
+	gui::TextItemPtr aiText3 = gui::createTextItem("Ai3:", fontDefault18, 18, textColor_);
+	gui::TextItemPtr aiText4 = gui::createTextItem("Ai4:", fontDefault18, 18, textColor_);
 
 	// Load all specific ai settings.
 	loadAllSettings();	
 
-	gui::TextButtonPtr ai1Button = createButton(activeAis_[0].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai1Button_ = createButton(activeAis_[0].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -928,7 +928,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::TextButtonPtr ai2Button = createButton(activeAis_[1].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai2Button_ = createButton(activeAis_[1].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -951,7 +951,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::TextButtonPtr ai3Button = createButton(activeAis_[2].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai3Button_ = createButton(activeAis_[2].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -974,7 +974,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::TextButtonPtr ai4Button = createButton(activeAis_[3].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai4Button_ = createButton(activeAis_[3].getName(), hDistance_, [&](gui::GuiItem* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -1001,53 +1001,54 @@ void GuiWindow::initAiFrame() {
 		loadAllSettings();
 		bool ai1 = false, ai2 = false, ai3 = false, ai4 = false;
 		for (const Ai& ai : ais_) {
-			if (ai.getName() == ai1Button->getText()) {
+			if (ai.getName() == ai1Button_->getText()) {
 				ai1 = true;
 			}
-			if (ai.getName() == ai2Button->getText()) {
+			if (ai.getName() == ai2Button_->getText()) {
 				ai2 = true;
 			}
-			if (ai.getName() == ai3Button->getText()) {
+			if (ai.getName() == ai3Button_->getText()) {
 				ai3 = true;
 			}
-			if (ai.getName() == ai4Button->getText()) {
+			if (ai.getName() == ai4Button_->getText()) {
 				ai4 = true;
 			}
 		}
 		if (!ai1) {
 			// Set to default ai.
 			activeAis_[0] = Ai();
-			ai1Button->setText(activeAis_[0].getName());
+			ai1Button_->setText(activeAis_[0].getName());
 		}
 		if (!ai2) {
 			// Set to default ai.
 			activeAis_[1] = Ai();
-			ai1Button->setText(activeAis_[1].getName());
+			ai1Button_->setText(activeAis_[1].getName());
 		}
 		if (!ai3) {
 			// Set to default ai.
 			activeAis_[2] = Ai();
-			ai1Button->setText(activeAis_[2].getName());
+			ai1Button_->setText(activeAis_[2].getName());
 		}
 		if (!ai4) {
 			// Set to default ai.
 			activeAis_[3] = Ai();
-			ai1Button->setText(activeAis_[3].getName());
+			ai1Button_->setText(activeAis_[3].getName());
 		}
+		
 	});
 
 	multiFrame_.add(b1, 0, 0, false, true);
 	multiFrame_.add(b2, 80, 0, false, true);
-	multiFrame_.add(aiText1_, 10, hDistance_ + 10, false, true);
-	multiFrame_.add(aiText2_, 10, hDistance_ + 60, false, true);
-	multiFrame_.add(aiText3_, 10, hDistance_ + 110, false, true);
-	multiFrame_.add(aiText4_, 10, hDistance_ + 160, false, true);
+	multiFrame_.add(aiText1, 10, hDistance_ + 10, false, true);
+	multiFrame_.add(aiText2, 10, hDistance_ + 60, false, true);
+	multiFrame_.add(aiText3, 10, hDistance_ + 110, false, true);
+	multiFrame_.add(aiText4, 10, hDistance_ + 160, false, true);
 	multiFrame_.add(reloadAis, 10, hDistance_ + 210, false, true);
 
-	multiFrame_.add(ai1Button, 60, hDistance_ + 10, false, true);
-	multiFrame_.add(ai2Button, 60, hDistance_ + 60, false, true);
-	multiFrame_.add(ai3Button, 60, hDistance_ + 110, false, true);
-	multiFrame_.add(ai4Button, 60, hDistance_ + 160, false, true);
+	multiFrame_.add(ai1Button_, 60, hDistance_ + 10, false, true);
+	multiFrame_.add(ai2Button_, 60, hDistance_ + 60, false, true);
+	multiFrame_.add(ai3Button_, 60, hDistance_ + 110, false, true);
+	multiFrame_.add(ai4Button_, 60, hDistance_ + 160, false, true);
 }
 
 void GuiWindow::loadAllSettings() {
@@ -1066,7 +1067,7 @@ void GuiWindow::loadAllSettings() {
 			}
 		}
 	}
-	// Load all active ais.
+	// Load all ais that is set to be active.
 	{
 		std::ifstream file("settings");
 		if (file.is_open()) {
@@ -1074,7 +1075,7 @@ void GuiWindow::loadAllSettings() {
 				std::string filename;
 				std::getline(file, filename);
 				loadAi(ai, "ais/", filename);
-			}			
+			}
 		}
 	}
 }
