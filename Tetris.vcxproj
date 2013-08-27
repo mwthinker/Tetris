@@ -163,6 +163,9 @@
     <ClCompile Include="textbutton.cpp" />
     <ClCompile Include="textitem.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources.res" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
