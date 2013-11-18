@@ -1,0 +1,24 @@
+v2.0
+
+Use SDL 2 instead of SDL library.
+
+Game logic should be performed in a new thread to increase input response.
+
+Decouple graphic from game logic in order for thread to share data safely.
+
+Add animation effects to game.
+
+The gui code must be made smaller and if possible into an own project.
+
+Use external TinyXMl library to load xml files.
+
+Save/load highscore records to/from a xml file.
+
+Save/load game settings, graphic and logic settings to/from xml file.
+
+Sound, image and data should be defined in a xml file to increase game customization.
+
+The AI parameters be defined in xml file.
+
+The "value" function for the AI should be defined outside the c++ code.
+Therefore a simple calculator must be defined to support loading custom math formula.
