@@ -4,6 +4,11 @@ The project MWetris is a tetris clone with network capabilities. You
 can play up to 4 human players on one computer and up to 4 computer opponents.
 The first two human players uses the keyboard and the rest uses any connected gamepad.
 
+<b> About </b>
+The project is using CMake to generate the environment specific development 
+tools. E.g. Visual Studio solution (Windows) and makefile (Unix). See more 
+at http://www.cmake.org/.
+
 License
 ======
 All code in the src folder is under the MIT license (see LICENSE.txt).
