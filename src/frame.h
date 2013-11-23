@@ -6,8 +6,9 @@
 #include <mw/color.h>
 #include <mw/window.h>
 
-#include <functional>
+#include <SDL.h>
 
+#include <functional>
 #include <vector>
 
 namespace gui {
@@ -43,6 +44,8 @@ namespace gui {
 		void draw();
 
 		static void windowSize(int& width, int& height);
+		
+		static SDL_Window* window;
 
 	private:
 		class GuiProperties {

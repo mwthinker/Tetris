@@ -88,6 +88,12 @@ namespace gui {
 			onClick_(this);
 		}
 
+		static SDL_Window* getWindow() {
+			return window;
+		}
+
+		static SDL_Window* window;
+
 	private:
 		// Updates the sdlEventhander.
 		void updateSdlEventHandler(const SDL_Event& windowEvent) {
@@ -95,7 +101,7 @@ namespace gui {
 		}
 
 		mw::Signal<GuiItem*> onClick_;
-		mw::Signal<GuiItem*, const SDL_Event&> sdlEventHandler_;
+		mw::Signal<GuiItem*, const SDL_Event&> sdlEventHandler_;		
 
 		int width_, height_;
 		bool focus_;

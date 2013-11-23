@@ -14,6 +14,7 @@
 
 #include "gamesprite.h"
 #include "gamefont.h"
+#include "frame.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -25,6 +26,8 @@
 #include <string>
 #include <ctime>
 
+SDL_Window* gui::GuiItem::window(nullptr);
+
 GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	// Set colors.
 	textColor_ = mw::Color(1,1,1);
@@ -35,6 +38,8 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	pushedColor_ = mw::Color(.8, .0, 0, .7);
 	barColor_ = mw::Color(.5,0,0,.30);
 	hDistance_ = 30;
+	gui::GuiItem::window = mw::Window::getSdlWindow();
+	gui::Frame::window = mw::Window::getSdlWindow();
 
 	// Set the keyboard keys.
 	pauseKey_ = SDLK_p;
@@ -78,8 +83,6 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 
 	// Set the start frame.
 	multiFrame_.setCurrentFrame(0);
-
-	mw::Window::setUnicodeInputEnable(true);
 	
 	// Init the opengl settings.
 	resize(getWidth(),getHeight());
@@ -282,7 +285,7 @@ void GuiWindow::initFrameMenu() {
 			quit();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				quit();
 				break;
@@ -346,7 +349,7 @@ void GuiWindow::initPlayFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -361,7 +364,7 @@ void GuiWindow::initPlayFrame() {
 	b2->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == restartKey_) {
 				item->click();
 				break;
@@ -376,7 +379,7 @@ void GuiWindow::initPlayFrame() {
 	pause_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == pauseKey_ || key == SDLK_PAUSE) {
 				item->click();
 				break;
@@ -406,7 +409,7 @@ void GuiWindow::initHighscoreFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE || key == SDLK_RETURN || key == SDLK_KP_ENTER) {
 				item->click();
 				break;
@@ -439,7 +442,7 @@ void GuiWindow::initCustomPlayFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -517,7 +520,7 @@ void GuiWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -559,7 +562,7 @@ void GuiWindow::initServerLoobyFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -599,7 +602,7 @@ void GuiWindow::initClientLoobyFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -629,7 +632,7 @@ void GuiWindow::initCreateServerFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -709,7 +712,7 @@ void GuiWindow::initCreateClientFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -810,7 +813,7 @@ void GuiWindow::initNewHighScoreFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_RETURN || key == SDLK_KP_ENTER) {
 				item->click();
 				break;
@@ -843,7 +846,7 @@ void GuiWindow::initNetworkPlayFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -858,7 +861,7 @@ void GuiWindow::initNetworkPlayFrame() {
 	b2->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == restartKey_) {
 				item->click();
 				break;
@@ -886,7 +889,7 @@ void GuiWindow::initAiFrame() {
 			item->click();
 			break;
 		case SDL_KEYDOWN:
-			SDLKey key = sdlEvent.key.keysym.sym;
+			SDL_Keycode key = sdlEvent.key.keysym.sym;
 			if (key == SDLK_ESCAPE) {
 				item->click();
 				break;
@@ -1132,6 +1135,15 @@ void GuiWindow::update(Uint32 deltaTime) {
 
 // Override mw::Window
 void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
+	if (windowEvent.type == SDL_WINDOWEVENT) {
+		switch (windowEvent.window.event) {
+			case SDL_WINDOWEVENT_RESIZED:
+				resize(windowEvent.window.data1, windowEvent.window.data2);
+				break;
+			default:
+				break;
+		}
+	}
 	eventQueue_.push(windowEvent);
 	
 	if (isUpdatingGame()) {

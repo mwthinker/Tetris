@@ -31,12 +31,14 @@ TetrisWindow::TetrisWindow() {
 	devices_.push_back(device2);
 
 	// Init joysticks!
+	/*
 	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();
 	for (const mw::JoystickPtr& joystick : joystics) {
 		std::cout << joystick->getName() << std::endl;
 		DevicePtr device(new Joystick(joystick, 0, 1));
 		devices_.push_back(device);
 	}
+	*/
 
 	loadHighscore();
 	initOptionFrame(devices_);
