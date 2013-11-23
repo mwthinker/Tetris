@@ -1,6 +1,6 @@
-[submodule "MwLibrary"]
-	path = MwLibrary
-	url = https://github.com/mwthinker/MwLibrary.git
 [submodule "MwEnet"]
 	path = MwEnet
 	url = https://github.com/mwthinker/MwEnet.git
+[submodule "MwLibrary2"]
+	path = MwLibrary2
+	url = https://github.com/mwthinker/MwLibrary2.git

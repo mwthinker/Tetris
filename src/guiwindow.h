@@ -26,8 +26,8 @@ protected:
 
 	void initOptionFrame(const std::vector<DevicePtr>& devices);
 
-	SDLKey pauseKey_;
-	SDLKey restartKey_;
+	SDL_Keycode pauseKey_;
+	SDL_Keycode restartKey_;
 
     HighscorePtr getHighscorePtr() const;
 	gui::TextButtonPtr getPausePtr() const;
@@ -122,8 +122,7 @@ private:
 	void initAiFrame();
 	void initNewHighScoreFrame();
 
-	// Override mw::Window
-	void resize(int width, int height) override;
+	void resize(int width, int height);
 
 	// Override mw::Window
 	void update(Uint32 deltaTime) override;

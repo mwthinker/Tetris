@@ -1,5 +1,6 @@
 #include "joystick.h"
 
+/*
 #include <mw/joystick.h>
 
 #include <SDL.h>
@@ -73,3 +74,4 @@ void Joystick::eventUpdate(const SDL_Event& windowEvent) {
 		}
 	}
 }
+*/

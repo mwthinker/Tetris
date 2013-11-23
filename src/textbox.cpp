@@ -41,11 +41,11 @@ namespace gui {
 			break;
 		case SDL_KEYDOWN:
 			if (hasFocus()) {
-				SDLKey sdlKey = windowEvent.key.keysym.sym;
+				SDL_Keycode sdlKey = windowEvent.key.keysym.sym;
 
 				// Transforms a unicode character to asci, therefor it will only work as
 				// intended for unicodes that has a corrensponding ascii value.
-				char key = static_cast<char>(windowEvent.key.keysym.unicode);
+				char key = static_cast<char>(windowEvent.key.keysym.sym);
 				inputFormatter_->update(key);
 
 				switch (sdlKey) {

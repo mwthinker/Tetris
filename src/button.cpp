@@ -24,16 +24,20 @@ namespace gui {
 				mouseInside_ = false;
 			} else if (windowEvent.user.code == GUI_CHANGE_TO_FRAME_CODE) { // Belonging frame inactivated?
                 // Mouse inside of the window?
-				if (SDL_GetAppState() & SDL_APPMOUSEFOCUS) {
+				if (SDL_GetWindowFlags(getWindow()) & SDL_WINDOW_MOUSE_FOCUS) {
                     // Check if mouse is inside.
                     mouseInside_ = isInside(x,y);
                 }
 			}
 			break;
-		case SDL_ACTIVEEVENT:
+		case SDL_WINDOWEVENT:
 			// Mouse leaves window?
-			if (windowEvent.active.gain == false) {
-				mouseInside_ = false;
+			switch (windowEvent.window.event) {
+				case SDL_WINDOWEVENT_LEAVE:
+					mouseInside_ = false;
+					break;
+				default:
+					break;
 			}
 			break;
 		case SDL_MOUSEMOTION:

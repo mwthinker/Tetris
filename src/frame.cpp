@@ -9,10 +9,13 @@
 #include <functional>
 #include <cmath>
 #include <vector>
+#include <SDL.h>
 #include <SDL_opengl.h>
 #include <memory>
 
 namespace gui {
+
+	SDL_Window* Frame::window(nullptr);
 
 	Frame::GuiProperties::GuiProperties() {
 		x_ = 0;
@@ -157,9 +160,7 @@ namespace gui {
 	}
 
 	void Frame::windowSize(int& width, int& height) {
-		SDL_Surface* surface = SDL_GetVideoSurface();
-		width = surface->w;
-		height = surface->h;
+		SDL_GetWindowSize(window, &width, &height);
 	}
 
 	void Frame::mousePosition(int& x, int& y) {

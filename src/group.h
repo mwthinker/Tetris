@@ -9,7 +9,7 @@ namespace gui {
 
 	class Group : public GuiItem {
 	public:
-		Group(SDLKey last, SDLKey next) {
+		Group(SDL_Keycode last, SDL_Keycode next) {
 			last_ = last;
 			next_ = next;
 			lastFocusIndex_ = 0;
@@ -23,7 +23,7 @@ namespace gui {
 			switch (windowEvent.type) {
 			case SDL_KEYDOWN:
 				{
-					SDLKey key = windowEvent.key.keysym.sym;
+					SDL_Keycode key = windowEvent.key.keysym.sym;
 					if (last_ == key) {
 						changeToNext(false);
 					} else if (next_ == key) {
@@ -94,13 +94,13 @@ namespace gui {
 
 		int lastFocusIndex_;
 
-		SDLKey last_, next_;
+		SDL_Keycode last_, next_;
 		std::vector<GuiItemPtr> items_;
 	};
 
 	typedef std::shared_ptr<Group> GroupPtr;
 
-	GroupPtr createGroup(SDLKey last, SDLKey next) {
+	GroupPtr createGroup(SDL_Keycode last, SDL_Keycode next) {
 		return GroupPtr(new Group(last,next));
 	}
 
