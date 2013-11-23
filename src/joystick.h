@@ -3,7 +3,9 @@
 
 #include "device.h"
 
+/*
 #include <mw/joystick.h>
+
 
 class Joystick : public Device {
 public:
@@ -19,5 +21,6 @@ private:
 	mw::JoystickPtr joystick_;
 	int rotateButton_, downButton_;	
 };
+*/
 
 #endif // JOYSTICK_H

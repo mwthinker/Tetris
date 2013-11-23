@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-Keyboard::Keyboard(std::string name, SDLKey down, SDLKey left, SDLKey right, SDLKey rotate) : Device(false) {		
+Keyboard::Keyboard(std::string name, SDL_Keycode down, SDL_Keycode left, SDL_Keycode right, SDL_Keycode rotate) : Device(false) {
 	name_ = name;
 	down_ = down;
 	right_ = right;
@@ -19,7 +19,7 @@ std::string Keyboard::getName() const {
 }
 
 void Keyboard::eventUpdate(const SDL_Event& windowEvent) {
-	SDLKey key = windowEvent.key.keysym.sym;
+	SDL_Keycode key = windowEvent.key.keysym.sym;
 
 	switch (windowEvent.type) {
 	case SDL_KEYDOWN:
