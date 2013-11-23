@@ -22,7 +22,7 @@ compiler are installed. The dependencies must also be recognized by CMAKE.
 <b> Windows </b>
 Run CMake (cmake-gui). Choose "Browse Source.." and point to the project folder.
 Do the same for "Browse Build..." but point to the build folder.
-Push the configure button and choose at least "Visual Studio 11" and push finish.
+Push the configure button and choose at least "Visual Studio 12" and push finish.
 Push "Generate" then the visual studio solution will appear in the build folder.
 
 <b> Unix </b>
