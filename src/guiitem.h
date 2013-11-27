@@ -20,8 +20,10 @@ namespace gui {
 	class GuiItem {
 	public:
 		friend class Frame;
+		friend class MultiFrame;
 
 		GuiItem() {
+			window_ = nullptr;
 			focus_ = false;
 			visible_ = true;
 			width_ = 0;
@@ -88,13 +90,13 @@ namespace gui {
 			onClick_(this);
 		}
 
-		static SDL_Window* getWindow() {
-			return window;
-		}
-
-		static SDL_Window* window;
+		SDL_Window* getWindow() const {
+			return window_;
+		}		
 
 	private:
+		SDL_Window* window_;
+
 		// Updates the sdlEventhander.
 		void updateSdlEventHandler(const SDL_Event& windowEvent) {
 			sdlEventHandler_(this, windowEvent);

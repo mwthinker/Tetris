@@ -11,14 +11,14 @@ namespace gui {
 
 	class MultiFrame {
 	public:
-		MultiFrame();
+		MultiFrame(SDL_Window* window);
 
 		// Creates a new frame at the back. Returns the added frame's index.
 		int addFrameBack();
-		void add(const GuiItemPtr& guiItem, int x, int y, bool invX, bool invY);
+		void add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY);
 
 		// Add item (item) to frame with index (frameIndex).
-		void add(const GuiItemPtr& guiItem, int x, int y, bool invX, bool invY, int frameIndex);
+		void add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY, int frameIndex);
 
 		// Is called in order to update all items in the active frame.
 		void eventUpdate(const SDL_Event& windowEvent);
@@ -42,6 +42,8 @@ namespace gui {
 		std::vector<FramePtr> frames_;
 		int currentFrame_;
 		BackgroundPtr defaultBackground_;
+
+		SDL_Window* window_;
 	};
 
 } // Namespace gui.

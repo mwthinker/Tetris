@@ -15,8 +15,6 @@
 
 namespace gui {
 
-	SDL_Window* Frame::window(nullptr);
-
 	Frame::GuiProperties::GuiProperties() {
 		x_ = 0;
 		y_ = 0;
@@ -31,8 +29,7 @@ namespace gui {
 		invY_ = invY;
 	}
 
-	Frame::Frame() {
-		background_ = nullptr;
+	Frame::Frame(SDL_Window* window) : background_(nullptr), window_(window) {
 	}
 
 	void Frame::unfocusAll() {
@@ -160,7 +157,7 @@ namespace gui {
 	}
 
 	void Frame::windowSize(int& width, int& height) {
-		SDL_GetWindowSize(window, &width, &height);
+		SDL_GetWindowSize(window_, &width, &height);
 	}
 
 	void Frame::mousePosition(int& x, int& y) {

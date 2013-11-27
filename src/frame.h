@@ -18,7 +18,7 @@ namespace gui {
 	class Frame {
 	public:
 		// Creates a empty frame.
-		Frame();
+		Frame(SDL_Window* window);
 
 		// Sets all guiitems to be unfocused.
 		void unfocusAll();
@@ -43,9 +43,9 @@ namespace gui {
 		// Draws all elements in frame.
 		void draw();
 
-		static void windowSize(int& width, int& height);
+		void windowSize(int& width, int& height);
 		
-		static SDL_Window* window;
+		SDL_Window* window_;
 
 	private:
 		class GuiProperties {
@@ -58,7 +58,7 @@ namespace gui {
 			bool invX_, invY_;  // Invert the x and y axis if true.	
 		};
 
-		static void mousePosition(int& x, int& y);
+		void mousePosition(int& x, int& y);
 
 		typedef std::pair<GuiItemPtr,GuiProperties> Item_;
 		std::vector<Item_> items_;

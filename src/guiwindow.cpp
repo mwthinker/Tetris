@@ -26,9 +26,7 @@
 #include <string>
 #include <ctime>
 
-SDL_Window* gui::GuiItem::window(nullptr);
-
-GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
+GuiWindow::GuiWindow() : mw::Window(520, 640, "MWetris", "images/tetris.bmp"), multiFrame_(mw::Window::getSdlWindow()) {
 	// Set colors.
 	textColor_ = mw::Color(1,1,1);
 	textButtonColor_ = mw::Color(1,.1,.1);
@@ -38,8 +36,6 @@ GuiWindow::GuiWindow() : mw::Window(520,640,"MWetris","images/tetris.bmp") {
 	pushedColor_ = mw::Color(.8, .0, 0, .7);
 	barColor_ = mw::Color(.5,0,0,.30);
 	hDistance_ = 30;
-	gui::GuiItem::window = mw::Window::getSdlWindow();
-	gui::Frame::window = mw::Window::getSdlWindow();
 
 	// Set the keyboard keys.
 	pauseKey_ = SDLK_p;
