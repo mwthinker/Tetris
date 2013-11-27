@@ -156,11 +156,11 @@ namespace gui {
 		}
 	}
 
-	void Frame::windowSize(int& width, int& height) {
+	void Frame::windowSize(int& width, int& height) const {
 		SDL_GetWindowSize(window_, &width, &height);
 	}
 
-	void Frame::mousePosition(int& x, int& y) {
+	void Frame::mousePosition(int& x, int& y) const {
 		int tmpX;
 		int tmpY;
 		SDL_GetMouseState(&tmpX, &tmpY);

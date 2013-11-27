@@ -43,9 +43,7 @@ namespace gui {
 		// Draws all elements in frame.
 		void draw();
 
-		void windowSize(int& width, int& height);
-		
-		SDL_Window* window_;
+		void windowSize(int& width, int& height) const;
 
 	private:
 		class GuiProperties {
@@ -58,7 +56,7 @@ namespace gui {
 			bool invX_, invY_;  // Invert the x and y axis if true.	
 		};
 
-		void mousePosition(int& x, int& y);
+		void mousePosition(int& x, int& y) const;
 
 		typedef std::pair<GuiItemPtr,GuiProperties> Item_;
 		std::vector<Item_> items_;
@@ -67,6 +65,7 @@ namespace gui {
 		std::vector<BarItem_> barItems_;
 
 		BackgroundPtr background_;
+		SDL_Window* window_;
 	};	
 
 } // Namespace gui.
