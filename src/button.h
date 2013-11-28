@@ -1,7 +1,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "guiitem.h"
+#include "widget.h"
 
 #include <mw/signal.h>
 
@@ -10,7 +10,7 @@
 
 namespace gui {
 
-	class Button : public GuiItem {
+	class Button : public Widget {
 	public:
 		Button();
 

@@ -1,7 +1,7 @@
 #ifndef NETWORKLOOBY_H
 #define NETWORKLOOBY_H
 
-#include "guiitem.h"
+#include "widget.h"
 #include "gamefont.h"
 
 #include <mw/text.h>
@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-class NetworkLooby : public gui::GuiItem {
+class NetworkLooby : public gui::Widget {
 public:
 	NetworkLooby();
 

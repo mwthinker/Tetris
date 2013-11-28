@@ -1,5 +1,5 @@
 #include "frame.h"
-#include "guiitem.h"
+#include "widget.h"
 #include "bar.h"
 #include "background.h"
 
@@ -69,7 +69,7 @@ namespace gui {
 		barItems_.push_back(item);
 	}
 
-	void Frame::add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY) {
+	void Frame::add(WidgetPtr guiItem, int x, int y, bool invX, bool invY) {
 		GuiProperties p(x,y,invX,invY);
 
 		Item_ item(guiItem,GuiProperties(x,y,invX,invY));

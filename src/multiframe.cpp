@@ -1,6 +1,6 @@
 #include "multiframe.h"
 
-#include "guiitem.h"
+#include "widget.h"
 #include "bar.h"
 #include "frame.h"
 
@@ -25,13 +25,13 @@ namespace gui {
 		return frames_.size() - 1;
 	}
 
-	void MultiFrame::add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY) {
+	void MultiFrame::add(WidgetPtr guiItem, int x, int y, bool invX, bool invY) {
 		frames_[currentFrame_]->add(guiItem, x, y, invX, invY);
 		guiItem->window_ = window_;
 	}
 
 	// Add item (item) to frame with index (frameIndex).
-	void MultiFrame::add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY, int frameIndex) {
+	void MultiFrame::add(WidgetPtr guiItem, int x, int y, bool invX, bool invY, int frameIndex) {
 		frames_[frameIndex]->add(guiItem, x, y, invX, invY);
 		guiItem->window_ = window_;
 	}

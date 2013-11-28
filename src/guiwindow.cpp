@@ -124,7 +124,7 @@ bool GuiWindow::isUpdatingGame() const {
 	return multiFrame_.getCurrentFrameIndex() == playFrameIndex_ || multiFrame_.getCurrentFrameIndex() == networkPlayFrameIndex_;
 }
 
-gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::GuiItem*)> onClick) {
+gui::TextButtonPtr GuiWindow::createButton(std::string text, int size, std::function<void(gui::Widget*)> onClick) {
 	gui::TextButtonPtr button = gui::createTextButton(text, size, fontDefault,
 		textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);
 	button->addOnClickListener(onClick);
@@ -141,7 +141,7 @@ gui::BarColorPtr GuiWindow::createUpperBar() {
 
 void GuiWindow::initManButtons() {
 	humanButton_ = createManButton(hDistance_, spriteMan, spriteCross);
-	humanButton_->addOnClickListener([&](gui::GuiItem* item) {
+	humanButton_->addOnClickListener([&](gui::Widget* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
 		setNbrOfHumanPlayers(nbr+1);
@@ -159,7 +159,7 @@ void GuiWindow::initManButtons() {
 		}
 	});
 
-	humanButton_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	humanButton_->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		switch (sdlEvent.type) {
 		case SDL_MOUSEBUTTONUP:
@@ -191,7 +191,7 @@ void GuiWindow::initManButtons() {
 
 	computerButton_ = createManButton(hDistance_, spriteComputer, spriteCross);
 	computerButton_->setNbr(0);
-	computerButton_->addOnClickListener([&](gui::GuiItem* item) {
+	computerButton_->addOnClickListener([&](gui::Widget* item) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		int nbr = nbrOfPlayers->getNbr();
 		setNbrOfComputerPlayers(nbr+1);
@@ -208,7 +208,7 @@ void GuiWindow::initManButtons() {
 			createLocalGame();
 		}
 	});
-	computerButton_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	computerButton_->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		ManButton* nbrOfPlayers = (ManButton*) item;
 		switch (sdlEvent.type) {
 		case SDL_MOUSEBUTTONUP:
@@ -249,33 +249,33 @@ void GuiWindow::initFrameMenu() {
 
 	// Text is outside due to invY which dont know where the top of the text begin.
 	// The bottom is put where it is supposed to but the invers not.
-	gui::ButtonPtr b1 = createButton("Resume", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Resume", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
 	});
 	resumeButton_ = b1;
 	resumeButton_->setVisible(false);
 
 	// Menu.
-	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::GuiItem*) {
+	gui::ButtonPtr b2 = createButton("Play", 35, [&](gui::Widget*) {
 		resumeButton_->setVisible(true);
 		abortGame();
 		createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
 	});
 	b2->setFocus(true);
 
-	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::GuiItem*) {
+	gui::ButtonPtr b3 = createButton("Custom play", 35, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(customFrameIndex_);
 	});
-	gui::ButtonPtr b4 = createButton("Highscore", 35, [&](gui::GuiItem*) {
+	gui::ButtonPtr b4 = createButton("Highscore", 35, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(highscoreFrameIndex_);
 	});
-	gui::ButtonPtr b5 = createButton("Options", 35, [&](gui::GuiItem*) {
+	gui::ButtonPtr b5 = createButton("Options", 35, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(optionFrameIndex_);
 	});
-	gui::ButtonPtr b6 = createButton("Exit", 35, [&](gui::GuiItem*) {
+	gui::ButtonPtr b6 = createButton("Exit", 35, [&](gui::Widget*) {
 		quit();
 	});
-	b6->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b6->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			quit();
@@ -289,7 +289,7 @@ void GuiWindow::initFrameMenu() {
 		}
 	});
 
-	gui::ButtonPtr b7 = createButton("Network game", 35, [&](gui::GuiItem*) {
+	gui::ButtonPtr b7 = createButton("Network game", 35, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(createServerFrameIndex_);
 	});
 
@@ -332,14 +332,14 @@ void GuiWindow::initPlayFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem* item) {
+	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::Widget* item) {
 		multiFrame_.setCurrentFrame(0);
 		item->setFocus(false);
 		if (!isPaused()) {
 			changePauseState();
 		}
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -353,11 +353,11 @@ void GuiWindow::initPlayFrame() {
 		}
 	});
 
-	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::GuiItem* item) {
+	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::Widget* item) {
 		restartGame();
 		item->setFocus(false);
 	});
-	b2->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b2->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDL_Keycode key = sdlEvent.key.keysym.sym;
@@ -368,11 +368,11 @@ void GuiWindow::initPlayFrame() {
 		}
 	});	
 
-	pause_ = createButton("Pause", hDistance_, [&](gui::GuiItem* item) {
+	pause_ = createButton("Pause", hDistance_, [&](gui::Widget* item) {
 		changePauseState();
 		item->setFocus(false);
 	});
-	pause_->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	pause_->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDL_Keycode key = sdlEvent.key.keysym.sym;
@@ -396,10 +396,10 @@ void GuiWindow::initHighscoreFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -414,7 +414,7 @@ void GuiWindow::initHighscoreFrame() {
 	});
 
 	highscorePtr_ = createHighscore(10, textColor_);
-	highscorePtr_->addOnClickListener([&](gui::GuiItem* item) {
+	highscorePtr_->addOnClickListener([&](gui::Widget* item) {
         multiFrame_.setCurrentFrame(newHighscoreFrameIndex_);
 	});
 
@@ -429,10 +429,10 @@ void GuiWindow::initCustomPlayFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 	});
-	menu->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	menu->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -478,7 +478,7 @@ void GuiWindow::initCustomPlayFrame() {
 	multiFrame_.add(customPlaymaxLevel_,140,100,false,true);
 
 	// Create game -----------------------------------------------------
-	gui::ButtonPtr button = createButton("Create game", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Create game", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(playFrameIndex_);
 		std::stringstream stream;
 		stream << customPlayWidth_->getText() << " ";
@@ -507,10 +507,10 @@ void GuiWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar(), optionFrameIndex_);
 
-	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -524,7 +524,7 @@ void GuiWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 		}
 	});
 
-	gui::ButtonPtr b2 = createButton("AI", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b2 = createButton("AI", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(aiFrameIndex_);
 	});
 
@@ -548,11 +548,11 @@ void GuiWindow::initServerLoobyFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 		abortGame();
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -566,11 +566,11 @@ void GuiWindow::initServerLoobyFrame() {
 		}
 	});
 
-	ready_ = createButton("Ready", hDistance_, [&] (gui::GuiItem* item) {
+	ready_ = createButton("Ready", hDistance_, [&](gui::Widget* item) {
 		changeReadyState();
 	});
 
-	gui::ButtonPtr b2 = createButton("Start", hDistance_, [&](gui::GuiItem* item) {
+	gui::ButtonPtr b2 = createButton("Start", hDistance_, [&](gui::Widget* item) {
 		startGame();
 	});
 
@@ -588,11 +588,11 @@ void GuiWindow::initClientLoobyFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 		abortGame();
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -619,10 +619,10 @@ void GuiWindow::initCreateServerFrame() {
 
 	gui::TextItemPtr header = gui::createTextItem("Server", fontDefault, 30, textColor_);
 
-	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 	});
-	menu->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	menu->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -635,7 +635,7 @@ void GuiWindow::initCreateServerFrame() {
 			}
 		}
 	});
-	gui::ButtonPtr b1 = createButton("Client", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Client", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(createClientFrameIndex_);
 	});
 
@@ -665,7 +665,7 @@ void GuiWindow::initCreateServerFrame() {
 	multiFrame_.add(computerButton_,260,200,false,true);
 
 	// Create game -----------------------------------------------------
-	gui::ButtonPtr button = createButton("Create", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Create", 30, [&](gui::Widget*) {
 		std::stringstream stream;
 		stream << customPlayWidth_->getText() << " ";
 		stream << customPlayHeight_->getText() << " ";
@@ -699,10 +699,10 @@ void GuiWindow::initCreateClientFrame() {
 
 	gui::TextItemPtr header = gui::createTextItem("Client", fontDefault, hDistance_, textColor_);
 
-	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr menu = createButton("Menu", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 	});
-	menu->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	menu->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -715,7 +715,7 @@ void GuiWindow::initCreateClientFrame() {
 			}
 		}
 	});
-	gui::ButtonPtr b1 = createButton("Server", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Server", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(createServerFrameIndex_);
 	});
 
@@ -740,7 +740,7 @@ void GuiWindow::initCreateClientFrame() {
 	multiFrame_.add(computerButton_,260,200,false,true);
 
 	// Create game -----------------------------------------------------
-	gui::ButtonPtr button = createButton("Join", 30, [&](gui::GuiItem*) {
+	gui::ButtonPtr button = createButton("Join", 30, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(waitToConnectFrameIndex_);
 		std::stringstream stream;
 		stream << portBox_->getText();
@@ -766,7 +766,7 @@ void GuiWindow::initCreateClientFrame() {
 void GuiWindow::initWaitToConnectFrame() {
 	multiFrame_.setCurrentFrame(waitToConnectFrameIndex_);
 
-	gui::ButtonPtr menu = createButton("Abort connection", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr menu = createButton("Abort connection", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 		abortGame();
 	});
@@ -792,7 +792,7 @@ void GuiWindow::initNewHighScoreFrame() {
 	multiFrame_.add(textItem,45,50,false,true);
 	multiFrame_.add(nameBox_,100,50,false,true);
 
-	gui::ButtonPtr b1 = createButton("Done!", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Done!", hDistance_, [&](gui::Widget*) {
 		std::string name = nameBox_->getText();
 		if (name.size() > 0) {
 			std::time_t t = std::time(NULL);
@@ -803,7 +803,7 @@ void GuiWindow::initNewHighScoreFrame() {
 			saveHighscore();
 		}
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -831,12 +831,12 @@ void GuiWindow::initNetworkPlayFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::GuiItem* item) {
+	gui::ButtonPtr b1 = createButton("Abort", hDistance_, [&](gui::Widget* item) {
 		multiFrame_.setCurrentFrame(0);
 		item->setFocus(false);
 		abortGame();
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -850,11 +850,11 @@ void GuiWindow::initNetworkPlayFrame() {
 		}
 	});
 
-	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::GuiItem* item) {
+	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::Widget* item) {
 		restartGame();
 		item->setFocus(false);
 	});
-	b2->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b2->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN:
 			SDL_Keycode key = sdlEvent.key.keysym.sym;
@@ -876,10 +876,10 @@ void GuiWindow::initAiFrame() {
 	// Upper bar.
 	multiFrame_.addBar(createUpperBar());
 
-	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b1 = createButton("Menu", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(0);
 	});
-	b1->addSdlEventListener([&](gui::GuiItem* item, const SDL_Event& sdlEvent) {
+	b1->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
 		case SDL_QUIT:
 			item->click();
@@ -892,7 +892,7 @@ void GuiWindow::initAiFrame() {
 			}
 		}
 	});
-	gui::ButtonPtr b2 = createButton("Option", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr b2 = createButton("Option", hDistance_, [&](gui::Widget*) {
 		multiFrame_.setCurrentFrame(optionFrameIndex_);
 	});
 
@@ -904,7 +904,7 @@ void GuiWindow::initAiFrame() {
 	// Load all specific ai settings.
 	loadAllSettings();	
 
-	ai1Button_ = createButton(activeAis_[0].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai1Button_ = createButton(activeAis_[0].getName(), hDistance_, [&](gui::Widget* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -927,7 +927,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	ai2Button_ = createButton(activeAis_[1].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai2Button_ = createButton(activeAis_[1].getName(), hDistance_, [&](gui::Widget* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -950,7 +950,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	ai3Button_ = createButton(activeAis_[2].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai3Button_ = createButton(activeAis_[2].getName(), hDistance_, [&](gui::Widget* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -973,7 +973,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	ai4Button_ = createButton(activeAis_[3].getName(), hDistance_, [&](gui::GuiItem* item) {
+	ai4Button_ = createButton(activeAis_[3].getName(), hDistance_, [&](gui::Widget* item) {
 		gui::TextButton* button = (gui::TextButton*) item;
 		int index = -1;
 		
@@ -996,7 +996,7 @@ void GuiWindow::initAiFrame() {
 		saveAllSettings();
 	});
 
-	gui::ButtonPtr reloadAis = createButton("Reload Ai:s", hDistance_, [&](gui::GuiItem*) {
+	gui::ButtonPtr reloadAis = createButton("Reload Ai:s", hDistance_, [&](gui::Widget*) {
 		loadAllSettings();
 		bool ai1 = false, ai2 = false, ai3 = false, ai4 = false;
 		for (const Ai& ai : ais_) {

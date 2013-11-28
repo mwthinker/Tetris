@@ -1,5 +1,5 @@
-#ifndef GUIITEM_H
-#define GUIITEM_H
+#ifndef WIDGET_H
+#define WIDGET_H
 
 #include "guitypedefs.h"
 
@@ -17,12 +17,12 @@ namespace gui {
 	const int GUI_CHANGE_FROM_FRAME_CODE = 7219;
 	const int GUI_CHANGE_TO_FRAME_CODE = 7220;
 
-	class GuiItem {
+	class Widget {
 	public:
 		friend class Frame;
 		friend class MultiFrame;
 
-		GuiItem() {
+		Widget() {
 			window_ = nullptr;
 			focus_ = false;
 			visible_ = true;
@@ -30,7 +30,7 @@ namespace gui {
 			height_ = 0;
 		}
 
-		virtual ~GuiItem() {
+		virtual ~Widget() {
 		}
 
 		virtual void eventUpdate(const SDL_Event& windowEvent, int x, int y) {
@@ -78,11 +78,11 @@ namespace gui {
 			return x >= 0 && x < width_ &&  y >= 0 && y <= height_;
 		}
 
-		mw::signals::Connection addOnClickListener(std::function<void(GuiItem*)> onClick) {
+		mw::signals::Connection addOnClickListener(std::function<void(Widget*)> onClick) {
 			return onClick_.connect(onClick);
 		}
 
-		mw::signals::Connection addSdlEventListener(std::function<void(GuiItem*,const SDL_Event&)> sdlEvent) {
+		mw::signals::Connection addSdlEventListener(std::function<void(Widget*, const SDL_Event&)> sdlEvent) {
 			return sdlEventHandler_.connect(sdlEvent);
 		}
 
@@ -102,8 +102,8 @@ namespace gui {
 			sdlEventHandler_(this, windowEvent);
 		}
 
-		mw::Signal<GuiItem*> onClick_;
-		mw::Signal<GuiItem*, const SDL_Event&> sdlEventHandler_;		
+		mw::Signal<Widget*> onClick_;
+		mw::Signal<Widget*, const SDL_Event&> sdlEventHandler_;
 
 		int width_, height_;
 		bool focus_;
@@ -112,4 +112,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // GUIITEM_H
+#endif // WIDGET_H

@@ -1,5 +1,5 @@
 #include "highscore.h"
-#include "guiitem.h"
+#include "widget.h"
 #include "gamefont.h"
 
 #include <mw/text.h>

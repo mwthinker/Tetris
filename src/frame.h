@@ -35,7 +35,7 @@ namespace gui {
 		// Add a gui item at postion (x,y). By default origo is at the corner decided by (invX,invY) of the window.
 		// Y-axis is directed up and X-axis is directed right. If invX and/or invY is true then the 
 		// respectiv axis direction is inverted. (invX,invY)= (false,false) the origo is placed in the bottom left.
-		void add(GuiItemPtr guiItem, int x, int y, bool invX = false, bool invY = false);
+		void add(WidgetPtr guiItem, int x, int y, bool invX = false, bool invY = false);
 
 		// Updates all guitems in order for them to repsond to a window event.
 		void eventUpdate(const SDL_Event& windowEvent);
@@ -58,7 +58,7 @@ namespace gui {
 
 		void mousePosition(int& x, int& y) const;
 
-		typedef std::pair<GuiItemPtr,GuiProperties> Item_;
+		typedef std::pair<WidgetPtr, GuiProperties> Item_;
 		std::vector<Item_> items_;
 
 		typedef std::pair<BarPtr,GuiProperties> BarItem_;

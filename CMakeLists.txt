@@ -43,7 +43,6 @@ SET(SOURCES
 	src/graphicboard.cpp
 	src/graphicboard.h
 	src/group.h
-	src/guiitem.h
 	src/guitypedefs.h
 	src/guiwindow.cpp
 	src/guiwindow.h
@@ -66,6 +65,8 @@ SET(SOURCES
 	src/networkevent.h
 	src/networklooby.cpp
 	src/networklooby.h
+	src/panel.h
+	src/panel.cpp
 	src/player.cpp
 	src/player.h
 	src/playerinfo.cpp
@@ -92,6 +93,7 @@ SET(SOURCES
 	src/textitem.cpp
 	src/textitem.h
 	src/userconnection.h
+	src/widget.h
 )
 # End of source files.
 
