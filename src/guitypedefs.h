@@ -23,8 +23,8 @@ namespace gui {
 	class Frame;
 	typedef std::shared_ptr<Frame> FramePtr;
 
-	class GuiItem;
-	typedef std::shared_ptr<GuiItem> GuiItemPtr;
+	class Widget;
+	typedef std::shared_ptr<Widget> WidgetPtr;
 
 	class Group;
 	typedef std::shared_ptr<Group> GroupPtr;

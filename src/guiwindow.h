@@ -103,7 +103,7 @@ private:
 	void setDrawGame(bool drawGame);
 	
 	gui::TextButtonPtr createButton(std::string text, int width,
-		std::function<void(gui::GuiItem*)> onClick);
+		std::function<void(gui::Widget*)> onClick);
 	gui::TextBoxPtr createTextBox(int width);
 	gui::BarColorPtr createUpperBar();
 

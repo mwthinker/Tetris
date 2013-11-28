@@ -1,7 +1,7 @@
 #ifndef TEXTBOX_H
 #define TEXTBOX_H
 
-#include "guiitem.h"
+#include "widget.h"
 #include "inputformatter.h"
 
 #include <mw/signal.h>
@@ -10,7 +10,7 @@
 
 namespace gui {
 
-	class TextBox : public GuiItem {
+	class TextBox : public Widget {
 	public:
 		TextBox(int width, int height);
 

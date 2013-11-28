@@ -15,10 +15,10 @@ namespace gui {
 
 		// Creates a new frame at the back. Returns the added frame's index.
 		int addFrameBack();
-		void add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY);
+		void add(WidgetPtr guiItem, int x, int y, bool invX, bool invY);
 
 		// Add item (item) to frame with index (frameIndex).
-		void add(GuiItemPtr guiItem, int x, int y, bool invX, bool invY, int frameIndex);
+		void add(WidgetPtr guiItem, int x, int y, bool invX, bool invY, int frameIndex);
 
 		// Is called in order to update all items in the active frame.
 		void eventUpdate(const SDL_Event& windowEvent);

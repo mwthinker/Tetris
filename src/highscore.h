@@ -1,7 +1,7 @@
 #ifndef HIGHSCORE_H
 #define HIGHSCORE_H
 
-#include "guiitem.h"
+#include "widget.h"
 
 #include <mw/text.h>
 #include <mw/color.h>
@@ -10,7 +10,7 @@
 #include <string>
 #include <memory>
 
-class Highscore : public gui::GuiItem {
+class Highscore : public gui::Widget {
 public:
 	Highscore(int nbr, const mw::Color& color);
 

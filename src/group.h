@@ -2,12 +2,13 @@
 #define GROUP_H
 
 #include "guitypedefs.h"
+#include "widget.h"
 
 #include <memory>
 
 namespace gui {
 
-	class Group : public GuiItem {
+	class Group : public Widget {
 	public:
 		Group(SDL_Keycode last, SDL_Keycode next) {
 			last_ = last;
@@ -15,7 +16,7 @@ namespace gui {
 			lastFocusIndex_ = 0;
 		}
 
-		void add(GuiItemPtr item) {
+		void add(WidgetPtr item) {
 			items_.push_back(item);			
 		}
 
@@ -29,7 +30,7 @@ namespace gui {
 					} else if (next_ == key) {
 						changeToNext(true);
 					} else if (SDLK_RETURN == key) {
-						for (const GuiItemPtr& item : items_) {
+						for (const WidgetPtr& item : items_) {
 							if (item->hasFocus() && item->isVisible()) {
 								item->click();
 								break;
@@ -47,7 +48,7 @@ namespace gui {
 		// Changes to next item if next is true else changes to the last item.
 		void changeToNext(bool nextItem) {
 			bool oneAtLeastVisible = false;
-			for (const GuiItemPtr& item : items_) {
+			for (const WidgetPtr& item : items_) {
 				if (item->isVisible()) {
 					oneAtLeastVisible = true;
 					break;
@@ -72,7 +73,7 @@ namespace gui {
 				// At least one unit has focus?
 				if (findFocusedItem) {
 					// Take focus from all items.
-					for (const GuiItemPtr& item : items_) {
+					for (const WidgetPtr& item : items_) {
 						item->setFocus(false);
 					}
 					// Give focus to next item.
@@ -82,7 +83,7 @@ namespace gui {
 					}
 				} else {
 					// Find first visible item and give focus.
-					for (const GuiItemPtr& item : items_) {
+					for (const WidgetPtr& item : items_) {
 						if (item->isVisible()) {
 							item->setFocus(true);
 							break;
@@ -95,7 +96,7 @@ namespace gui {
 		int lastFocusIndex_;
 
 		SDL_Keycode last_, next_;
-		std::vector<GuiItemPtr> items_;
+		std::vector<WidgetPtr> items_;
 	};
 
 	typedef std::shared_ptr<Group> GroupPtr;
