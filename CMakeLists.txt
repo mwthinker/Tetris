@@ -29,6 +29,7 @@ SET(SOURCES
 	src/block.h
 	src/button.cpp
 	src/button.h
+	src/component.h
 	src/computer.cpp
 	src/computer.h
 	src/device.h

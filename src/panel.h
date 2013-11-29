@@ -5,7 +5,7 @@ namespace gui {
 
 	class Panel {
 	public:
-
+		
 	private:
 	};
 

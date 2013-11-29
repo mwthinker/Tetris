@@ -1,28 +1,24 @@
 #include "frame.h"
+
 #include "widget.h"
 #include "bar.h"
 #include "background.h"
 
-#include <mw/window.h>
-#include <mw/color.h>
-
-#include <functional>
-#include <cmath>
-#include <vector>
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <memory>
+
+#include <vector>
 
 namespace gui {
 
-	Frame::GuiProperties::GuiProperties() {
+	Frame::Properties::Properties() {
 		x_ = 0;
 		y_ = 0;
 		invX_ = false;
 		invY_ = false;
 	}
 
-	Frame::GuiProperties::GuiProperties(int x, int y, bool invX, bool invY) {
+	Frame::Properties::Properties(int x, int y, bool invX, bool invY) {
 		x_ = x;
 		y_ = y;
 		invX_ = invX;
@@ -47,40 +43,40 @@ namespace gui {
 	}
 
 	void Frame::addBar(BarPtr bar) {
-		GuiProperties properties;
+		Properties properties;
 
 		// Sets the position.
 		switch (bar->getType()) {
-		case Bar::UP:
-			properties.y_ = bar->getSize();
-			properties.invY_ = true;
-			break;
-		case Bar::DOWN:
-			break;
-		case Bar::LEFT:
-			break;
-		case Bar::RIGHT:
-			properties.invX_ = true;
-			properties.x_ = bar->getSize();
-			break;
+			case Bar::UP:
+				properties.y_ = bar->getSize();
+				properties.invY_ = true;
+				break;
+			case Bar::DOWN:
+				break;
+			case Bar::LEFT:
+				break;
+			case Bar::RIGHT:
+				properties.invX_ = true;
+				properties.x_ = bar->getSize();
+				break;
 		}
 
-		BarItem_ item(bar,properties);
+		BarItem_ item(bar, properties);
 		barItems_.push_back(item);
 	}
 
 	void Frame::add(WidgetPtr guiItem, int x, int y, bool invX, bool invY) {
-		GuiProperties p(x,y,invX,invY);
+		Properties p(x, y, invX, invY);
 
-		Item_ item(guiItem,GuiProperties(x,y,invX,invY));
+		Item_ item(guiItem, Properties(x, y, invX, invY));
 		items_.push_back(item);
 	}
 
 	void Frame::eventUpdate(const SDL_Event& windowEvent) {
 		int x, y;
-		mousePosition(x,y);
+		mousePosition(x, y);
 		int w, h;
-		windowSize(w,h);
+		windowSize(w, h);
 
 		for (Item_& item : items_) {
 			if (item.first->isVisible()) {
@@ -93,7 +89,7 @@ namespace gui {
 					yTemp = h - item.second.y_ - item.first->getHeight();
 				}
 
-				item.first->eventUpdate(windowEvent,x - xTemp,y - yTemp);
+				item.first->eventUpdate(windowEvent, x - xTemp, y - yTemp);
 				item.first->updateSdlEventHandler(windowEvent);
 			}
 		}
@@ -101,16 +97,16 @@ namespace gui {
 
 	void Frame::draw() {
 		int w, h;
-		windowSize(w,h);
+		windowSize(w, h);
 
 		// Draw background?
 		if (background_ != 0) {
-			background_->draw(w,h);
+			background_->draw(w, h);
 		}
 
 		// Draw all visible Bars.
-		for (BarItem_& item : barItems_) {			
-			GuiProperties& p = item.second;
+		for (BarItem_& item : barItems_) {
+			Properties& p = item.second;
 			glPushMatrix();
 			int x = p.x_;
 			if (p.invX_) {
@@ -120,26 +116,26 @@ namespace gui {
 			if (p.invY_) {
 				y = h - p.y_;
 			}
-			glTranslated(x,y,0.0);
+			glTranslated(x, y, 0.0);
 			switch (item.first->getType()) {
-			case Bar::UP:
-				// Fall through.
-			case Bar::DOWN:
-				item.first->draw(w,item.first->getSize());
-				break;
-			case Bar::LEFT:
-				// Fall through.
-			case Bar::RIGHT:
-				item.first->draw(item.first->getSize(),h);
-				break;
-			}				
+				case Bar::UP:
+					// Fall through.
+				case Bar::DOWN:
+					item.first->draw(w, item.first->getSize());
+					break;
+				case Bar::LEFT:
+					// Fall through.
+				case Bar::RIGHT:
+					item.first->draw(item.first->getSize(), h);
+					break;
+			}
 			glPopMatrix();
 		}
 
 		// Draw all visible Gui Items.
 		for (Item_& item : items_) {
 			if (item.first->isVisible()) {
-				GuiProperties& p = item.second;
+				Properties& p = item.second;
 				glPushMatrix();
 				int x = p.x_;
 				if (p.invX_) {
@@ -149,7 +145,7 @@ namespace gui {
 				if (p.invY_) {
 					y = h - p.y_ - item.first->getHeight();
 				}
-				glTranslated(x,y,0.0);
+				glTranslated(x, y, 0.0);
 				item.first->draw();
 				glPopMatrix();
 			}

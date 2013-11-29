@@ -3,12 +3,8 @@
 
 #include "guitypedefs.h"
 
-#include <mw/color.h>
-#include <mw/window.h>
-
 #include <SDL.h>
 
-#include <functional>
 #include <vector>
 
 namespace gui {
@@ -39,18 +35,18 @@ namespace gui {
 
 		// Updates all guitems in order for them to repsond to a window event.
 		void eventUpdate(const SDL_Event& windowEvent);
-		
+
 		// Draws all elements in frame.
 		void draw();
 
 		void windowSize(int& width, int& height) const;
 
 	private:
-		class GuiProperties {
+		class Properties {
 		public:
-			GuiProperties();
+			Properties();
 
-			GuiProperties(int x, int y, bool invX, bool invY);
+			Properties(int x, int y, bool invX, bool invY);
 
 			int x_, y_;  // Global position.
 			bool invX_, invY_;  // Invert the x and y axis if true.	
@@ -58,15 +54,15 @@ namespace gui {
 
 		void mousePosition(int& x, int& y) const;
 
-		typedef std::pair<WidgetPtr, GuiProperties> Item_;
+		typedef std::pair<WidgetPtr, Properties> Item_;
 		std::vector<Item_> items_;
 
-		typedef std::pair<BarPtr,GuiProperties> BarItem_;
+		typedef std::pair<BarPtr, Properties> BarItem_;
 		std::vector<BarItem_> barItems_;
 
 		BackgroundPtr background_;
 		SDL_Window* window_;
-	};	
+	};
 
 } // Namespace gui.
 

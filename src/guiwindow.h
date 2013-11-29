@@ -3,9 +3,9 @@
 
 #include "guitypedefs.h"
 #include "multiframe.h"
+#include "networklooby.h"
 #include "highscore.h"
 #include "manbutton.h"
-#include "networklooby.h"
 #include "device.h"
 #include "tetrisparameters.h"
 #include "ai.h"
@@ -29,10 +29,10 @@ protected:
 	SDL_Keycode pauseKey_;
 	SDL_Keycode restartKey_;
 
-    HighscorePtr getHighscorePtr() const;
+	HighscorePtr getHighscorePtr() const;
 	gui::TextButtonPtr getPausePtr() const;
 	NetworkLoobyPtr getNetworkLoobyPtr() const;
-	gui::TextButtonPtr getReadyPtr() const;	
+	gui::TextButtonPtr getReadyPtr() const;
 
 	void gotoLocalPlayFrame();
 	void gotoServerPlayFrame();
@@ -70,21 +70,21 @@ private:
 	virtual int getNbrOfComputerPlayers() const = 0;
 
 	// Aborts the current game.
-    virtual void abortGame() = 0;
-	
+	virtual void abortGame() = 0;
+
 	// Creates a local game whith default settings.
 	virtual void createLocalGame() = 0;
 	// Creates a local game with the settings defined in parameterts.
-    virtual void createLocalGame(int width, int height, int maxLevel) = 0;
+	virtual void createLocalGame(int width, int height, int maxLevel) = 0;
 	// Creates a server with the game settings defined in parameterts.
 	virtual void createServerGame(int port, int width, int height) = 0;
 	// Creates a client with the game settings defined at the remote server.
 	virtual void createClientGame(int port, std::string ip) = 0;
 
 	// Returns true if the game is paused else false.
-	virtual bool isPaused() const = 0;	
+	virtual bool isPaused() const = 0;
 	// Change the current pause state.
-	virtual void changePauseState() = 0;	
+	virtual void changePauseState() = 0;
 	// Returns true if the user is ready to for the game to start.
 	virtual bool isReady() const = 0;
 	// Change the current ready state.
@@ -101,7 +101,7 @@ private:
 	bool isUpdatingGame() const;
 	bool isDrawGame() const;
 	void setDrawGame(bool drawGame);
-	
+
 	gui::TextButtonPtr createButton(std::string text, int width,
 		std::function<void(gui::Widget*)> onClick);
 	gui::TextBoxPtr createTextBox(int width);
@@ -129,7 +129,7 @@ private:
 
 	// Override mw::Window
 	void eventUpdate(const SDL_Event& windowEvent) override;
-	
+
 	int hDistance_;
 
 	gui::MultiFrame multiFrame_;
@@ -147,7 +147,7 @@ private:
 	// Attributes defined in initCreateServerMenu.
 	gui::TextBoxPtr portBox_, ipBox_;
 
-    // Attribute defined in initHighscoreMenu.
+	// Attribute defined in initHighscoreMenu.
 	HighscorePtr highscorePtr_;
 
 	// Attribute defined in initFrameMenu.
