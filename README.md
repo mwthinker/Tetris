@@ -9,7 +9,7 @@ The project is using CMake to generate the environment specific development
 tools. E.g. Visual Studio solution (Windows) and makefile (Unix). See more 
 at http://www.cmake.org/.
 
-License
+Open source
 ======
 All code in the src folder is under the MIT license (see LICENSE.txt).
 
@@ -36,5 +36,3 @@ The first to generate the makefile and the second to compile the zombie project.
 <p>$ ./MWetris</p>
 
 to run the executable.
-
-This file is written by Marcus Welander.
