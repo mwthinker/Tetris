@@ -1,6 +1,6 @@
 MWetris
 ======
-The project MWetris is a tetris clone with network capabilities. You 
+The project MWetris is a Tetris clone with network capabilities. You 
 can play up to 4 human players on one computer and up to 4 computer opponents.
 The first two human players uses the keyboard and the rest uses any connected gamepad.
 
@@ -22,7 +22,7 @@ compiler are installed. The dependencies must also be recognized by CMAKE.
 <p><b> Windows </b></p>
 Run CMake (cmake-gui). Choose "Browse Source.." and point to the project folder.
 Do the same for "Browse Build..." but point to the build folder.
-Push the configure button and choose at least "Visual Studio 13" and push finish.
+Push the configure button and choose at least Visual Studio version 12 and push finish.
 Push "Generate" then the visual studio solution will appear in the build folder.
 
 <p><b> Unix </b></p>
