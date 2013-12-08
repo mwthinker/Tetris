@@ -51,11 +51,6 @@ namespace gui {
 
 	};
 
-	class LayoutManager {
-	public:
-		virtual void add(Component* component) = 0;
-	};
-
 } // Namespace gui.
 
 #endif // COMPONENT_H

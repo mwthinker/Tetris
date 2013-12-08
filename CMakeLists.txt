@@ -29,7 +29,6 @@ SET(SOURCES
 	src/block.h
 	src/button.cpp
 	src/button.h
-	src/component.h
 	src/computer.cpp
 	src/computer.h
 	src/device.h
@@ -66,8 +65,6 @@ SET(SOURCES
 	src/networkevent.h
 	src/networklooby.cpp
 	src/networklooby.h
-	src/panel.h
-	src/panel.cpp
 	src/player.cpp
 	src/player.h
 	src/playerinfo.cpp
@@ -107,6 +104,7 @@ FIND_PACKAGE(SDL2_ttf REQUIRED)
 ADD_SUBDIRECTORY(TinyXML2)
 ADD_SUBDIRECTORY(MwEnet)
 ADD_SUBDIRECTORY(MwLibrary2)
+ADD_SUBDIRECTORY(Gui)
 
 FILE(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
