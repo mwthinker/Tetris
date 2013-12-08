@@ -19,13 +19,13 @@ CMake must be installed, at least version 2.8. Create a directory named
 "build" in the project directory. Make sure all dependencies and a native 
 compiler are installed. The dependencies must also be recognized by CMAKE.
 
-<b> Windows </b>
+<p><b> Windows </b></p>
 Run CMake (cmake-gui). Choose "Browse Source.." and point to the project folder.
 Do the same for "Browse Build..." but point to the build folder.
-Push the configure button and choose at least "Visual Studio 12" and push finish.
+Push the configure button and choose at least "Visual Studio 13" and push finish.
 Push "Generate" then the visual studio solution will appear in the build folder.
 
-<b> Unix </b>
+<p><b> Unix </b></p>
 Open a terminal inside the "build" directory and run:
 
 <p>$ cmake ..</p>
