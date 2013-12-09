@@ -8,6 +8,12 @@ namespace gui {
 	class LayoutManager {
 	public:
 		virtual void add(Component* component) = 0;
+
+		// Returns the height.
+		virtual float getHeight() const = 0;
+
+		// Returns the width.
+		virtual float getWidth() const = 0;
 	};
 
 } // Namespace gui.

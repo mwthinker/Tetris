@@ -10,16 +10,8 @@
 
 namespace gui {
 
-	// Identifies if the SDL_UserEvent is made by the "gui".
-	// Means that the frame has changed. Random number.
-	const int GUI_CHANGE_FROM_FRAME_CODE = 7219;
-	const int GUI_CHANGE_TO_FRAME_CODE = 7220;
-
 	class Widget {
 	public:
-		friend class Frame;
-		friend class MultiFrame;
-
 		Widget() {
 			window_ = nullptr;
 			focus_ = false;
@@ -72,10 +64,6 @@ namespace gui {
 			height_ = height;
 		}
 
-		bool isInside(int x, int y) const {
-			return x >= 0 && x < width_ &&  y >= 0 && y <= height_;
-		}
-
 		mw::signals::Connection addOnClickListener(std::function<void(Widget*)> onClick) {
 			return onClick_.connect(onClick);
 		}
@@ -90,7 +78,7 @@ namespace gui {
 
 		SDL_Window* getWindow() const {
 			return window_;
-		}		
+		}
 
 	private:
 		SDL_Window* window_;

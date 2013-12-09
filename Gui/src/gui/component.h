@@ -7,6 +7,10 @@ namespace gui {
 
 	class Component {
 	public:
+		enum Alignment {
+			BOTTOM_ALIGNMENT, CENTER_ALIGNMENT, LEFT_ALIGNMENT, RIGHT_ALIGNMENT, TOP_ALIGNMENT
+		};
+
 		// Returns the alignment along the X axis. The return value = [0,1].
 		virtual float getAlignmentX() const = 0;
 
@@ -23,24 +27,15 @@ namespace gui {
 		virtual float getX() const = 0;
 
 		// Returns the y position of the top left corner.
-		virtual float getY() const = 0;
-
-		// Returns true if the mouse is inside the Component else it returns false.
-		// The mouse position is saved in x and y in Component's coordinate space.
-		bool mousePosition(float& x, float& y) const {
-			return true;
-		}
+		virtual float getY() const = 0;		
 
 		void addMouseListener() {
-
 		}
 
 		void addKeyListener() {
-
 		}
 
 		bool hasFocus() const {
-
 		}
 
 	private:
