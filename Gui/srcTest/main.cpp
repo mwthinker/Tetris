@@ -8,8 +8,8 @@
 #include <cassert>
 
 int main(int argc, char** argv) {
-	gui::GuiWindow gui;
-	gui::GuiWindow::startLoop();
+	gui::Frame gui;
+	gui::Frame::startLoop();
 
 	return 0;
 }

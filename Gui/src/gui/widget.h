@@ -92,6 +92,8 @@ namespace gui {
 		mw::Signal<Widget*, const SDL_Event&> sdlEventHandler_;
 
 		int width_, height_;
+		int x_, y_;
+
 		bool focus_;
 		bool visible_;
 	};

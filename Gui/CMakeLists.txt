@@ -18,6 +18,7 @@ endif (MSVC)
 SET(SOURCES
 	src/gui/actionlistener.h
 	src/gui/component.h
+	src/gui/dimension.h
 	src/gui/flowlayout.h
 	src/gui/guiwindow.cpp
 	src/gui/guiwindow.h

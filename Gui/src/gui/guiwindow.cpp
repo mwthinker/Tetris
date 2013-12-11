@@ -12,12 +12,12 @@
 
 namespace gui {
 
-	GuiWindow::GuiWindow() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
+	Frame::Frame() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
 		// Init the opengl settings.
 		resize();
 	}
 
-	void GuiWindow::resize() {
+	void Frame::resize() {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glViewport(0, 0, getWidth(), getHeight());
@@ -27,7 +27,7 @@ namespace gui {
 	}
 
 	// Override mw::Window
-	void GuiWindow::update(Uint32 deltaTime) {
+	void Frame::update(Uint32 deltaTime) {
 		// Perform non critical event updates.
 		while (!eventQueue_.empty()) {
 			SDL_Event windowEvent = eventQueue_.front();
@@ -53,7 +53,7 @@ namespace gui {
 	}
 
 	// Override mw::Window
-	void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
+	void Frame::eventUpdate(const SDL_Event& windowEvent) {
 		if (windowEvent.type == SDL_WINDOWEVENT) {
 			switch (windowEvent.window.event) {
 				case SDL_WINDOWEVENT_RESIZED:

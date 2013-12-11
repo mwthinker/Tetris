@@ -1,6 +1,8 @@
 #ifndef GUIWINDOW_H
 #define GUIWINDOW_H
 
+#include "component.h"
+
 #include <mw/font.h>
 #include <mw/sprite.h>
 #include <mw/window.h>
@@ -13,9 +15,57 @@
 
 namespace gui {
 
-	class GuiWindow : public mw::Window {
+	class Button {
 	public:
-		GuiWindow();
+		Button(std::string buttonLabel) {
+		}
+
+		std::string getLabel() const;
+		
+		// Get the label of this Button instance
+		void setLabel(std::string buttonLabel);
+		
+		// Set the label of this Button instance.
+		void setEnable(bool enable);
+	};
+
+	class TextField {
+	public:
+		TextField(std::string strInitialText);
+
+		std::string getText() const;
+		// Get the current text on this TextField instance
+		void setText(std::string strText);
+		// Set the display text on this TextField instance
+		void setEditable(bool editable);
+		// Set this TextField to editable (read/write) or non-editable (read-only)
+	};
+
+	class Label : public Component {
+	public:
+		enum Alignment {
+			LEFT,
+			CENTER,
+			RIGHT
+		};
+
+		Label(std::string strLabel, Alignment alignment) {
+		}
+
+		std::string getText();
+		void setText(std::string strLabel);
+		
+		Alignment getAlignment();
+		void setAlignment(Alignment alignment);
+	};
+
+	// Panel, Button, TextField, Label, Checkbox, CheckboxGroup (radio buttons), List, and Choice
+	class Frame : public mw::Window, public Container {
+	public:
+		Frame();
+
+		void add() {
+		}
 
 	private:
 		// Override mw::Window
@@ -24,15 +74,9 @@ namespace gui {
 		// Override mw::Window
 		void eventUpdate(const SDL_Event& windowEvent) override;
 
-		void resize();		
+		void resize();
 
 		std::queue<SDL_Event> eventQueue_;
-
-		int playFrameIndex_, networkFrameIndex_, highscoreFrameIndex_,
-			customFrameIndex_, optionFrameIndex_, newHighscoreFrameIndex_,
-			createClientFrameIndex_, createServerFrameIndex_, loobyClientFrameIndex_,
-			loobyServerFrameIndex_, waitToConnectFrameIndex_, networkPlayFrameIndex_,
-			aiFrameIndex_;
 	};
 
 } // Namespace gui.
