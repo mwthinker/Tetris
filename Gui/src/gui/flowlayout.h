@@ -10,53 +10,56 @@ namespace gui {
 	class FlowLayout : public LayoutManager {
 	public:
 		enum Alignment {
-			RIGHT
+			LEFT
 		};
 
 		FlowLayout() {
-			alignment_ = RIGHT;
+			alignment_ = LEFT;
 		}
 
 		FlowLayout(Alignment alignment) {
 			alignment_ = alignment;
 		}
 
-		// Returns the height.
-		float getHeight() const override {
-
-		}
-
-		// Returns the width.
-		float getWidth() const override {
-
+		Dimension getSize() const override {
+			return dimension_;
 		}
 
 		Dimension preferredLayoutSize(Container* parent) const override {
-
-		}
-		
-		Dimension minimumLayoutSize(Container* parent) const override {
-
-		}
+			return dimension_;
+		}		
 
 		void layoutContainer(Container* parent) {
 			switch (alignment_) {
-				case RIGHT:
-					layoutRight(parent);
+				case LEFT:
+					layoutLeft(parent);
 					break;
 			}
 		}
 
 	private:
-		inline void layoutRight(Container* parent) {			
+		inline void layoutLeft(Container* parent) {
+			double yMean = 0;
+			double xMean = 0;
+			double length = 0;
 
-			for (Component* componenet : *parent) {
-				Dimension dim = componenet->getPreferredSize();
+			for (Component* component : *parent) {
+				Dimension dim = component->getPreferredSize();
+				yMean += dim.height_ / 2.0;
+				xMean += dim.width_ / 2.0;
+				length += component->leftBorder() + component->rightBorder() + dim.width_;
+			}
+			yMean /= parent->nbrOfComponents();
+			xMean /= parent->nbrOfComponents();
+
+			for (Component* component : *parent) {
+				component->setLocation(component->leftBorder(), component->downBorder());
 			}
 		}
 
 		Alignment alignment_;
 		int vGap_, hGap_;
+		Dimension dimension_;
 	};
 
 } // Namespace gui.

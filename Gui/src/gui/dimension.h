@@ -5,14 +5,26 @@ namespace gui {
 
 	class Point {
 	public:
-		int x_;
-		int y_;
+		Point() : x_(0), y_(0) {
+		}
+
+		Point(float x, float y) : x_(x), y_(y) {
+		}
+
+		float x_;
+		float y_;
 	};
 
 	class Dimension {
 	public:
-		int width_;
-		int height_;
+		Dimension() : width_(0), height_(0) {
+		}
+
+		Dimension(float width, float height) : width_(width), height_(height) {
+		}
+
+		float width_;
+		float height_;
 	};
 
 } // Namespace gui.

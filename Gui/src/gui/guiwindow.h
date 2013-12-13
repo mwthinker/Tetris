@@ -2,6 +2,7 @@
 #define GUIWINDOW_H
 
 #include "component.h"
+#include "button.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -14,20 +15,6 @@
 #include <queue>
 
 namespace gui {
-
-	class Button {
-	public:
-		Button(std::string buttonLabel) {
-		}
-
-		std::string getLabel() const;
-		
-		// Get the label of this Button instance
-		void setLabel(std::string buttonLabel);
-		
-		// Set the label of this Button instance.
-		void setEnable(bool enable);
-	};
 
 	class TextField {
 	public:
@@ -63,9 +50,6 @@ namespace gui {
 	class Frame : public mw::Window, public Container {
 	public:
 		Frame();
-
-		void add() {
-		}
 
 	private:
 		// Override mw::Window

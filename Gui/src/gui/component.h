@@ -5,61 +5,124 @@
 #include "dimension.h"
 
 #include <mw/signal.h>
+#include <mw/color.h>
+
+#include <sdl.h>
 
 #include <list>
 
 namespace gui {
 
+	class Component;
+
+	using FocusListener = mw::Signal<Component*, const SDL_Event&>;
+	using KeyListener = FocusListener;
+	using MouseListener = KeyListener;
+
 	class Component {
 	public:
-		// Returns the alignment along the X axis. The return value = [0,1].
-		virtual float getAlignmentX() const = 0;
+		void setLocation(float x, float y) {
+			location_ = Point(x, y);
+		}
 
-		// Returns the alignment along the Y axis. The return value = [0,1].
-		virtual float getAlignmentY() const = 0;
+		// Returns the alignment along the Y and X axis. The return value = [0,1].
+		Dimension getAlignment() const {
+			return alignment_;
+		}
 
-		virtual void setPreferredSize(int width, int height);
+		void setPreferredSize(float width, float height) {
+			preferedDimension_ = Dimension(width, height);
+		}
 
-		virtual Dimension getPreferredSize() const = 0;
+		Dimension getPreferredSize() const {
+			return preferedDimension_;
+		}
 
 		// Returns the size.
-		virtual Dimension getSize() const = 0;
+		Dimension getSize() const {
+			return dimension_;
+		}
 
-		// Returns the x position of the top left corner.
-		virtual float getX() const = 0;
+		void setSize(float width, float height) {
+			dimension_ = Dimension(width, height);
+		}
 
-		// Returns the y position of the top left corner.
-		virtual float getY() const = 0;
+		void setVisible(bool visible) {
+			visible_ = visible;
+		}
 
-		virtual void setVisible(bool visible) = 0;
-
-		virtual bool isVisible() const = 0;
-
-		virtual void doLayout() {
+		bool isVisible() const {
+			return visible_;
 		}
 
 		bool isValid() const {
+			return valid_;
 		}
 
-		void addMouseListener() {
+		mw::signals::Connection addKeyListener(const KeyListener::Callback& callback) {
+			return keyListener_.connect(callback);
 		}
 
-		void addKeyListener() {
+		mw::signals::Connection addMouseListener(const MouseListener::Callback& callback) {
+			return mouseListener.connect(callback);
+		}
+
+		mw::signals::Connection addFocusListener(const FocusListener::Callback& callback) {
+			return focusListener_.connect(callback);
 		}
 
 		bool hasFocus() const {
+			return focus_;
 		}
 
 		Component* getParent() const {
 			return parent_;
-		}		
+		}
 
-	private:
+		float leftBorder() const {
+			return 5;
+		}
+
+		float rightBorder() const {
+			return 5;
+		}
+
+		float upBorder() const {
+			return 5;
+		}
+
+		float downBorder() const {
+			return 5;
+		}
+
+		void setBackground(const mw::Color& color) {
+			background_ = color;
+		}
+
+		virtual void draw(float deltaTime) {
+		}
+
+	protected:
+		mw::Color background_;
 		Component* parent_;
+		Point location_;
+		Dimension dimension_;
+		Dimension preferedDimension_;
+		Dimension alignment_;
+
+		FocusListener focusListener_;
+		KeyListener keyListener_;
+		MouseListener mouseListener;
+
+		bool visible_;
+		bool valid_;
+		bool focus_;
 	};
 
-	class Container {
+	class Container : public Component {
 	public:
+		friend class Frame;
+
 		void add(Component* component) {
 			components_.push_back(component);
 		}
@@ -86,6 +149,14 @@ namespace gui {
 
 		std::list<Component*>::const_iterator end() const {
 			return components_.end();
+		}
+
+		int nbrOfComponents() const {
+			return components_.size();
+		}
+
+		std::list<Component*> getComponents() const {
+			return components_;
 		}
 
 	private:

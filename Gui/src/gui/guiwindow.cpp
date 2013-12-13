@@ -1,4 +1,5 @@
 #include "guiwindow.h"
+#include "flowlayout.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -15,6 +16,8 @@ namespace gui {
 	Frame::Frame() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
 		// Init the opengl settings.
 		resize();
+
+		setLayout(new FlowLayout());
 	}
 
 	void Frame::resize() {
@@ -35,6 +38,11 @@ namespace gui {
 
 			switch (windowEvent.type) {
 				case SDL_KEYDOWN:
+					// Fall through.
+				case SDL_KEYUP:
+					for (Component* component : *this) {
+					}
+
 					switch (windowEvent.key.keysym.sym) {
 						case SDLK_ESCAPE:
 							quit();

@@ -16,6 +16,8 @@ endif (MSVC)
 
 # Source files.
 SET(SOURCES
+	src/gui/button.cpp
+	src/gui/button.h
 	src/gui/actionlistener.h
 	src/gui/component.h
 	src/gui/dimension.h
