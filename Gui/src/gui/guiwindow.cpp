@@ -38,24 +38,39 @@ namespace gui {
 	void Frame::update(Uint32 deltaTime) {
 		// Perform non critical event updates.
 		while (!eventQueue_.empty()) {
-			SDL_Event windowEvent = eventQueue_.front();
+			SDL_Event sdlEvent = eventQueue_.front();
 			eventQueue_.pop();
 
-			switch (windowEvent.type) {
+			switch (sdlEvent.type) {
+				case SDL_WINDOWEVENT:
+					switch (sdlEvent.window.event) {
+						case SDL_WINDOWEVENT_RESIZED:
+							setPreferredSize((float) sdlEvent.window.data1, (float) sdlEvent.window.data2);
+							setSize((float) sdlEvent.window.data1, (float) sdlEvent.window.data2);
+							setLocation(0, 0);
+							resize();
+							break;
+						default:
+							break;
+					}
+					break;
 				case SDL_MOUSEMOTION:
-					// Fall through!
+					// Reverse y-axis.
+					sdlEvent.motion.yrel *= -1;
+					sdlEvent.motion.y = getHeight() - sdlEvent.motion.y;
+					handleMouse(sdlEvent);
+					break;
 				case SDL_MOUSEBUTTONDOWN:
 					// Fall through!
 				case SDL_MOUSEBUTTONUP:
-					handleMouse(windowEvent);
+					sdlEvent.button.y = getHeight() - sdlEvent.motion.y;
+					handleMouse(sdlEvent);
 					break;
 				case SDL_KEYDOWN:
 					// Fall through.
-				case SDL_KEYUP:
-					for (Component* component : *this) {
-					}
-
-					switch (windowEvent.key.keysym.sym) {
+				case SDL_KEYUP:				
+					handleKeyboard(sdlEvent);
+					switch (sdlEvent.key.keysym.sym) {
 						case SDLK_ESCAPE:
 							quit();
 							break;
@@ -75,18 +90,6 @@ namespace gui {
 
 	// Override mw::Window
 	void Frame::eventUpdate(const SDL_Event& windowEvent) {
-		if (windowEvent.type == SDL_WINDOWEVENT) {
-			switch (windowEvent.window.event) {
-				case SDL_WINDOWEVENT_RESIZED:
-					setPreferredSize((float) windowEvent.window.data1, (float) windowEvent.window.data2);
-					setSize((float) windowEvent.window.data1, (float) windowEvent.window.data2);
-					setLocation(0, 0);
-					resize();
-					break;
-				default:
-					break;
-			}
-		}
 		eventQueue_.push(windowEvent);
 	}
 
