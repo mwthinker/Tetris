@@ -13,6 +13,9 @@ namespace gui {
 	public:
 		friend class Frame;
 
+		Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false) {
+		}
+
 		void add(Component* component);
 
 		void setLayout(LayoutManager* layoutManager);
@@ -37,9 +40,16 @@ namespace gui {
 
 		void handleKeyboard(const SDL_Event&) override;
 
+		void mouseMotionLeave() override;
+
+		void mouseOutsideUp() override;
+
 	private:
 		std::list<Component*> components_;
 		LayoutManager* layoutManager_;
+
+		Component* mouseMotionInsideComponent_;
+		Component* mouseDownInsideComponent_;
 	};
 
 } // Namespace gui.

@@ -30,6 +30,10 @@ namespace gui {
 		bool isPushed() const;
 
 		bool isMouseDown() const;
+		
+		void mouseMotionLeave() override;
+
+		void mouseOutsideUp() override;
 
 	protected:
 		mw::Text text_;
@@ -39,6 +43,9 @@ namespace gui {
 			setPreferredSize(50, 50);
 			std::bind(&Button::handleMouse, this, this, std::placeholders::_1);
 			std::bind(&Button::handleKeyboard, this, this, std::placeholders::_1);
+			pushed_ = false;
+			mouseDown_ = false;
+			mouseInside_ = false;
 		}
 
 		void handleMouse(const SDL_Event&);

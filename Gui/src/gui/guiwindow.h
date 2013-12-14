@@ -21,12 +21,14 @@ namespace gui {
 	public:
 		TextField(std::string strInitialText);
 
+		// Get the current text on this TextField instance.
 		std::string getText() const;
-		// Get the current text on this TextField instance
+		
+		// Set the display text on this TextField instance.
 		void setText(std::string strText);
-		// Set the display text on this TextField instance
-		void setEditable(bool editable);
-		// Set this TextField to editable (read/write) or non-editable (read-only)
+		
+		// Set this TextField to editable (read/write) or non-editable (read-only).
+		void setEditable(bool editable);		
 	};
 
 	class Label : public Component {

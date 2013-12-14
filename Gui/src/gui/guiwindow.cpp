@@ -5,6 +5,7 @@
 #include <mw/font.h>
 #include <mw/sprite.h>
 #include <mw/window.h>
+#include <mw/exception.h>
 
 #include <iostream>
 #include <sstream>
@@ -14,13 +15,28 @@
 
 namespace gui {
 
+	namespace {
+
+		TButton* createButton(std::string text) {
+			mw::Color textColor(1, 1, 1);
+			mw::Color textButtonColor(1, .1, .1);
+			mw::Color focusColo(.8, .1, 0, .3);
+			mw::Color onHoverColor(.6, .1, .1);
+			mw::Color notHoverColor(.4, .0, .0, .0);
+			mw::Color pushedColor(.8, .0, 0, .7);
+			return nullptr;
+			//return new TButton(text, size, fontDefault, textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);			
+		}
+
+	}
+
 	Frame::Frame() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
 		// Init the opengl settings.
 		resize();
-		add(new TButton());
+		add(new TButton);
 
 		setLayout(new FlowLayout());
-		setBackground(mw::Color(1, 0, 0));
+		setBackground(mw::Color(0, 1, 0));
 		setSize((float) getWidth(), (float) getHeight());
 		setPreferredSize((float) getWidth(), (float) getHeight());
 	}
@@ -49,6 +65,9 @@ namespace gui {
 							setSize((float) sdlEvent.window.data1, (float) sdlEvent.window.data2);
 							setLocation(0, 0);
 							resize();
+							break;
+						case SDL_WINDOWEVENT_LEAVE:
+							mouseMotionLeave();
 							break;
 						default:
 							break;

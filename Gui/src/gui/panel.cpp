@@ -76,6 +76,7 @@ namespace gui {
 
 	// Todo! Reverse y-axis!
 	void Panel::handleMouse(const SDL_Event& mouseEvent) {
+		Component* currentComponent = nullptr;
 		switch (mouseEvent.type) {
 			case SDL_MOUSEMOTION:
 				for (Component* component : *this) {
@@ -87,15 +88,21 @@ namespace gui {
 						motionEvent.motion.x -= (Sint32) p.x_;
 						motionEvent.motion.y -= (Sint32) p.y_;
 						component->handleMouse(motionEvent);
+						currentComponent = component;
+						break;
 					}
 				}
+				if (mouseMotionInsideComponent_ != currentComponent) {
+					if (mouseMotionInsideComponent_ != nullptr) {
+						mouseMotionInsideComponent_->mouseMotionLeave();
+					}
+				}
+				mouseMotionInsideComponent_ = currentComponent;
 				Component::handleMouse(mouseEvent);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				// Fall through!
 			case SDL_MOUSEBUTTONUP:
-			{
-				Component* cFocus = nullptr;
 				// Send the mouseEvent through to the correct component.
 				for (Component* component : *this) {
 					Point p = component->getLocation();
@@ -108,23 +115,36 @@ namespace gui {
 						buttonEvent.motion.x -= (Sint32) p.x_;
 						buttonEvent.motion.y -= (Sint32) p.y_;
 						component->setFocus(true);
-						cFocus = component;
+						currentComponent = component;
 						component->handleMouse(buttonEvent);
 						break; // Abort, components should not overlap!
 					}
 				}
-				if (cFocus != nullptr) {
+
+				if (mouseEvent.type == SDL_MOUSEBUTTONDOWN) {
 					// Set all components focus to false except
-					// the component used.
+					// the component used.					
 					for (Component* component : *this) {
 						component->setFocus(false);
 					}
-					cFocus->setFocus(true);
+					if (currentComponent != nullptr) {
+						currentComponent->setFocus(true);
+					}
+				}
+
+				// Call the component if it was pushed and released outside
+				// the component.
+				if (mouseEvent.type == SDL_MOUSEBUTTONUP) {
+					if (mouseDownInsideComponent_ != nullptr && mouseDownInsideComponent_ != currentComponent) {
+						mouseDownInsideComponent_->mouseOutsideUp();
+						mouseDownInsideComponent_ = nullptr;
+					}
+				} else if (mouseEvent.type == SDL_MOUSEBUTTONDOWN) {
+					mouseDownInsideComponent_ = currentComponent;
 				}
 
 				Component::handleMouse(mouseEvent);
-				break;
-			}
+				break;			
 			default:
 				break;
 		}
@@ -132,6 +152,18 @@ namespace gui {
 
 	void Panel::handleKeyboard(const SDL_Event& keyEvent) {
 		Component::handleKeyboard(keyEvent);
+	}
+
+	void Panel::mouseMotionLeave() {
+		for (Component* component : *this) {
+			component->mouseMotionLeave();
+		}
+	}
+
+	void Panel::mouseOutsideUp() {
+		for (Component* component : *this) {
+			component->mouseOutsideUp();
+		}
 	}
 
 } // Namespace gui.

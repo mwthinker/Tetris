@@ -39,7 +39,7 @@ namespace gui {
 			case SDL_KEYDOWN:
 				// Has focus and pressed enter?
 				if (hasFocus() && key == SDLK_RETURN && key == SDLK_KP_ENTER) {
-					// Action!
+					doAction();
 				}
 				break;
 			default:
@@ -55,26 +55,17 @@ namespace gui {
 			case SDL_MOUSEBUTTONDOWN:
 				switch (mouseEvent.button.button) {
 					case SDL_BUTTON_LEFT:
-					{
-						mouseInside_ = true;
 						pushed_ = true;
-						setFocus(true);
-					}
 						mouseDown_ = true;
-					
+						break;
+					default:
 						break;
 				}
 				break;
 			case SDL_MOUSEBUTTONUP:
 				switch (mouseEvent.button.button) {
 					case SDL_BUTTON_LEFT:
-						mouseInside_ = true;
-
-						if (mouseInside_ && hasFocus() && pushed_) {
-							setFocus(true);
-							//click();
-						}
-
+						doAction();
 						mouseDown_ = false;
 						pushed_ = false;
 						break;
@@ -97,6 +88,15 @@ namespace gui {
 
 	bool Button::isMouseDown() const {
 		return mouseDown_;
+	}
+
+	void Button::mouseMotionLeave() {
+		mouseInside_ = false;
+	}
+
+	void Button::mouseOutsideUp() {
+		mouseDown_ = false;
+		pushed_ = false;
 	}
 	
 } // Namespace gui.

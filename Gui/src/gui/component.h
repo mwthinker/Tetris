@@ -21,7 +21,7 @@ namespace gui {
 	public:
 		friend class Panel;
 
-		Component() : valid_(false), parent_(nullptr) {
+		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false) {
 		}
 
 		Point getLocation() const {
@@ -119,6 +119,19 @@ namespace gui {
 		virtual void draw(float deltaTime) {
 		}
 
+		void doAction() {
+			actionListener_(this);
+		}
+
+		// Only called when the mouse leave the component.
+		virtual void mouseMotionLeave() {
+		}
+
+		// Only called when the mouse down was inside the component.
+		// And the up event was outside.
+		virtual void mouseOutsideUp() {
+		}
+
 	protected:
 		virtual void handleMouse(const SDL_Event& mouseEvent) {
 			mouseListener_(this, mouseEvent);
@@ -130,7 +143,7 @@ namespace gui {
 
 	private:
 		void setNotValid() {
-			// Set this instance  and all parents invalid.
+			// Set this and all parents invalid.
 			Component* parent = parent_;
 			while (parent != nullptr) {
 				parent->valid_ = false;
