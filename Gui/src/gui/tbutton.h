@@ -13,6 +13,7 @@ namespace gui {
 
 	class TButton : public Button {
 	public:
+		TButton();
 		TButton(std::string text, mw::FontPtr font);
 		TButton(std::string text, mw::FontPtr font, mw::Color textColor, mw::Color focused, mw::Color onHover,
 			mw::Color notHover, mw::Color insideDownHover);

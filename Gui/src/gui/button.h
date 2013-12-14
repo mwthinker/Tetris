@@ -25,8 +25,6 @@ namespace gui {
 
 		void setFont(const mw::FontPtr& font);
 
-		virtual void draw(float deltaTime) override;
-
 		bool isMouseInside() const;
 
 		bool isPushed() const;

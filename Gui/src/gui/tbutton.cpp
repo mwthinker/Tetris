@@ -8,6 +8,14 @@
 
 namespace gui {
 
+	TButton::TButton() {
+		focused_ = mw::Color(0.8, 0.8, 0.8);
+		textColor_ = mw::Color(1.0, 0.1, 0.1);
+		onHover_ = mw::Color(0.6, 0.1, 0.1);
+		notHover_ = mw::Color(0.4, 0.0, 0.0);
+		insideDownHover_ = mw::Color(0.5, 0.0, 0.5);
+	}
+
 	TButton::TButton(std::string text, mw::FontPtr font) : text_(text, font) {
 		focused_ = mw::Color(0.8, 0.8, 0.8);
 		textColor_ = mw::Color(1.0, 0.1, 0.1);

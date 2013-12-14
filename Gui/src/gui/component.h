@@ -19,6 +19,15 @@ namespace gui {
 
 	class Component {
 	public:
+		friend class Panel;
+
+		Component() : valid_(false), parent_(nullptr) {
+		}
+
+		Point getLocation() const {
+			return location_;
+		}
+
 		void setLocation(float x, float y) {
 			location_ = Point(x, y);
 		}
@@ -30,6 +39,12 @@ namespace gui {
 
 		void setPreferredSize(float width, float height) {
 			preferedDimension_ = Dimension(width, height);
+			setNotValid();
+		}
+
+		void setPreferredSize(const Dimension& dimension) {
+			preferedDimension_ = dimension;
+			setNotValid();
 		}
 
 		Dimension getPreferredSize() const {
@@ -45,6 +60,10 @@ namespace gui {
 			dimension_ = Dimension(width, height);
 		}
 
+		void setSize(const Dimension& dimension) {
+			dimension_ = dimension;
+		}
+
 		void setVisible(bool visible) {
 			visible_ = visible;
 		}
@@ -55,6 +74,10 @@ namespace gui {
 
 		bool isValid() const {
 			return valid_;
+		}
+
+		void setToValid() {
+			valid_ = true;
 		}
 
 		mw::signals::Connection addKeyListener(const KeyListener::Callback& callback) {
@@ -97,6 +120,24 @@ namespace gui {
 		}
 
 	protected:
+		virtual void handleMouse(const SDL_Event& mouseEvent) {
+			mouseListener_(this, mouseEvent);
+		}
+
+		virtual void handleKeyboard(const SDL_Event& keyEvent) {
+			keyListener_(this, keyEvent);
+		}
+
+	private:
+		void setNotValid() {
+			// Set this instance  and all parents invalid.
+			Component* parent = parent_;
+			while (parent != nullptr) {
+				parent->valid_ = false;
+				parent = parent->parent_;
+			}
+		}
+
 		mw::Color background_;
 		Component* parent_;
 		Point location_;

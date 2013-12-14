@@ -1,5 +1,6 @@
 #include "guiwindow.h"
 #include "flowlayout.h"
+#include "tbutton.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -16,6 +17,7 @@ namespace gui {
 	Frame::Frame() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
 		// Init the opengl settings.
 		resize();
+		add(new TButton());
 
 		setLayout(new FlowLayout());
 		setBackground(mw::Color(1, 0, 0));
@@ -40,6 +42,13 @@ namespace gui {
 			eventQueue_.pop();
 
 			switch (windowEvent.type) {
+				case SDL_MOUSEMOTION:
+					// Fall through!
+				case SDL_MOUSEBUTTONDOWN:
+					// Fall through!
+				case SDL_MOUSEBUTTONUP:
+					handleMouse(windowEvent);
+					break;
 				case SDL_KEYDOWN:
 					// Fall through.
 				case SDL_KEYUP:

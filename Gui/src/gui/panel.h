@@ -33,6 +33,10 @@ namespace gui {
 
 		void draw(float deltaTime) override;
 
+		void handleMouse(const SDL_Event& mouseEvent) override;
+
+		void handleKeyboard(const SDL_Event&) override;
+
 	private:
 		std::list<Component*> components_;
 		LayoutManager* layoutManager_;

@@ -55,6 +55,8 @@ namespace gui {
 
 			for (Component* component : *parent) {
 				//component->setLocation(, );
+				component->setSize(component->getPreferredSize());
+				component->setToValid();
 			}
 		}
 
