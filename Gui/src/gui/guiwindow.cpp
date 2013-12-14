@@ -18,6 +18,9 @@ namespace gui {
 		resize();
 
 		setLayout(new FlowLayout());
+		setBackground(mw::Color(1, 0, 0));
+		setSize((float) getWidth(), (float) getHeight());
+		setPreferredSize((float) getWidth(), (float) getHeight());
 	}
 
 	void Frame::resize() {
@@ -58,6 +61,7 @@ namespace gui {
 					break;
 			}
 		}
+		draw(deltaTime / 1000.f);
 	}
 
 	// Override mw::Window
@@ -65,7 +69,10 @@ namespace gui {
 		if (windowEvent.type == SDL_WINDOWEVENT) {
 			switch (windowEvent.window.event) {
 				case SDL_WINDOWEVENT_RESIZED:
-					//resize(windowEvent.window.data1, windowEvent.window.data2);
+					setPreferredSize((float) windowEvent.window.data1, (float) windowEvent.window.data2);
+					setSize((float) windowEvent.window.data1, (float) windowEvent.window.data2);
+					setLocation(0, 0);
+					resize();
 					break;
 				default:
 					break;

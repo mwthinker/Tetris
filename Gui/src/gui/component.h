@@ -1,15 +1,12 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "layoutmanager.h"
 #include "dimension.h"
 
 #include <mw/signal.h>
 #include <mw/color.h>
 
 #include <sdl.h>
-
-#include <list>
 
 namespace gui {
 
@@ -18,6 +15,7 @@ namespace gui {
 	using FocusListener = mw::Signal<Component*, const SDL_Event&>;
 	using KeyListener = FocusListener;
 	using MouseListener = KeyListener;
+	using ActionListener = mw::Signal<Component*>;
 
 	class Component {
 	public:
@@ -64,11 +62,19 @@ namespace gui {
 		}
 
 		mw::signals::Connection addMouseListener(const MouseListener::Callback& callback) {
-			return mouseListener.connect(callback);
+			return mouseListener_.connect(callback);
 		}
 
 		mw::signals::Connection addFocusListener(const FocusListener::Callback& callback) {
 			return focusListener_.connect(callback);
+		}
+
+		mw::signals::Connection addActionListener(const ActionListener::Callback& callback) {
+			return actionListener_.connect(callback);
+		}
+
+		void setFocus(bool focus) {
+			focus_ = focus;
 		}
 
 		bool hasFocus() const {
@@ -78,25 +84,13 @@ namespace gui {
 		Component* getParent() const {
 			return parent_;
 		}
-
-		float leftBorder() const {
-			return 5;
-		}
-
-		float rightBorder() const {
-			return 5;
-		}
-
-		float upBorder() const {
-			return 5;
-		}
-
-		float downBorder() const {
-			return 5;
-		}
-
+		
 		void setBackground(const mw::Color& color) {
 			background_ = color;
+		}
+
+		inline const mw::Color& getBackground() const {
+			return background_;
 		}
 
 		virtual void draw(float deltaTime) {
@@ -112,57 +106,13 @@ namespace gui {
 
 		FocusListener focusListener_;
 		KeyListener keyListener_;
-		MouseListener mouseListener;
+		MouseListener mouseListener_;
+		ActionListener actionListener_;
 
 		bool visible_;
 		bool valid_;
 		bool focus_;
-	};
-
-	class Container : public Component {
-	public:
-		friend class Frame;
-
-		void add(Component* component) {
-			components_.push_back(component);
-		}
-
-		void setLayout(LayoutManager* layoutManager) {
-			layoutManager_ = layoutManager;
-		}
-
-		LayoutManager* getLayout(LayoutManager* layoutManager) {
-			return layoutManager_;
-		}
-
-		std::list<Component*>::iterator begin() {
-			return components_.begin();
-		}
-
-		std::list<Component*>::iterator end() {
-			return components_.end();
-		}
-
-		std::list<Component*>::const_iterator begin() const {
-			return components_.begin();
-		}
-
-		std::list<Component*>::const_iterator end() const {
-			return components_.end();
-		}
-
-		int nbrOfComponents() const {
-			return components_.size();
-		}
-
-		std::list<Component*> getComponents() const {
-			return components_;
-		}
-
-	private:
-		std::list<Component*> components_;
-		LayoutManager* layoutManager_;
-	};
+	};	
 
 } // Namespace gui.
 

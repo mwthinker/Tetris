@@ -3,6 +3,7 @@
 
 #include "component.h"
 #include "button.h"
+#include "panel.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -47,7 +48,7 @@ namespace gui {
 	};
 
 	// Panel, Button, TextField, Label, Checkbox, CheckboxGroup (radio buttons), List, and Choice
-	class Frame : public mw::Window, public Container {
+	class Frame : public mw::Window, public Panel {
 	public:
 		Frame();
 

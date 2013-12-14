@@ -5,16 +5,15 @@
 
 namespace gui {	
 
-	class Component;
-	class Container;
+	class Panel;
 
 	class LayoutManager {
 	public:
 		virtual Dimension getSize() const = 0;
 
-		virtual Dimension preferredLayoutSize(Container* parent) const = 0;
+		virtual Dimension preferredLayoutSize(Panel* parent) const = 0;
 
-		virtual void layoutContainer(Container* parent) = 0;
+		virtual void layoutContainer(Panel* parent) = 0;
 	};
 
 } // Namespace gui.

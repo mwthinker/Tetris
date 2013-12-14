@@ -3,7 +3,6 @@
 #include <gui/flowlayout.h>
 #include <gui/panel.h>
 #include <gui/component.h>
-#include <gui/actionlistener.h>
 
 #include <cassert>
 

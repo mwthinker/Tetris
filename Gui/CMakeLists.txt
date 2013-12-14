@@ -18,7 +18,6 @@ endif (MSVC)
 SET(SOURCES
 	src/gui/button.cpp
 	src/gui/button.h
-	src/gui/actionlistener.h
 	src/gui/component.h
 	src/gui/dimension.h
 	src/gui/flowlayout.h
@@ -27,6 +26,8 @@ SET(SOURCES
 	src/gui/layoutmanager.h
 	src/gui/panel.cpp
 	src/gui/panel.h
+	src/gui/tbutton.cpp
+	src/gui/tbutton.h
 	src/gui/widget.h
 )
 

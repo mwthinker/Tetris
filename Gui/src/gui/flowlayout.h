@@ -2,6 +2,7 @@
 #define FLOWLAYOUT_H
 
 #include "layoutmanager.h"
+#include "panel.h"
 
 #include <list>
 
@@ -25,11 +26,11 @@ namespace gui {
 			return dimension_;
 		}
 
-		Dimension preferredLayoutSize(Container* parent) const override {
+		Dimension preferredLayoutSize(Panel* parent) const override {
 			return dimension_;
 		}		
 
-		void layoutContainer(Container* parent) {
+		void layoutContainer(Panel* parent) {
 			switch (alignment_) {
 				case LEFT:
 					layoutLeft(parent);
@@ -38,7 +39,7 @@ namespace gui {
 		}
 
 	private:
-		inline void layoutLeft(Container* parent) {
+		inline void layoutLeft(Panel* parent) {
 			double yMean = 0;
 			double xMean = 0;
 			double length = 0;
@@ -47,13 +48,13 @@ namespace gui {
 				Dimension dim = component->getPreferredSize();
 				yMean += dim.height_ / 2.0;
 				xMean += dim.width_ / 2.0;
-				length += component->leftBorder() + component->rightBorder() + dim.width_;
+				length += dim.width_;
 			}
 			yMean /= parent->nbrOfComponents();
 			xMean /= parent->nbrOfComponents();
 
 			for (Component* component : *parent) {
-				component->setLocation(component->leftBorder(), component->downBorder());
+				//component->setLocation(, );
 			}
 		}
 
