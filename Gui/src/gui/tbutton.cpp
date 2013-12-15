@@ -10,7 +10,7 @@ namespace gui {
 
 	TButton::TButton() {
 		focused_ = mw::Color(.8, .1, 0, .3);
-		textColor_ = mw::Color(1, 1, 1);
+		textColor_ = mw::Color(1, 0.1, 0.1);
 		onHover_ = mw::Color(.6, .1, .1);
 		notHover_ = mw::Color(.4, .0, .0, .0);
 		insideDownHover_ = mw::Color(.8, .0, 0, .7);
@@ -18,7 +18,7 @@ namespace gui {
 
 	TButton::TButton(std::string text, mw::FontPtr font) : text_(text, font) {
 		focused_ = mw::Color(.8, .1, 0, .3);
-		textColor_ = mw::Color(1, 1, 1);
+		textColor_ = mw::Color(1, 0.1, 0.1);
 		onHover_ = mw::Color(.6, .1, .1);
 		notHover_ = mw::Color(.4, .0, .0, .0);
 		insideDownHover_ = mw::Color(.8, .0, 0, .7);
@@ -97,13 +97,13 @@ namespace gui {
 				y = dim.height_ - (float) text_.getHeight();
 				break;
 		}
+		glDisable(GL_BLEND);
 
 		textColor_.glColor4d();
 		glPushMatrix();
 		glTranslatef(x, y, 0);
 		text_.draw();
 		glPopMatrix();
-		glDisable(GL_BLEND);
 	}
 
 } // Namespace gui.

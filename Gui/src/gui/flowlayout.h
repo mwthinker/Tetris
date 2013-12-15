@@ -43,24 +43,24 @@ namespace gui {
 			parent->setToValid();
 			Dimension dimP = parent->getPreferredSize();
 
-			float w = 0;
-			float h = 0;
+			float w = hGap_;
+			float h = vGap_;
 			float maxH = 0;
 			for (Component* c : *parent) {
 				Dimension dimC = c->getPreferredSize();
 				c->setSize(dimC);
 				if (w + dimC.width_ >= dimP.width_) {
 					w = 0;
-					h += maxH;
+					h += maxH + vGap_;
 					maxH = 0;
 				}
 				maxH = std::max(maxH, dimC.height_);
-								
+
 				switch (alignment_) {
-					case LEFT:						
+					case LEFT:
 						c->setLocation(w, dimP.height_ - h - dimC.height_);
 						break;
-					//case CENTER:
+						//case CENTER:
 						// Todo!
 						//c->setLocation((dimP.width_ + dimC.width_ - w) * 0.5f, dimP.height_ - h - dimC.height_);
 						//break;
@@ -68,7 +68,7 @@ namespace gui {
 						c->setLocation(dimP.width_ - w - dimC.width_, dimP.height_ - h - dimC.height_);
 						break;
 				}
-				w += dimC.width_;
+				w += dimC.width_ + hGap_;
 				c->setToValid();
 			}
 		}
