@@ -28,6 +28,9 @@ namespace gui {
 		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
 
+		virtual ~Component() {
+		}
+
 		Point getLocation() const {
 			return location_;
 		}

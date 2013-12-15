@@ -5,6 +5,7 @@
 #include "panel.h"
 
 #include <list>
+#include <algorithm>
 
 namespace gui {
 
@@ -12,7 +13,7 @@ namespace gui {
 	public:
 		enum Alignment {
 			LEFT,
-			CENTER,
+			// CENTER, // Todo
 			RIGHT
 		};
 
@@ -39,40 +40,40 @@ namespace gui {
 		}
 
 		void layoutContainer(Panel* parent) {
-			switch (alignment_) {
-				case LEFT:
-					layoutLeft(parent);
-					break;
+			parent->setToValid();
+			Dimension dimP = parent->getPreferredSize();
+
+			float w = 0;
+			float h = 0;
+			float maxH = 0;
+			for (Component* c : *parent) {
+				Dimension dimC = c->getPreferredSize();
+				c->setSize(dimC);
+				if (w + dimC.width_ >= dimP.width_) {
+					w = 0;
+					h += maxH;
+					maxH = 0;
+				}
+				maxH = std::max(maxH, dimC.height_);
+								
+				switch (alignment_) {
+					case LEFT:						
+						c->setLocation(w, dimP.height_ - h - dimC.height_);
+						break;
+					//case CENTER:
+						// Todo!
+						//c->setLocation((dimP.width_ + dimC.width_ - w) * 0.5f, dimP.height_ - h - dimC.height_);
+						//break;
+					case RIGHT:
+						c->setLocation(dimP.width_ - w - dimC.width_, dimP.height_ - h - dimC.height_);
+						break;
+				}
+				w += dimC.width_;
+				c->setToValid();
 			}
 		}
 
 	private:
-		inline void layoutLeft(Panel* parent) {
-			parent->setToValid();
-			double yMean = 0;
-			double xMean = 0;
-			double length = 0;
-
-			for (Component* component : *parent) {
-				Dimension dim = component->getPreferredSize();
-				yMean += dim.height_ / 2.0;
-				xMean += dim.width_ / 2.0;
-				length += dim.width_;
-			}
-			yMean /= parent->nbrOfComponents();
-			xMean /= parent->nbrOfComponents();			
-
-			float x = 0;
-			float y = 0;
-			for (Component* component : *parent) {
-				component->setLocation(x, y);
-				component->setSize(component->getPreferredSize());
-				component->setToValid();
-				x += component->getSize().width_;
-				component->setToValid();
-			}
-		}
-
 		Alignment alignment_;
 		float vGap_, hGap_;
 	};

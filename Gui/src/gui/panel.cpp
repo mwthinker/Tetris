@@ -6,14 +6,18 @@
 
 namespace gui {
 
-	Panel::Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false) {
+	Panel::Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false), layoutManager_(nullptr) {
 		setLayout(new FlowLayout);
 	}
 
 	Panel::~Panel() {
+		for (Component* c : *this) {
+			delete c;
+		}
+
 		delete layoutManager_;
 	}
-
+	
 	void Panel::add(Component* component) {
 		component->parent_ = this;
 		component->setLayoutIndex(0);

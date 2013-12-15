@@ -17,6 +17,9 @@ namespace gui {
 		Button(std::string text, const mw::FontPtr& font);
 		Button(mw::Text text);
 
+		virtual ~Button() {
+		}
+
 		// Get the label of this Button instance.
 		std::string getLabel() const;
 

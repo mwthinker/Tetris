@@ -37,20 +37,6 @@ namespace gui {
 
 		// Init the opengl settings.
 		resize();
-
-		add(new TButton, BorderLayout::NORTH);
-		add(new TButton, BorderLayout::CENTER);
-		add(new TButton, BorderLayout::WEST);
-		add(new TButton, BorderLayout::EAST);
-		add(new TButton, BorderLayout::SOUTH);
-
-		addMouseListener([](Component* c, const SDL_Event& sdlEvent) {
-			switch (sdlEvent.type) {
-				case SDL_MOUSEBUTTONDOWN:
-					std::cout << "\n" << sdlEvent.button.x << " " << sdlEvent.button.y;
-					break;
-			}
-		});
 		
 		setBackground(mw::Color(0, 1, 0));
 		setSize((float) getWidth(), (float) getHeight());

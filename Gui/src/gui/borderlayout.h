@@ -30,10 +30,11 @@ namespace gui {
 		}
 
 		void layoutContainer(Panel* parent) {
-			float n = 0.0;
-			float s = 0.0;
-			float w = 0.0;
-			float e = 0.0;
+			parent->setToValid();
+			float n = 0;
+			float s = 0;
+			float w = 0;
+			float e = 0;
 			for (Component* c : *parent) {
 				switch (c->getLayoutIndex()) {
 					case CENTER:
@@ -79,6 +80,7 @@ namespace gui {
 						c->setLocation(dimP.width_ - e, s);
 						break;
 				}
+				c->setToValid();
 			}
 		}
 
