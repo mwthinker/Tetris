@@ -11,24 +11,32 @@ namespace gui {
 	class FlowLayout : public LayoutManager {
 	public:
 		enum Alignment {
-			LEFT
+			LEFT,
+			CENTER,
+			RIGHT
 		};
 
 		FlowLayout() {
 			alignment_ = LEFT;
+			vGap_ = 5.f;
+			hGap_ = 5.f;
 		}
 
 		FlowLayout(Alignment alignment) {
 			alignment_ = alignment;
+			vGap_ = 5.f;
+			hGap_ = 5.f;
 		}
 
-		Dimension getSize() const override {
-			return dimension_;
+		FlowLayout(Alignment alignment, float vGap, float hGap) {
+			alignment_ = alignment;
+			vGap_ = vGap;
+			hGap_ = hGap;
 		}
 
 		Dimension preferredLayoutSize(Panel* parent) const override {
-			return dimension_;
-		}		
+			return Dimension();
+		}
 
 		void layoutContainer(Panel* parent) {
 			switch (alignment_) {
@@ -40,6 +48,7 @@ namespace gui {
 
 	private:
 		inline void layoutLeft(Panel* parent) {
+			parent->setToValid();
 			double yMean = 0;
 			double xMean = 0;
 			double length = 0;
@@ -51,18 +60,21 @@ namespace gui {
 				length += dim.width_;
 			}
 			yMean /= parent->nbrOfComponents();
-			xMean /= parent->nbrOfComponents();
+			xMean /= parent->nbrOfComponents();			
 
+			float x = 0;
+			float y = 0;
 			for (Component* component : *parent) {
-				//component->setLocation(, );
+				component->setLocation(x, y);
 				component->setSize(component->getPreferredSize());
+				component->setToValid();
+				x += component->getSize().width_;
 				component->setToValid();
 			}
 		}
 
 		Alignment alignment_;
-		int vGap_, hGap_;
-		Dimension dimension_;
+		float vGap_, hGap_;
 	};
 
 } // Namespace gui.

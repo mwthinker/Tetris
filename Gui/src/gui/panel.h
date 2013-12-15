@@ -13,26 +13,23 @@ namespace gui {
 	public:
 		friend class Frame;
 
-		Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false) {
-		}
+		Panel();
+		~Panel();
 
 		void add(Component* component);
+		void add(Component* component, int layoutIndex);
 
 		void setLayout(LayoutManager* layoutManager);
-
 		LayoutManager* getLayout(LayoutManager* layoutManager);
 
 		std::list<Component*>::iterator begin();
-
 		std::list<Component*>::iterator end();
-
-		std::list<Component*>::const_iterator begin() const;
-
-		std::list<Component*>::const_iterator end() const;
+		std::list<Component*>::const_iterator cbegin() const;
+		std::list<Component*>::const_iterator cend() const;
 
 		int nbrOfComponents() const;
 
-		std::list<Component*> getComponents() const;
+		const std::list<Component*>& getComponents() const;
 
 		void draw(float deltaTime) override;
 

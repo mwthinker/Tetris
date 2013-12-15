@@ -1,5 +1,6 @@
-#include "guiwindow.h"
+#include "frame.h"
 #include "flowlayout.h"
+#include "borderlayout.h"
 #include "tbutton.h"
 
 #include <mw/font.h>
@@ -31,11 +32,26 @@ namespace gui {
 	}
 
 	Frame::Frame() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
+		// The default frame for Frame.
+		setLayout(new BorderLayout());
+
 		// Init the opengl settings.
 		resize();
-		add(new TButton);
 
-		setLayout(new FlowLayout());
+		add(new TButton, BorderLayout::NORTH);
+		add(new TButton, BorderLayout::CENTER);
+		add(new TButton, BorderLayout::WEST);
+		add(new TButton, BorderLayout::EAST);
+		add(new TButton, BorderLayout::SOUTH);
+
+		addMouseListener([](Component* c, const SDL_Event& sdlEvent) {
+			switch (sdlEvent.type) {
+				case SDL_MOUSEBUTTONDOWN:
+					std::cout << "\n" << sdlEvent.button.x << " " << sdlEvent.button.y;
+					break;
+			}
+		});
+		
 		setBackground(mw::Color(0, 1, 0));
 		setSize((float) getWidth(), (float) getHeight());
 		setPreferredSize((float) getWidth(), (float) getHeight());
@@ -61,11 +77,15 @@ namespace gui {
 				case SDL_WINDOWEVENT:
 					switch (sdlEvent.window.event) {
 						case SDL_WINDOWEVENT_RESIZED:
-							setPreferredSize((float) sdlEvent.window.data1, (float) sdlEvent.window.data2);
-							setSize((float) sdlEvent.window.data1, (float) sdlEvent.window.data2);
+						{
+							float width = (float) sdlEvent.window.data1;
+							float height = (float) sdlEvent.window.data2;
+							setPreferredSize(width, height);
+							setSize(width, height);
 							setLocation(0, 0);
 							resize();
 							break;
+						}
 						case SDL_WINDOWEVENT_LEAVE:
 							mouseMotionLeave();
 							break;
@@ -76,18 +96,18 @@ namespace gui {
 				case SDL_MOUSEMOTION:
 					// Reverse y-axis.
 					sdlEvent.motion.yrel *= -1;
-					sdlEvent.motion.y = getHeight() - sdlEvent.motion.y;
+					sdlEvent.motion.y = getHeight() - sdlEvent.motion.y - 1;
 					handleMouse(sdlEvent);
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					// Fall through!
 				case SDL_MOUSEBUTTONUP:
-					sdlEvent.button.y = getHeight() - sdlEvent.motion.y;
+					sdlEvent.button.y = getHeight() - sdlEvent.motion.y - 1;
 					handleMouse(sdlEvent);
 					break;
 				case SDL_KEYDOWN:
 					// Fall through.
-				case SDL_KEYUP:				
+				case SDL_KEYUP:
 					handleKeyboard(sdlEvent);
 					switch (sdlEvent.key.keysym.sym) {
 						case SDLK_ESCAPE:

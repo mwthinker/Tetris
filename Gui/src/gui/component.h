@@ -17,11 +17,15 @@ namespace gui {
 	using MouseListener = KeyListener;
 	using ActionListener = mw::Signal<Component*>;
 
+	enum Orientation {
+		LT
+	};
+
 	class Component {
 	public:
 		friend class Panel;
 
-		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false) {
+		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
 
 		Point getLocation() const {
@@ -132,6 +136,14 @@ namespace gui {
 		virtual void mouseOutsideUp() {
 		}
 
+		int getLayoutIndex() const {
+			return layoutIndex_;
+		}
+		
+		void setLayoutIndex(int layoutIndex) {
+			layoutIndex_ = layoutIndex;
+		}
+
 	protected:
 		virtual void handleMouse(const SDL_Event& mouseEvent) {
 			mouseListener_(this, mouseEvent);
@@ -144,7 +156,7 @@ namespace gui {
 	private:
 		void setNotValid() {
 			// Set this and all parents invalid.
-			Component* parent = parent_;
+			Component* parent = this;
 			while (parent != nullptr) {
 				parent->valid_ = false;
 				parent = parent->parent_;
@@ -157,6 +169,7 @@ namespace gui {
 		Dimension dimension_;
 		Dimension preferedDimension_;
 		Dimension alignment_;
+		int layoutIndex_;
 
 		FocusListener focusListener_;
 		KeyListener keyListener_;

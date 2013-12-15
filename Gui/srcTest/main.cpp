@@ -1,5 +1,4 @@
-#include <gui/guiwindow.h>
-#include <gui/widget.h>
+#include <gui/frame.h>
 #include <gui/flowlayout.h>
 #include <gui/panel.h>
 #include <gui/component.h>

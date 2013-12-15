@@ -1,18 +1,36 @@
 #include "panel.h"
 #include "component.h"
-#include "layoutmanager.h"
+#include "flowlayout.h"
 
 #include <list>
 
 namespace gui {
 
+	Panel::Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false) {
+		setLayout(new FlowLayout);
+	}
+
+	Panel::~Panel() {
+		delete layoutManager_;
+	}
+
 	void Panel::add(Component* component) {
 		component->parent_ = this;
+		component->setLayoutIndex(0);
+		components_.push_back(component);
+	}
+
+	void Panel::add(Component* component, int layoutIndex) {
+		component->parent_ = this;
+		component->setLayoutIndex(layoutIndex);
 		components_.push_back(component);
 	}
 
 	void Panel::setLayout(LayoutManager* layoutManager) {
-		layoutManager_ = layoutManager;
+		if (layoutManager != nullptr) {
+			delete layoutManager_;
+			layoutManager_ = layoutManager;
+		}
 	}
 
 	LayoutManager* Panel::getLayout(LayoutManager* layoutManager) {
@@ -27,11 +45,11 @@ namespace gui {
 		return components_.end();
 	}
 
-	std::list<Component*>::const_iterator Panel::begin() const {
+	std::list<Component*>::const_iterator Panel::cbegin() const {
 		return components_.begin();
 	}
 
-	std::list<Component*>::const_iterator Panel::end() const {
+	std::list<Component*>::const_iterator Panel::cend() const {
 		return components_.end();
 	}
 
@@ -39,18 +57,21 @@ namespace gui {
 		return components_.size();
 	}
 
-	std::list<Component*> Panel::getComponents() const {
+	const std::list<Component*>& Panel::getComponents() const {
 		return components_;
 	}
 
 	void Panel::draw(float deltaTime) {
-
 		if (!isValid()) {
 			// Validate!
 			layoutManager_->layoutContainer(this);
 		}
 
-		// Draw panel background.		
+		Point location = getLocation();
+		glPushMatrix();
+		glTranslated(location.x_, location.y_, 0.f);
+
+		// Draw panel background.
 		getBackground().glColor3d();
 		Dimension dim = getSize();
 		glBegin(GL_QUADS);
@@ -60,10 +81,6 @@ namespace gui {
 		glVertex3f(0.0f, dim.height_*1.0f, 0.0f);
 		glEnd();
 
-		if (!isValid()) {
-			layoutManager_->layoutContainer(this);
-		}
-
 		// Draw components.
 		for (Component* component : *this) {
 			glPushMatrix();
@@ -72,6 +89,7 @@ namespace gui {
 			component->draw(deltaTime);
 			glPopMatrix();
 		}
+		glPopMatrix();
 	}
 
 	// Todo! Reverse y-axis!
@@ -107,7 +125,7 @@ namespace gui {
 				for (Component* component : *this) {
 					Point p = component->getLocation();
 					Dimension d = component->getSize();
-					
+
 					// Mouse is inside the component?
 					if (p.x_ <= mouseEvent.button.x && p.x_ + d.width_ > mouseEvent.button.x &&
 						p.y_ <= mouseEvent.button.y && p.y_ + d.height_ > mouseEvent.button.y) {
@@ -144,7 +162,7 @@ namespace gui {
 				}
 
 				Component::handleMouse(mouseEvent);
-				break;			
+				break;
 			default:
 				break;
 		}
