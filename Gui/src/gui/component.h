@@ -5,6 +5,7 @@
 
 #include <mw/signal.h>
 #include <mw/color.h>
+#include <mw/texture.h>
 
 #include <sdl.h>
 
@@ -115,17 +116,28 @@ namespace gui {
 			return parent_;
 		}
 		
-		void setBackground(const mw::Color& color) {
-			background_ = color;
+		void setBackground(const mw::TexturePtr& background) {
+			background_ = background;
 		}
 
-		inline const mw::Color& getBackground() const {
+		inline mw::TexturePtr getBackground() const {
 			return background_;
 		}
 
+		void setBackgroundColor(const mw::Color& color) {
+			backgroundColor_ = color;
+		}
+
+		inline const mw::Color& getBackgroundColor() const {
+			return backgroundColor_;
+		}
+
+		// Is empty. Should be deriverd and should then draw 
+		// component in the size defined by getSize().
 		virtual void draw(float deltaTime) {
 		}
 
+		// Do action.
 		void doAction() {
 			actionListener_(this);
 		}
@@ -139,10 +151,14 @@ namespace gui {
 		virtual void mouseOutsideUp() {
 		}
 
+		// Gets the layout index for the component.
+		// 0 is the default value.
 		int getLayoutIndex() const {
 			return layoutIndex_;
 		}
 		
+		// Defines the layout for the component.
+		// Must correspond to the active LayoutManager.
 		void setLayoutIndex(int layoutIndex) {
 			layoutIndex_ = layoutIndex;
 		}
@@ -166,7 +182,8 @@ namespace gui {
 			}
 		}
 
-		mw::Color background_;
+		mw::TexturePtr background_;
+		mw::Color backgroundColor_;
 		Component* parent_;
 		Point location_;
 		Dimension dimension_;
