@@ -98,5 +98,13 @@ namespace gui {
 		mouseDown_ = false;
 		pushed_ = false;
 	}
+
+	void Button::setVerticalAlignment(VerticalAlignment alignment) {
+		vTextAlignment_ = alignment;
+	}
+
+	void Button::setHorizontalAlignment(HorizontalAlignment alignment) {
+		hTextAlignment_ = alignment;
+	}
 	
 } // Namespace gui.

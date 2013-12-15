@@ -18,15 +18,18 @@ void testBorderLayout() {
 }
 
 void testFlowLayout() {
+	mw::FontPtr font(new mw::Font("Ubuntu-B.ttf", 12));
+	
 	gui::Frame frame;
 	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT));
-	frame.add(new gui::TButton);
-	frame.add(new gui::TButton);
-	gui::Button* button = new gui::TButton();
+	frame.add(new gui::TButton("Button 1", font));
+	frame.add(new gui::TButton("Button 2", font));
+	gui::Button* button = new gui::TButton("Button 3", font);
 	button->setPreferredSize(100, 100);
+	button->setVerticalAlignment(gui::Button::TOP);
 	frame.add(button);
-	frame.add(new gui::TButton);
-	frame.add(new gui::TButton);
+	frame.add(new gui::TButton("Button 4", font));
+	frame.add(new gui::TButton("Button 5", font));
 
 	frame.addMouseListener([](gui::Component* c, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
@@ -35,12 +38,12 @@ void testFlowLayout() {
 				break;
 		}
 	});
-
+	
 	gui::Frame::startLoop();
 }
 
 int main(int argc, char** argv) {
-	testBorderLayout();
+	//testBorderLayout();
 	testFlowLayout();
 
 	return 0;

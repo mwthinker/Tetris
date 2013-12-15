@@ -17,11 +17,11 @@ namespace gui {
 	}
 
 	TButton::TButton(std::string text, mw::FontPtr font) : text_(text, font) {
-		focused_ = mw::Color(0.8, 0.8, 0.8);
-		textColor_ = mw::Color(1.0, 0.1, 0.1);
-		onHover_ = mw::Color(0.6, 0.1, 0.1);
-		notHover_ = mw::Color(0.4, 0.0, 0.0);
-		insideDownHover_ = mw::Color(0.5, 0.0, 0.5);
+		focused_ = mw::Color(.8, .1, 0, .3);
+		textColor_ = mw::Color(1, 1, 1);
+		onHover_ = mw::Color(.6, .1, .1);
+		notHover_ = mw::Color(.4, .0, .0, .0);
+		insideDownHover_ = mw::Color(.8, .0, 0, .7);
 	}
 
 	TButton::TButton(std::string text, mw::FontPtr font, mw::Color textColor, mw::Color focused, mw::Color onHover,
@@ -73,9 +73,36 @@ namespace gui {
 			glEnd();
 		}
 
-		textColor_.glColor4d();
-		text_.draw();
+		float x = 0.0;
+		switch (hTextAlignment_) {
+			case HorizontalAlignment::LEFT:
+				x = 0;
+				break;
+			case HorizontalAlignment::HCENTER:
+				x = dim.width_ * 0.5f - (float) text_.getWidth() * 0.5f;
+				break;
+			case HorizontalAlignment::RIGHT:
+				x = dim.width_ - (float) text_.getWidth();
+				break;
+		}
+		float y = 0.0;
+		switch (vTextAlignment_) {
+			case VerticalAlignment::BOTTOM:
+				y = 0;
+				break;
+			case VerticalAlignment::VCENTER:
+				y = dim.height_ * 0.5f - (float) text_.getHeight() * 0.5f;
+				break;
+			case VerticalAlignment::TOP:
+				y = dim.height_ - (float) text_.getHeight();
+				break;
+		}
 
+		textColor_.glColor4d();
+		glPushMatrix();
+		glTranslatef(x, y, 0);
+		text_.draw();
+		glPopMatrix();
 		glDisable(GL_BLEND);
 	}
 

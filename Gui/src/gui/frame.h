@@ -28,7 +28,7 @@ namespace gui {
 		void setText(std::string strText);
 		
 		// Set this TextField to editable (read/write) or non-editable (read-only).
-		void setEditable(bool editable);		
+		void setEditable(bool editable);
 	};
 
 	class Label : public Component {

@@ -13,6 +13,18 @@ namespace gui {
 
 	class Button : public Component {
 	public:
+		enum HorizontalAlignment {
+			LEFT,
+			HCENTER,
+			RIGHT
+		};
+
+		enum VerticalAlignment {
+			TOP,
+			VCENTER,
+			BOTTOM
+		};
+
 		Button();
 		Button(std::string text, const mw::FontPtr& font);
 		Button(mw::Text text);
@@ -38,8 +50,13 @@ namespace gui {
 
 		void mouseOutsideUp() override;
 
+		void setVerticalAlignment(VerticalAlignment alignment);
+		void setHorizontalAlignment(HorizontalAlignment alignment);
+
 	protected:
 		mw::Text text_;
+		VerticalAlignment vTextAlignment_;
+		HorizontalAlignment hTextAlignment_;
 
 	private:
 		inline void init() {
@@ -49,6 +66,8 @@ namespace gui {
 			pushed_ = false;
 			mouseDown_ = false;
 			mouseInside_ = false;
+			vTextAlignment_ = VerticalAlignment::VCENTER;
+			hTextAlignment_ = HorizontalAlignment::HCENTER;
 		}
 
 		void handleMouse(const SDL_Event&);
