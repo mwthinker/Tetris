@@ -38,7 +38,7 @@ namespace gui {
 		// Init the opengl settings.
 		resize();
 		
-		setBackground(mw::Color(0, 1, 0));
+		setBackgroundColor(mw::Color(0, 1, 0));
 		setSize((float) getWidth(), (float) getHeight());
 		setPreferredSize((float) getWidth(), (float) getHeight());
 	}

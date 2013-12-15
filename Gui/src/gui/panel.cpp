@@ -75,15 +75,30 @@ namespace gui {
 		glPushMatrix();
 		glTranslated(location.x_, location.y_, 0.f);
 
+		glEnable(GL_BLEND);
+		glEnable(GL_TEXTURE_2D);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		// Draw panel background.
-		getBackground().glColor3d();
+		getBackgroundColor().glColor3d();
+		mw::TexturePtr texture = getBackground();
+		if (texture) {
+			getBackground()->bind();
+		}
+
 		Dimension dim = getSize();
 		glBegin(GL_QUADS);
-		glVertex3f(0.0f, 0.0f, 0.0f);
-		glVertex3f(dim.width_*1.0f, 0.0f, 0.0f);
-		glVertex3f(dim.width_*1.0f, dim.height_*1.0f, 0.0f);
-		glVertex3f(0.0f, dim.height_*1.0f, 0.0f);
+		glTexCoord2f(0, 0);
+		glVertex2f(0.f, 0.f);
+		glTexCoord2f(1, 0);
+		glVertex2f(dim.width_*1.f, 0.f);
+		glTexCoord2f(1, 1);
+		glVertex2f(dim.width_*1.f, dim.height_*1.0f);
+		glTexCoord2f(0, 1);
+		glVertex2f(0.f, dim.height_*1.f);
 		glEnd();
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
 
 		// Draw components.
 		for (Component* component : *this) {
