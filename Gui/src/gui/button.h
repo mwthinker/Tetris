@@ -34,30 +34,43 @@ namespace gui {
 
 		virtual void draw(float deltaTime) override;
 
-		// Get the label of this Button instance.
+		// Get the label of the Button instance.
 		std::string getLabel() const;
 
-		// Set the label of this Button instance.
+		// Sets the label of the Button instance.
 		void setLabel(std::string buttonLabel);
 
+		// Sets the font used by the label.
 		void setFont(const mw::FontPtr& font);
 
+		// Returns true when the mouse is inside the button. Else 
+		// it returns false.
 		bool isMouseInside() const;
 
+		// Returns true if the button was pushed. Else 
+		// it returns false.
 		bool isPushed() const;
 
+		// Returns true if the mouse left button is hold down when the 
+		// mouse hovers the button. Else it returns false.
 		bool isMouseDown() const;
 		
 		void mouseMotionLeave() override;
 
 		void mouseOutsideUp() override;
-
+		
+		// Sets the vertical alignment for the text label.
 		void setVerticalAlignment(VerticalAlignment alignment);
+		
+		// Sets the horizontal alignment for the text label.
 		void setHorizontalAlignment(HorizontalAlignment alignment);
 
+		// Sets the color for the text label.
 		void setTextColor(const mw::Color& textColor);
 
 	protected:
+		void drawLabel();
+
 		mw::Text text_;
 		mw::Color textColor_;
 		VerticalAlignment vTextAlignment_;

@@ -53,6 +53,7 @@ namespace gui {
 	class Frame : public mw::Window, public Panel {
 	public:
 		Frame();
+		Frame(int width, int height, bool resizeable = true, std::string title = "Frame", std::string icon = "");
 
 	private:
 		// Override mw::Window
@@ -62,6 +63,8 @@ namespace gui {
 		void eventUpdate(const SDL_Event& windowEvent) override;
 
 		void resize();
+
+		void init();
 
 		std::queue<SDL_Event> eventQueue_;
 	};

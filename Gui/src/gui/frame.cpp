@@ -15,32 +15,13 @@
 #include <ctime>
 
 namespace gui {
-
-	namespace {
-
-		TButton* createButton(std::string text) {
-			mw::Color textColor(1, 1, 1);
-			mw::Color textButtonColor(1, .1, .1);
-			mw::Color focusColo(.8, .1, 0, .3);
-			mw::Color onHoverColor(.6, .1, .1);
-			mw::Color notHoverColor(.4, .0, .0, .0);
-			mw::Color pushedColor(.8, .0, 0, .7);
-			return nullptr;
-			//return new TButton(text, size, fontDefault, textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);			
-		}
-
+	
+	Frame::Frame() : mw::Window(512, 512, true, "Frame", "") {
+		init();
 	}
 
-	Frame::Frame() : mw::Window(520, 640, "MWetris", "images/tetris.bmp") {
-		// The default frame for Frame.
-		setLayout(new BorderLayout());
-
-		// Init the opengl settings.
-		resize();
-		
-		setBackgroundColor(mw::Color(0, 1, 0));
-		setSize((float) getWidth(), (float) getHeight());
-		setPreferredSize((float) getWidth(), (float) getHeight());
+	Frame::Frame(int width, int height, bool resizeable, std::string title, std::string icon) : mw::Window(width, height, resizeable, title, icon) {
+		init();
 	}
 
 	void Frame::resize() {
@@ -116,6 +97,18 @@ namespace gui {
 	// Override mw::Window
 	void Frame::eventUpdate(const SDL_Event& windowEvent) {
 		eventQueue_.push(windowEvent);
+	}
+
+	void Frame::init() {
+		// The default frame for Frame.
+		setLayout(new BorderLayout());
+
+		// Init the opengl settings.
+		resize();
+
+		setBackgroundColor(mw::Color(1, 1, 1));
+		setSize((float) getWidth(), (float) getHeight());
+		setPreferredSize((float) getWidth(), (float) getHeight());
 	}
 
 } // Namespace gui.

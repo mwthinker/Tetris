@@ -26,9 +26,6 @@ namespace gui {
 	public:
 		friend class Panel;
 
-		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false), layoutIndex_(0) {
-		}
-
 		virtual ~Component() {
 		}
 
@@ -132,9 +129,40 @@ namespace gui {
 			return backgroundColor_;
 		}
 
-		// Is empty. Should be deriverd and should then draw 
+		// Draws the gackground color.
+		// Should be deriverd and should then draw the
 		// component in the size defined by getSize().
 		virtual void draw(float deltaTime) {
+			mw::TexturePtr texture = getBackground();
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			if (texture) {
+				glEnable(GL_TEXTURE_2D);
+				getBackground()->bind();
+			}			
+
+			// Draw panel background.
+			backgroundColor_.glColor4d();
+
+			Dimension dim = getSize();
+			glBegin(GL_QUADS);
+			glTexCoord2f(0, 0);
+			glVertex2f(0.f, 0.f);
+			glTexCoord2f(1, 0);
+			glVertex2f(dim.width_*1.f, 0.f);
+			glTexCoord2f(1, 1);
+			glVertex2f(dim.width_*1.f, dim.height_*1.0f);
+			glTexCoord2f(0, 1);
+			glVertex2f(0.f, dim.height_*1.f);
+			glEnd();
+
+			if (texture) {
+				glDisable(GL_TEXTURE_2D);
+			}
+
+			glDisable(GL_BLEND);
 		}
 
 		// Do action.
@@ -164,6 +192,9 @@ namespace gui {
 		}
 
 	protected:
+		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false), layoutIndex_(0) {
+		}
+
 		virtual void handleMouse(const SDL_Event& mouseEvent) {
 			mouseListener_(this, mouseEvent);
 		}

@@ -74,7 +74,7 @@ namespace gui {
 		}
 		glDisable(GL_BLEND);
 
-		Button::draw(deltaTime);
+		drawLabel();
 	}
 
 } // Namespace gui.

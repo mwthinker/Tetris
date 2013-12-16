@@ -7,6 +7,17 @@
 
 #include <cassert>
 
+gui::TButton* createButton(std::string text) {
+	mw::Color textColor(1, 1, 1);
+	mw::Color textButtonColor(1, .1, .1);
+	mw::Color focusColo(.8, .1, 0, .3);
+	mw::Color onHoverColor(.6, .1, .1);
+	mw::Color notHoverColor(.4, .0, .0, .0);
+	mw::Color pushedColor(.8, .0, 0, .7);
+	return nullptr;
+	//return new TButton(text, size, fontDefault, textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);			
+}
+
 void testBorderLayout() {
 	gui::Frame frame;
 	frame.add(new gui::TButton, gui::BorderLayout::NORTH);

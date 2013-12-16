@@ -15,7 +15,7 @@ namespace gui {
 	public:
 		friend class Frame;
 
-		// Creates a empty panel. The default LayoutManager is BorderLayout.
+		// Creates a empty panel. The default LayoutManager is FlowLayout.
 		Panel();
 
 		// Deallocats all contained components.
@@ -30,7 +30,12 @@ namespace gui {
 		// I.e. Deallocates the component when the panel is deallocated.
 		void add(Component* component, int layoutIndex);
 
+		// Sets the layouyt manager. Takes ower the ownership of the layoutManager.
+		// The old layoutManager are dealloted.
 		void setLayout(LayoutManager* layoutManager);
+		
+		// Gets the current layout manager. Do not deallocate the layout manager
+		// the panel takes care of that!
 		LayoutManager* getLayout(LayoutManager* layoutManager);
 
 		std::list<Component*>::iterator begin();
@@ -38,8 +43,10 @@ namespace gui {
 		std::list<Component*>::const_iterator cbegin() const;
 		std::list<Component*>::const_iterator cend() const;
 
+		// Returns the number of components contained.
 		int nbrOfComponents() const;
 
+		// Gets the list holding all contained components.
 		const std::list<Component*>& getComponents() const;
 
 		void draw(float deltaTime) override;
@@ -47,7 +54,7 @@ namespace gui {
 		void handleMouse(const SDL_Event& mouseEvent) override;
 
 		void handleKeyboard(const SDL_Event&) override;
-
+		
 		void mouseMotionLeave() override;
 
 		void mouseOutsideUp() override;

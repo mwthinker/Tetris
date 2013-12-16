@@ -71,39 +71,7 @@ namespace gui {
 			layoutManager_->layoutContainer(this);
 		}
 
-		Point location = getLocation();
-		glPushMatrix();
-		glTranslated(location.x_, location.y_, 0.f);
-
-
-		mw::TexturePtr texture = getBackground();
-		if (texture) {
-			glEnable(GL_TEXTURE_2D);
-			getBackground()->bind();
-		}
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		// Draw panel background.
-		getBackgroundColor().glColor3d();
-
-		Dimension dim = getSize();
-		glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);
-		glVertex2f(0.f, 0.f);
-		glTexCoord2f(1, 0);
-		glVertex2f(dim.width_*1.f, 0.f);
-		glTexCoord2f(1, 1);
-		glVertex2f(dim.width_*1.f, dim.height_*1.0f);
-		glTexCoord2f(0, 1);
-		glVertex2f(0.f, dim.height_*1.f);
-		glEnd();
-		glDisable(GL_BLEND);
-
-		if (texture) {
-			glDisable(GL_TEXTURE_2D);
-		}
+		Component::draw(deltaTime);
 
 		// Draw components.
 		for (Component* component : *this) {
@@ -113,7 +81,6 @@ namespace gui {
 			component->draw(deltaTime);
 			glPopMatrix();
 		}
-		glPopMatrix();
 	}
 
 	// Todo! Reverse y-axis!
