@@ -3,24 +3,54 @@
 
 #include "component.h"
 
+#include <mw/text.h>
+
 namespace gui {
 
 	class Label : public Component {
 	public:
-		enum Alignment {
+		enum HorizontalAlignment {
 			LEFT,
-			CENTER,
+			HCENTER,
 			RIGHT
 		};
 
-		Label(std::string strLabel, Alignment alignment) {
+		enum VerticalAlignment {
+			TOP,
+			VCENTER,
+			BOTTOM
+		};
+
+		Label(std::string text, const mw::FontPtr& font);
+		Label(mw::Text text);
+
+		virtual ~Label() {
 		}
 
-		std::string getText();
-		void setText(std::string strLabel);
+		virtual void draw(float deltaTime) override;
 
-		Alignment getAlignment();
-		void setAlignment(Alignment alignment);
+		// Sets the font used by the label.
+		void setFont(const mw::FontPtr& font);
+
+		std::string getText() const;
+		void setText(std::string text);
+
+		HorizontalAlignment getHorizontalAlignment() const;
+		void setHorizontalAlignment(HorizontalAlignment alignment);
+
+		VerticalAlignment getVerticalAlignment() const;
+		void setVerticalAlignment(VerticalAlignment alignment);
+
+		// Sets the color for the text.
+		void setTextColor(const mw::Color& textColor);
+
+	private:
+		void init();
+
+		mw::Text text_;
+		mw::Color color_;
+		VerticalAlignment vTextAlignment_;
+		HorizontalAlignment hTextAlignment_;
 	};
 
 } // Namespace gui.
