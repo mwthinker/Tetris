@@ -1,7 +1,5 @@
 #include "frame.h"
-#include "flowlayout.h"
 #include "borderlayout.h"
-#include "tbutton.h"
 
 #include <mw/font.h>
 #include <mw/sprite.h>
@@ -9,10 +7,7 @@
 #include <mw/exception.h>
 
 #include <iostream>
-#include <sstream>
-#include <fstream>
 #include <string>
-#include <ctime>
 
 namespace gui {
 	

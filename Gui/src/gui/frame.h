@@ -1,8 +1,6 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-#include "component.h"
-#include "button.h"
 #include "panel.h"
 
 #include <mw/font.h>
@@ -11,43 +9,9 @@
 #include <mw/color.h>
 
 #include <string>
-#include <array>
-#include <functional>
 #include <queue>
 
-namespace gui {
-
-	class TextField {
-	public:
-		TextField(std::string strInitialText);
-
-		// Get the current text on this TextField instance.
-		std::string getText() const;
-		
-		// Set the display text on this TextField instance.
-		void setText(std::string strText);
-		
-		// Set this TextField to editable (read/write) or non-editable (read-only).
-		void setEditable(bool editable);
-	};
-
-	class Label : public Component {
-	public:
-		enum Alignment {
-			LEFT,
-			CENTER,
-			RIGHT
-		};
-
-		Label(std::string strLabel, Alignment alignment) {
-		}
-
-		std::string getText();
-		void setText(std::string strLabel);
-		
-		Alignment getAlignment();
-		void setAlignment(Alignment alignment);
-	};
+namespace gui {	
 
 	// Panel, Button, TextField, Label, Checkbox, CheckboxGroup (radio buttons), List, and Choice
 	class Frame : public mw::Window, public Panel {

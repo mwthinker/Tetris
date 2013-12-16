@@ -24,11 +24,15 @@ SET(SOURCES
 	src/gui/flowlayout.h
 	src/gui/frame.cpp
 	src/gui/frame.h
+	src/gui/label.cpp
+	src/gui/label.h
 	src/gui/layoutmanager.h
 	src/gui/panel.cpp
 	src/gui/panel.h
 	src/gui/tbutton.cpp
 	src/gui/tbutton.h
+	src/gui/textfield.cpp
+	src/gui/textfield.h
 )
 
 SET(SOURCES_TEST

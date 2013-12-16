@@ -11,4 +11,4 @@ there and point to the project directory (i.e. there the "CMakeLists.txt" is).
 
 Open source
 ======
-The code is licensed under the MIT License (see LICENSE.txt).
+Is licensed under the MIT License (see LICENSE.txt).
