@@ -18,20 +18,16 @@ gui::TButton* createButton(std::string text) {
 	//return new TButton(text, size, fontDefault, textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);			
 }
 
-void testBorderLayout() {
-	gui::Frame frame;
+void testBorderLayout(gui::Frame& frame) {
 	frame.add(new gui::TButton, gui::BorderLayout::NORTH);
 	frame.add(new gui::TButton, gui::BorderLayout::CENTER);
 	frame.add(new gui::TButton, gui::BorderLayout::WEST);
 	frame.add(new gui::TButton, gui::BorderLayout::EAST);
 	frame.add(new gui::TButton, gui::BorderLayout::SOUTH);
-	gui::Frame::startLoop();
 }
 
-void testFlowLayout() {
+void testFlowLayout(gui::Frame& frame) {
 	mw::FontPtr font(new mw::Font("Ubuntu-B.ttf", 16));
-	
-	gui::Frame frame;
 	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT));
 	frame.add(new gui::TButton("Button 1", font));
 	frame.add(new gui::TButton("Button 2", font));
@@ -50,12 +46,16 @@ void testFlowLayout() {
 		}
 	});
 	
-	gui::Frame::startLoop();
+	
 }
 
 int main(int argc, char** argv) {
-	//testBorderLayout();
-	testFlowLayout();
+	gui::Frame frameBorder;
+	testBorderLayout(frameBorder);
+	gui::Frame frameFlow;
+	testFlowLayout(frameFlow);
+	
+	gui::Frame::startLoop();
 
 	return 0;
 }

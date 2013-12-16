@@ -25,6 +25,10 @@ namespace gui {
 	}
 
 	void Frame::resize() {
+		setPreferredSize((float) getWidth(), (float) getHeight());
+		setSize((float) getWidth(), (float) getHeight());
+		setLocation(0, 0);
+		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glViewport(0, 0, getWidth(), getHeight());
@@ -42,49 +46,50 @@ namespace gui {
 
 			switch (sdlEvent.type) {
 				case SDL_WINDOWEVENT:
-					switch (sdlEvent.window.event) {
-						case SDL_WINDOWEVENT_RESIZED:
-						{
-							float width = (float) sdlEvent.window.data1;
-							float height = (float) sdlEvent.window.data2;
-							setPreferredSize(width, height);
-							setSize(width, height);
-							setLocation(0, 0);
-							resize();
-							break;
+					if (sdlEvent.window.windowID == SDL_GetWindowID(getSdlWindow())) {
+						switch (sdlEvent.window.event) {
+							case SDL_WINDOWEVENT_RESIZED:
+								resize();
+								break;
+							case SDL_WINDOWEVENT_LEAVE:
+								mouseMotionLeave();
+								break;
+							default:
+								break;
 						}
-						case SDL_WINDOWEVENT_LEAVE:
-							mouseMotionLeave();
-							break;
-						default:
-							break;
 					}
 					break;
 				case SDL_MOUSEMOTION:
-					// Reverse y-axis.
-					sdlEvent.motion.yrel *= -1;
-					sdlEvent.motion.y = getHeight() - sdlEvent.motion.y - 1;
-					handleMouse(sdlEvent);
+					if (sdlEvent.motion.windowID == SDL_GetWindowID(getSdlWindow())) {
+						// Reverse y-axis.
+						sdlEvent.motion.yrel *= -1;
+						sdlEvent.motion.y = getHeight() - sdlEvent.motion.y - 1;
+						handleMouse(sdlEvent);
+					}
 					break;
 				case SDL_MOUSEBUTTONDOWN:
 					// Fall through!
 				case SDL_MOUSEBUTTONUP:
-					sdlEvent.button.y = getHeight() - sdlEvent.motion.y - 1;
-					handleMouse(sdlEvent);
+					if (sdlEvent.button.windowID == SDL_GetWindowID(getSdlWindow())) {
+						sdlEvent.button.y = getHeight() - sdlEvent.motion.y - 1;
+						handleMouse(sdlEvent);
+					}
 					break;
 				case SDL_KEYDOWN:
 					// Fall through.
 				case SDL_KEYUP:
-					handleKeyboard(sdlEvent);
-					switch (sdlEvent.key.keysym.sym) {
-						case SDLK_ESCAPE:
-							quit();
-							break;
-						case SDLK_F11:
-							mw::Window::setFullScreen(!mw::Window::isFullScreen());
-							break;
-						default:
-							break;
+					if (sdlEvent.key.windowID == SDL_GetWindowID(getSdlWindow())) {
+						handleKeyboard(sdlEvent);
+						switch (sdlEvent.key.keysym.sym) {
+							case SDLK_ESCAPE:
+								quit();
+								break;
+							case SDLK_F11:
+								mw::Window::setFullScreen(!mw::Window::isFullScreen());
+								break;
+							default:
+								break;
+						}
 					}
 					break;
 				default:
