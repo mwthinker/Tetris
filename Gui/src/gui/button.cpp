@@ -9,14 +9,46 @@ namespace gui {
 		init();
 	}
 
-	Button::Button(std::string text, const mw::FontPtr& font) {
-		text_ = mw::Text(text, font);
+	Button::Button(std::string text, const mw::FontPtr& font) : text_(text , font) {
 		init();
 	}
 
-	Button::Button(mw::Text text) {
-		text_ = text;
+	Button::Button(mw::Text text) : text_(text) {
 		init();
+	}
+
+	void Button::draw(float deltaTime) {
+		Dimension dim = getSize();
+
+		float x = 0.0;
+		switch (hTextAlignment_) {
+			case HorizontalAlignment::LEFT:
+				x = 0;
+				break;
+			case HorizontalAlignment::HCENTER:
+				x = dim.width_ * 0.5f - (float) text_.getWidth() * 0.5f;
+				break;
+			case HorizontalAlignment::RIGHT:
+				x = dim.width_ - (float) text_.getWidth();
+				break;
+		}
+		float y = 0.0;
+		switch (vTextAlignment_) {
+			case VerticalAlignment::BOTTOM:
+				y = 0;
+				break;
+			case VerticalAlignment::VCENTER:
+				y = dim.height_ * 0.5f - (float) text_.getHeight() * 0.5f;
+				break;
+			case VerticalAlignment::TOP:
+				y = dim.height_ - (float) text_.getHeight();
+				break;
+		}
+		textColor_.glColor4d();
+		glPushMatrix();
+		glTranslatef(x, y, 0);
+		text_.draw();
+		glPopMatrix();
 	}
 
 	// Get the label of this Button instance.
@@ -65,9 +97,11 @@ namespace gui {
 			case SDL_MOUSEBUTTONUP:
 				switch (mouseEvent.button.button) {
 					case SDL_BUTTON_LEFT:
-						doAction();
-						mouseDown_ = false;
-						pushed_ = false;
+						if (mouseDown_) {
+							doAction();
+							mouseDown_ = false;
+							pushed_ = false;
+						}
 						break;
 					default:
 						break;
@@ -105,6 +139,10 @@ namespace gui {
 
 	void Button::setHorizontalAlignment(HorizontalAlignment alignment) {
 		hTextAlignment_ = alignment;
+	}
+
+	void Button::setTextColor(const mw::Color& textColor) {
+		textColor_ = textColor;
 	}
 	
 } // Namespace gui.

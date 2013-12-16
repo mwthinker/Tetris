@@ -21,9 +21,7 @@ namespace gui {
 		void draw(float deltaTime) override;
 
 	private:
-		mw::Color textColor_, focused_, onHover_, notHover_, insideDownHover_;
-		mw::Text text_;
-		int size_;
+		mw::Color focused_, onHover_, notHover_, insideDownHover_;
 	};
 
 } // Namespace gui.

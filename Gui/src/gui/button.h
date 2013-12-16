@@ -32,6 +32,8 @@ namespace gui {
 		virtual ~Button() {
 		}
 
+		virtual void draw(float deltaTime) override;
+
 		// Get the label of this Button instance.
 		std::string getLabel() const;
 
@@ -53,8 +55,11 @@ namespace gui {
 		void setVerticalAlignment(VerticalAlignment alignment);
 		void setHorizontalAlignment(HorizontalAlignment alignment);
 
+		void setTextColor(const mw::Color& textColor);
+
 	protected:
 		mw::Text text_;
+		mw::Color textColor_;
 		VerticalAlignment vTextAlignment_;
 		HorizontalAlignment hTextAlignment_;
 
