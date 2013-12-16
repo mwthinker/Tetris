@@ -9,9 +9,8 @@ namespace gui {
 
 	class LayoutManager {
 	public:
-		// Calculates the prefered size of the parent
-		// based of the childs' sizes.
-		virtual Dimension preferredLayoutSize(Panel* parent) const = 0;
+		virtual ~LayoutManager() {
+		}
 
 		// Sets the size of childs based on the current
 		// size of the parent.

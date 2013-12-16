@@ -13,7 +13,7 @@ namespace gui {
 	public:
 		enum Alignment {
 			LEFT,
-			// CENTER, // Todo
+			CENTER,
 			RIGHT
 		};
 
@@ -33,10 +33,6 @@ namespace gui {
 			alignment_ = alignment;
 			vGap_ = vGap;
 			hGap_ = hGap;
-		}
-
-		Dimension preferredLayoutSize(Panel* parent) const override {
-			return Dimension();
 		}
 
 		void layoutContainer(Panel* parent) {
@@ -60,10 +56,10 @@ namespace gui {
 					case LEFT:
 						c->setLocation(w, dimP.height_ - h - dimC.height_);
 						break;
-						//case CENTER:
+					case CENTER:
 						// Todo!
 						//c->setLocation((dimP.width_ + dimC.width_ - w) * 0.5f, dimP.height_ - h - dimC.height_);
-						//break;
+						break;
 					case RIGHT:
 						c->setLocation(dimP.width_ - w - dimC.width_, dimP.height_ - h - dimC.height_);
 						break;

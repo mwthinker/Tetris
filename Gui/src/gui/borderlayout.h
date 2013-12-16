@@ -20,40 +20,10 @@ namespace gui {
 		BorderLayout() {
 		}
 
-		BorderLayout(float vGap, float hGap) {
-			vGap_ = vGap;
-			hGap_ = hGap;
-		}
-		
-		Dimension preferredLayoutSize(Panel* parent) const override {
-			return Dimension();
-		}
-
 		void layoutContainer(Panel* parent) {
 			parent->setToValid();
-			float n = 0;
-			float s = 0;
-			float w = 0;
-			float e = 0;
-			for (Component* c : *parent) {
-				switch (c->getLayoutIndex()) {
-					case CENTER:
-						// Maximize.
-						break;
-					case NORTH:
-						n = c->getPreferredSize().height_;
-						break;
-					case SOUTH:
-						s = c->getPreferredSize().height_;
-						break;
-					case WEST:
-						w = c->getPreferredSize().width_;
-						break;
-					case EAST:
-						e = c->getPreferredSize().width_;
-						break;
-				}
-			}
+			float n, s, w, e;
+			calculateSizes(parent, n, s, w, e);
 
 			Dimension dimP = parent->getPreferredSize();
 			for (Component* c : *parent) {
@@ -79,13 +49,43 @@ namespace gui {
 						c->setSize(e, dimP.height_ - n - s);
 						c->setLocation(dimP.width_ - e, s);
 						break;
+					default:
+						// Error.
+						break;
 				}
 				c->setToValid();
 			}
 		}
 
 	private:
-		float vGap_, hGap_;
+		inline void calculateSizes(Panel* parent, float& north, float& south, float& west, float& east) const {
+			north = 0;
+			south = 0;
+			west = 0;
+			east = 0;
+			for (Component* c : *parent) {
+				switch (c->getLayoutIndex()) {
+					case CENTER:
+						// Maximize.
+						break;
+					case NORTH:
+						north = c->getPreferredSize().height_;
+						break;
+					case SOUTH:
+						south = c->getPreferredSize().height_;
+						break;
+					case WEST:
+						west = c->getPreferredSize().width_;
+						break;
+					case EAST:
+						east = c->getPreferredSize().width_;
+						break;
+					default:
+						// Error.
+						break;
+				}
+			}
+		}
 	};
 
 } // Namespace gui.
