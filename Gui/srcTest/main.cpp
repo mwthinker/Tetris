@@ -18,10 +18,10 @@ void testBorderLayout() {
 }
 
 void testFlowLayout() {
-	mw::FontPtr font(new mw::Font("Ubuntu-B.ttf", 12));
+	mw::FontPtr font(new mw::Font("Ubuntu-B.ttf", 16));
 	
 	gui::Frame frame;
-	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT));
+	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT));
 	frame.add(new gui::TButton("Button 1", font));
 	frame.add(new gui::TButton("Button 2", font));
 	gui::Button* button = new gui::TButton("Button 3", font);

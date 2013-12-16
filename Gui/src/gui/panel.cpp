@@ -156,7 +156,6 @@ namespace gui {
 						SDL_Event buttonEvent = mouseEvent;
 						buttonEvent.motion.x -= (Sint32) p.x_;
 						buttonEvent.motion.y -= (Sint32) p.y_;
-						component->setFocus(true);
 						currentComponent = component;
 						component->handleMouse(buttonEvent);
 						break; // Abort, components should not overlap!
