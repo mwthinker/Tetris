@@ -68,6 +68,8 @@ namespace gui {
 		// Sets the color for the text label.
 		void setTextColor(const mw::Color& textColor);
 
+		virtual void preferedSizeFitText();
+
 	protected:
 		void drawLabel();
 
@@ -88,6 +90,8 @@ namespace gui {
 			hTextAlignment_ = HorizontalAlignment::HCENTER;
 			textColor_ = mw::Color(0, 0, 0);
 			setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
+
+			Button::preferedSizeFitText();
 		}
 
 		void handleMouse(const SDL_Event&);

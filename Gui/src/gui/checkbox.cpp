@@ -15,7 +15,7 @@ namespace gui {
 
 	CheckBox::CheckBox() {
 		addActionListener(std::bind(doActionSelect, this));
-		boxSize_ = 12;
+		boxSize_ = 15 * 0.9f;
 		selected_ = false;
 		setPreferredSize(15, 15);
 	}
@@ -24,14 +24,14 @@ namespace gui {
 		addActionListener(std::bind(doActionSelect, this));
 		boxSize_ = (float) (font->getCharacterSize() * 0.9);
 		selected_ = false;
-		setPreferredSize(boxSize_ + 3.f + (float) font->getCharacterSize(), (float) font->getCharacterSize());
+		setPreferredSize(boxSize_ + 3.f + (float) text_.getWidth(), (float) text_.getHeight());
 	}
 
 	CheckBox::CheckBox(mw::Text text) : Button(text) {
 		addActionListener(std::bind(doActionSelect, this));
 		boxSize_ = (float) (text.getCharacterSize() * 0.9);
 		selected_ = false;
-		setPreferredSize(boxSize_ + 3.f + (float) text.getCharacterSize(), (float) text.getCharacterSize());
+		setPreferredSize(boxSize_ + 3.f + (float) text_.getWidth(), (float) text_.getHeight());
 	}
 
 	void CheckBox::draw(float deltaTime) {
@@ -40,7 +40,7 @@ namespace gui {
 		textColor_.glColor4d();
 
 		glPushMatrix();
-		glTranslatef(3, 3, 0);
+		glTranslatef(text_.getCharacterSize() * 0.1f, 0, 0);
 
 		// Draw box.
 		glBegin(GL_LINES);
@@ -55,7 +55,7 @@ namespace gui {
 
 		glVertex2f(0, boxSize_);
 		glVertex2f(0, 0);
-
+				
 		if (selected_) {
 			glVertex2f(boxSize_ * 0.2f, boxSize_* 0.1f);
 			glVertex2f(boxSize_ * 0.1f, boxSize_* 0.9f);

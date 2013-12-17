@@ -148,5 +148,11 @@ namespace gui {
 		text_.draw();
 		glPopMatrix();
 	}
+
+	void Button::preferedSizeFitText() {
+		if (text_.getWidth() > 1 && text_.getHeight() > 1) {
+			setPreferredSize(2 + (float) text_.getWidth(), 2 + (float) text_.getHeight());
+		}
+	}
 	
 } // Namespace gui.

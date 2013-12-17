@@ -35,7 +35,6 @@ void testFlowLayout(gui::Frame& frame) {
 	frame.add(new gui::TButton("Button 1", font));
 	frame.add(new gui::TButton("Button 2", font));
 	gui::Button* button = new gui::TButton("Button 3", font);
-	button->setPreferredSize(100, 100);
 	button->setVerticalAlignment(gui::Button::TOP);
 	frame.add(button);
 	frame.add(new gui::TButton("Button 4", font));
