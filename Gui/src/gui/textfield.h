@@ -40,7 +40,7 @@ namespace gui {
 		void setAlignment(Alignment alignment);
 
 	protected:
-		void drawText();
+		void drawText(float deltaTime);
 		
 		// Sets the color for the text.
 		void setTextColor(const mw::Color& textColor);
@@ -54,6 +54,7 @@ namespace gui {
 		mw::Color color_;
 		Alignment alignment_;
 		InputFormatter inputFormatter_;
+		float markerDeltaTime_;
 	};
 
 } // Namespace gui.

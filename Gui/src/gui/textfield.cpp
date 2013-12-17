@@ -2,12 +2,12 @@
 
 namespace gui {
 
-	TextField::TextField(const mw::FontPtr& font) : text_("", font), marker_(text_), color_(0, 0, 0), alignment_(LEFT) {
+	TextField::TextField(const mw::FontPtr& font) : text_("", font), marker_(text_), color_(0, 0, 0), alignment_(LEFT), markerDeltaTime_(0.f) {
 		setPreferredSize(150, 20);
 		setBackgroundColor(mw::Color(0.8, 0.8, 0.8));
 	}
 
-	TextField::TextField(std::string initialText, const mw::FontPtr& font) : text_(initialText, font), marker_(text_), color_(0, 0, 0), alignment_(LEFT) {
+	TextField::TextField(std::string initialText, const mw::FontPtr& font) : text_(initialText, font), marker_(text_), color_(0, 0, 0), alignment_(LEFT), markerDeltaTime_(0.f) {
 		setPreferredSize(150, 20);
 		setBackgroundColor(mw::Color(0.8, 0.8, 0.8));
 	}
@@ -54,7 +54,7 @@ namespace gui {
 		
 		glPushMatrix();
 		glTranslatef(x, 0, 0);
-		drawText();
+		drawText(deltaTime);
 		glPopMatrix();
 	}
 
@@ -69,6 +69,8 @@ namespace gui {
 	void TextField::handleKeyboard(const SDL_Event& keyEvent) {
 		switch (keyEvent.type) {
 			case SDL_KEYDOWN:
+				// Reset marker animation.
+				markerDeltaTime_ = 0;
 				switch (keyEvent.key.keysym.sym) {
 					case SDLK_HOME:
 						inputFormatter_.update(InputFormatter::INPUT_MOVE_MARKER_HOME);
@@ -106,7 +108,7 @@ namespace gui {
 		};
 	}
 
-	void TextField::drawText() {
+	void TextField::drawText(float deltaTime) {
 		Dimension dim = getSize();
 
 		color_.glColor4d();
@@ -118,10 +120,44 @@ namespace gui {
 			marker_.setText(text_.getText().substr(0, index));
 			double x = marker_.getWidth();
 			glBegin(GL_LINES);
-			glVertex2d(x, text_.getCharacterSize() * 1.05);
-			glVertex2d(x, text_.getCharacterSize() * -0.05);
+			markerDeltaTime_ += deltaTime;
+			if (markerDeltaTime_ < 0.5f) {
+				glVertex2d(x+2, text_.getCharacterSize());
+				glVertex2d(x+2, 1);
+			} else if (markerDeltaTime_ > 1.f) {
+				markerDeltaTime_ = 0;
+			}
+			
+			glVertex2d(0, 0);
+			glVertex2d(dim.width_, 0);
+			
+			glVertex2d(dim.width_, 0);
+			glVertex2d(dim.width_, dim.height_);
+
+			glVertex2d(dim.width_, dim.height_);
+			glVertex2d(0, dim.height_);
+
+			glVertex2d(0, dim.height_);
+			glVertex2d(0, 0);
 			glEnd();
+		} else {
+			markerDeltaTime_ = 0;
 		}
+
+		// Draw border.
+		glBegin(GL_LINES);
+		glVertex2d(0, 0);
+		glVertex2d(dim.width_, 0);
+
+		glVertex2d(dim.width_, 0);
+		glVertex2d(dim.width_, dim.height_);
+
+		glVertex2d(dim.width_, dim.height_);
+		glVertex2d(0, dim.height_);
+
+		glVertex2d(0, dim.height_);
+		glVertex2d(0, 0);
+		glEnd();
 	}
 
 } // Namespace gui.
