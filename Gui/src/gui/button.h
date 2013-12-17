@@ -86,6 +86,8 @@ namespace gui {
 			mouseInside_ = false;
 			vTextAlignment_ = VerticalAlignment::VCENTER;
 			hTextAlignment_ = HorizontalAlignment::HCENTER;
+			textColor_ = mw::Color(0, 0, 0);
+			setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
 		}
 
 		void handleMouse(const SDL_Event&);

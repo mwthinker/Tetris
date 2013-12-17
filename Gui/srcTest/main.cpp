@@ -6,6 +6,7 @@
 #include <gui/tbutton.h>
 #include <gui/label.h>
 #include <gui/textfield.h>
+#include <gui/checkbox.h>
 
 #include <cassert>
 
@@ -38,7 +39,7 @@ void testFlowLayout(gui::Frame& frame) {
 	button->setVerticalAlignment(gui::Button::TOP);
 	frame.add(button);
 	frame.add(new gui::TButton("Button 4", font));
-	frame.add(new gui::TButton("Button 5", font));
+	frame.add(new gui::CheckBox("CheckBox 5", font));
 	frame.add(new gui::TextField("Text:", font));
 	frame.add(new gui::Label("JAjajaj", font));
 

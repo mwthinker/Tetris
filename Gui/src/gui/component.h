@@ -18,10 +18,6 @@ namespace gui {
 	using MouseListener = KeyListener;
 	using ActionListener = mw::Signal<Component*>;
 
-	enum Orientation {
-		LT
-	};
-
 	class Component {
 	public:
 		friend class Panel;

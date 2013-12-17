@@ -19,6 +19,8 @@ SET(SOURCES
 	src/gui/borderlayout.h
 	src/gui/button.cpp
 	src/gui/button.h
+	src/gui/checkbox.cpp
+	src/gui/checkbox.h
 	src/gui/component.h
 	src/gui/dimension.h
 	src/gui/flowlayout.h

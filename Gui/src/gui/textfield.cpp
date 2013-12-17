@@ -51,7 +51,7 @@ namespace gui {
 				x = dim.width_ - (float) text_.getWidth();
 				break;
 		}
-		
+
 		glPushMatrix();
 		glTranslatef(x, 0, 0);
 		drawText(deltaTime);
@@ -122,23 +122,12 @@ namespace gui {
 			glBegin(GL_LINES);
 			markerDeltaTime_ += deltaTime;
 			if (markerDeltaTime_ < 0.5f) {
-				glVertex2d(x+2, text_.getCharacterSize());
-				glVertex2d(x+2, 1);
+				glVertex2d(x + 2, text_.getCharacterSize());
+				glVertex2d(x + 2, 1);
 			} else if (markerDeltaTime_ > 1.f) {
 				markerDeltaTime_ = 0;
 			}
-			
-			glVertex2d(0, 0);
-			glVertex2d(dim.width_, 0);
-			
-			glVertex2d(dim.width_, 0);
-			glVertex2d(dim.width_, dim.height_);
 
-			glVertex2d(dim.width_, dim.height_);
-			glVertex2d(0, dim.height_);
-
-			glVertex2d(0, dim.height_);
-			glVertex2d(0, 0);
 			glEnd();
 		} else {
 			markerDeltaTime_ = 0;
@@ -146,17 +135,17 @@ namespace gui {
 
 		// Draw border.
 		glBegin(GL_LINES);
-		glVertex2d(0, 0);
-		glVertex2d(dim.width_, 0);
+		glVertex2f(0, 0);
+		glVertex2f(dim.width_, 0);
 
-		glVertex2d(dim.width_, 0);
-		glVertex2d(dim.width_, dim.height_);
+		glVertex2f(dim.width_, 0);
+		glVertex2f(dim.width_, dim.height_);
 
-		glVertex2d(dim.width_, dim.height_);
-		glVertex2d(0, dim.height_);
+		glVertex2f(dim.width_, dim.height_);
+		glVertex2f(0, dim.height_);
 
-		glVertex2d(0, dim.height_);
-		glVertex2d(0, 0);
+		glVertex2f(0, dim.height_);
+		glVertex2f(0, 0);
 		glEnd();
 	}
 

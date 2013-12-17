@@ -12,12 +12,12 @@
 #include <string>
 #include <queue>
 
-namespace gui {	
+namespace gui {
 
 	class Frame;
 	using WindowListener = mw::Signal<Frame*, const SDL_Event&>;
 
-	// TextField, Checkbox, CheckboxGroup (radio buttons), List, and Choice
+	// Checkbox, CheckboxGroup (radio buttons), List, and Choice
 	class Frame : public mw::Window, public Panel {
 	public:
 		Frame();
