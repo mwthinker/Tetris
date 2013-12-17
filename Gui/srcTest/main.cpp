@@ -5,6 +5,7 @@
 #include <gui/component.h>
 #include <gui/tbutton.h>
 #include <gui/label.h>
+#include <gui/textfield.h>
 
 #include <cassert>
 
@@ -38,7 +39,7 @@ void testFlowLayout(gui::Frame& frame) {
 	frame.add(button);
 	frame.add(new gui::TButton("Button 4", font));
 	frame.add(new gui::TButton("Button 5", font));
-	frame.add(new gui::Label("Label 1", font));
+	frame.add(new gui::TextField("Text:", font));
 	frame.add(new gui::Label("JAjajaj", font));
 
 	frame.addMouseListener([](gui::Component* c, const SDL_Event& sdlEvent) {
@@ -51,9 +52,9 @@ void testFlowLayout(gui::Frame& frame) {
 }
 
 int main(int argc, char** argv) {
-	gui::Frame frameBorder;
-	frameBorder.setDefaultClosing(true);
-	testBorderLayout(frameBorder);
+	//gui::Frame frameBorder;
+	//frameBorder.setDefaultClosing(true);
+	//testBorderLayout(frameBorder);
 	gui::Frame frameFlow;
 	frameFlow.setDefaultClosing(true);
 	testFlowLayout(frameFlow);

@@ -159,6 +159,11 @@ namespace gui {
 	}
 
 	void Panel::handleKeyboard(const SDL_Event& keyEvent) {
+		for (Component* component : *this) {
+			if (component->hasFocus()) {
+				component->handleKeyboard(keyEvent);
+			}
+		}
 		Component::handleKeyboard(keyEvent);
 	}
 

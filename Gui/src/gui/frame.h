@@ -23,7 +23,7 @@ namespace gui {
 		Frame();
 		Frame(int width, int height, bool resizeable = true, std::string title = "Frame", std::string icon = "");
 
-		mw::signals::Connection addActionListener(const WindowListener::Callback& callback);
+		mw::signals::Connection addWindowListener(const WindowListener::Callback& callback);
 
 		void setDefaultClosing(bool defaultClosing);
 

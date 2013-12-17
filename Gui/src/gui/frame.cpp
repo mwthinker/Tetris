@@ -17,7 +17,7 @@ namespace gui {
 		init();
 	}
 
-	mw::signals::Connection Frame::addActionListener(const WindowListener::Callback& callback) {
+	mw::signals::Connection Frame::addWindowListener(const WindowListener::Callback& callback) {
 		return windowListener_.connect(callback);
 	}
 
@@ -52,6 +52,7 @@ namespace gui {
 			switch (sdlEvent.type) {
 				case SDL_WINDOWEVENT:
 					if (sdlEvent.window.windowID == SDL_GetWindowID(getSdlWindow())) {
+						windowListener_(this, sdlEvent);
 						switch (sdlEvent.window.event) {
 							case SDL_WINDOWEVENT_RESIZED:
 								resize();
@@ -94,9 +95,6 @@ namespace gui {
 								if (defaultClosing_) {
 									quit();
 								}
-								break;
-							case SDLK_F11:
-								mw::Window::setFullScreen(!mw::Window::isFullScreen());
 								break;
 							default:
 								break;
