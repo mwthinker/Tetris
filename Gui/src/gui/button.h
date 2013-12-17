@@ -1,5 +1,5 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef GUI_BUTTON_H
+#define GUI_BUTTON_H
 
 #include "component.h"
 
@@ -98,4 +98,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // BUTTON_H
+#endif // GUI_BUTTON_H

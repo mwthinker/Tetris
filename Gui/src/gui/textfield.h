@@ -1,5 +1,5 @@
-#ifndef TEXTFIELD_H
-#define TEXTFIELD_H
+#ifndef GUI_TEXTFIELD_H
+#define GUI_TEXTFIELD_H
 
 #include "component.h"
 #include "inputformatter.h"
@@ -58,4 +58,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // TEXTFIELD_H
+#endif // GUI_TEXTFIELD_H

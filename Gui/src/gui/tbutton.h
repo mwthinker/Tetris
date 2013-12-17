@@ -1,5 +1,5 @@
-#ifndef TBUTTON_H
-#define TBUTTON_H
+#ifndef GUI_TBUTTON_H
+#define GUI_TBUTTON_H
 
 #include "button.h"
 
@@ -26,4 +26,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // TBUTTON_H
+#endif // GUI_TBUTTON_H

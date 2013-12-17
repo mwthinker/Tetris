@@ -1,5 +1,5 @@
-#ifndef FLOWLAYOUT_H
-#define FLOWLAYOUT_H
+#ifndef GUI_FLOWLAYOUT_H
+#define GUI_FLOWLAYOUT_H
 
 #include "layoutmanager.h"
 #include "panel.h"
@@ -76,4 +76,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // FLOWLAYOUT_H
+#endif // GUI_FLOWLAYOUT_H

@@ -1,5 +1,5 @@
-#ifndef LABEL_H
-#define LABEL_H
+#ifndef GUI_LABEL_H
+#define GUI_LABEL_H
 
 #include "component.h"
 
@@ -55,4 +55,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // LABEL_H
+#endif // GUI_LABEL_H

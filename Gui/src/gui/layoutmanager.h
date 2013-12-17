@@ -1,5 +1,5 @@
-#ifndef LAYOUTMANAGER_H
-#define LAYOUTMANAGER_H
+#ifndef GUI_LAYOUTMANAGER_H
+#define GUI_LAYOUTMANAGER_H
 
 #include "dimension.h"
 
@@ -19,4 +19,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // LAYOUTMANAGER_H
+#endif // GUI_LAYOUTMANAGER_H

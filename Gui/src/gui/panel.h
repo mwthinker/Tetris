@@ -1,5 +1,5 @@
-#ifndef PANEL_H
-#define PANEL_H
+#ifndef GUI_PANEL_H
+#define GUI_PANEL_H
 
 #include "component.h"
 
@@ -69,4 +69,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // PANEL_H
+#endif // GUI_PANEL_H

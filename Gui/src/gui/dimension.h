@@ -1,5 +1,5 @@
-#ifndef DIMENSION_H
-#define DIMENSION_H
+#ifndef GUI_DIMENSION_H
+#define GUI_DIMENSION_H
 
 namespace gui {
 
@@ -29,4 +29,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // DIMENSION_H
+#endif // GUI_DIMENSION_H

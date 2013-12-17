@@ -1,5 +1,5 @@
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef GUI_FRAME_H
+#define GUI_FRAME_H
 
 #include "panel.h"
 
@@ -47,4 +47,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // FRAME_H
+#endif // GUI_FRAME_H

@@ -1,5 +1,5 @@
-#ifndef INPUTFORMATTER_H
-#define INPUTFORMATTER_H
+#ifndef GUI_INPUTFORMATTER_H
+#define GUI_INPUTFORMATTER_H
 
 #include <sstream> // std::ostringstream
 #include <cstring> // std::memmove
@@ -171,4 +171,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // INPUTFORMATTER_H
+#endif // GUI_INPUTFORMATTER_H

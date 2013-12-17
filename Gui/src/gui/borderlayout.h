@@ -1,5 +1,5 @@
-#ifndef BORDERLAYOUT_H
-#define BORDERLAYOUT_H
+#ifndef GUI_BORDERLAYOUT_H
+#define GUI_BORDERLAYOUT_H
 
 #include "layoutmanager.h"
 #include "panel.h"
@@ -90,4 +90,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // BORDERLAYOUT_H
+#endif // GUI_BORDERLAYOUT_H

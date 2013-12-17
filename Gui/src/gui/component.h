@@ -1,5 +1,5 @@
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#ifndef GUI_COMPONENT_H
+#define GUI_COMPONENT_H
 
 #include "dimension.h"
 
@@ -234,4 +234,4 @@ namespace gui {
 
 } // Namespace gui.
 
-#endif // COMPONENT_H
+#endif // GUI_COMPONENT_H
