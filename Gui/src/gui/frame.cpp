@@ -2,15 +2,13 @@
 #include "borderlayout.h"
 
 #include <mw/font.h>
-#include <mw/sprite.h>
 #include <mw/window.h>
 #include <mw/exception.h>
 
-#include <iostream>
 #include <string>
 
-namespace gui {
-	
+namespace gui {	
+
 	Frame::Frame() : mw::Window(512, 512, true, "Frame", "") {
 		init();
 	}
@@ -19,11 +17,23 @@ namespace gui {
 		init();
 	}
 
+	mw::signals::Connection Frame::addActionListener(const WindowListener::Callback& callback) {
+		return windowListener_.connect(callback);
+	}
+
+	void Frame::setDefaultClosing(bool defaultClosing) {
+		defaultClosing_ = true;
+	}
+
+	bool Frame::isDefaultClosing() const {
+		return defaultClosing_;
+	}
+
 	void Frame::resize() {
 		setPreferredSize((float) getWidth(), (float) getHeight());
 		setSize((float) getWidth(), (float) getHeight());
 		setLocation(0, 0);
-		
+
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glViewport(0, 0, getWidth(), getHeight());
@@ -49,6 +59,10 @@ namespace gui {
 							case SDL_WINDOWEVENT_LEAVE:
 								mouseMotionLeave();
 								break;
+							case SDL_WINDOWEVENT_CLOSE:
+								if (defaultClosing_) {
+									quit();
+								}
 							default:
 								break;
 						}
@@ -77,7 +91,9 @@ namespace gui {
 						handleKeyboard(sdlEvent);
 						switch (sdlEvent.key.keysym.sym) {
 							case SDLK_ESCAPE:
-								quit();
+								if (defaultClosing_) {
+									quit();
+								}
 								break;
 							case SDLK_F11:
 								mw::Window::setFullScreen(!mw::Window::isFullScreen());
@@ -109,6 +125,7 @@ namespace gui {
 		setBackgroundColor(mw::Color(1, 1, 1));
 		setSize((float) getWidth(), (float) getHeight());
 		setPreferredSize((float) getWidth(), (float) getHeight());
+		defaultClosing_ = false;
 	}
 
 } // Namespace gui.

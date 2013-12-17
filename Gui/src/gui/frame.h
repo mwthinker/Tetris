@@ -3,27 +3,37 @@
 
 #include "panel.h"
 
-#include <mw/font.h>
-#include <mw/sprite.h>
 #include <mw/window.h>
 #include <mw/color.h>
+#include <mw/signal.h>
+
+#include <SDL.h>
 
 #include <string>
 #include <queue>
 
 namespace gui {	
 
-	// Panel, Button, TextField, Label, Checkbox, CheckboxGroup (radio buttons), List, and Choice
+	class Frame;
+	using WindowListener = mw::Signal<Frame*, const SDL_Event&>;
+
+	// TextField, Checkbox, CheckboxGroup (radio buttons), List, and Choice
 	class Frame : public mw::Window, public Panel {
 	public:
 		Frame();
 		Frame(int width, int height, bool resizeable = true, std::string title = "Frame", std::string icon = "");
 
+		mw::signals::Connection addActionListener(const WindowListener::Callback& callback);
+
+		void setDefaultClosing(bool defaultClosing);
+
+		bool isDefaultClosing() const;
+
 	private:
-		// Override mw::Window
+		// Override mw::Window.
 		void update(Uint32 deltaTime) override;
 
-		// Override mw::Window
+		// Override mw::Window.
 		void eventUpdate(const SDL_Event& windowEvent) override;
 
 		void resize();
@@ -31,6 +41,8 @@ namespace gui {
 		void init();
 
 		std::queue<SDL_Event> eventQueue_;
+		WindowListener windowListener_;
+		bool defaultClosing_;
 	};
 
 } // Namespace gui.

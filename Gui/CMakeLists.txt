@@ -54,7 +54,7 @@ INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
 	../MwLibrary2/src/
-	../MwEnet/MwExtra/src
+	../MwEnet/MwExtra/src/
 )
 
 ADD_LIBRARY(Gui ${SOURCES})
