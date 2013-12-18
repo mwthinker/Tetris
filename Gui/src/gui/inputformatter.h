@@ -4,12 +4,7 @@
 #include <sstream> // std::ostringstream
 #include <cstring> // std::memmove
 
-#include <memory>
-
 namespace gui {
-
-	class InputFormatter;
-	typedef std::shared_ptr<InputFormatter> InputFormatterPtr;
 
 	class InputFormatter {
 	public:
@@ -25,15 +20,13 @@ namespace gui {
 		};
 
 		InputFormatter(int maxLimit = 30) {
-			clear();
-			isWritable_ = true;
+			size_ = 0;
+			marker_ = 0;
 			maxLimit_ = maxLimit;
 		}
 
-		virtual ~InputFormatter() {
-		}
-
 		// Returns the current input.
+		// The return value is a utf8 string.
 		std::string getText() const {
 			std::ostringstream stream;
 			for (int i = 0; i < size_; ++i) {
@@ -46,17 +39,19 @@ namespace gui {
 		void clear() {
 			size_ = 0;
 			marker_ = 0;
-			for (int i = 0; i < MAX_SIZE; ++i) {
-				text_[i] = ' ';
-			}
 		}
 
-		// Updates the input.
-		void update(char key) {
-			if (isWritable_) {
-				if (size_ < maxLimit_ && size_ < MAX_SIZE && isValidKey(key)) {
-					memmove(text_+marker_+1,text_+marker_,size_ - marker_);
-					text_[marker_] = key;
+		// Takes a utf8 character as input.
+		// The whole c-string assumes to represent a utf8 character.
+		void update(const char* text) {
+			int size = std::strlen(text);
+
+			if (size_ + size <= maxLimit_ && size_ + size <= MAX_SIZE) {
+				memmove(text_ + marker_ + size, text_ + marker_, size_ - marker_);
+				memmove(textUtf8_ + marker_ + size, textUtf8_ + marker_, size_ - marker_);
+				for (int i = 0; i < size; ++i) {
+					text_[marker_] = text[i];
+					textUtf8_[marker_] = size;
 					++marker_;
 					++size_;
 				}
@@ -65,108 +60,70 @@ namespace gui {
 
 		// Updates the input.
 		void update(InputFormatter::Input input) {
-			if (isWritable_) {
 				switch (input) {
-				case INPUT_ERASE_LEFT:
-					if (marker_ > 0) {
-						removeChar(--marker_);
-					}
-					break;
-				case INPUT_ERASE_RIGHT:
-					if (marker_  < size_) {
-						removeChar(marker_);
-					}
-					break;
-				case INPUT_MOVE_MARKER_LEFT:
-					if (marker_ > 0) {
-						--marker_;
-					}
-					break;
-				case INPUT_MOVE_MARKER_RIGHT:
-					if (marker_ < size_) {
-						++marker_;
-					}
-					break;
-				case INPUT_MOVE_MARKER_HOME:
-					marker_ = 0;
-					break;
-				case INPUT_MOVE_MARKER_END:
-					marker_ = size_;
-					break;
-				}
-			}
+					case INPUT_ERASE_LEFT:
+						removeChar(true);
+						break;
+					case INPUT_ERASE_RIGHT:
+						removeChar(false);
+						break;
+					case INPUT_MOVE_MARKER_LEFT:
+						if (marker_ > 0) {
+							marker_ += -textUtf8_[marker_ - 1];
+						}
+						break;
+					case INPUT_MOVE_MARKER_RIGHT:
+						if (marker_ < size_) {
+							marker_ += textUtf8_[marker_];
+						}
+						break;
+					case INPUT_MOVE_MARKER_HOME:
+						marker_ = 0;
+						break;
+					case INPUT_MOVE_MARKER_END:
+						marker_ = size_;
+						break;
+				}			
 		}
 
-		// Enable/disable the update function.
-		void setWritable(bool isWritable) {
-			isWritable_ = isWritable;
-		}
-
-		// Returns true if the updatefunctions is active else false.
-		bool isWritable() const {
-			return isWritable_;
-		}
-
-		// Returns true if this InputTextfield contains input.
-		bool hasInput() const {
-			return size_ > 0;
-		}
-
-		int getMarkerPosition() const {
-			return marker_;
-		}
-
-	protected:
-		virtual bool isValidKey(char key) const {
-			if (key == ' ') {
-				return true;
-			}
-			if (key >= 'a' && key <= 'z') {
-				return true;
-			}
-			if (key >= 'A' && key <= 'Z') {
-				return true;
-			}
-			if (key >= '0' && key <= '9') {
-				return true;
-			}
-			if (key == '.') {
-				return true;
-            }
-
-			// Swedish keyboard. Warning, region/plattform dependent code!
-			if (key == 'å' || key == 'ä' || key == 'ö' || key == 'Å' || key == 'Ä' || key == 'Ö') {
-				return true;
-			}
-			return false;
-		}
-
-		char characterAt(int index) const {
-			return text_[index];
-		}
-
+		// Returns the size of the current utf8 string.
 		int getSize() const {
 			return size_;
 		}
 
-		void setSize(int size) {
-			if (size >= 0 && size < MAX_SIZE) {
-				size_ = size;
-			}
+		// Get the position for the marker. The position
+		// is for the character in the utf8 string.
+		int getMarkerPosition() const {
+			return marker_;
 		}
+
 	private:
-		void removeChar(int index) {
-			if (marker_ >= 0 && marker_ < size_) {
-				memmove(text_+index,text_+index+1, size_ - index -1);
-				--size_;
+		// Remove one utf8 encoded character to the left or to the right of the marker.
+		// May remove several character due to the encoding.
+		void removeChar(bool leftMarker) {
+			if (leftMarker && marker_ > 0) {
+				int dst = marker_ - textUtf8_[marker_ - 1];
+				int src = marker_;
+				int size = size_ - marker_;
+				memmove(text_ + dst, text_ + src, size);
+				size_ -= textUtf8_[marker_ - 1];
+				marker_ -= textUtf8_[marker_ - 1];
+				memmove(textUtf8_ + dst, textUtf8_ + src, size);
+			} else if (!leftMarker && marker_ < size_) {
+				int dst = marker_;
+				int src = marker_ + textUtf8_[marker_];
+				int size = size_ - (marker_ + textUtf8_[marker_]);
+				memmove(text_ + dst, text_ + src, size);
+				size_ -= textUtf8_[marker_];
+				memmove(textUtf8_ + dst, textUtf8_ + src, size);
 			}
 		}
 
-		int maxLimit_;			// Max number of input character allowed.
-		bool isWritable_;		// New input is allowed.
-		char text_[MAX_SIZE];	// Storage of text input.
-		int size_;				// Size of string input.
-		int marker_;			// Marker position.
+		int maxLimit_;				// Max number of input character allowed.
+		char text_[MAX_SIZE];		// Storage of text input.
+		char textUtf8_[MAX_SIZE];	// Correspond to number of bytes corresponding utf8 takes.
+		int size_;					// Size of string input.
+		int marker_;				// Marker position.
 	};
 
 } // Namespace gui.

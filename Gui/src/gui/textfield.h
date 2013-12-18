@@ -51,6 +51,8 @@ namespace gui {
 		bool editable_;
 		mw::Text text_;
 		mw::Text marker_;
+		int cursor_;
+
 		mw::Color color_;
 		Alignment alignment_;
 		InputFormatter inputFormatter_;

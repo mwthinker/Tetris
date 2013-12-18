@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 	frameFlow.setDefaultClosing(true);
 	testFlowLayout(frameFlow);
 	
+	SDL_StartTextInput();
 	gui::Frame::startLoop();
 
 	return 0;

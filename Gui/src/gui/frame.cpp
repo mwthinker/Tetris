@@ -85,6 +85,10 @@ namespace gui {
 						handleMouse(sdlEvent);
 					}
 					break;
+				case SDL_TEXTINPUT:
+					// Fall through.
+				case SDL_TEXTEDITING:
+					// Fall through.
 				case SDL_KEYDOWN:
 					// Fall through.
 				case SDL_KEYUP:
@@ -114,7 +118,7 @@ namespace gui {
 	}
 
 	void Frame::init() {
-		// The default frame for Frame.
+		// Default layout for Frame.
 		setLayout(new BorderLayout());
 
 		// Init the opengl settings.
