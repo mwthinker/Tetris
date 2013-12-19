@@ -7,8 +7,8 @@
 
 #include <string>
 
-namespace gui {	
-
+namespace gui {
+	
 	Frame::Frame() : mw::Window(512, 512, true, "Frame", "") {
 		init();
 	}
@@ -90,6 +90,23 @@ namespace gui {
 				case SDL_TEXTEDITING:
 					// Fall through.
 				case SDL_KEYDOWN:
+					if (sdlEvent.key.windowID == SDL_GetWindowID(getSdlWindow())) {
+						switch (sdlEvent.key.keysym.sym) {
+							case SDLK_TAB:
+							{
+								const Uint8* state = SDL_GetKeyboardState(0);
+								if (state[SDL_SCANCODE_LSHIFT] || state[SDL_SCANCODE_RSHIFT]) {
+
+								} else {
+
+								}
+							}
+								break;
+							default:
+								break;
+						}
+					}
+
 					// Fall through.
 				case SDL_KEYUP:
 					if (sdlEvent.key.windowID == SDL_GetWindowID(getSdlWindow())) {

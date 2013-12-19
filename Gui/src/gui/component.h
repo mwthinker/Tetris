@@ -13,14 +13,15 @@ namespace gui {
 
 	class Component;
 
-	using FocusListener = mw::Signal<Component*, const SDL_Event&>;
-	using KeyListener = FocusListener;
+	using FocusListener = mw::Signal<Component*>;
+	using KeyListener = mw::Signal<Component*, const SDL_Event&>;
 	using MouseListener = KeyListener;
 	using ActionListener = mw::Signal<Component*>;
 
 	class Component {
 	public:
 		friend class Panel;
+		friend class Frame;
 
 		virtual ~Component() {
 		}
@@ -98,7 +99,10 @@ namespace gui {
 		}
 
 		void setFocus(bool focus) {
-			focus_ = focus;
+			if (focus != focus_) {
+				focus_ = focus;
+				focusListener_(this);
+			}
 		}
 
 		bool hasFocus() const {
@@ -188,7 +192,8 @@ namespace gui {
 		}
 
 	protected:
-		Component() : valid_(false), visible_(true), parent_(nullptr), focus_(false), layoutIndex_(0) {
+		Component() : valid_(false), visible_(true), 
+			parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
 
 		virtual void handleMouse(const SDL_Event& mouseEvent) {
