@@ -1,5 +1,4 @@
 #include "networklooby.h"
-#include "widget.h"
 #include "gamefont.h"
 
 #include <mw/text.h>
@@ -15,7 +14,7 @@
 NetworkLooby::NetworkLooby() {
 }
 
-void NetworkLooby::draw() {
+void NetworkLooby::draw(float deltaTime) {
 	glColor3d(1,1,1);
 	
 	glPushMatrix();

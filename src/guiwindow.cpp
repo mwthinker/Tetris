@@ -1,3 +1,4 @@
+/*
 #include "guiwindow.h"
 #include "barcolor.h"
 #include "imagebackground.h"
@@ -1054,44 +1055,6 @@ void GuiWindow::initAiFrame() {
 	multiFrame_.add(ai4Button_, 60, hDistance_ + 160, false, true);
 }
 
-void GuiWindow::loadAllSettings() {
-	// Load all ais.
-	{
-		std::ifstream file("ais/ais");
-		if (file.is_open()) {
-			ais_.clear();
-			ais_.push_back(Ai());
-			std::string filename;
-			while (std::getline(file, filename)) {
-				Ai ai;
-				if (loadAi(ai, "ais/", filename)) {
-					ais_.push_back(ai);
-				}
-			}
-		}
-	}
-	// Load all ais that is set to be active.
-	{
-		std::ifstream file("settings");
-		if (file.is_open()) {
-			for (Ai& ai : activeAis_) {
-				std::string filename;
-				std::getline(file, filename);
-				loadAi(ai, "ais/", filename);
-			}
-		}
-	}
-}
-
-void GuiWindow::saveAllSettings() {
-	std::ofstream file("settings");
-	if (file.is_open() && file.good()) {
-		for (const Ai& ai : activeAis_) {
-			file << ai.getName() << "\n";
-		}
-	}
-}
-
 void GuiWindow::resize(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -1150,3 +1113,4 @@ void GuiWindow::eventUpdate(const SDL_Event& windowEvent) {
 		updateGameEvent(windowEvent);
 	}
 }
+*/

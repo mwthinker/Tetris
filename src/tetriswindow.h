@@ -1,52 +1,50 @@
 #ifndef TETRISWINDOW_H
 #define TETRISWINDOW_H
 
-#include "guiwindow.h"
 #include "tetrisgame.h"
 #include "device.h"
 
-class TetrisWindow : public GuiWindow {
+#include <gui/frame.h>
+
+class TetrisWindow : public gui::Frame {
 public:
 	TetrisWindow();
 	~TetrisWindow();
 
 private:
-    void setNbrOfHumanPlayers(int number) override;
-	int getNbrOfHumanPlayers() const override;
-	void setNbrOfComputerPlayers(int number) override;
-	int getNbrOfComputerPlayers() const override;
+	void initOptionFrame(const std::vector<DevicePtr>& devices);
 
-	void abortGame() override;
-	void startGame() override;
-	void restartGame() override;
+    void setNbrOfHumanPlayers(int number);
+	int getNbrOfHumanPlayers() const;
+	void setNbrOfComputerPlayers(int number);
+	int getNbrOfComputerPlayers() const;	
 
-	void createLocalGame() override;
-	void createLocalGame(int width, int height, int maxLevel) override;
-	void createServerGame(int port, int width, int height) override;
-	void createClientGame(int port, std::string ip) override;
-
-	bool isPaused() const override;
-	void changePauseState() override;
-	bool isReady() const override;
-	void changeReadyState() override;
+	void createLocalGame();
+	void createLocalGame(int width, int height, int maxLevel);
+	void createServerGame(int port, int width, int height);
+	void createClientGame(int port, std::string ip);
 
 	// Override gui::GuiWindow
-	void updateGame(Uint32 deltaTime) override;
+	void drawGame(Uint32 deltaTime);
 
 	// Override gui::GuiWindow
-	void drawGame(Uint32 deltaTime) override;
-
-	// Override gui::GuiWindow
-	void updateGameEvent(const SDL_Event& windowEvent) override;
+	void updateGameEvent(const SDL_Event& windowEvent);
 
 	void handleConnectionEvent(NetworkEventPtr nEvent);
 
 	void loadHighscore();
-	void saveHighscore() override;
+	void saveHighscore();
+
+	void loadAllSettings();
+	void saveAllSettings();
 
 	TetrisGame tetrisGame_;
 	std::vector<DevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
+
+	// All ai:s.
+	std::array<Ai, 4> activeAis_;
+	std::vector<Ai> ais_;
 };
 
 #endif // TETRISWINDOW_H

@@ -2,15 +2,14 @@
 
 #include <mw/sprite.h>
 
-ManButton::ManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross) {
+ManButton::ManButton(float pixelSize, const mw::Sprite man, const mw::Sprite cross) {
 	man_ = man;
 	cross_ = cross;
 
 	pixelSize_ = pixelSize;
 	nbr_ = 1;
 
-	setHeight(pixelSize_);
-	setWidth(pixelSize_);
+	setPreferredSize(pixelSize_, pixelSize_);
 }
 
 unsigned int ManButton::getNbr() const {
@@ -24,10 +23,10 @@ void ManButton::setNbr(unsigned int nbr) {
 		nbr = 1;
 	}
 	// Set the correct size of the button.
-	setWidth(pixelSize_*nbr);
+	setPreferredSize(pixelSize_ * nbr, pixelSize_);
 }
 
-void ManButton::draw() {
+void ManButton::draw(float deltaTime) {
 	glPushMatrix();
 
 	if (nbr_ == 0) {
@@ -52,8 +51,4 @@ void ManButton::drawPlayer(mw::Sprite& sprite) {
 	glColor3d(1,1,1);
 	sprite.draw();
 	glPopMatrix();
-}
-
-ManButtonPtr createManButton(int pixelSize, const mw::Sprite man, const mw::Sprite cross) {
-	return ManButtonPtr(new ManButton(pixelSize, man, cross));
 }

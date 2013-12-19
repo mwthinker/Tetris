@@ -1,20 +1,21 @@
 #ifndef HIGHSCORE_H
 #define HIGHSCORE_H
 
-#include "widget.h"
 
+#include <gui/component.h>
 #include <mw/text.h>
 #include <mw/color.h>
 
 #include <list>
 #include <string>
 #include <memory>
+#include <vector>
 
-class Highscore : public gui::Widget {
+class Highscore : public gui::Component {
 public:
 	Highscore(int nbr, const mw::Color& color);
 
-	void draw() override;
+	void draw(float deltaTime) override;
 
 	bool isNewRecord(int record) const;
 	void addNewRecord(std::string name, std::string date);

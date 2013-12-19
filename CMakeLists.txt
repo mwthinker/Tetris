@@ -21,19 +21,11 @@ SET(SOURCES
 	src/actionhandler.h
 	src/ai.cpp
 	src/ai.h
-	src/background.h
-	src/barcolor.cpp
-	src/barcolor.h
-	src/bar.h
 	src/block.cpp
 	src/block.h
-	src/button.cpp
-	src/button.h
 	src/computer.cpp
 	src/computer.h
 	src/device.h
-	src/frame.cpp
-	src/frame.h
 	src/gamefont.cpp
 	src/gamefont.h
 	src/gamesound.cpp
@@ -43,14 +35,10 @@ SET(SOURCES
 	src/graphicboard.cpp
 	src/graphicboard.h
 	src/group.h
-	src/guitypedefs.h
 	src/guiwindow.cpp
 	src/guiwindow.h
 	src/highscore.cpp
 	src/highscore.h
-	src/imagebackground.h
-	src/inputformatter.h
-	src/inputnumberformatter.h
 	src/joystick.cpp
 	src/joystick.h
 	src/keyboard.cpp
@@ -60,8 +48,6 @@ SET(SOURCES
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
-	src/multiframe.cpp
-	src/multiframe.h
 	src/networkevent.h
 	src/networklooby.cpp
 	src/networklooby.h
@@ -82,16 +68,9 @@ SET(SOURCES
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h
-	src/textbox.cpp
-	src/textboxdraw.cpp
-	src/textboxdraw.h
-	src/textbox.h
 	src/textbutton.cpp
 	src/textbutton.h
-	src/textitem.cpp
-	src/textitem.h
 	src/userconnection.h
-	src/widget.h
 )
 # End of source files.
 
@@ -108,14 +87,22 @@ ADD_SUBDIRECTORY(Gui)
 
 FILE(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS} 
-	${SDL2_IMAGE_INCLUDE_DIRS} ${OpenGL_INCLUDE_DIR} "MwEnet/MwExtra/src" 
-	"MwEnet" "MwEnet/enet-1.3.9" "MwLibrary2/src"
+INCLUDE_DIRECTORIES(
+	${SDL2_INCLUDE_DIRS} 
+	${SDL2_TTF_INCLUDE_DIRS}
+	${SDL2_MIXER_INCLUDE_DIRS} 
+	${SDL2_IMAGE_INCLUDE_DIRS}
+	${OpenGL_INCLUDE_DIR}
+	MwEnet/MwExtra/src
+	MwEnet/
+	MwEnet/enet-1.3.9/
+	MwLibrary2/src
+	Gui/src
 )
 
 ADD_EXECUTABLE(MWetris ${SOURCES})
 
-TARGET_LINK_LIBRARIES(MWetris MwExtra MwEnet MwLibrary2 ${WINDOWS_ENET_DEPENDENCIES} 
+TARGET_LINK_LIBRARIES(MWetris MwExtra MwEnet MwLibrary2 Gui ${WINDOWS_ENET_DEPENDENCIES} 
 	${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES} 
 	${SDL2_MIXER_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${OPENGL_LIBRARIES}
 )

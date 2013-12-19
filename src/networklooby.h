@@ -1,9 +1,9 @@
 #ifndef NETWORKLOOBY_H
 #define NETWORKLOOBY_H
 
-#include "widget.h"
 #include "gamefont.h"
 
+#include <gui/component.h>
 #include <mw/text.h>
 #include <mw/color.h>
 
@@ -13,11 +13,11 @@
 #include <memory>
 #include <functional>
 
-class NetworkLooby : public gui::Widget {
+class NetworkLooby : public gui::Component {
 public:
 	NetworkLooby();
 
-	void draw() override;
+	void draw(float deltaTime) override;
 	void addConnection(int id, int nbrOfPlayers, bool boolReady);
 	void removeConnection(int id);
 	void setReady(int id, bool ready);

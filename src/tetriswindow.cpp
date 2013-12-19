@@ -7,8 +7,8 @@
 #include "keyboard.h"
 #include "computer.h"
 
-#include "textbutton.h"
-#include "highscore.h"
+//#include "textbutton.h"
+//#include "highscore.h"
 
 #include <mw/sprite.h>
 #include <mw/color.h>
@@ -30,6 +30,8 @@ TetrisWindow::TetrisWindow() {
 	DevicePtr device2(new Keyboard("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w));
 	devices_.push_back(device2);
 
+	setDefaultClosing(true);
+
 	// Init joysticks!
 	/*
 	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();
@@ -45,6 +47,10 @@ TetrisWindow::TetrisWindow() {
 }
 
 TetrisWindow::~TetrisWindow() {
+}
+
+void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
+
 }
 
 void TetrisWindow::setNbrOfHumanPlayers(int number) {
@@ -74,10 +80,6 @@ int TetrisWindow::getNbrOfComputerPlayers() const {
     return nbrOfComputerPlayers_;
 }
 
-void TetrisWindow::abortGame() {
-	tetrisGame_.closeGame();
-}
-
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	const int size = devices_.size();
 	std::vector<DevicePtr> tmpDevices;
@@ -86,7 +88,7 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
 	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
 	tetrisGame_.startGame();
 }
@@ -99,7 +101,7 @@ void TetrisWindow::createLocalGame() {
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
 	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_);
 	tetrisGame_.startGame();
 }
@@ -112,7 +114,7 @@ void TetrisWindow::createServerGame(int port, int width, int height) {
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
 	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
 }
 
@@ -124,36 +126,8 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	}
 
 	tetrisGame_.closeGame();
-	tetrisGame_.setAis(getAi1(), getAi2(), getAi3(), getAi4());
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
 	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
-}
-
-void TetrisWindow::restartGame() {
-	tetrisGame_.restartGame();
-}
-
-void TetrisWindow::startGame() {
-	tetrisGame_.startGame();
-}
-
-bool TetrisWindow::isPaused() const {
-	return tetrisGame_.isPaused();
-}
-
-void TetrisWindow::changePauseState() {
-	tetrisGame_.pause();
-}
-
-bool TetrisWindow::isReady() const {
-	return tetrisGame_.isReady();
-}
-
-void TetrisWindow::changeReadyState() {
-	tetrisGame_.changeReadyState();
-}
-
-void TetrisWindow::updateGame(Uint32 deltaTime) {
-	tetrisGame_.update(deltaTime);
 }
 
 void TetrisWindow::drawGame(Uint32 deltaTime) {
@@ -185,6 +159,7 @@ void TetrisWindow::updateGameEvent(const SDL_Event& windowEvent) {
 }
 
 void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
+	/*
 	if (std::shared_ptr<GameOver> gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
 		HighscorePtr highscore = getHighscorePtr();
 		// Points high enough to be saved in the highscore list?
@@ -234,9 +209,11 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 		auto networkLooby = getNetworkLoobyPtr();
 		networkLooby->setReady(ready->id_,ready->ready_);
 	}
+	*/
 }
 
 void TetrisWindow::loadHighscore() {
+	/*
 	std::ifstream file("highscore");
 	if (file.is_open()) {
 		HighscorePtr highscore = getHighscorePtr();
@@ -264,9 +241,11 @@ void TetrisWindow::loadHighscore() {
 		}
 		file.close();
 	}
+	*/
 }
 
 void TetrisWindow::saveHighscore() {
+	/*
 	std::string line;
 	std::ofstream file("highscore");
 	HighscorePtr highscore = getHighscorePtr();
@@ -278,4 +257,44 @@ void TetrisWindow::saveHighscore() {
 		});
 	}
 	file.close();
+	*/
+}
+
+void TetrisWindow::loadAllSettings() {
+	/*
+	// Load all ais.
+	{
+		std::ifstream file("ais/ais");
+		if (file.is_open()) {
+			ais_.clear();
+			ais_.push_back(Ai());
+			std::string filename;
+			while (std::getline(file, filename)) {
+				Ai ai;
+				if (loadAi(ai, "ais/", filename)) {
+					ais_.push_back(ai);
+				}
+			}
+		}
+	}
+	// Load all ais that is set to be active.
+	{
+	std::ifstream file("settings");
+	if (file.is_open()) {
+		for (Ai& ai : activeAis_) {
+			std::string filename;
+			std::getline(file, filename);
+			loadAi(ai, "ais/", filename);
+		}
+	}
+	*/
+}
+
+void TetrisWindow::saveAllSettings() {
+	std::ofstream file("settings");
+	if (file.is_open() && file.good()) {
+		for (const Ai& ai : activeAis_) {
+			file << ai.getName() << "\n";
+		}
+	}
 }

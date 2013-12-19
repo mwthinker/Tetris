@@ -1,7 +1,6 @@
 #ifndef GUIWINDOW_H
 #define GUIWINDOW_H
 
-#include "guitypedefs.h"
 #include "multiframe.h"
 #include "networklooby.h"
 #include "highscore.h"
@@ -24,38 +23,7 @@ class GuiWindow : public mw::Window {
 protected:
 	GuiWindow();
 
-	void initOptionFrame(const std::vector<DevicePtr>& devices);
-
-	SDL_Keycode pauseKey_;
-	SDL_Keycode restartKey_;
-
-	HighscorePtr getHighscorePtr() const;
-	gui::TextButtonPtr getPausePtr() const;
-	NetworkLoobyPtr getNetworkLoobyPtr() const;
-	gui::TextButtonPtr getReadyPtr() const;
-
-	void gotoLocalPlayFrame();
-	void gotoServerPlayFrame();
-	void gotoClientPlayFrame();
-
-	void gotoServerLoobyFrame();
-	void gotoClientLoobyFrame();
-
-	inline Ai getAi1() const {
-		return activeAis_[0];
-	}
-
-	inline Ai getAi2() const {
-		return activeAis_[1];
-	}
-
-	inline Ai getAi3() const {
-		return activeAis_[2];
-	}
-
-	inline Ai getAi4() const {
-		return activeAis_[3];
-	}
+	
 
 private:
 	//--------------------- Is to be derived. -----------------------------
@@ -68,9 +36,6 @@ private:
 	virtual int getNbrOfHumanPlayers() const = 0;
 	virtual void setNbrOfComputerPlayers(int number) = 0;
 	virtual int getNbrOfComputerPlayers() const = 0;
-
-	// Aborts the current game.
-	virtual void abortGame() = 0;
 
 	// Creates a local game whith default settings.
 	virtual void createLocalGame() = 0;
@@ -120,9 +85,7 @@ private:
 	void initWaitToConnectFrame();
 	void initNetworkPlayFrame();
 	void initAiFrame();
-	void initNewHighScoreFrame();
-
-	void resize(int width, int height);
+	void initNewHighScoreFrame();	
 
 	// Override mw::Window
 	void update(Uint32 deltaTime) override;
@@ -145,33 +108,29 @@ private:
 	ManButtonPtr humanButton_, computerButton_;
 
 	// Attributes defined in initCreateServerMenu.
-	gui::TextBoxPtr portBox_, ipBox_;
+	//gui::TextBoxPtr portBox_, ipBox_;
 
 	// Attribute defined in initHighscoreMenu.
-	HighscorePtr highscorePtr_;
+	//HighscorePtr highscorePtr_;
 
 	// Attribute defined in initFrameMenu.
-	gui::ButtonPtr resumeButton_;
+	//gui::ButtonPtr resumeButton_;
 
 	// Attribute defined in initPlayFrame.
-	gui::TextButtonPtr pause_;
+	//gui::TextButtonPtr pause_;
 
 	// Init in initServerLoobyFrame.
-	NetworkLoobyPtr networkLoobyPtr_;
-	gui::TextButtonPtr ready_;
+	//NetworkLoobyPtr networkLoobyPtr_;
+	//gui::TextButtonPtr ready_;
 
 	// Attributes defined in initCustomPlayFrame.
-	gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
+	//gui::TextBoxPtr customPlayWidth_, customPlayHeight_, customPlaymaxLevel_;
 
 	// Attributes defined in initNewHighScoreFrame.
-	gui::TextBoxPtr nameBox_;
+	//gui::TextBoxPtr nameBox_;
 
 	// Attributes defined in initAiFrame.
-	gui::TextButtonPtr ai1Button_, ai2Button_, ai3Button_, ai4Button_;
-
-	// All ai:s.
-	std::array<Ai, 4> activeAis_;
-	std::vector<Ai> ais_;
+	//gui::TextButtonPtr ai1Button_, ai2Button_, ai3Button_, ai4Button_;	
 
 	mw::Color barColor_, textButtonColor_, textColor_, focusColor_,
 		onHoverColor_, notHoverColor_, pushedColor_;

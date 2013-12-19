@@ -1,5 +1,4 @@
 #include "highscore.h"
-#include "widget.h"
 #include "gamefont.h"
 
 #include <mw/text.h>
@@ -20,11 +19,10 @@ Highscore::Highscore(int nbr, const mw::Color& color) : color_(color) {
 		stream << nbr-i << ":";
 		numbers_.push_back(mw::Text(stream.str(),fontDefault,25));
 	}
-	setWidth(300);
-	setHeight(nbr* (fontDefault->getCharacterSize()+2) + 28);
+	setPreferredSize(300, nbr* (fontDefault->getCharacterSize() + 2) + 28);
 }
 
-void Highscore::draw() {
+void Highscore::draw(float deltaTime) {
 	glColor3d(1,1,1);
 	glPushMatrix();
 
