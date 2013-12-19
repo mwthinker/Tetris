@@ -41,20 +41,27 @@ namespace gui {
 			marker_ = 0;
 		}
 
-		// Takes a utf8 character as input.
-		// The whole c-string assumes to represent a utf8 character.
+		// Takes a c-string which must be encoded in utf8 in order
+		// to work correctly.
 		void update(const char* text) {
 			int size = std::strlen(text);
-
-			if (size_ + size <= maxLimit_ && size_ + size <= MAX_SIZE) {
-				memmove(text_ + marker_ + size, text_ + marker_, size_ - marker_);
-				memmove(textUtf8_ + marker_ + size, textUtf8_ + marker_, size_ - marker_);
-				for (int i = 0; i < size; ++i) {
-					text_[marker_] = text[i];
-					textUtf8_[marker_] = size;
-					++marker_;
-					++size_;
+			int length = 1;
+			for (int i = 0; i < size; i += length) {
+				unsigned char token = text[i];
+				if (token < UTF8_BYTE_2) {
+					length = 1;
+				} else if (token < UTF8_BYTE_3) {
+					length = 2;
+				} else if (token < UTF8_BYTE_4) {
+					length = 3;
+				} else if (token < UTF8_BYTE_5) {
+					length = 4;
+				} else if (token < UTF8_BYTE_6) {
+					length = 5;
+				} else {
+					length = 6; // Assumes.
 				}
+				addUtf8(text + i, length);
 			}
 		}
 
@@ -118,6 +125,29 @@ namespace gui {
 				memmove(textUtf8_ + dst, textUtf8_ + src, size);
 			}
 		}
+
+		void addUtf8(const char* utf8Token, int length) {
+			if (size_ + length <= maxLimit_ && size_ + length <= MAX_SIZE) {
+				memmove(text_ + marker_ + length, text_ + marker_, size_ - marker_);
+				memmove(textUtf8_ + marker_ + length, textUtf8_ + marker_, size_ - marker_);
+				for (int i = 0; i < length; ++i) {
+					text_[marker_] = utf8Token[i];
+					textUtf8_[marker_] = length;
+					++marker_;
+					++size_;
+				}
+			}
+		}
+
+		// First code point. Source: https://en.wikipedia.org/wiki/UTF-8.
+		// Only the value of the first byte is of interest in order to see how many bytes
+		// each utf8 character contains.
+		unsigned const char UTF8_BYTE_1 = 0;
+		unsigned const char UTF8_BYTE_2 = 192;
+		unsigned const char UTF8_BYTE_3 = 224;
+		unsigned const char UTF8_BYTE_4 = 240;
+		unsigned const char UTF8_BYTE_5 = 248;
+		unsigned const char UTF8_BYTE_6 = 252;
 
 		int maxLimit_;				// Max number of input character allowed.
 		char text_[MAX_SIZE];		// Storage of text input.

@@ -70,13 +70,25 @@ namespace gui {
 		if (editable_) {
 			switch (keyEvent.type) {
 				case SDL_TEXTINPUT:
-					// Utf8 character!
+					// A Utf8 string as input.
 					inputFormatter_.update(keyEvent.text.text);
 					break;
 				case SDL_KEYDOWN:
 					// Reset marker animation.
 					markerDeltaTime_ = 0;
 					switch (keyEvent.key.keysym.sym) {
+						case SDLK_v:// Paste from clipboard!
+							if ((keyEvent.key.keysym.mod & KMOD_CTRL) && SDL_HasClipboardText()) {
+								char* text = SDL_GetClipboardText();
+								inputFormatter_.update(SDL_GetClipboardText());
+								SDL_free(text);
+							}
+							break;
+						case SDLK_c: // Copy from textfield!
+							if (keyEvent.key.keysym.mod & KMOD_CTRL) {
+								SDL_SetClipboardText(inputFormatter_.getText().c_str());
+							}
+							break;
 						case SDLK_HOME:
 							inputFormatter_.update(InputFormatter::INPUT_MOVE_MARKER_HOME);
 							break;
