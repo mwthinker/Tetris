@@ -19,7 +19,7 @@ Highscore::Highscore(int nbr, const mw::Color& color) : color_(color) {
 		stream << nbr-i << ":";
 		numbers_.push_back(mw::Text(stream.str(),fontDefault,25));
 	}
-	setPreferredSize(300, nbr* (fontDefault->getCharacterSize() + 2) + 28);
+	setPreferredSize(300, (float) nbr * (fontDefault->getCharacterSize() + 2) + 28);
 }
 
 void Highscore::draw(float deltaTime) {

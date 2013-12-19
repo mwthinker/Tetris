@@ -52,12 +52,12 @@ void testFlowLayout(gui::Frame& frame) {
 }
 
 int main(int argc, char** argv) {
-	//gui::Frame frameBorder;
-	//frameBorder.setDefaultClosing(true);
-	//testBorderLayout(frameBorder);
-	gui::Frame frameFlow;
-	frameFlow.setDefaultClosing(true);
-	testFlowLayout(frameFlow);
+	gui::Frame frameBorder;
+	frameBorder.setDefaultClosing(true);
+	testBorderLayout(frameBorder);
+	//gui::Frame frameFlow;
+	//frameFlow.setDefaultClosing(true);
+	//testFlowLayout(frameFlow);
 	
 	SDL_StartTextInput();
 	gui::Frame::startLoop();

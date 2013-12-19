@@ -12,6 +12,8 @@ public:
 	~TetrisWindow();
 
 private:
+	gui::Panel* createPlayOptions() const;
+
 	void initOptionFrame(const std::vector<DevicePtr>& devices);
 
     void setNbrOfHumanPlayers(int number);
@@ -45,6 +47,21 @@ private:
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;
 	std::vector<Ai> ais_;
+
+	// All panels.
+	int playFrameIndex_, 
+		networkFrameIndex_, 
+		highscoreFrameIndex_, 
+		customFrameIndex_, 
+		optionFrameIndex_, 
+		newHighscoreFrameIndex_,
+		createClientFrameIndex_, 
+		createServerFrameIndex_, 
+		loobyClientFrameIndex_,
+		loobyServerFrameIndex_, 
+		waitToConnectFrameIndex_, 
+		networkPlayFrameIndex_,
+		aiFrameIndex_;
 };
 
 #endif // TETRISWINDOW_H

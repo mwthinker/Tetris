@@ -10,7 +10,6 @@
 #include <list>
 #include <string>
 #include <sstream>
-#include <memory>
 #include <functional>
 
 class NetworkLooby : public gui::Component {
@@ -39,9 +38,5 @@ private:
 	mw::Color color_;
 	int nextRecord_;
 };
-
-typedef std::shared_ptr<NetworkLooby> NetworkLoobyPtr;
-
-NetworkLoobyPtr createNetworkLooby();
 
 #endif // NETWORKLOOBY_H

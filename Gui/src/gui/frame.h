@@ -26,7 +26,9 @@ namespace gui {
 		Frame(const Frame&) = delete;
 		Frame& operator=(const Frame&) = delete;
 
-		void push_back(Panel* panel);
+		int addPanelBack();
+
+		int push_back(Panel* panel);
 
 		void add(Component* component);
 
@@ -44,6 +46,11 @@ namespace gui {
 		std::vector<Panel*>::iterator end();
 		std::vector<Panel*>::const_iterator cbegin() const;
 		std::vector<Panel*>::const_iterator cend() const;
+
+		//
+		//Panel*& operator[](int index) {
+		//	return panels_[currentPanel_];
+		//}
 
 		mw::signals::Connection addWindowListener(const WindowListener::Callback& callback);
 

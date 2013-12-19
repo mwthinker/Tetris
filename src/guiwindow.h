@@ -23,9 +23,8 @@ class GuiWindow : public mw::Window {
 protected:
 	GuiWindow();
 
-	
-
 private:
+
 	//--------------------- Is to be derived. -----------------------------
 	virtual void saveHighscore() = 0;
 	virtual void updateGame(Uint32 deltaTime) = 0;

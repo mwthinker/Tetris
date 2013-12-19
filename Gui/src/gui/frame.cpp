@@ -17,8 +17,15 @@ namespace gui {
 		init();
 	}
 
-	void Frame::push_back(Panel* panel) {
+	int Frame::addPanelBack() {
+		Panel* p = new Panel;
+		p->setLayout(new BorderLayout);
+		return push_back(p);
+	}
+
+	int Frame::push_back(Panel* panel) {
 		panels_.push_back(panel);
+		return panels_.size() - 1;
 	}
 
 	void Frame::add(Component* component) {

@@ -6,6 +6,9 @@
 #include "joystick.h"
 #include "keyboard.h"
 #include "computer.h"
+#include "textbutton.h"
+
+#include <gui/borderlayout.h>
 
 //#include "textbutton.h"
 //#include "highscore.h"
@@ -16,6 +19,17 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+namespace {
+	
+	gui::Panel* createBackgroundPanel() {
+		gui::Panel* panel = new gui::Panel();
+		panel->setBackground(spriteBackground.getTexture());
+		panel->setLayout(new gui::BorderLayout);
+		return panel;
+	}
+
+}
 
 TetrisWindow::TetrisWindow() {
     nbrOfHumanPlayers_ = 1;
@@ -42,15 +56,54 @@ TetrisWindow::TetrisWindow() {
 	}
 	*/
 
-	loadHighscore();
+	// Create all frames.
+	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
+	optionFrameIndex_ = getCurrentPanelIndex();
+	
+	playFrameIndex_ = push_back(createBackgroundPanel());
+	highscoreFrameIndex_ = push_back(createBackgroundPanel());
+	customFrameIndex_ = push_back(createBackgroundPanel());
+	newHighscoreFrameIndex_ = push_back(createBackgroundPanel());
+	networkFrameIndex_ = push_back(createBackgroundPanel());
+	createClientFrameIndex_ = push_back(createBackgroundPanel());
+	createServerFrameIndex_ = push_back(createBackgroundPanel());
+	loobyClientFrameIndex_ = push_back(createBackgroundPanel());
+	loobyServerFrameIndex_ = push_back(createBackgroundPanel());
+	waitToConnectFrameIndex_ = push_back(createBackgroundPanel());
+	networkPlayFrameIndex_ = push_back(createBackgroundPanel());
+	aiFrameIndex_ = push_back(createBackgroundPanel());
+	
+	//loadHighscore();
 	initOptionFrame(devices_);
+}
+
+gui::Panel* TetrisWindow::createPlayOptions() const {
+	gui::Panel* panel = new gui::Panel;
+	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
+	
+	TextButton* b1 = new TextButton("Play", fontDefault35);
+	panel->add(b1);
+	TextButton* b2 = new TextButton("Custom play", fontDefault35);
+	panel->add(b2);
+	TextButton* b3 = new TextButton("Highscore", fontDefault35);
+	panel->add(b3);
+	TextButton* b4 = new TextButton("Options", fontDefault35);
+	panel->add(b4);
+	TextButton* b5 = new TextButton("Exit", fontDefault35);
+	panel->add(b5);
+
+	panel->setPreferredSize(400, 400);
+
+	return panel;
 }
 
 TetrisWindow::~TetrisWindow() {
 }
 
 void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
-
+	setCurrentFrame(optionFrameIndex_);
+	gui::Panel* optionsPanel = createPlayOptions();
+	add(optionsPanel, gui::BorderLayout::NORTH);
 }
 
 void TetrisWindow::setNbrOfHumanPlayers(int number) {

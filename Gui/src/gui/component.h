@@ -146,7 +146,7 @@ namespace gui {
 			if (texture) {
 				glEnable(GL_TEXTURE_2D);
 				getBackground()->bind();
-			}			
+			}
 
 			// Draw panel background.
 			backgroundColor_.glColor4d();
