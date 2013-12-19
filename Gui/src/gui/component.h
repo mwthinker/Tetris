@@ -17,6 +17,7 @@ namespace gui {
 	using KeyListener = mw::Signal<Component*, const SDL_Event&>;
 	using MouseListener = KeyListener;
 	using ActionListener = mw::Signal<Component*>;
+	using PanelChangeListener = mw::Signal<Component*, bool>;
 
 	class Component {
 	public:
@@ -96,6 +97,10 @@ namespace gui {
 
 		mw::signals::Connection addActionListener(const ActionListener::Callback& callback) {
 			return actionListener_.connect(callback);
+		}
+
+		mw::signals::Connection addPanelChangeListener(const PanelChangeListener::Callback& callback) {
+			return panelChangeListener_.connect(callback);
 		}
 
 		void setFocus(bool focus) {
@@ -179,6 +184,10 @@ namespace gui {
 		virtual void mouseOutsideUp() {
 		}
 
+		virtual void panelChanged(bool active) {
+			panelChangeListener_(this, active);
+		}
+
 		// Gets the layout index for the component.
 		// 0 is the default value.
 		int getLayoutIndex() const {
@@ -227,6 +236,7 @@ namespace gui {
 		KeyListener keyListener_;
 		MouseListener mouseListener_;
 		ActionListener actionListener_;
+		PanelChangeListener panelChangeListener_;
 
 		bool visible_;
 		bool valid_;

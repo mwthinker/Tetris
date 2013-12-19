@@ -36,7 +36,7 @@ namespace gui {
 		
 		// Gets the current layout manager. Do not deallocate the layout manager
 		// the panel takes care of that!
-		LayoutManager* getLayout(LayoutManager* layoutManager);
+		LayoutManager* getLayout() const;
 
 		std::list<Component*>::iterator begin();
 		std::list<Component*>::iterator end();
@@ -58,6 +58,8 @@ namespace gui {
 		void mouseMotionLeave() override;
 
 		void mouseOutsideUp() override;
+
+		void panelChanged(bool active) override;
 
 	private:
 		std::list<Component*> components_;

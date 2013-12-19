@@ -37,7 +37,7 @@ namespace gui {
 		}
 	}
 
-	LayoutManager* Panel::getLayout(LayoutManager* layoutManager) {
+	LayoutManager* Panel::getLayout() const {
 		return layoutManager_;
 	}
 
@@ -177,6 +177,13 @@ namespace gui {
 		for (Component* component : *this) {
 			component->mouseOutsideUp();
 		}
+	}
+
+	void Panel::panelChanged(bool active) {
+		for (Component* component : *this) {
+			component->panelChanged(active);
+		}
+		Component::panelChanged(active);
 	}
 
 } // Namespace gui.

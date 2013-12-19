@@ -17,6 +17,42 @@ namespace gui {
 		init();
 	}
 
+	void Frame::push_back(Panel* panel) {
+		panels_.push_back(panel);
+	}
+
+	void Frame::add(Component* component) {
+		getCurrentPanel()->add(component);
+	}
+
+	void Frame::add(Component* component, int layoutIndex) {
+		getCurrentPanel()->add(component, layoutIndex);
+	}
+
+	void Frame::setLayout(LayoutManager* layoutManager) {
+		getCurrentPanel()->setLayout(layoutManager);
+	}
+
+	LayoutManager* Frame::getLayout() const {
+		return getCurrentPanel()->getLayout();
+	}
+
+	std::vector<Panel*>::iterator Frame::begin() {
+		return panels_.begin();
+	}
+
+	std::vector<Panel*>::iterator Frame::end() {
+		return panels_.end();
+	}
+
+	std::vector<Panel*>::const_iterator Frame::cbegin() const {
+		return panels_.begin();
+	}
+
+	std::vector<Panel*>::const_iterator Frame::cend() const {
+		return panels_.end();
+	}
+
 	mw::signals::Connection Frame::addWindowListener(const WindowListener::Callback& callback) {
 		return windowListener_.connect(callback);
 	}
@@ -30,9 +66,9 @@ namespace gui {
 	}
 
 	void Frame::resize() {
-		setPreferredSize((float) getWidth(), (float) getHeight());
-		setSize((float) getWidth(), (float) getHeight());
-		setLocation(0, 0);
+		getCurrentPanel()->setPreferredSize((float) getWidth(), (float) getHeight());
+		getCurrentPanel()->setSize((float) getWidth(), (float) getHeight());
+		getCurrentPanel()->setLocation(0, 0);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -58,7 +94,7 @@ namespace gui {
 								resize();
 								break;
 							case SDL_WINDOWEVENT_LEAVE:
-								mouseMotionLeave();
+								getCurrentPanel()->mouseMotionLeave();
 								break;
 							case SDL_WINDOWEVENT_CLOSE:
 								if (defaultClosing_) {
@@ -74,7 +110,7 @@ namespace gui {
 						// Reverse y-axis.
 						sdlEvent.motion.yrel *= -1;
 						sdlEvent.motion.y = getHeight() - sdlEvent.motion.y - 1;
-						handleMouse(sdlEvent);
+						getCurrentPanel()->handleMouse(sdlEvent);
 					}
 					break;
 				case SDL_MOUSEBUTTONDOWN:
@@ -82,7 +118,7 @@ namespace gui {
 				case SDL_MOUSEBUTTONUP:
 					if (sdlEvent.button.windowID == SDL_GetWindowID(getSdlWindow())) {
 						sdlEvent.button.y = getHeight() - sdlEvent.motion.y - 1;
-						handleMouse(sdlEvent);
+						getCurrentPanel()->handleMouse(sdlEvent);
 					}
 					break;
 				case SDL_TEXTINPUT:
@@ -110,7 +146,7 @@ namespace gui {
 					// Fall through.
 				case SDL_KEYUP:
 					if (sdlEvent.key.windowID == SDL_GetWindowID(getSdlWindow())) {
-						handleKeyboard(sdlEvent);
+						getCurrentPanel()->handleKeyboard(sdlEvent);
 						switch (sdlEvent.key.keysym.sym) {
 							case SDLK_ESCAPE:
 								if (defaultClosing_) {
@@ -126,7 +162,7 @@ namespace gui {
 					break;
 			}
 		}
-		draw(deltaTime / 1000.f);
+		getCurrentPanel()->draw(deltaTime / 1000.f);
 	}
 
 	// Override mw::Window
@@ -135,15 +171,18 @@ namespace gui {
 	}
 
 	void Frame::init() {
+		currentPanel_ = 0;
 		// Default layout for Frame.
-		setLayout(new BorderLayout());
+		push_back(new Panel);
+
+		getCurrentPanel()->setLayout(new BorderLayout());
 
 		// Init the opengl settings.
 		resize();
 
-		setBackgroundColor(mw::Color(1, 1, 1));
-		setSize((float) getWidth(), (float) getHeight());
-		setPreferredSize((float) getWidth(), (float) getHeight());
+		getCurrentPanel()->setBackgroundColor(mw::Color(1, 1, 1));
+		getCurrentPanel()->setSize((float) getWidth(), (float) getHeight());
+		getCurrentPanel()->setPreferredSize((float) getWidth(), (float) getHeight());
 		defaultClosing_ = false;
 	}
 
