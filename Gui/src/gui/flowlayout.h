@@ -4,8 +4,8 @@
 #include "layoutmanager.h"
 #include "panel.h"
 
-#include <list>
 #include <algorithm>
+#include <cassert>
 
 namespace gui {
 
@@ -35,7 +35,7 @@ namespace gui {
 			vGap_ = vGap;
 		}
 
-		void layoutContainer(Panel* parent) {
+		void layoutContainer(Panel* parent) override {
 			Dimension dimP = parent->getPreferredSize();
 
 			float w = hGap_;

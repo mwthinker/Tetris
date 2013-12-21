@@ -4,7 +4,6 @@
 #include "layoutmanager.h"
 #include "panel.h"
 
-#include <list>
 #include <cassert>
 
 namespace gui {
@@ -20,7 +19,7 @@ namespace gui {
 		BorderLayout() {
 		}
 
-		void layoutContainer(Panel* parent) {
+		void layoutContainer(Panel* parent) override {
 			float n, s, w, e;
 			calculateSizes(parent, n, s, w, e);
 
