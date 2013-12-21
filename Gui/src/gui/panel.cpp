@@ -8,6 +8,7 @@ namespace gui {
 
 	Panel::Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false), layoutManager_(nullptr) {
 		setLayout(new FlowLayout);
+		setPreferredSize(50, 50);
 	}
 
 	Panel::~Panel() {
@@ -22,18 +23,21 @@ namespace gui {
 		component->parent_ = this;
 		component->setLayoutIndex(0);
 		components_.push_back(component);
+		validate();
 	}
 
 	void Panel::add(Component* component, int layoutIndex) {
 		component->parent_ = this;
 		component->setLayoutIndex(layoutIndex);
 		components_.push_back(component);
+		validate();
 	}
 
 	void Panel::setLayout(LayoutManager* layoutManager) {
 		if (layoutManager != nullptr) {
 			delete layoutManager_;
 			layoutManager_ = layoutManager;
+			validate();
 		}
 	}
 
@@ -66,11 +70,7 @@ namespace gui {
 	}
 
 	void Panel::draw(float deltaTime) {
-		if (!isValid()) {
-			// Validate!
-			layoutManager_->layoutContainer(this);
-		}
-
+		pushScissor(this);
 		Component::draw(deltaTime);
 
 		// Draw components.
@@ -81,6 +81,8 @@ namespace gui {
 			component->draw(deltaTime);
 			glPopMatrix();
 		}
+
+		pullScissor();
 	}
 
 	// Todo! Reverse y-axis!
@@ -184,6 +186,77 @@ namespace gui {
 			component->panelChanged(active);
 		}
 		Component::panelChanged(active);
+	}
+
+	void Panel::validate() {
+		Component::validate();
+		// Validate!
+		layoutManager_->layoutContainer(this);
+		for (Component* child : *this) {
+			child->validate();
+		}
+	}
+
+	std::stack<Panel::Square> Panel::squares_;
+
+	bool Panel::isIntersecting(const Square& sq1, const Square& sq2) {
+		return (((sq1.first.x_ + +sq1.second.width_ < sq2.first.x_) ||
+			(sq2.first.x_ + +sq2.second.width_ < sq1.first.x_)) &&
+			((sq1.first.y_ + +sq1.second.height_ < sq2.first.y_) ||
+			(sq2.first.y_ + +sq2.second.height_ < sq1.first.y_)));
+	}
+
+	Panel::Square Panel::calculateIntersectSquare(const Square& sq1, const Square& sq2) {
+		float x, y, w, h;
+		if (isIntersecting(sq1, sq2)) {
+			return sq2;
+		}
+
+		if (sq1.first.x_ < sq2.first.x_) {
+			x = sq2.first.x_;
+			w = sq1.second.width_ - (sq2.first.x_ - sq1.first.x_);
+			if (sq1.first.y_ < sq2.first.y_) {
+				y = sq2.first.y_;
+				h = sq1.second.height_ - (sq2.first.y_ - sq1.first.y_);
+			} else {
+				y = sq1.first.y_;
+				h = sq2.second.height_ - (sq1.first.y_ - sq2.first.y_);
+			}
+		} else {
+			x = sq1.first.x_;
+			w = sq2.second.width_ - (sq1.first.x_ - sq2.first.x_);
+			if (sq1.first.y_ < sq2.first.y_) {
+				y = sq2.first.y_;
+				h = sq1.second.height_ - (sq2.first.y_ - sq1.first.y_);
+			} else {
+				y = sq1.first.y_;
+				h = sq2.second.height_ - (sq1.first.y_ - sq2.first.y_);
+			}
+		}
+		return Square(Point(x, y), Dimension(w, h));
+	}
+
+	void Panel::pushScissor(Component* component) {
+		glEnable(GL_SCISSOR_TEST);
+		Point loc = component->location_;
+		Dimension dim = component->dimension_;
+		if (squares_.empty()) {
+			squares_.push(Square(loc, dim));
+		} else {
+			squares_.push(calculateIntersectSquare(squares_.top(), Square(loc, dim)));
+		}
+		Square sq = squares_.top();
+
+		glScissor((GLsizei) sq.first.x_, (GLsizei) sq.first.y_, 
+			(GLsizei) sq.second.width_, (GLsizei) sq.second.height_);
+		squares_.empty();
+	}
+
+	void Panel::pullScissor() {
+		glDisable(GL_SCISSOR_TEST);
+		if (!squares_.empty()) {
+			squares_.pop();
+		}
 	}
 
 } // Namespace gui.

@@ -3,6 +3,7 @@
 
 #include "tetrisgame.h"
 #include "device.h"
+#include "textbutton.h"
 
 #include <gui/frame.h>
 
@@ -62,6 +63,8 @@ private:
 		waitToConnectFrameIndex_, 
 		networkPlayFrameIndex_,
 		aiFrameIndex_;
+
+	TextButton* menu_;
 };
 
 #endif // TETRISWINDOW_H

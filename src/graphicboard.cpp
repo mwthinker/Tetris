@@ -99,11 +99,11 @@ GraphicBoard::GraphicBoard() {
 	frameColor_ = mw::Color(237/256.0,78/256.0,8/256.0); // Some type of orange.
 
 	// Define all text sizes and font usage.
-	name_ = mw::Text("Player", fontDefault, 40);
-	level_ = mw::Text("Level 1", fontDefault, 30);
-	points_ = mw::Text("Points 0", fontDefault, 30);
-	nbrOfClearedRows_ = mw::Text("Rows 0", fontDefault, 30);
-	middleMessage_ = mw::Text("", fontDefault, 70);
+	name_ = mw::Text("Player", fontDefault30, 40);
+	level_ = mw::Text("Level 1", fontDefault30, 30);
+	points_ = mw::Text("Points 0", fontDefault30, 30);
+	nbrOfClearedRows_ = mw::Text("Rows 0", fontDefault30, 30);
+	middleMessage_ = mw::Text("", fontDefault30, 70);
 }
 
 void GraphicBoard::setNbrOfClearedRows(int nbr) {

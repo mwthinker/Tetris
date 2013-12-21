@@ -21,6 +21,7 @@ SET(SOURCES
 	src/gui/button.h
 	src/gui/checkbox.cpp
 	src/gui/checkbox.h
+	src/gui/component.cpp
 	src/gui/component.h
 	src/gui/dimension.h
 	src/gui/flowlayout.h
@@ -32,8 +33,6 @@ SET(SOURCES
 	src/gui/layoutmanager.h
 	src/gui/panel.cpp
 	src/gui/panel.h
-	src/gui/tbutton.cpp
-	src/gui/tbutton.h
 	src/gui/textfield.cpp
 	src/gui/textfield.h
 )

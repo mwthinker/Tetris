@@ -21,7 +21,6 @@ namespace gui {
 		}
 
 		void layoutContainer(Panel* parent) {
-			parent->setToValid();
 			float n, s, w, e;
 			calculateSizes(parent, n, s, w, e);
 
@@ -53,7 +52,6 @@ namespace gui {
 						// Error.
 						break;
 				}
-				c->setToValid();
 			}
 		}
 

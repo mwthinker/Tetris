@@ -19,24 +19,23 @@ namespace gui {
 
 		FlowLayout() {
 			alignment_ = LEFT;
-			vGap_ = 5.f;
-			hGap_ = 5.f;
+			hGap_ = 5;
+			vGap_ = 5;
 		}
 
 		FlowLayout(Alignment alignment) {
 			alignment_ = alignment;
-			vGap_ = 5.f;
-			hGap_ = 5.f;
+			hGap_ = 5;
+			vGap_ = 5;			
 		}
 
-		FlowLayout(Alignment alignment, float vGap, float hGap) {
+		FlowLayout(Alignment alignment, float hGap, float vGap) {
 			alignment_ = alignment;
-			vGap_ = vGap;
 			hGap_ = hGap;
+			vGap_ = vGap;
 		}
 
 		void layoutContainer(Panel* parent) {
-			parent->setToValid();
 			Dimension dimP = parent->getPreferredSize();
 
 			float w = hGap_;
@@ -65,13 +64,12 @@ namespace gui {
 						break;
 				}
 				w += dimC.width_ + hGap_;
-				c->setToValid();
 			}
 		}
 
 	private:
 		Alignment alignment_;
-		float vGap_, hGap_;
+		float hGap_, vGap_;
 	};
 
 } // Namespace gui.

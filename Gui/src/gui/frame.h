@@ -66,7 +66,7 @@ namespace gui {
 			return currentPanel_;
 		}
 
-		void setCurrentFrame(int index) {
+		void setCurrentPanel(int index) {
 			if (currentPanel_ != index) {
 				getCurrentPanel()->panelChanged(false);
 				currentPanel_ = index;

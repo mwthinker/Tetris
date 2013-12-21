@@ -9,6 +9,8 @@
 
 #include <sdl.h>
 
+#include <stack>
+
 namespace gui {
 
 	class Component;
@@ -42,12 +44,12 @@ namespace gui {
 
 		void setPreferredSize(float width, float height) {
 			preferedDimension_ = Dimension(width, height);
-			setNotValid();
+			validate();
 		}
 
 		void setPreferredSize(const Dimension& dimension) {
 			preferedDimension_ = dimension;
-			setNotValid();
+			validate();
 		}
 
 		Dimension getPreferredSize() const {
@@ -77,10 +79,6 @@ namespace gui {
 
 		bool isValid() const {
 			return valid_;
-		}
-
-		void setToValid() {
-			valid_ = true;
 		}
 
 		mw::signals::Connection addKeyListener(const KeyListener::Callback& callback) {
@@ -137,38 +135,7 @@ namespace gui {
 		// Draws the gackground color.
 		// Should be deriverd and should then draw the
 		// component in the size defined by getSize().
-		virtual void draw(float deltaTime) {
-			mw::TexturePtr texture = getBackground();
-
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			if (texture) {
-				glEnable(GL_TEXTURE_2D);
-				getBackground()->bind();
-			}
-
-			// Draw panel background.
-			backgroundColor_.glColor4d();
-
-			Dimension dim = getSize();
-			glBegin(GL_QUADS);
-			glTexCoord2f(0, 0);
-			glVertex2f(0.f, 0.f);
-			glTexCoord2f(1, 0);
-			glVertex2f(dim.width_*1.f, 0.f);
-			glTexCoord2f(1, 1);
-			glVertex2f(dim.width_*1.f, dim.height_*1.0f);
-			glTexCoord2f(0, 1);
-			glVertex2f(0.f, dim.height_*1.f);
-			glEnd();
-
-			if (texture) {
-				glDisable(GL_TEXTURE_2D);
-			}
-
-			glDisable(GL_BLEND);
-		}
+		virtual void draw(float deltaTime);
 
 		// Do action.
 		void doAction() {
@@ -213,13 +180,14 @@ namespace gui {
 			keyListener_(this, keyEvent);
 		}
 
+		virtual void validate() {
+			valid_ = true;
+		}
+
 	private:
 		void setNotValid() {
-			// Set this and all parents invalid.
-			Component* parent = this;
-			while (parent != nullptr) {
-				parent->valid_ = false;
-				parent = parent->parent_;
+			if (parent_ != nullptr) {
+				parent_->validate();
 			}
 		}
 

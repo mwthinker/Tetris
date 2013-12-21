@@ -9,6 +9,7 @@
 #include "textbutton.h"
 
 #include <gui/borderlayout.h>
+#include <gui/flowlayout.h>
 
 //#include "textbutton.h"
 //#include "highscore.h"
@@ -27,6 +28,14 @@ namespace {
 		panel->setBackground(spriteBackground.getTexture());
 		panel->setLayout(new gui::BorderLayout);
 		return panel;
+	}
+
+	gui::Panel* createBar() {
+		gui::Panel* bar = new gui::Panel;
+		bar->setPreferredSize(35, 35);
+		bar->setBackgroundColor(mw::Color(.5, 0, 0, .30));
+		bar->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
+		return bar;
 	}
 
 }
@@ -81,15 +90,15 @@ gui::Panel* TetrisWindow::createPlayOptions() const {
 	gui::Panel* panel = new gui::Panel;
 	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
 	
-	TextButton* b1 = new TextButton("Play", fontDefault35);
+	TextButton* b1 = new TextButton("Play", fontDefault30);
 	panel->add(b1);
-	TextButton* b2 = new TextButton("Custom play", fontDefault35);
+	TextButton* b2 = new TextButton("Custom play", fontDefault30);
 	panel->add(b2);
-	TextButton* b3 = new TextButton("Highscore", fontDefault35);
+	TextButton* b3 = new TextButton("Highscore", fontDefault30);
 	panel->add(b3);
-	TextButton* b4 = new TextButton("Options", fontDefault35);
+	TextButton* b4 = new TextButton("Options", fontDefault30);
 	panel->add(b4);
-	TextButton* b5 = new TextButton("Exit", fontDefault35);
+	TextButton* b5 = new TextButton("Exit", fontDefault30);
 	panel->add(b5);
 
 	panel->setPreferredSize(400, 400);
@@ -101,9 +110,16 @@ TetrisWindow::~TetrisWindow() {
 }
 
 void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
-	setCurrentFrame(optionFrameIndex_);
-	gui::Panel* optionsPanel = createPlayOptions();
-	add(optionsPanel, gui::BorderLayout::NORTH);
+	setCurrentPanel(optionFrameIndex_);
+	//gui::Panel* optionsPanel = createPlayOptions();
+	
+	menu_ = new TextButton("Menu", fontDefault30);
+
+	gui::Panel* bar = createBar();
+	bar->add(menu_);
+
+	add(bar, gui::BorderLayout::NORTH);
+	//add(optionsPanel, gui::BorderLayout::NORTH);
 }
 
 void TetrisWindow::setNbrOfHumanPlayers(int number) {

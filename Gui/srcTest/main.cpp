@@ -3,44 +3,37 @@
 #include <gui/borderlayout.h>
 #include <gui/panel.h>
 #include <gui/component.h>
-#include <gui/tbutton.h>
 #include <gui/label.h>
+#include <gui/button.h>
 #include <gui/textfield.h>
 #include <gui/checkbox.h>
 
 #include <cassert>
 
-gui::TButton* createButton(std::string text) {
-	mw::Color textColor(1, 1, 1);
-	mw::Color textButtonColor(1, .1, .1);
-	mw::Color focusColo(.8, .1, 0, .3);
-	mw::Color onHoverColor(.6, .1, .1);
-	mw::Color notHoverColor(.4, .0, .0, .0);
-	mw::Color pushedColor(.8, .0, 0, .7);
-	return nullptr;
-	//return new TButton(text, size, fontDefault, textButtonColor_, focusColor_, onHoverColor_, notHoverColor_, pushedColor_);			
-}
-
 void testBorderLayout(gui::Frame& frame) {
-	frame.add(new gui::TButton, gui::BorderLayout::NORTH);
-	frame.add(new gui::TButton, gui::BorderLayout::CENTER);
-	frame.add(new gui::TButton, gui::BorderLayout::WEST);
-	frame.add(new gui::TButton, gui::BorderLayout::EAST);
-	frame.add(new gui::TButton, gui::BorderLayout::SOUTH);
+	frame.add(new gui::Button, gui::BorderLayout::NORTH);
+	frame.add(new gui::Button, gui::BorderLayout::CENTER);
+	frame.add(new gui::Button, gui::BorderLayout::WEST);
+	frame.add(new gui::Button, gui::BorderLayout::EAST);
+	frame.add(new gui::Button, gui::BorderLayout::SOUTH);
 }
 
 void testFlowLayout(gui::Frame& frame) {
 	mw::FontPtr font(new mw::Font("Ubuntu-B.ttf", 16));
 	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT));
-	frame.add(new gui::TButton("Button 1", font));
-	frame.add(new gui::TButton("Button 2", font));
-	gui::Button* button = new gui::TButton("Button 3", font);
+	frame.add(new gui::Button("Button 1", font));
+	frame.add(new gui::Button("Button 2", font));
+	gui::Button* button = new gui::Button("Button 3", font);
 	button->setVerticalAlignment(gui::Button::TOP);
 	frame.add(button);
-	frame.add(new gui::TButton("Button 4", font));
+	frame.add(new gui::Button("Button 4", font));
 	frame.add(new gui::CheckBox("CheckBox 5", font));
 	frame.add(new gui::TextField("Text:", font));
 	frame.add(new gui::Label("JAjajaj", font));
+
+	gui::Panel* panel = new gui::Panel();
+	panel->setBackgroundColor(mw::Color(0, 1, 0));
+	frame.add(panel);
 
 	frame.addMouseListener([](gui::Component* c, const SDL_Event& sdlEvent) {
 		switch (sdlEvent.type) {
@@ -51,13 +44,15 @@ void testFlowLayout(gui::Frame& frame) {
 	});
 }
 
+// Objects can be drawn outside the panel. Fix todo!
+
 int main(int argc, char** argv) {
-	gui::Frame frameBorder;
-	frameBorder.setDefaultClosing(true);
-	testBorderLayout(frameBorder);
-	//gui::Frame frameFlow;
-	//frameFlow.setDefaultClosing(true);
-	//testFlowLayout(frameFlow);
+	//gui::Frame frameBorder;
+	//frameBorder.setDefaultClosing(true);
+	//testBorderLayout(frameBorder);
+	gui::Frame frameFlow;
+	frameFlow.setDefaultClosing(true);
+	testFlowLayout(frameFlow);
 	
 	SDL_StartTextInput();
 	gui::Frame::startLoop();
