@@ -10,6 +10,11 @@ namespace gui {
 
 	class BoxLayout : public LayoutManager {
 	public:
+		enum Direction {
+			HORIZONTAL,
+			VERTICAL
+		};
+
 		BoxLayout() {
 		}
 

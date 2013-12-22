@@ -7,10 +7,10 @@
 #include <cassert>
 
 namespace gui {
-
+	
 	class GridLayout : public LayoutManager {
 	public:
-		GridLayout(int rows, int columns) : columns_(columns), rows_(rows), hGap_(), vGap_(0) {
+		GridLayout(int rows, int columns) : columns_(columns), rows_(rows), hGap_(0), vGap_(0) {
 		}
 
 		GridLayout(int rows, int columns, float hGap, float vGap) : columns_(columns), rows_(rows), hGap_(hGap), vGap_(vGap) {
