@@ -35,6 +35,7 @@ SET(SOURCES
 	src/gui/layoutmanager.h
 	src/gui/panel.cpp
 	src/gui/panel.h
+	src/gui/verticallayout.h
 	src/gui/textfield.cpp
 	src/gui/textfield.h
 )

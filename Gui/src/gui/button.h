@@ -68,12 +68,14 @@ namespace gui {
 		// Sets the color for the text label.
 		void setTextColor(const mw::Color& textColor);
 
-		virtual void preferedSizeFitText();
+		virtual void setPreferedSizeFitText();
 
 	protected:
 		void drawLabel();
 
 		mw::Text text_;
+		mw::Text toWide_;
+
 		mw::Color textColor_;
 		VerticalAlignment vTextAlignment_;
 		HorizontalAlignment hTextAlignment_;
@@ -81,8 +83,6 @@ namespace gui {
 	private:
 		inline void init() {
 			setPreferredSize(50, 50);
-			std::bind(&Button::handleMouse, this, this, std::placeholders::_1);
-			std::bind(&Button::handleKeyboard, this, this, std::placeholders::_1);
 			pushed_ = false;
 			mouseDown_ = false;
 			mouseInside_ = false;
@@ -91,11 +91,13 @@ namespace gui {
 			textColor_ = mw::Color(0, 0, 0);
 			setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
 
-			Button::preferedSizeFitText();
+			Button::setPreferedSizeFitText();
+			toWide_ = text_;
+			toWide_.setText(". . .");
 		}
 
-		void handleMouse(const SDL_Event&);
-		void handleKeyboard(const SDL_Event&);
+		void handleMouse(const SDL_Event&) override;
+		void handleKeyboard(const SDL_Event&) override;
 		
 		bool pushed_;
 		bool mouseDown_;

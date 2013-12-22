@@ -13,7 +13,7 @@ public:
 	~TetrisWindow();
 
 private:
-	gui::Panel* createPlayOptions() const;
+	gui::Panel* createPlayOptions();
 
 	void initOptionFrame(const std::vector<DevicePtr>& devices);
 

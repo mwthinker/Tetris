@@ -10,6 +10,8 @@
 
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
+#include <gui/verticallayout.h>
+#include <gui/Label.h>
 
 //#include "textbutton.h"
 //#include "highscore.h"
@@ -67,8 +69,7 @@ TetrisWindow::TetrisWindow() {
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
-	optionFrameIndex_ = getCurrentPanelIndex();
-	
+	optionFrameIndex_ = getCurrentPanelIndex();	
 	playFrameIndex_ = push_back(createBackgroundPanel());
 	highscoreFrameIndex_ = push_back(createBackgroundPanel());
 	customFrameIndex_ = push_back(createBackgroundPanel());
@@ -86,22 +87,42 @@ TetrisWindow::TetrisWindow() {
 	initOptionFrame(devices_);
 }
 
-gui::Panel* TetrisWindow::createPlayOptions() const {
+gui::Panel* TetrisWindow::createPlayOptions() {
 	gui::Panel* panel = new gui::Panel;
+	panel->setLayout(new gui::VerticalLayout(5, 15, 10));
 	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
+
+	gui::Label* label = new gui::Label("MWetris", fontDefault50);
+	label->setTextColor(mw::Color(1, 1, 1));
+	label->setBackgroundColor(mw::Color(1, 1, 1,0));
+	panel->add(label);
+	panel->setPreferredSize(400, 400);
 	
 	TextButton* b1 = new TextButton("Play", fontDefault30);
 	panel->add(b1);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(playFrameIndex_);
+	});
 	TextButton* b2 = new TextButton("Custom play", fontDefault30);
 	panel->add(b2);
+	b2->addActionListener([&](gui::Component*) {
+		setCurrentPanel(optionFrameIndex_);
+	});
 	TextButton* b3 = new TextButton("Highscore", fontDefault30);
 	panel->add(b3);
+	b3->addActionListener([&](gui::Component*) {
+		setCurrentPanel(highscoreFrameIndex_);
+	});
 	TextButton* b4 = new TextButton("Options", fontDefault30);
+	b4->addActionListener([&](gui::Component*) {
+		setCurrentPanel(optionFrameIndex_);
+	});
 	panel->add(b4);
 	TextButton* b5 = new TextButton("Exit", fontDefault30);
+	b5->addActionListener([&](gui::Component*) {
+		Window::quit();
+	});
 	panel->add(b5);
-
-	panel->setPreferredSize(400, 400);
 
 	return panel;
 }
@@ -111,7 +132,7 @@ TetrisWindow::~TetrisWindow() {
 
 void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 	setCurrentPanel(optionFrameIndex_);
-	//gui::Panel* optionsPanel = createPlayOptions();
+	gui::Panel* optionsPanel = createPlayOptions();
 	
 	menu_ = new TextButton("Menu", fontDefault30);
 
@@ -119,7 +140,7 @@ void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 	bar->add(menu_);
 
 	add(bar, gui::BorderLayout::NORTH);
-	//add(optionsPanel, gui::BorderLayout::NORTH);
+	add(optionsPanel, gui::BorderLayout::WEST);
 }
 
 void TetrisWindow::setNbrOfHumanPlayers(int number) {

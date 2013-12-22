@@ -34,6 +34,7 @@ namespace gui {
 
 	void Button::setFont(const mw::FontPtr& font) {
 		text_ = mw::Text(text_.getText(), font);
+		toWide_ = mw::Text(toWide_.getText(), font);
 	}
 
 	void Button::handleKeyboard(const SDL_Event& keyEvent) {
@@ -118,6 +119,7 @@ namespace gui {
 
 	void Button::drawLabel() {
 		Dimension dim = getSize();
+
 		float x = 0.0;
 		switch (hTextAlignment_) {
 			case HorizontalAlignment::LEFT:
@@ -145,11 +147,17 @@ namespace gui {
 		textColor_.glColor4d();
 		glPushMatrix();
 		glTranslatef(x, y, 0);
-		text_.draw();
+
+		if (text_.getWidth() < dim.width_) {
+			text_.draw();
+		} else {
+			toWide_.draw();
+		}
+
 		glPopMatrix();
 	}
 
-	void Button::preferedSizeFitText() {
+	void Button::setPreferedSizeFitText() {
 		if (text_.getWidth() > 1 && text_.getHeight() > 1) {
 			setPreferredSize(2 + (float) text_.getWidth(), 2 + (float) text_.getHeight());
 		}
