@@ -8,13 +8,12 @@
 #include "computer.h"
 #include "textbutton.h"
 
+//#include "highscore.h"
+
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
 #include <gui/verticallayout.h>
 #include <gui/Label.h>
-
-//#include "textbutton.h"
-//#include "highscore.h"
 
 #include <mw/sprite.h>
 #include <mw/color.h>
@@ -69,22 +68,23 @@ TetrisWindow::TetrisWindow() {
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
-	optionFrameIndex_ = getCurrentPanelIndex();	
-	playFrameIndex_ = push_back(createBackgroundPanel());
-	highscoreFrameIndex_ = push_back(createBackgroundPanel());
-	customFrameIndex_ = push_back(createBackgroundPanel());
-	newHighscoreFrameIndex_ = push_back(createBackgroundPanel());
-	networkFrameIndex_ = push_back(createBackgroundPanel());
-	createClientFrameIndex_ = push_back(createBackgroundPanel());
-	createServerFrameIndex_ = push_back(createBackgroundPanel());
-	loobyClientFrameIndex_ = push_back(createBackgroundPanel());
-	loobyServerFrameIndex_ = push_back(createBackgroundPanel());
-	waitToConnectFrameIndex_ = push_back(createBackgroundPanel());
-	networkPlayFrameIndex_ = push_back(createBackgroundPanel());
-	aiFrameIndex_ = push_back(createBackgroundPanel());
+	optionIndex_ = getCurrentPanelIndex();	
+	playIndex_ = push_back(createBackgroundPanel());
+	highscoreIndex_ = push_back(createBackgroundPanel());
+	customIndex_ = push_back(createBackgroundPanel());
+	newHighscoreIndex_ = push_back(createBackgroundPanel());
+	networkIndex_ = push_back(createBackgroundPanel());
+	createClientIndex_ = push_back(createBackgroundPanel());
+	createServerIndex_ = push_back(createBackgroundPanel());
+	loobyClientIndex_ = push_back(createBackgroundPanel());
+	loobyServerIndex_ = push_back(createBackgroundPanel());
+	waitToConnectIndex_ = push_back(createBackgroundPanel());
+	networkPlayIndex_ = push_back(createBackgroundPanel());
+	aiIndex_ = push_back(createBackgroundPanel());
 	
 	//loadHighscore();
 	initOptionFrame(devices_);
+	initPlayFrame();
 }
 
 gui::Panel* TetrisWindow::createPlayOptions() {
@@ -101,21 +101,21 @@ gui::Panel* TetrisWindow::createPlayOptions() {
 	TextButton* b1 = new TextButton("Play", fontDefault30);
 	panel->add(b1);
 	b1->addActionListener([&](gui::Component*) {
-		setCurrentPanel(playFrameIndex_);
+		setCurrentPanel(playIndex_);
 	});
 	TextButton* b2 = new TextButton("Custom play", fontDefault30);
 	panel->add(b2);
 	b2->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionFrameIndex_);
+		setCurrentPanel(optionIndex_);
 	});
 	TextButton* b3 = new TextButton("Highscore", fontDefault30);
 	panel->add(b3);
 	b3->addActionListener([&](gui::Component*) {
-		setCurrentPanel(highscoreFrameIndex_);
+		setCurrentPanel(highscoreIndex_);
 	});
 	TextButton* b4 = new TextButton("Options", fontDefault30);
 	b4->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionFrameIndex_);
+		setCurrentPanel(optionIndex_);
 	});
 	panel->add(b4);
 	TextButton* b5 = new TextButton("Exit", fontDefault30);
@@ -131,18 +131,80 @@ TetrisWindow::~TetrisWindow() {
 }
 
 void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
-	setCurrentPanel(optionFrameIndex_);
+	setCurrentPanel(optionIndex_);
 	gui::Panel* optionsPanel = createPlayOptions();
 	
-	menu_ = new TextButton("Menu", fontDefault30);
+	TextButton* b1 = new TextButton("Resume", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(playIndex_);
+	});
 
 	gui::Panel* bar = createBar();
-	bar->add(menu_);
+	bar->add(b1);
 
 	add(bar, gui::BorderLayout::NORTH);
 	add(optionsPanel, gui::BorderLayout::WEST);
 }
 
+void TetrisWindow::initPlayFrame() {
+	setCurrentPanel(playIndex_);
+	
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(optionIndex_);
+	});
+	bar->add(b1);
+	TextButton* b2 = new TextButton("Restart", fontDefault30);
+	bar->add(b2);
+	add(bar, gui::BorderLayout::NORTH);
+	TextButton* b3 = new TextButton("Pause", fontDefault30);
+	bar->add(b3);
+
+	/*
+	// Upper bar.
+	multiFrame_.addBar(createUpperBar());
+	
+	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::Widget* item) {
+		restartGame();
+		item->setFocus(false);
+	});
+
+	b2->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDL_Keycode key = sdlEvent.key.keysym.sym;
+				if (key == restartKey_) {
+					item->click();
+					break;
+				}
+		}
+	});
+
+	pause_ = createButton("Pause", hDistance_, [&](gui::Widget* item) {
+		changePauseState();
+		item->setFocus(false);
+	});
+	pause_->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+			case SDL_KEYDOWN:
+				SDL_Keycode key = sdlEvent.key.keysym.sym;
+				if (key == pauseKey_ || key == SDLK_PAUSE) {
+					item->click();
+					break;
+				}
+		}
+	});
+
+	multiFrame_.add(b1, 0, 0, false, true);
+	multiFrame_.add(b2, 80, 0, false, true);
+	multiFrame_.add(humanButton_, 80 + b2->getWidth(), 0, false, true);
+	multiFrame_.add(computerButton_, 100 + b2->getWidth() + 130, 0, false, true);
+	multiFrame_.add(pause_, 0, 0, true, true);
+	*/
+}
+
+/*
 void TetrisWindow::setNbrOfHumanPlayers(int number) {
     const int size = devices_.size();
 	if (number < 0) {
@@ -153,22 +215,7 @@ void TetrisWindow::setNbrOfHumanPlayers(int number) {
         nbrOfHumanPlayers_ = size;
     }
 }
-
-int TetrisWindow::getNbrOfHumanPlayers() const {
-    return nbrOfHumanPlayers_;
-}
-
-void TetrisWindow::setNbrOfComputerPlayers(int number) {
-    if (number <= 4) {
-        nbrOfComputerPlayers_ = number;
-    } else {
-        nbrOfComputerPlayers_ = 4;
-    }
-}
-
-int TetrisWindow::getNbrOfComputerPlayers() const {
-    return nbrOfComputerPlayers_;
-}
+*/
 
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	const int size = devices_.size();

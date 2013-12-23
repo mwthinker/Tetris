@@ -76,6 +76,7 @@ namespace gui {
 		getCurrentPanel()->setPreferredSize((float) getWidth(), (float) getHeight());
 		getCurrentPanel()->setSize((float) getWidth(), (float) getHeight());
 		getCurrentPanel()->setLocation(0, 0);
+		getCurrentPanel()->validate();
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();

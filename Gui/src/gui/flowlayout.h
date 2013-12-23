@@ -36,7 +36,7 @@ namespace gui {
 		}
 
 		void layoutContainer(Panel* parent) override {
-			Dimension dimP = parent->getPreferredSize();
+			Dimension dimP = parent->getSize();
 
 			float w = hGap_;
 			float h = vGap_;

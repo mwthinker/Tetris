@@ -47,11 +47,6 @@ namespace gui {
 		std::vector<Panel*>::const_iterator cbegin() const;
 		std::vector<Panel*>::const_iterator cend() const;
 
-		//
-		//Panel*& operator[](int index) {
-		//	return panels_[currentPanel_];
-		//}
-
 		mw::signals::Connection addWindowListener(const WindowListener::Callback& callback);
 
 		void setDefaultClosing(bool defaultClosing);
@@ -70,6 +65,7 @@ namespace gui {
 			if (currentPanel_ != index) {
 				getCurrentPanel()->panelChanged(false);
 				currentPanel_ = index;
+				resize();
 				getCurrentPanel()->panelChanged(true);
 			}
 		}

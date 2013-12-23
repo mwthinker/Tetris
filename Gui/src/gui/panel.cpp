@@ -182,6 +182,10 @@ namespace gui {
 	}
 
 	void Panel::panelChanged(bool active) {
+		if (active) {
+			validate();
+		}
+
 		for (Component* component : *this) {
 			component->panelChanged(active);
 		}

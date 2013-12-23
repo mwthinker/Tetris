@@ -16,11 +16,7 @@ private:
 	gui::Panel* createPlayOptions();
 
 	void initOptionFrame(const std::vector<DevicePtr>& devices);
-
-    void setNbrOfHumanPlayers(int number);
-	int getNbrOfHumanPlayers() const;
-	void setNbrOfComputerPlayers(int number);
-	int getNbrOfComputerPlayers() const;	
+	void initPlayFrame();
 
 	void createLocalGame();
 	void createLocalGame(int width, int height, int maxLevel);
@@ -50,21 +46,19 @@ private:
 	std::vector<Ai> ais_;
 
 	// All panels.
-	int playFrameIndex_, 
-		networkFrameIndex_, 
-		highscoreFrameIndex_, 
-		customFrameIndex_, 
-		optionFrameIndex_, 
-		newHighscoreFrameIndex_,
-		createClientFrameIndex_, 
-		createServerFrameIndex_, 
-		loobyClientFrameIndex_,
-		loobyServerFrameIndex_, 
-		waitToConnectFrameIndex_, 
-		networkPlayFrameIndex_,
-		aiFrameIndex_;
-
-	TextButton* menu_;
+	int optionIndex_, 
+		playIndex_, 
+		networkIndex_, 
+		highscoreIndex_, 
+		customIndex_, 
+		newHighscoreIndex_, 
+		createClientIndex_, 
+		createServerIndex_, 
+		loobyClientIndex_, 
+		loobyServerIndex_, 
+		waitToConnectIndex_, 
+		networkPlayIndex_, 
+		aiIndex_; 
 };
 
 #endif // TETRISWINDOW_H

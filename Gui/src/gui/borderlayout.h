@@ -23,7 +23,7 @@ namespace gui {
 			float n, s, w, e;
 			calculateSizes(parent, n, s, w, e);
 
-			Dimension dimP = parent->getPreferredSize();
+			Dimension dimP = parent->getSize();
 			for (Component* c : *parent) {
 				Dimension dimC = c->getPreferredSize();
 				switch (c->getLayoutIndex()) {
