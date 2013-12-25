@@ -23,6 +23,10 @@ namespace gui {
 		Dimension(float width, float height) : width_(width), height_(height) {
 		}
 
+		Dimension operator+(const Dimension& dim) {
+			return Dimension(dim.width_ + width_, dim.height_ + height_);
+		}
+
 		float width_;
 		float height_;
 	};

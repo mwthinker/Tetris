@@ -26,7 +26,7 @@ namespace gui {
 			int column = 0;
 			for (Component* c : *parent) {
 				c->setLocation(column * (w + hGap_), row * (h + vGap_));
-				c->setPreferredSize(w, h);
+				c->setSize(w, h);
 
 				++column;
 				if (column >= columns_) {
