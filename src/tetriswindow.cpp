@@ -13,6 +13,7 @@
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
 #include <gui/verticallayout.h>
+#include <gui/gridlayout.h>
 #include <gui/Label.h>
 
 #include <mw/sprite.h>
@@ -150,58 +151,35 @@ void TetrisWindow::initPlayFrame() {
 	setCurrentPanel(playIndex_);
 	
 	gui::Panel* bar = createBar();
+	bar->setLayout(new gui::GridLayout(1, 2));
+
+	gui::Panel* p1 = new gui::Panel;
+	gui::Panel* p2 = new gui::Panel;
+	// Make panels transparent.
+	p1->setBackgroundColor(mw::Color(1, 1, 1, 0));
+	p2->setBackgroundColor(p1->getBackgroundColor());
+	p1->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
+	p2->setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT, 5, 0));
+
 	TextButton* b1 = new TextButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(optionIndex_);
 	});
-	bar->add(b1);
+	p1->add(b1);
+
 	TextButton* b2 = new TextButton("Restart", fontDefault30);
-	bar->add(b2);
-	add(bar, gui::BorderLayout::NORTH);
+	p1->add(b2);
+
 	TextButton* b3 = new TextButton("Pause", fontDefault30);
-	bar->add(b3);
-
-	/*
-	// Upper bar.
-	multiFrame_.addBar(createUpperBar());
+	p2->add(b3);
 	
-	gui::ButtonPtr b2 = createButton("Restart", hDistance_, [&](gui::Widget* item) {
-		restartGame();
-		item->setFocus(false);
-	});
+	p1->setPreferredSize(b1->getPreferredSize() + b2->getPreferredSize());
+	p2->setPreferredSize(b2->getPreferredSize());
 
-	b2->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
-		switch (sdlEvent.type) {
-			case SDL_KEYDOWN:
-				SDL_Keycode key = sdlEvent.key.keysym.sym;
-				if (key == restartKey_) {
-					item->click();
-					break;
-				}
-		}
-	});
-
-	pause_ = createButton("Pause", hDistance_, [&](gui::Widget* item) {
-		changePauseState();
-		item->setFocus(false);
-	});
-	pause_->addSdlEventListener([&](gui::Widget* item, const SDL_Event& sdlEvent) {
-		switch (sdlEvent.type) {
-			case SDL_KEYDOWN:
-				SDL_Keycode key = sdlEvent.key.keysym.sym;
-				if (key == pauseKey_ || key == SDLK_PAUSE) {
-					item->click();
-					break;
-				}
-		}
-	});
-
-	multiFrame_.add(b1, 0, 0, false, true);
-	multiFrame_.add(b2, 80, 0, false, true);
-	multiFrame_.add(humanButton_, 80 + b2->getWidth(), 0, false, true);
-	multiFrame_.add(computerButton_, 100 + b2->getWidth() + 130, 0, false, true);
-	multiFrame_.add(pause_, 0, 0, true, true);
-	*/
+	bar->add(p1);
+	bar->add(p2);
+	add(bar, gui::BorderLayout::NORTH);
+	//setCurrentPanel(optionIndex_);
 }
 
 /*

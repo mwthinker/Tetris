@@ -241,6 +241,7 @@ namespace gui {
 	}
 
 	void Panel::pushScissor(Component* component) {
+		/*
 		glEnable(GL_SCISSOR_TEST);
 		Point loc = component->location_;
 		Dimension dim = component->dimension_;
@@ -254,13 +255,16 @@ namespace gui {
 		glScissor((GLsizei) sq.first.x_, (GLsizei) sq.first.y_, 
 			(GLsizei) sq.second.width_, (GLsizei) sq.second.height_);
 		squares_.empty();
+		*/
 	}
 
 	void Panel::pullScissor() {
+		/*
 		glDisable(GL_SCISSOR_TEST);
 		if (!squares_.empty()) {
 			squares_.pop();
 		}
+		*/
 	}
 
 } // Namespace gui.

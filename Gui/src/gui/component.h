@@ -168,7 +168,7 @@ namespace gui {
 		}
 
 	protected:
-		Component() : valid_(false), visible_(true), 
+		Component() : valid_(false), visible_(true),
 			parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
 

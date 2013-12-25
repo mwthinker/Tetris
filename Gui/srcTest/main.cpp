@@ -49,9 +49,9 @@ void testFlowLayout(gui::Frame& frame) {
 // Objects can be drawn outside the panel. Fix todo!
 
 int main(int argc, char** argv) {
-	//gui::Frame frameBorder;
-	//frameBorder.setDefaultClosing(true);
-	//testBorderLayout(frameBorder);
+	gui::Frame frameBorder;
+	frameBorder.setDefaultClosing(true);
+	testBorderLayout(frameBorder);
 	gui::Frame frameFlow;
 	frameFlow.setDefaultClosing(true);
 	testFlowLayout(frameFlow);
