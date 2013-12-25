@@ -16,15 +16,16 @@ namespace gui {
 		VerticalLayout(float hGap, float vGap, float vFirstGap) : hGap_(hGap), vGap_(vGap), vFirstGap_(vFirstGap) {
 		}
 
-		void layoutContainer(Panel* parent) override {
-			Point p = parent->getLocation();
+		void layoutContainer(Panel* parent) override {			
+
 			Dimension dimP = parent->getSize();
-			p.y_ -= vFirstGap_;
+			float x = 0;
+			float y = -vFirstGap_;
 			for (Component* c : *parent) {
 				Dimension dim = c->getPreferredSize();
 				c->setSize(dim);
-				c->setLocation(p.x_ + hGap_, p.y_ + dimP.height_ - dim.height_);
-				p.y_ -= dim.height_ + vGap_;
+				c->setLocation(x + hGap_, y + dimP.height_ - dim.height_);
+				y -= dim.height_ + vGap_;
 			}
 		}
 

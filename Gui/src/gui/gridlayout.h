@@ -17,7 +17,7 @@ namespace gui {
 		}
 
 		void layoutContainer(Panel* parent) override {
-			Dimension dimP = parent->getPreferredSize();
+			Dimension dimP = parent->getSize();
 
 			float w = dimP.width_ / columns_;
 			float h = dimP.height_ / rows_;
@@ -29,7 +29,7 @@ namespace gui {
 				c->setPreferredSize(w, h);
 
 				++column;
-				if (column >= rows_) {
+				if (column >= columns_) {
 					column = 0;
 					++row;
 				}
