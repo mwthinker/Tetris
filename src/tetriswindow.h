@@ -13,6 +13,8 @@ public:
 	~TetrisWindow();
 
 private:
+	void updateDevices(Frame* frame, const SDL_Event& windowEvent);
+
 	gui::Panel* createPlayOptions();
 
 	void initOptionFrame(const std::vector<DevicePtr>& devices);
@@ -24,10 +26,7 @@ private:
 	void createClientGame(int port, std::string ip);
 
 	// Override gui::GuiWindow
-	void drawGame(Uint32 deltaTime);
-
-	// Override gui::GuiWindow
-	void updateGameEvent(const SDL_Event& windowEvent);
+	
 
 	void handleConnectionEvent(NetworkEventPtr nEvent);
 

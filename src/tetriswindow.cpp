@@ -67,6 +67,7 @@ TetrisWindow::TetrisWindow() {
 		devices_.push_back(device);
 	}
 	*/
+	addWindowListener(std::bind(&TetrisWindow::updateDevices, this, this, std::placeholders::_2));
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
@@ -87,6 +88,12 @@ TetrisWindow::TetrisWindow() {
 	//loadHighscore();
 	initOptionFrame(devices_);
 	initPlayFrame();
+}
+
+void TetrisWindow::updateDevices(Frame* frame, const SDL_Event& windowEvent) {
+	for (DevicePtr& device : devices_) {
+		device->eventUpdate(windowEvent);
+	}
 }
 
 gui::Panel* TetrisWindow::createPlayOptions() {
@@ -245,34 +252,6 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	tetrisGame_.closeGame();
 	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
 	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
-}
-
-void TetrisWindow::drawGame(Uint32 deltaTime) {
-	glPushMatrix();
-	int w = getWidth();
-	int h = getHeight() - 30; // Bar size, but should not be magic number!
-
-	// Centers the game and holds the correct proportions. The sides is transparent.
-	if (tetrisGame_.getWidth() / w > tetrisGame_.getHeight() / h) {
-		// Black sides, up and down.
-		double scale = w / tetrisGame_.getWidth();
-		glTranslated(0, (h - scale*tetrisGame_.getHeight()) * 0.5, 0);
-		glScaled(scale, scale, 1);
-	} else {
-		// Black sides, left and right.
-		double scale = h / tetrisGame_.getHeight();
-		glTranslated((w-scale*tetrisGame_.getWidth()) * 0.5, 0, 0);
-		glScaled(scale,scale,1);
-	}
-
-	tetrisGame_.draw();
-	glPopMatrix();
-}
-
-void TetrisWindow::updateGameEvent(const SDL_Event& windowEvent) {
-	for (DevicePtr& device : devices_) {
-		device->eventUpdate(windowEvent);
-	}
 }
 
 void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
