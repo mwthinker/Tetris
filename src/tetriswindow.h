@@ -1,9 +1,9 @@
 #ifndef TETRISWINDOW_H
 #define TETRISWINDOW_H
 
-#include "tetrisgame.h"
 #include "device.h"
 #include "textbutton.h"
+#include "tetrisgame.h"
 
 #include <gui/frame.h>
 
@@ -38,6 +38,7 @@ private:
 	void saveAllSettings();
 
 	TetrisGame tetrisGame_;
+
 	std::vector<DevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
 
@@ -46,19 +47,19 @@ private:
 	std::vector<Ai> ais_;
 
 	// All panels.
-	int optionIndex_, 
-		playIndex_, 
-		networkIndex_, 
-		highscoreIndex_, 
-		customIndex_, 
-		newHighscoreIndex_, 
-		createClientIndex_, 
-		createServerIndex_, 
-		loobyClientIndex_, 
-		loobyServerIndex_, 
-		waitToConnectIndex_, 
-		networkPlayIndex_, 
-		aiIndex_; 
+	int optionIndex_,
+		playIndex_,
+		networkIndex_,
+		highscoreIndex_,
+		customIndex_,
+		newHighscoreIndex_,
+		createClientIndex_,
+		createServerIndex_,
+		loobyClientIndex_,
+		loobyServerIndex_,
+		waitToConnectIndex_,
+		networkPlayIndex_,
+		aiIndex_;
 };
 
 #endif // TETRISWINDOW_H

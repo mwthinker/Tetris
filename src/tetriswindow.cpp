@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "computer.h"
 #include "textbutton.h"
+#include "gamecomponent.h"
 
 //#include "highscore.h"
 
@@ -69,7 +70,7 @@ TetrisWindow::TetrisWindow() {
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
-	optionIndex_ = getCurrentPanelIndex();	
+	optionIndex_ = getCurrentPanelIndex();
 	playIndex_ = push_back(createBackgroundPanel());
 	highscoreIndex_ = push_back(createBackgroundPanel());
 	customIndex_ = push_back(createBackgroundPanel());
@@ -179,6 +180,7 @@ void TetrisWindow::initPlayFrame() {
 	bar->add(p1);
 	bar->add(p2);
 	add(bar, gui::BorderLayout::NORTH);
+	add(new GameComponent(tetrisGame_), gui::BorderLayout::CENTER);
 	//setCurrentPanel(optionIndex_);
 }
 
