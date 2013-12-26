@@ -7,6 +7,8 @@
 
 #include <gui/frame.h>
 
+class ManButton;
+
 class TetrisWindow : public gui::Frame {
 public:
 	TetrisWindow();
@@ -40,6 +42,9 @@ private:
 
 	std::vector<DevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
+
+	ManButton* nbrHumans_;
+	ManButton* nbrAis_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

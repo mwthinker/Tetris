@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "computer.h"
 #include "textbutton.h"
+#include "manbutton.h"
 #include "gamecomponent.h"
 
 //#include "highscore.h"
@@ -177,9 +178,21 @@ void TetrisWindow::initPlayFrame() {
 
 	TextButton* b2 = new TextButton("Restart", fontDefault30);
 	p1->add(b2);
-
 	TextButton* b3 = new TextButton("Pause", fontDefault30);
 	p2->add(b3);
+	
+	nbrHumans_ = new ManButton(devices_.size(), spriteMan, spriteCross);
+	nbrHumans_->addActionListener([&](gui::Component*) {
+		tetrisGame_.createLocalGame(devices_, nbrAis_->getNbr(), 20, 10, 20);
+		tetrisGame_.restartGame();
+	});
+	p1->add(nbrHumans_);
+	nbrAis_ = new ManButton(4, spriteComputer, spriteCross);
+	nbrAis_->addActionListener([&](gui::Component*) {
+		tetrisGame_.createLocalGame(devices_, nbrAis_->getNbr(), 20, 10, 20);
+		tetrisGame_.restartGame();
+	});
+	p2->add(nbrAis_);
 	
 	p1->setPreferredSize(b1->getPreferredSize() + b2->getPreferredSize());
 	p2->setPreferredSize(b2->getPreferredSize());

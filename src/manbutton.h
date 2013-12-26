@@ -4,22 +4,32 @@
 #include <gui/button.h>
 
 #include <mw/sprite.h>
-#include <memory>
 
-class ManButton : public gui::Button {
-public:	
-	ManButton(float pixelSize, const mw::Sprite man, const mw::Sprite cross);
+class ManButton : public gui::Component {
+public:
+	ManButton(unsigned int max, const mw::Sprite man, const mw::Sprite cross);
 
 	unsigned int getNbr() const;
 	void setNbr(unsigned int nbr);
 
+	inline unsigned int getMax() const {
+		return max_;
+	}
+
 	void draw(float deltaTime) override;
+
+protected:
+	void handleMouse(const SDL_Event& mouseEvent) override;
+	void mouseMotionLeave() override;
+
 private:
 	void drawPlayer(mw::Sprite& sprite);
 	unsigned int nbr_;
 
 	mw::Sprite man_, cross_;
-	float pixelSize_;
+	unsigned int max_;
+
+	bool mouseInside_;
 };
 
 #endif // MANBUTTON_H

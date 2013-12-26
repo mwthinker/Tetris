@@ -2,14 +2,14 @@
 
 #include <mw/sprite.h>
 
-ManButton::ManButton(float pixelSize, const mw::Sprite man, const mw::Sprite cross) {
+ManButton::ManButton(unsigned int max, const mw::Sprite man, const mw::Sprite cross) : max_(max) {
 	man_ = man;
 	cross_ = cross;
-
-	pixelSize_ = pixelSize;
+	
 	nbr_ = 1;
+	mouseInside_ = false;
 
-	setPreferredSize(pixelSize_, pixelSize_);
+	setPreferredSize(30, 30);
 }
 
 unsigned int ManButton::getNbr() const {
@@ -23,19 +23,20 @@ void ManButton::setNbr(unsigned int nbr) {
 		nbr = 1;
 	}
 	// Set the correct size of the button.
-	setPreferredSize(pixelSize_ * nbr, pixelSize_);
+	gui::Dimension dim = getPreferredSize();
+	setPreferredSize(dim.height_ * nbr, dim.height_);
 }
 
 void ManButton::draw(float deltaTime) {
 	glPushMatrix();
-
+	gui::Dimension dim = getSize();
 	if (nbr_ == 0) {
 		drawPlayer(man_);
 		drawPlayer(cross_);
 	} else {
 		for (unsigned int i = 0; i < nbr_; ++i) {
 			drawPlayer(man_);
-			glTranslated(pixelSize_,0,0);
+			glTranslated(dim.height_, 0, 0);
 		}
 	}
 	glPopMatrix();
@@ -43,12 +44,46 @@ void ManButton::draw(float deltaTime) {
 
 void ManButton::drawPlayer(mw::Sprite& sprite) {
 	glPushMatrix();
-	glTranslated(pixelSize_/2.0,pixelSize_/2.0,0);
-	if (isMouseInside()) {
+	gui::Dimension dim = getSize();
+	glTranslated(dim.height_ / 2.0, dim.height_ / 2.0, 0);
+	if (mouseInside_) {
 		glScaled(1.2,1.2,1);
 	}
-	glScaled(pixelSize_,pixelSize_,1);
+	glScaled(dim.height_, dim.height_, 1);
 	glColor3d(1,1,1);
 	sprite.draw();
 	glPopMatrix();
+}
+
+void ManButton::handleMouse(const SDL_Event& mouseEvent) {
+	switch (mouseEvent.type) {
+		case SDL_MOUSEMOTION:
+			mouseInside_ = true;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			mouseInside_ = true;
+			break;
+		case SDL_MOUSEBUTTONUP:
+			switch (mouseEvent.button.button) {
+				case SDL_BUTTON_LEFT:
+					nbr_ = (nbr_ + 1) % (max_ + 1);
+					setNbr(nbr_);
+					doAction();
+					break;
+				case SDL_BUTTON_RIGHT:
+					nbr_ = (nbr_ + max_) % (max_ + 1);
+					setNbr(nbr_);
+					doAction();
+					break;
+				default:
+					break;
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+void ManButton::mouseMotionLeave() {
+	mouseInside_ = false;
 }

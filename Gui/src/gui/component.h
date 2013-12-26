@@ -44,12 +44,12 @@ namespace gui {
 
 		void setPreferredSize(float width, float height) {
 			preferedDimension_ = Dimension(width, height);
-			validate();
+			validateParent();
 		}
 
 		void setPreferredSize(const Dimension& dimension) {
 			preferedDimension_ = dimension;
-			validate();
+			validateParent();
 		}
 
 		Dimension getPreferredSize() const {
@@ -75,10 +75,6 @@ namespace gui {
 
 		bool isVisible() const {
 			return visible_;
-		}
-
-		bool isValid() const {
-			return valid_;
 		}
 
 		mw::signals::Connection addKeyListener(const KeyListener::Callback& callback) {
@@ -168,7 +164,7 @@ namespace gui {
 		}
 
 	protected:
-		Component() : valid_(false), visible_(true),
+		Component() : visible_(true),
 			parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
 
@@ -181,16 +177,15 @@ namespace gui {
 		}
 
 		virtual void validate() {
-			valid_ = true;
 		}
 
-	private:
-		void setNotValid() {
+		void validateParent() {
 			if (parent_ != nullptr) {
 				parent_->validate();
 			}
 		}
 
+	private:
 		mw::TexturePtr background_;
 		mw::Color backgroundColor_;
 		Component* parent_;
@@ -207,7 +202,6 @@ namespace gui {
 		PanelChangeListener panelChangeListener_;
 
 		bool visible_;
-		bool valid_;
 		bool focus_;
 	};	
 

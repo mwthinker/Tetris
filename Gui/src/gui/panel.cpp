@@ -193,7 +193,6 @@ namespace gui {
 	}
 
 	void Panel::validate() {
-		Component::validate();
 		// Validate!
 		layoutManager_->layoutContainer(this);
 		for (Component* child : *this) {
