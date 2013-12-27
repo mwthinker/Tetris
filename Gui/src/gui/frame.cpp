@@ -64,6 +64,10 @@ namespace gui {
 		return windowListener_.connect(callback);
 	}
 
+	mw::signals::Connection Frame::addSdlEventListener(const SdlEventListener::Callback& callback) {
+		return sdlEventListener_.connect(callback);
+	}
+
 	void Frame::setDefaultClosing(bool defaultClosing) {
 		defaultClosing_ = true;
 	}
@@ -175,6 +179,7 @@ namespace gui {
 
 	// Override mw::Window
 	void Frame::eventUpdate(const SDL_Event& windowEvent) {
+		sdlEventListener_(this, windowEvent);
 		eventQueue_.push(windowEvent);
 	}
 

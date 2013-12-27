@@ -16,6 +16,7 @@ namespace gui {
 
 	class Frame;
 	using WindowListener = mw::Signal<Frame*, const SDL_Event&>;
+	using SdlEventListener = mw::Signal<Frame*, const SDL_Event&>;
 
 	// CheckboxGroup (radio buttons), List, and Choice
 	class Frame : public mw::Window {
@@ -48,6 +49,7 @@ namespace gui {
 		std::vector<Panel*>::const_iterator cend() const;
 
 		mw::signals::Connection addWindowListener(const WindowListener::Callback& callback);
+		mw::signals::Connection addSdlEventListener(const SdlEventListener::Callback& callback);
 
 		void setDefaultClosing(bool defaultClosing);
 
@@ -107,6 +109,7 @@ namespace gui {
 
 		std::queue<SDL_Event> eventQueue_;
 		WindowListener windowListener_;
+		SdlEventListener sdlEventListener_;
 		
 		bool defaultClosing_;
 		std::vector<Panel*> panels_;
