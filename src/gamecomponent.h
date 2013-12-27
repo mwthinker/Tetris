@@ -19,15 +19,19 @@ public:
 		if (tetrisGame_.getWidth() / dim.width_ > tetrisGame_.getHeight() / dim.height_) {
 			// Black sides, up and down.
 			double scale = (double) dim.width_ / tetrisGame_.getWidth();
+			glTranslated(0, (dim.height_ - scale * tetrisGame_.getHeight()) * 0.5, 0);
 			glScaled(scale, scale, 1);
 		} else {
 			// Black sides, left and right.
 			double scale = (double) dim.height_ / tetrisGame_.getHeight();
+			glTranslated((dim.width_ - scale*tetrisGame_.getWidth()) * 0.5, 0, 0);
 			glScaled(scale,scale,1);
 		}
 
 		tetrisGame_.draw();
 		glPopMatrix();
+
+		tetrisGame_.update(deltaTime * 1000);
 	}
 
 private:

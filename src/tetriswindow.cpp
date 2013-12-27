@@ -40,7 +40,7 @@ namespace {
 		bar->setBackgroundColor(mw::Color(.5, 0, 0, .30));
 		bar->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 		return bar;
-	}
+	}	
 
 }
 
@@ -68,7 +68,10 @@ TetrisWindow::TetrisWindow() {
 		devices_.push_back(device);
 	}
 	*/
-	addWindowListener(std::bind(&TetrisWindow::updateDevices, this, this, std::placeholders::_2));
+	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, this, std::placeholders::_2));
+	tetrisGame_.closeGame();
+	tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, 10, 20, 20);
+	tetrisGame_.startGame();
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
@@ -177,19 +180,30 @@ void TetrisWindow::initPlayFrame() {
 	p1->add(b1);
 
 	TextButton* b2 = new TextButton("Restart", fontDefault30);
+	b2->addActionListener([&](gui::Component*) {
+		tetrisGame_.restartGame();
+	});
 	p1->add(b2);
 	TextButton* b3 = new TextButton("Pause", fontDefault30);
+	b3->addActionListener([&](gui::Component*) {
+		tetrisGame_.pause();
+	});
 	p2->add(b3);
 	
 	nbrHumans_ = new ManButton(devices_.size(), spriteMan, spriteCross);
 	nbrHumans_->addActionListener([&](gui::Component*) {
-		tetrisGame_.createLocalGame(devices_, nbrAis_->getNbr(), 20, 10, 20);
+		tetrisGame_.closeGame();
+		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		tetrisGame_.startGame();
 		tetrisGame_.restartGame();
 	});
 	p1->add(nbrHumans_);
 	nbrAis_ = new ManButton(4, spriteComputer, spriteCross);
+	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component*) {
-		tetrisGame_.createLocalGame(devices_, nbrAis_->getNbr(), 20, 10, 20);
+		tetrisGame_.closeGame();
+		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		tetrisGame_.startGame();
 		tetrisGame_.restartGame();
 	});
 	p2->add(nbrAis_);
@@ -201,7 +215,21 @@ void TetrisWindow::initPlayFrame() {
 	bar->add(p2);
 	add(bar, gui::BorderLayout::NORTH);
 	add(new GameComponent(tetrisGame_), gui::BorderLayout::CENTER);
-	//setCurrentPanel(optionIndex_);
+	addKeyListener([&](gui::Component* c, const SDL_Event& keyEvent) {
+		switch (keyEvent.type) {
+			case SDL_KEYDOWN:
+				switch (keyEvent.key.keysym.sym) {
+					case SDLK_F12:
+						tetrisGame_.restartGame();
+						break;
+					case SDLK_p:
+						tetrisGame_.pause();
+						break;
+				}
+				break;
+		}
+	});
+	setCurrentPanel(optionIndex_);
 }
 
 /*
