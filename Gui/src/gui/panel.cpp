@@ -41,6 +41,15 @@ namespace gui {
 		}
 	}
 
+	void Panel::setFocus(bool focus) {
+		Component::setFocus(focus);
+		if (!focus) {
+			for (Component* component : *this) {
+				component->setFocus(false);
+			}
+		}
+	}
+
 	LayoutManager* Panel::getLayout() const {
 		return layoutManager_;
 	}
@@ -133,13 +142,14 @@ namespace gui {
 
 				if (mouseEvent.type == SDL_MOUSEBUTTONDOWN) {
 					// Set all components focus to false except
-					// the component used.					
+					// the component used.
 					for (Component* component : *this) {
-						component->setFocus(false);
-					}
-					if (currentComponent != nullptr) {
-						currentComponent->setFocus(true);
-					}
+						if (currentComponent == component) {
+							component->setFocus(true);
+						} else {
+							component->setFocus(false);
+						}
+					}					
 				}
 
 				// Call the component if it was pushed and released outside

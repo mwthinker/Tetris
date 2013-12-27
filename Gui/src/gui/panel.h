@@ -63,6 +63,8 @@ namespace gui {
 
 		void validate() override;
 
+		void setFocus(bool focus) override;
+
 	private:
 		typedef std::pair<Point, Dimension> Square;
 

@@ -29,6 +29,7 @@ namespace gui {
 		virtual ~Component() {
 		}
 
+		// Return the component's location in the parent's coordinate space.
 		Point getLocation() const {
 			return location_;
 		}
@@ -56,7 +57,7 @@ namespace gui {
 			return preferedDimension_;
 		}
 
-		// Returns the size.
+		// Returns the components size.
 		Dimension getSize() const {
 			return dimension_;
 		}
@@ -97,13 +98,16 @@ namespace gui {
 			return panelChangeListener_.connect(callback);
 		}
 
-		void setFocus(bool focus) {
+		// Sets the focus for the component.
+		// Focuslistener is called if focus changes.
+		virtual void setFocus(bool focus) {
 			if (focus != focus_) {
 				focus_ = focus;
 				focusListener_(this);
 			}
 		}
 
+		// Return the focus for the component.
 		bool hasFocus() const {
 			return focus_;
 		}
@@ -142,7 +146,7 @@ namespace gui {
 		virtual void mouseMotionLeave() {
 		}
 
-		// Only called when the mouse down was inside the component.
+		// Only called when the mouse up was inside the component.
 		// And the up event was outside.
 		virtual void mouseOutsideUp() {
 		}
@@ -167,18 +171,28 @@ namespace gui {
 		Component() : visible_(true),
 			parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
-
+		
+		// Takes care of all mouse events. And send it through to
+		// all mouse listener callbacks.
+		// Mouse events: SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN and SDL_MOUSEBUTTONUP.
 		virtual void handleMouse(const SDL_Event& mouseEvent) {
 			mouseListener_(this, mouseEvent);
 		}
 
+		// Takes care of all key events. And send it through to
+		// all key listener callbacks.
+		// Key events: SDL_TEXTINPUT, SDL_TEXTEDITING, SDL_KEYDOWN and SDL_KEYUP.
 		virtual void handleKeyboard(const SDL_Event& keyEvent) {
 			keyListener_(this, keyEvent);
 		}
 
+		// Fixes all child components sizes.
+		// If there are no childs nothing happens.
 		virtual void validate() {
 		}
 
+		// Is called in order to signal tha parent component that
+		// the childrens sizes must be recalculated.
 		void validateParent() {
 			if (parent_ != nullptr) {
 				parent_->validate();
