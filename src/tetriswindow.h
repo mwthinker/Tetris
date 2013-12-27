@@ -6,8 +6,10 @@
 #include "tetrisgame.h"
 
 #include <gui/frame.h>
+#include <gui/textfield.h>
 
 class ManButton;
+class Highscore;
 
 class TetrisWindow : public gui::Frame {
 public:
@@ -19,8 +21,19 @@ private:
 
 	gui::Panel* createPlayOptions();
 
-	void initOptionFrame(const std::vector<DevicePtr>& devices);
-	void initPlayFrame();
+	void initOptionPanel(const std::vector<DevicePtr>& devices);
+	void initPlayPanel();
+	void initHighscorePanel();
+	void initNewHighscorePanel();
+	void initCustomPlayPanel();
+	void initCreateServerPanel();
+	void initCreateClientPanel();
+	void initServerLoobyPanel();
+	void initClientLoobyPanel();
+	void initWaitToConnectPanel();
+	void initNetworkPlayPanel();
+	void initAiPanel();
+	void initNewHighScorePanel();
 
 	void createLocalGame();
 	void createLocalGame(int width, int height, int maxLevel);
@@ -42,6 +55,9 @@ private:
 
 	ManButton* nbrHumans_;
 	ManButton* nbrAis_;
+	TextButton* pauseButton_;
+	Highscore* highscore_;
+	gui::TextField* textField_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

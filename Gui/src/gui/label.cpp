@@ -94,7 +94,8 @@ namespace gui {
 	void Label::init() {
 		color_ = mw::Color(0, 0, 0);
 		hTextAlignment_ = HCENTER;
-		vTextAlignment_ = VCENTER;		
+		vTextAlignment_ = VCENTER;
+		setBackgroundColor(mw::Color(0, 0, 0, 0));
 	}
 
 } // Namespace gui.

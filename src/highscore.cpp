@@ -112,6 +112,3 @@ void Highscore::sort() {
 	});
 }
 
-HighscorePtr createHighscore(int nbr, const mw::Color& color) {
-	return HighscorePtr(new Highscore(nbr, color));
-}

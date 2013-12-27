@@ -8,6 +8,7 @@
 #include "computer.h"
 #include "textbutton.h"
 #include "manbutton.h"
+#include "highscore.h"
 #include "gamecomponent.h"
 
 //#include "highscore.h"
@@ -16,11 +17,13 @@
 #include <gui/flowlayout.h>
 #include <gui/verticallayout.h>
 #include <gui/gridlayout.h>
-#include <gui/Label.h>
+#include <gui/label.h>
+#include <gui/textfield.h>
 
 #include <mw/sprite.h>
 #include <mw/color.h>
 
+#include <ctime>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -69,9 +72,6 @@ TetrisWindow::TetrisWindow() {
 	}
 	*/
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, this, std::placeholders::_2));
-	tetrisGame_.closeGame();
-	tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, 10, 20, 20);
-	tetrisGame_.startGame();
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
@@ -90,8 +90,24 @@ TetrisWindow::TetrisWindow() {
 	aiIndex_ = push_back(createBackgroundPanel());
 	
 	//loadHighscore();
-	initOptionFrame(devices_);
-	initPlayFrame();
+	initOptionPanel(devices_);
+	initPlayPanel();
+	initHighscorePanel();
+	initNewHighscorePanel();
+	initCustomPlayPanel();
+	initCreateServerPanel();
+	initCreateClientPanel();
+	initServerLoobyPanel();
+	initClientLoobyPanel();
+	initWaitToConnectPanel();
+	initNetworkPlayPanel();
+	initAiPanel();
+	initNewHighScorePanel();
+	
+	// Init local game settings.
+	tetrisGame_.closeGame();
+	tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
+	tetrisGame_.startGame();
 }
 
 void TetrisWindow::updateDevices(Frame* frame, const SDL_Event& windowEvent) {
@@ -143,7 +159,7 @@ gui::Panel* TetrisWindow::createPlayOptions() {
 TetrisWindow::~TetrisWindow() {
 }
 
-void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
+void TetrisWindow::initOptionPanel(const std::vector<DevicePtr>& devices) {
 	setCurrentPanel(optionIndex_);
 	gui::Panel* optionsPanel = createPlayOptions();
 	
@@ -159,7 +175,7 @@ void TetrisWindow::initOptionFrame(const std::vector<DevicePtr>& devices) {
 	add(optionsPanel, gui::BorderLayout::WEST);
 }
 
-void TetrisWindow::initPlayFrame() {
+void TetrisWindow::initPlayPanel() {
 	setCurrentPanel(playIndex_);
 	
 	gui::Panel* bar = createBar();
@@ -184,11 +200,11 @@ void TetrisWindow::initPlayFrame() {
 		tetrisGame_.restartGame();
 	});
 	p1->add(b2);
-	TextButton* b3 = new TextButton("Pause", fontDefault30);
-	b3->addActionListener([&](gui::Component*) {
+	pauseButton_ = new TextButton("Pause", fontDefault30);
+	pauseButton_->addActionListener([&](gui::Component*) {
 		tetrisGame_.pause();
 	});
-	p2->add(b3);
+	p2->add(pauseButton_);
 	
 	nbrHumans_ = new ManButton(devices_.size(), spriteMan, spriteCross);
 	nbrHumans_->addActionListener([&](gui::Component*) {
@@ -223,7 +239,7 @@ void TetrisWindow::initPlayFrame() {
 						tetrisGame_.restartGame();
 						break;
 					case SDLK_p:
-						tetrisGame_.pause();
+						pauseButton_->doAction();
 						break;
 				}
 				break;
@@ -232,18 +248,123 @@ void TetrisWindow::initPlayFrame() {
 	setCurrentPanel(optionIndex_);
 }
 
-/*
-void TetrisWindow::setNbrOfHumanPlayers(int number) {
-    const int size = devices_.size();
-	if (number < 0) {
-		nbrOfHumanPlayers_ = 0;
-	} else if (number <= size) {
-        nbrOfHumanPlayers_ = number;
-    } else {
-        nbrOfHumanPlayers_ = size;
-    }
+void TetrisWindow::initHighscorePanel() {
+	setCurrentPanel(highscoreIndex_);
+
+	gui::Panel* bar = createBar();
+	//bar->setLayout(new gui::GridLayout(1, 2));
+
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(optionIndex_);
+	});	
+	bar->add(b1);
+
+	add(bar, gui::BorderLayout::NORTH);
+	highscore_ = new Highscore(10, mw::Color(1, 1, 1));
+	add(highscore_, gui::BorderLayout::CENTER);
 }
-*/
+
+void TetrisWindow::initNewHighscorePanel() {
+	setCurrentPanel(newHighscoreIndex_);
+	gui::Panel* bar = createBar();
+	add(bar, gui::BorderLayout::NORTH);
+	
+	gui::Panel* panel = new gui::Panel;
+	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
+	add(panel, gui::BorderLayout::CENTER);
+	
+	panel->setPreferredSize(200, 200);
+	gui::Label* label = new gui::Label("Name: ", fontDefault18);
+	label->setTextColor(mw::Color(1, 1, 1));
+	panel->add(label);
+	
+	textField_ = new gui::TextField(fontDefault18);
+	textField_->addActionListener([&](gui::Component* c) {
+		gui::TextField* textField = static_cast<gui::TextField*>(c);
+		std::string name = textField->getText();
+
+		bool validName = false;
+		for (char chr : name) {
+			if (chr != ' ') {
+				validName = true;
+				break;
+			}
+		}
+
+		if (validName) {
+			std::time_t t = std::time(NULL);
+			char mbstr[30];
+			std::strftime(mbstr, 30, "%Y-%m-%d", std::localtime(&t));
+			highscore_->addNewRecord(name, mbstr);
+			setCurrentPanel(optionIndex_);
+		}
+	});
+	panel->add(textField_);
+	TextButton* button = new TextButton("Ok", fontDefault18);
+	button->addActionListener([&](gui::Component* c) {
+		textField_->doAction();
+	});
+	panel->add(button);
+}
+
+void TetrisWindow::initCustomPlayPanel() {
+	setCurrentPanel(customIndex_);
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(optionIndex_);
+	});
+	bar->add(b1);
+	
+	add(bar, gui::BorderLayout::NORTH);
+
+	gui::Panel* panel = new gui::Panel;
+	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
+	panel->setPreferredSize(200, 200);
+
+	gui::Label* label1 = new gui::Label("Width", fontDefault18);
+	label1->setTextColor(mw::Color(1, 1, 1));
+	panel->add(label1);
+
+	gui::Label* label2 = new gui::Label("Height", fontDefault18);
+	label2->setTextColor(mw::Color(1, 1, 1));
+	panel->add(label2);
+
+	add(panel, gui::BorderLayout::CENTER);
+}
+
+void TetrisWindow::initCreateServerPanel() {
+
+}
+
+void TetrisWindow::initCreateClientPanel() {
+
+}
+
+void TetrisWindow::initServerLoobyPanel() {
+
+}
+
+void TetrisWindow::initClientLoobyPanel() {
+
+}
+
+void TetrisWindow::initWaitToConnectPanel() {
+
+}
+
+void TetrisWindow::initNetworkPlayPanel() {
+
+}
+
+void TetrisWindow::initAiPanel() {
+
+}
+
+void TetrisWindow::initNewHighScorePanel() {
+
+}
 
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	const int size = devices_.size();
@@ -296,23 +417,24 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 }
 
 void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
-	/*
 	if (std::shared_ptr<GameOver> gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
-		HighscorePtr highscore = getHighscorePtr();
 		// Points high enough to be saved in the highscore list?
-		if (highscore->isNewRecord(gameOver->points_)) {
+		if (highscore_->isNewRecord(gameOver->points_)) {
 			// Set points in order for highscore to know which point to save in list.
-			highscore->setNextRecord(gameOver->points_);
+			highscore_->setNextRecord(gameOver->points_);
 			// In order for the user to insert name.
-			highscore->click();
+			setCurrentPanel(newHighscoreIndex_);
 		}
 	} else if (std::shared_ptr<GamePause> gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
 		if (gameOver->pause_) {
-			getPausePtr()->setText("Unpause");
+			pauseButton_->setLabel("Unpause");
+			pauseButton_->setPreferedSizeFitText();
 		} else {
-			getPausePtr()->setText("Pause");
+			pauseButton_->setLabel("Pause");
+			pauseButton_->setPreferedSizeFitText();
 		}
 	} else if (std::shared_ptr<NewConnection> newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
+		/*
 		auto networkLooby = getNetworkLoobyPtr();
 		networkLooby->clear();
 		newConnection->iterate([&](int id, int nbrOfPlayers, bool ready) {
@@ -330,23 +452,23 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 			// Is no local looby.
 			break;
 		}
+		*/
 	} else if (std::shared_ptr<GameStart> start = std::dynamic_pointer_cast<GameStart>(nEvent)) {
 		switch (start->status_) {
 		case GameStart::LOCAL:
-			gotoLocalPlayFrame();
+			//gotoLocalPlayFrame();
 			break;
 		case GameStart::CLIENT:
-			gotoClientPlayFrame();
+			//gotoClientPlayFrame();
 			break;
 		case GameStart::SERVER:
-			gotoServerPlayFrame();
+			//gotoServerPlayFrame();
 			break;
 		}
 	} else if (std::shared_ptr<GameReady> ready = std::dynamic_pointer_cast<GameReady>(nEvent)) {
-		auto networkLooby = getNetworkLoobyPtr();
-		networkLooby->setReady(ready->id_,ready->ready_);
-	}
-	*/
+		//auto networkLooby = getNetworkLoobyPtr();
+		//networkLooby->setReady(ready->id_,ready->ready_);
+	}	
 }
 
 void TetrisWindow::loadHighscore() {
