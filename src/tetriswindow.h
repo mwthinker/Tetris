@@ -19,9 +19,9 @@ public:
 private:
 	void updateDevices(Frame* frame, const SDL_Event& windowEvent);
 
-	gui::Panel* createPlayOptions();
+	gui::Panel* createMenu();
 
-	void initOptionPanel(const std::vector<DevicePtr>& devices);
+	void initMenuPanel(const std::vector<DevicePtr>& devices);
 	void initPlayPanel();
 	void initHighscorePanel();
 	void initNewHighscorePanel();
@@ -58,17 +58,20 @@ private:
 	TextButton* pauseButton_;
 	Highscore* highscore_;
 	gui::TextField* textField_;
+	gui::TextField* widthField_;
+	gui::TextField* heightField_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;
 	std::vector<Ai> ais_;
 
 	// All panels.
-	int optionIndex_,
+	int menuIndex_,
 		playIndex_,
 		networkIndex_,
 		highscoreIndex_,
 		customIndex_,
+		optionIndex_,
 		newHighscoreIndex_,
 		createClientIndex_,
 		createServerIndex_,

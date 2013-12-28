@@ -43,7 +43,21 @@ namespace {
 		bar->setBackgroundColor(mw::Color(.5, 0, 0, .30));
 		bar->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 		return bar;
-	}	
+	}
+
+	gui::Panel* createPanel(float preferredWidth=100, float preferredHeight=100) {
+		gui::Panel* panel = new gui::Panel;
+		panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
+		panel->setPreferredSize(preferredWidth, preferredHeight);
+		return panel;
+	}
+
+	gui::Label* createLabel(std::string text, mw::FontPtr font) {
+		gui::Label* label = new gui::Label(text, fontDefault18);
+		label->setTextColor(mw::Color(1, 1, 1));
+		label->setBackgroundColor(mw::Color(1, 1, 1, 0));
+		return label;
+	}
 
 }
 
@@ -75,10 +89,11 @@ TetrisWindow::TetrisWindow() {
 
 	// Create all frames.
 	getCurrentPanel()->setBackground(spriteBackground.getTexture());	
-	optionIndex_ = getCurrentPanelIndex();
+	menuIndex_ = getCurrentPanelIndex();
 	playIndex_ = push_back(createBackgroundPanel());
 	highscoreIndex_ = push_back(createBackgroundPanel());
 	customIndex_ = push_back(createBackgroundPanel());
+	optionIndex_ = push_back(createBackgroundPanel());
 	newHighscoreIndex_ = push_back(createBackgroundPanel());
 	networkIndex_ = push_back(createBackgroundPanel());
 	createClientIndex_ = push_back(createBackgroundPanel());
@@ -89,8 +104,7 @@ TetrisWindow::TetrisWindow() {
 	networkPlayIndex_ = push_back(createBackgroundPanel());
 	aiIndex_ = push_back(createBackgroundPanel());
 	
-	//loadHighscore();
-	initOptionPanel(devices_);
+	initMenuPanel(devices_);
 	initPlayPanel();
 	initHighscorePanel();
 	initNewHighscorePanel();
@@ -116,36 +130,37 @@ void TetrisWindow::updateDevices(Frame* frame, const SDL_Event& windowEvent) {
 	}
 }
 
-gui::Panel* TetrisWindow::createPlayOptions() {
-	gui::Panel* panel = new gui::Panel;
+gui::Panel* TetrisWindow::createMenu() {
+	gui::Panel* panel = createPanel(400, 400);
 	panel->setLayout(new gui::VerticalLayout(5, 15, 10));
 	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
 
-	gui::Label* label = new gui::Label("MWetris", fontDefault50);
-	label->setTextColor(mw::Color(1, 1, 1));
-	label->setBackgroundColor(mw::Color(1, 1, 1,0));
+	gui::Label* label = createLabel("MWetris", fontDefault50);
 	panel->add(label);
-	panel->setPreferredSize(400, 400);
 	
 	TextButton* b1 = new TextButton("Play", fontDefault30);
 	panel->add(b1);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(playIndex_);
 	});
+
 	TextButton* b2 = new TextButton("Custom play", fontDefault30);
 	panel->add(b2);
 	b2->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionIndex_);
+		setCurrentPanel(customIndex_);
 	});
+
 	TextButton* b3 = new TextButton("Highscore", fontDefault30);
 	panel->add(b3);
 	b3->addActionListener([&](gui::Component*) {
 		setCurrentPanel(highscoreIndex_);
 	});
+
 	TextButton* b4 = new TextButton("Options", fontDefault30);
 	b4->addActionListener([&](gui::Component*) {
 		setCurrentPanel(optionIndex_);
 	});
+
 	panel->add(b4);
 	TextButton* b5 = new TextButton("Exit", fontDefault30);
 	b5->addActionListener([&](gui::Component*) {
@@ -159,9 +174,8 @@ gui::Panel* TetrisWindow::createPlayOptions() {
 TetrisWindow::~TetrisWindow() {
 }
 
-void TetrisWindow::initOptionPanel(const std::vector<DevicePtr>& devices) {
-	setCurrentPanel(optionIndex_);
-	gui::Panel* optionsPanel = createPlayOptions();
+void TetrisWindow::initMenuPanel(const std::vector<DevicePtr>& devices) {
+	setCurrentPanel(menuIndex_);
 	
 	TextButton* b1 = new TextButton("Resume", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
@@ -172,7 +186,7 @@ void TetrisWindow::initOptionPanel(const std::vector<DevicePtr>& devices) {
 	bar->add(b1);
 
 	add(bar, gui::BorderLayout::NORTH);
-	add(optionsPanel, gui::BorderLayout::WEST);
+	add(createMenu(), gui::BorderLayout::WEST);
 }
 
 void TetrisWindow::initPlayPanel() {
@@ -181,17 +195,15 @@ void TetrisWindow::initPlayPanel() {
 	gui::Panel* bar = createBar();
 	bar->setLayout(new gui::GridLayout(1, 2));
 
-	gui::Panel* p1 = new gui::Panel;
-	gui::Panel* p2 = new gui::Panel;
+	gui::Panel* p1 = createPanel();
+	gui::Panel* p2 = createPanel();
 	// Make panels transparent.
-	p1->setBackgroundColor(mw::Color(1, 1, 1, 0));
-	p2->setBackgroundColor(p1->getBackgroundColor());
 	p1->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 	p2->setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT, 5, 0));
 
 	TextButton* b1 = new TextButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionIndex_);
+		setCurrentPanel(menuIndex_);
 	});
 	p1->add(b1);
 
@@ -245,7 +257,6 @@ void TetrisWindow::initPlayPanel() {
 				break;
 		}
 	});
-	setCurrentPanel(optionIndex_);
 }
 
 void TetrisWindow::initHighscorePanel() {
@@ -256,7 +267,7 @@ void TetrisWindow::initHighscorePanel() {
 
 	TextButton* b1 = new TextButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionIndex_);
+		setCurrentPanel(menuIndex_);
 	});	
 	bar->add(b1);
 
@@ -267,17 +278,12 @@ void TetrisWindow::initHighscorePanel() {
 
 void TetrisWindow::initNewHighscorePanel() {
 	setCurrentPanel(newHighscoreIndex_);
-	gui::Panel* bar = createBar();
-	add(bar, gui::BorderLayout::NORTH);
+	add(createBar(), gui::BorderLayout::NORTH);
 	
-	gui::Panel* panel = new gui::Panel;
-	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
+	gui::Panel* panel = createPanel(200, 200);
 	add(panel, gui::BorderLayout::CENTER);
-	
-	panel->setPreferredSize(200, 200);
-	gui::Label* label = new gui::Label("Name: ", fontDefault18);
-	label->setTextColor(mw::Color(1, 1, 1));
-	panel->add(label);
+		
+	panel->add(createLabel("Name: ", fontDefault18));
 	
 	textField_ = new gui::TextField(fontDefault18);
 	textField_->addActionListener([&](gui::Component* c) {
@@ -313,23 +319,20 @@ void TetrisWindow::initCustomPlayPanel() {
 	gui::Panel* bar = createBar();
 	TextButton* b1 = new TextButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionIndex_);
+		setCurrentPanel(menuIndex_);
 	});
 	bar->add(b1);
 	
 	add(bar, gui::BorderLayout::NORTH);
 
-	gui::Panel* panel = new gui::Panel;
-	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
-	panel->setPreferredSize(200, 200);
-
-	gui::Label* label1 = new gui::Label("Width", fontDefault18);
-	label1->setTextColor(mw::Color(1, 1, 1));
-	panel->add(label1);
-
-	gui::Label* label2 = new gui::Label("Height", fontDefault18);
-	label2->setTextColor(mw::Color(1, 1, 1));
-	panel->add(label2);
+	gui::Panel* panel = createPanel(200, 200);
+	
+	panel->add(createLabel("Width", fontDefault18));
+	widthField_ = new gui::TextField("10", fontDefault18);	
+	panel->add(widthField_);
+	panel->add(createLabel("Height", fontDefault18));
+	heightField_ = new gui::TextField("20", fontDefault18);
+	panel->add(heightField_);
 
 	add(panel, gui::BorderLayout::CENTER);
 }
