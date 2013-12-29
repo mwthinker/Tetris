@@ -44,6 +44,9 @@ namespace gui {
 			for (Component* c : *parent) {
 				Dimension dimC = c->getPreferredSize();
 				c->setSize(dimC);
+				if (!c->isVisible()) {
+					continue;
+				}
 				if (w + dimC.width_ >= dimP.width_) {
 					w = 0;
 					h += maxH + vGap_;

@@ -100,6 +100,9 @@ namespace gui {
 		switch (mouseEvent.type) {
 			case SDL_MOUSEMOTION:
 				for (Component* component : *this) {
+					if (!component->isVisible()) {
+						continue;
+					}
 					Point p = component->getLocation();
 					Dimension d = component->getSize();
 					if (p.x_ <= mouseEvent.motion.x && p.x_ + d.width_ > mouseEvent.motion.x &&
@@ -125,6 +128,9 @@ namespace gui {
 			case SDL_MOUSEBUTTONUP:
 				// Send the mouseEvent through to the correct component.
 				for (Component* component : *this) {
+					if (!component->isVisible()) {
+						continue;
+					}
 					Point p = component->getLocation();
 					Dimension d = component->getSize();
 
@@ -144,6 +150,9 @@ namespace gui {
 					// Set all components focus to false except
 					// the component used.
 					for (Component* component : *this) {
+						if (!component->isVisible()) {
+							continue;
+						}
 						if (currentComponent == component) {
 							component->setFocus(true);
 						} else {

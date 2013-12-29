@@ -71,7 +71,10 @@ namespace gui {
 		}
 
 		void setVisible(bool visible) {
-			visible_ = visible;
+			if (visible_ != visible) {
+				visible_ = visible;
+				validateParent();
+			}
 		}
 
 		bool isVisible() const {
@@ -191,7 +194,7 @@ namespace gui {
 		virtual void validate() {
 		}
 
-		// Is called in order to signal tha parent component that
+		// Is called in order to signal the parent component that
 		// the childrens sizes must be recalculated.
 		void validateParent() {
 			if (parent_ != nullptr) {

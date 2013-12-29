@@ -11,8 +11,6 @@
 #include "highscore.h"
 #include "gamecomponent.h"
 
-//#include "highscore.h"
-
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
 #include <gui/verticallayout.h>

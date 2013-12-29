@@ -37,7 +37,6 @@ SET(SOURCES
 	src/graphicboard.h
 	src/group.h
 	src/guiwindow.cpp
-	src/guiwindow.h
 	src/highscore.cpp
 	src/highscore.h
 	src/joystick.cpp

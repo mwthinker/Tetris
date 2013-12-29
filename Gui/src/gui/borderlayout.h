@@ -25,6 +25,9 @@ namespace gui {
 
 			Dimension dimP = parent->getSize();
 			for (Component* c : *parent) {
+				if (!c->isVisible()) {
+					continue;
+				}
 				Dimension dimC = c->getPreferredSize();
 				switch (c->getLayoutIndex()) {
 					case CENTER:
@@ -61,6 +64,10 @@ namespace gui {
 			west = 0;
 			east = 0;
 			for (Component* c : *parent) {
+				if (!c->isVisible()) {
+					continue;
+				}
+
 				switch (c->getLayoutIndex()) {
 					case CENTER:
 						// Maximize.
