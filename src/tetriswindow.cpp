@@ -51,7 +51,7 @@ namespace {
 	}
 
 	gui::Label* createLabel(std::string text, mw::FontPtr font) {
-		gui::Label* label = new gui::Label(text, fontDefault18);
+		gui::Label* label = new gui::Label(text, font);
 		label->setTextColor(mw::Color(1, 1, 1));
 		label->setBackgroundColor(mw::Color(1, 1, 1, 0));
 		return label;
