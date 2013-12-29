@@ -116,7 +116,6 @@ TetrisWindow::TetrisWindow() {
 	initWaitToConnectPanel();
 	initNetworkPlayPanel();
 	initAiPanel();
-	initNewHighScorePanel();
 	
 	// Init local game settings.
 	tetrisGame_.closeGame();
@@ -150,23 +149,30 @@ gui::Panel* TetrisWindow::createMenu() {
 		setCurrentPanel(customIndex_);
 	});
 
-	TextButton* b3 = new TextButton("Highscore", fontDefault30);
+	TextButton* b3 = new TextButton("Network play", fontDefault30);
 	panel->add(b3);
 	b3->addActionListener([&](gui::Component*) {
+		setCurrentPanel(createServerIndex_);
+		networkButton_->setLabel("Client");
+	});
+
+	TextButton* b4 = new TextButton("Highscore", fontDefault30);
+	panel->add(b4);
+	b4->addActionListener([&](gui::Component*) {
 		setCurrentPanel(highscoreIndex_);
 	});
 
-	TextButton* b4 = new TextButton("Options", fontDefault30);
-	b4->addActionListener([&](gui::Component*) {
+	TextButton* b5 = new TextButton("Options", fontDefault30);
+	b5->addActionListener([&](gui::Component*) {
 		setCurrentPanel(optionIndex_);
 	});
 
-	panel->add(b4);
-	TextButton* b5 = new TextButton("Exit", fontDefault30);
-	b5->addActionListener([&](gui::Component*) {
+	panel->add(b5);
+	TextButton* b6 = new TextButton("Exit", fontDefault30);
+	b6->addActionListener([&](gui::Component*) {
 		Window::quit();
 	});
-	panel->add(b5);
+	panel->add(b6);
 
 	return panel;
 }
@@ -321,52 +327,179 @@ void TetrisWindow::initCustomPlayPanel() {
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
+
+
 	bar->add(b1);
-	
 	add(bar, gui::BorderLayout::NORTH);
-
-	gui::Panel* panel = createPanel(200, 200);
 	
-	panel->add(createLabel("Width", fontDefault18));
+	gui::Panel* p1 = createPanel(450, 100);
+	p1->add(createLabel("Width", fontDefault18));
 	widthField_ = new gui::TextField("10", fontDefault18);	
-	panel->add(widthField_);
-	panel->add(createLabel("Height", fontDefault18));
+	p1->add(widthField_);
+	p1->add(createLabel("Height", fontDefault18));
 	heightField_ = new gui::TextField("20", fontDefault18);
-	panel->add(heightField_);
+	p1->add(heightField_);
 
-	add(panel, gui::BorderLayout::CENTER);
+	gui::Panel* p2 = createPanel(100, 100);
+	p2->add(createLabel("Min Level", fontDefault18));
+	minLevel_ = new gui::TextField("1", fontDefault18);
+	p2->add(minLevel_);
+	p2->add(createLabel("Max Level", fontDefault18));
+	maxLevel_ = new gui::TextField("20", fontDefault18);
+	p2->add(maxLevel_);
+
+	gui::Panel* centerPanel = createPanel();
+	centerPanel->setLayout(new gui::VerticalLayout);
+
+	centerPanel->add(p1);
+	centerPanel->add(p2);
+
+	TextButton* button = new TextButton("Play", fontDefault30);
+	centerPanel->add(button);
+
+	add(centerPanel, gui::BorderLayout::CENTER);
 }
 
 void TetrisWindow::initCreateServerPanel() {
+	setCurrentPanel(createServerIndex_);
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(menuIndex_);
+	});
+	bar->add(b1);
 
+	networkButton_ = new TextButton("Client", fontDefault30);
+	networkButton_->addActionListener([&](gui::Component*) {
+		if (createServerIndex_ == getCurrentPanelIndex()) {
+			setCurrentPanel(createClientIndex_);
+			networkButton_->setLabel("Server");
+			networkButton_->setPreferedSizeFitText();
+		} else if (createClientIndex_ == getCurrentPanelIndex()) {
+			setCurrentPanel(createServerIndex_);
+			networkButton_->setLabel("Client");
+			networkButton_->setPreferedSizeFitText();
+		}
+	});
+	bar->add(networkButton_);
+
+	add(bar, gui::BorderLayout::NORTH);
+
+	gui::Panel* centerPanel = createPanel();
+	centerPanel->setLayout(new gui::VerticalLayout);	
+
+	gui::Panel* p1 = createPanel(450, 40);
+	p1->add(createLabel("Width", fontDefault18));
+	widthField_ = new gui::TextField("10", fontDefault18);
+	p1->add(widthField_);
+	p1->add(createLabel("Height", fontDefault18));
+	heightField_ = new gui::TextField("20", fontDefault18);
+	p1->add(heightField_);
+	centerPanel->add(p1);
+
+	gui::Panel* p2 = createPanel(100, 150);
+	p2->add(createLabel("Min Level", fontDefault18));
+	minLevel_ = new gui::TextField("1", fontDefault18);
+	p2->add(minLevel_);
+	p2->add(createLabel("Max Level", fontDefault18));
+	maxLevel_ = new gui::TextField("20", fontDefault18);
+	p2->add(maxLevel_);
+	centerPanel->add(p2);
+
+	gui::Panel* p3 = createPanel(450, 40);
+	p3->add(createLabel("Port", fontDefault18));
+	port_ = new gui::TextField("11155", fontDefault18);
+	p3->add(port_);
+	centerPanel->add(p3);
+
+	gui::Panel* p4 = createPanel(450, 40);
+	p4->add(createLabel("Local players", fontDefault18));
+	p4->add(nbrHumans_);
+	p4->add(nbrAis_);
+	centerPanel->add(p4);
+	
+	for (int i = 0; i < players_.size(); ++i) {
+		players_[i] = createPanel(400, 35);
+		std::stringstream stream;
+		stream << "Human " << i + 1;
+		players_[i]->add(createLabel(stream.str(), fontDefault18));
+		players_[i]->add(new gui::TextField("", fontDefault18));
+	}
+	
+	for (gui::Panel* panel : players_) {
+		centerPanel->add(panel);
+	}
+
+	TextButton* button = new TextButton("Connect", fontDefault30);
+	centerPanel->add(button);
+
+	add(centerPanel, gui::BorderLayout::CENTER);
 }
 
 void TetrisWindow::initCreateClientPanel() {
+	setCurrentPanel(createClientIndex_);
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(menuIndex_);
+	});
+	bar->add(b1);
+	bar->add(networkButton_);
 
+	add(bar, gui::BorderLayout::NORTH);
+
+	gui::Panel* centerPanel = createPanel();
+	centerPanel->setLayout(new gui::VerticalLayout);
+
+	gui::Panel* p1 = createPanel(450, 40);
+	p1->add(createLabel("Ip", fontDefault18));
+	ip_ = new gui::TextField("", fontDefault18);
+	p1->add(ip_);
+	p1->add(createLabel("Port", fontDefault18));
+	p1->add(port_);
+	centerPanel->add(p1);
+	
+	gui::Panel* p2 = createPanel(450, 40);
+	p2->add(createLabel("Local players", fontDefault18));
+	p2->add(nbrHumans_);
+	p2->add(nbrAis_);
+	centerPanel->add(p2);
+
+	for (gui::Panel* panel : players_) {
+		centerPanel->add(panel);
+	}
+
+	TextButton* button = new TextButton("Connect", fontDefault30);
+	centerPanel->add(button);
+
+	add(centerPanel, gui::BorderLayout::CENTER);
 }
 
 void TetrisWindow::initServerLoobyPanel() {
-
+	/*
+	setCurrentPanel(loobyServerIndex_);
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(menuIndex_);
+	});
+	*/
 }
 
 void TetrisWindow::initClientLoobyPanel() {
-
+	//setCurrentPanel(loobyClientIndex_);
 }
 
 void TetrisWindow::initWaitToConnectPanel() {
-
+	//setCurrentPanel(waitToConnectIndex_);
 }
 
 void TetrisWindow::initNetworkPlayPanel() {
-
+	//setCurrentPanel(networkPlayIndex_);
 }
 
 void TetrisWindow::initAiPanel() {
-
-}
-
-void TetrisWindow::initNewHighScorePanel() {
-
+	//setCurrentPanel(aiIndex_);
 }
 
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {

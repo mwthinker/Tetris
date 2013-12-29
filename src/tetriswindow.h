@@ -60,6 +60,12 @@ private:
 	gui::TextField* textField_;
 	gui::TextField* widthField_;
 	gui::TextField* heightField_;
+	gui::TextField* minLevel_;
+	gui::TextField* maxLevel_;
+	TextButton* networkButton_;
+	gui::TextField* ip_;
+	gui::TextField* port_;
+	std::array<gui::Panel*, 4> players_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;
