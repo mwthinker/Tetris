@@ -46,6 +46,7 @@ namespace gui {
 		void setTextColor(const mw::Color& textColor);
 
 	private:
+		void init(std::string initialText, const mw::FontPtr& font);
 		void handleKeyboard(const SDL_Event& keyEvent) override;
 
 		bool editable_;

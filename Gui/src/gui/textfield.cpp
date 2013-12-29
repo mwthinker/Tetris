@@ -2,14 +2,24 @@
 
 namespace gui {
 
-	TextField::TextField(const mw::FontPtr& font) : editable_(true), text_("", font), marker_(text_), color_(0, 0, 0), alignment_(LEFT), markerDeltaTime_(0.f) {
-		setPreferredSize(150, 20);
-		setBackgroundColor(mw::Color(0.8, 0.8, 0.8));
+	TextField::TextField(const mw::FontPtr& font) {
+		init("", font);
 	}
 
-	TextField::TextField(std::string initialText, const mw::FontPtr& font) : editable_(true), text_(initialText, font), marker_(text_), color_(0, 0, 0), alignment_(LEFT), markerDeltaTime_(0.f) {
+	TextField::TextField(std::string initialText, const mw::FontPtr& font) {
+		init(initialText, font);
+	}
+
+	void TextField::init(std::string initialText, const mw::FontPtr& font) {
+		inputFormatter_.update(initialText.c_str());
+		editable_ = true;
 		setPreferredSize(150, 20);
 		setBackgroundColor(mw::Color(0.8, 0.8, 0.8));
+		color_ = mw::Color(0, 0, 0);
+		text_ = mw::Text(inputFormatter_.getText(), font);
+		marker_ = mw::Text(text_.getText(), font);
+		alignment_ = LEFT;
+		markerDeltaTime_ = 0;
 	}
 
 	// Get the current text.
@@ -127,7 +137,7 @@ namespace gui {
 		Dimension dim = getSize();
 
 		color_.glColor4d();
-		text_.setText(inputFormatter_.getText());
+		//text_.setText(inputFormatter_.getText());
 		text_.draw();
 
 		if (editable_) {
