@@ -63,9 +63,19 @@ private:
 	gui::TextField* minLevel_;
 	gui::TextField* maxLevel_;
 	TextButton* networkButton_;
-	gui::TextField* ip_;
-	gui::TextField* port_;
-	std::array<gui::Panel*, 4> players_;
+	
+	// Create server panel.
+	gui::TextField* portServer_;
+	std::array<gui::Panel*, 4> playersServer_;
+	ManButton* nbrHumansServer_;
+	ManButton* nbrAisServer_;
+
+	// Create client panel.
+	gui::TextField* ipClient_;
+	gui::TextField* portClient_;
+	std::array<gui::Panel*, 4> playersClient_;
+	ManButton* nbrHumansClient_;
+	ManButton* nbrAisClient_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

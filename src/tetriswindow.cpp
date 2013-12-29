@@ -406,27 +406,49 @@ void TetrisWindow::initCreateServerPanel() {
 
 	gui::Panel* p3 = createPanel(450, 40);
 	p3->add(createLabel("Port", fontDefault18));
-	port_ = new gui::TextField("11155", fontDefault18);
-	p3->add(port_);
+	portServer_ = new gui::TextField("11155", fontDefault18);
+	p3->add(portServer_);
 	centerPanel->add(p3);
 
 	gui::Panel* p4 = createPanel(450, 40);
 	p4->add(createLabel("Local players", fontDefault18));
-	p4->add(nbrHumans_);
-	p4->add(nbrAis_);
 	centerPanel->add(p4);
+
+	nbrHumansServer_ = new ManButton(devices_.size(), spriteMan, spriteCross);
+	p4->add(nbrHumansServer_);
+	nbrAisServer_ = new ManButton(activeAis_.size(), spriteComputer, spriteCross);
+	p4->add(nbrAisServer_);	
 	
-	for (int i = 0; i < players_.size(); ++i) {
-		players_[i] = createPanel(400, 35);
+	for (unsigned int i = 0; i < playersServer_.size(); ++i) {
+		playersServer_[i] = createPanel(400, 35);
 		std::stringstream stream;
 		stream << "Human " << i + 1;
-		players_[i]->add(createLabel(stream.str(), fontDefault18));
-		players_[i]->add(new gui::TextField("", fontDefault18));
+		playersServer_[i]->add(createLabel(stream.str(), fontDefault18));
+		playersServer_[i]->add(new gui::TextField("", fontDefault18));
+		playersServer_[i]->setVisible(false);
 	}
 	
-	for (gui::Panel* panel : players_) {
+	for (gui::Panel* panel : playersServer_) {
 		centerPanel->add(panel);
 	}
+
+	for (unsigned int i = 0; i < playersServer_.size(); ++i) {
+		if (i < nbrHumansServer_->getNbr()) {
+			playersServer_[i]->setVisible(true);
+		} else {
+			playersServer_[i]->setVisible(false);
+		}
+	}
+
+	nbrHumansServer_->addActionListener([&](gui::Component* c) {
+		for (unsigned int i = 0; i < playersServer_.size(); ++i) {
+			if (i < nbrHumansServer_->getNbr()) {
+				playersServer_[i]->setVisible(true);
+			} else {
+				playersServer_[i]->setVisible(false);
+			}
+		}
+	});
 
 	TextButton* button = new TextButton("Connect", fontDefault30);
 	centerPanel->add(button);
@@ -451,21 +473,53 @@ void TetrisWindow::initCreateClientPanel() {
 
 	gui::Panel* p1 = createPanel(450, 40);
 	p1->add(createLabel("Ip", fontDefault18));
-	ip_ = new gui::TextField("", fontDefault18);
-	p1->add(ip_);
+	ipClient_ = new gui::TextField("", fontDefault18);
+	p1->add(ipClient_);
 	p1->add(createLabel("Port", fontDefault18));
-	p1->add(port_);
+	portClient_ = new gui::TextField("11155", fontDefault18);
+	p1->add(portClient_);
 	centerPanel->add(p1);
 	
 	gui::Panel* p2 = createPanel(450, 40);
 	p2->add(createLabel("Local players", fontDefault18));
-	p2->add(nbrHumans_);
-	p2->add(nbrAis_);
 	centerPanel->add(p2);
 
-	for (gui::Panel* panel : players_) {
+	nbrHumansClient_ = new ManButton(devices_.size(), spriteMan, spriteCross);
+	p2->add(nbrHumansClient_);
+	nbrAisClient_ = new ManButton(activeAis_.size(), spriteComputer, spriteCross);
+	p2->add(nbrAisClient_);
+
+	//////////////////////////////////////
+	for (unsigned int i = 0; i < playersClient_.size(); ++i) {
+		playersClient_[i] = createPanel(400, 35);
+		std::stringstream stream;
+		stream << "Human " << i + 1;
+		playersClient_[i]->add(createLabel(stream.str(), fontDefault18));
+		playersClient_[i]->add(new gui::TextField("", fontDefault18));
+		playersClient_[i]->setVisible(false);
+	}
+
+	for (gui::Panel* panel : playersClient_) {
 		centerPanel->add(panel);
 	}
+
+	for (unsigned int i = 0; i < playersClient_.size(); ++i) {
+		if (i < nbrHumansClient_->getNbr()) {
+			playersClient_[i]->setVisible(true);
+		} else {
+			playersClient_[i]->setVisible(false);
+		}
+	}
+
+	nbrHumansServer_->addActionListener([&](gui::Component* c) {
+		for (unsigned int i = 0; i < playersClient_.size(); ++i) {
+			if (i < nbrHumansClient_->getNbr()) {
+				playersClient_[i]->setVisible(true);
+			} else {
+				playersClient_[i]->setVisible(false);
+			}
+		}
+	});
 
 	TextButton* button = new TextButton("Connect", fontDefault30);
 	centerPanel->add(button);
