@@ -134,8 +134,6 @@ TetrisWindow::TetrisWindow() {
 	initServerLoobyPanel();
 	initClientLoobyPanel();
 	initWaitToConnectPanel();
-	initNetworkPlayPanel();
-	initAiPanel();
 
 	// Init local game settings.
 	tetrisGame_.closeGame();
@@ -549,15 +547,16 @@ void TetrisWindow::initClientLoobyPanel() {
 }
 
 void TetrisWindow::initWaitToConnectPanel() {
-	//setCurrentPanel(waitToConnectIndex_);
-}
+	setCurrentPanel(waitToConnectIndex_);
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Abort", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(menuIndex_);
+	});
+	bar->add(b1);
 
-void TetrisWindow::initNetworkPlayPanel() {
-	//setCurrentPanel(networkPlayIndex_);
-}
-
-void TetrisWindow::initAiPanel() {
-	//setCurrentPanel(aiIndex_);
+	add(bar, gui::BorderLayout::NORTH);
+	add(createLabel("Waiting for the server to accept connection!", fontDefault18), gui::BorderLayout::CENTER);
 }
 
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {

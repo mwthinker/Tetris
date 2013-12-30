@@ -22,20 +22,6 @@ private:
 
 	gui::Panel* createMenu();
 
-	void initMenuPanel(const std::vector<DevicePtr>& devices);
-	void initPlayPanel();
-	void initHighscorePanel();
-	void initNewHighscorePanel();
-	void initCustomPlayPanel();
-	void initCreateServerPanel();
-	void initCreateClientPanel();
-	void initServerLoobyPanel();
-	void initClientLoobyPanel();
-	void initWaitToConnectPanel();
-	void initNetworkPlayPanel();
-	void initAiPanel();
-	void initNewHighScorePanel();
-
 	void createLocalGame();
 	void createLocalGame(int width, int height, int maxLevel);
 	void createServerGame(int port, int width, int height);
@@ -51,13 +37,15 @@ private:
 
 	TetrisGame tetrisGame_;
 
-	std::vector<DevicePtr> devices_;
-	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
-
+	// initPlayPanel
 	ManButton* nbrHumans_;
 	ManButton* nbrAis_;
 	TextButton* pauseButton_;
+	
+	// initHighscorePanel
 	Highscore* highscore_;
+	
+	// initNewHighscorePanel
 	gui::TextField* textField_;
 
 	// initCustomPlayPanel
@@ -76,7 +64,7 @@ private:
 	gui::TextField* serverMinLevel_;
 	gui::TextField* serverMaxLevel_;
 
-	// Create client panel.
+	// initCreateClientPanel
 	gui::TextField* ipClient_;
 	gui::TextField* portClient_;
 	std::array<gui::Panel*, 4> playersClient_;
@@ -93,7 +81,24 @@ private:
 	std::array<Ai, 4> activeAis_;
 	std::vector<Ai> ais_;
 
+	// Devices.
+	std::vector<DevicePtr> devices_;
+	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
+
 	// All panels.
+	void initMenuPanel(const std::vector<DevicePtr>& devices);
+	void initPlayPanel();
+	void initHighscorePanel();
+	void initNewHighscorePanel();
+	void initCustomPlayPanel();
+	void initCreateServerPanel();
+	void initCreateClientPanel();
+	void initServerLoobyPanel();
+	void initClientLoobyPanel();
+	void initWaitToConnectPanel();
+	void initNewHighScorePanel();
+
+	// Panel indexes.
 	int menuIndex_,
 		playIndex_,
 		networkIndex_,
