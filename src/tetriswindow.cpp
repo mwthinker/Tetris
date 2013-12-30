@@ -10,6 +10,7 @@
 #include "manbutton.h"
 #include "highscore.h"
 #include "gamecomponent.h"
+#include "joystick.h"
 
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
@@ -20,6 +21,7 @@
 
 #include <mw/sprite.h>
 #include <mw/color.h>
+#include <mw/joystick.h>
 
 #include <ctime>
 #include <iostream>
@@ -96,14 +98,12 @@ TetrisWindow::TetrisWindow() {
 	setDefaultClosing(true);
 
 	// Init joysticks!
-	/*
 	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();
 	for (const mw::JoystickPtr& joystick : joystics) {
 		std::cout << joystick->getName() << std::endl;
 		DevicePtr device(new Joystick(joystick, 0, 1));
 		devices_.push_back(device);
 	}
-	*/
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, this, std::placeholders::_2));
 
 	// Create all frames.
