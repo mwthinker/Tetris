@@ -18,7 +18,7 @@ namespace gui {
 
 		delete layoutManager_;
 	}
-	
+
 	void Panel::add(Component* component) {
 		component->parent_ = this;
 		component->setLayoutIndex(0);
@@ -160,7 +160,7 @@ namespace gui {
 						} else {
 							component->setFocus(false);
 						}
-					}					
+					}
 				}
 
 				// Call the component if it was pushed and released outside
@@ -266,14 +266,14 @@ namespace gui {
 		Point loc = component->location_;
 		Dimension dim = component->dimension_;
 		if (squares_.empty()) {
-			squares_.push(Square(loc, dim));
+		squares_.push(Square(loc, dim));
 		} else {
-			squares_.push(calculateIntersectSquare(squares_.top(), Square(loc, dim)));
+		squares_.push(calculateIntersectSquare(squares_.top(), Square(loc, dim)));
 		}
 		Square sq = squares_.top();
 
-		glScissor((GLsizei) sq.first.x_, (GLsizei) sq.first.y_, 
-			(GLsizei) sq.second.width_, (GLsizei) sq.second.height_);
+		glScissor((GLsizei) sq.first.x_, (GLsizei) sq.first.y_,
+		(GLsizei) sq.second.width_, (GLsizei) sq.second.height_);
 		squares_.empty();
 		*/
 	}
@@ -282,7 +282,7 @@ namespace gui {
 		/*
 		glDisable(GL_SCISSOR_TEST);
 		if (!squares_.empty()) {
-			squares_.pop();
+		squares_.pop();
 		}
 		*/
 	}

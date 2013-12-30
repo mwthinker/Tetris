@@ -13,8 +13,6 @@ namespace gui {
 	// the layout of the components based on the layout manager.
 	class Panel : public Component {
 	public:
-		friend class Frame;
-
 		// Creates a empty panel. The default LayoutManager is FlowLayout.
 		Panel();
 

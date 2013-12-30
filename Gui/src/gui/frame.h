@@ -24,9 +24,6 @@ namespace gui {
 		Frame();
 		Frame(int width, int height, bool resizeable = true, std::string title = "Frame", std::string icon = "");
 
-		Frame(const Frame&) = delete;
-		Frame& operator=(const Frame&) = delete;
-
 		int addPanelBack();
 
 		int push_back(Panel* panel);

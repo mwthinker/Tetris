@@ -24,7 +24,6 @@ namespace gui {
 	class Component {
 	public:
 		friend class Panel;
-		friend class Frame;
 
 		virtual ~Component() {
 		}
@@ -57,7 +56,7 @@ namespace gui {
 			return preferedDimension_;
 		}
 
-		// Returns the components size.
+		// Return the components size.
 		Dimension getSize() const {
 			return dimension_;
 		}
@@ -118,7 +117,7 @@ namespace gui {
 		Component* getParent() const {
 			return parent_;
 		}
-		
+
 		void setBackground(const mw::TexturePtr& background) {
 			background_ = background;
 		}
@@ -163,7 +162,7 @@ namespace gui {
 		int getLayoutIndex() const {
 			return layoutIndex_;
 		}
-		
+
 		// Defines the layout for the component.
 		// Must correspond to the active LayoutManager.
 		void setLayoutIndex(int layoutIndex) {
@@ -174,7 +173,7 @@ namespace gui {
 		Component() : visible_(true),
 			parent_(nullptr), focus_(false), layoutIndex_(0) {
 		}
-		
+
 		// Takes care of all mouse events. And send it through to
 		// all mouse listener callbacks.
 		// Mouse events: SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN and SDL_MOUSEBUTTONUP.
@@ -220,7 +219,7 @@ namespace gui {
 
 		bool visible_;
 		bool focus_;
-	};	
+	};
 
 } // Namespace gui.
 
