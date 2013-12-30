@@ -113,7 +113,7 @@ TetrisWindow::TetrisWindow() {
 	playIndex_ = push_back(createBackgroundPanel());
 	highscoreIndex_ = push_back(createBackgroundPanel());
 	customIndex_ = push_back(createBackgroundPanel());
-	optionIndex_ = push_back(createBackgroundPanel());
+	settingsIndex_ = push_back(createBackgroundPanel());
 	newHighscoreIndex_ = push_back(createBackgroundPanel());
 	networkIndex_ = push_back(createBackgroundPanel());
 	createClientIndex_ = push_back(createBackgroundPanel());
@@ -129,6 +129,7 @@ TetrisWindow::TetrisWindow() {
 	initHighscorePanel();
 	initNewHighscorePanel();
 	initCustomPlayPanel();
+	initSettingsPanel();
 	initCreateServerPanel();
 	initCreateClientPanel();
 	initServerLoobyPanel();
@@ -184,9 +185,9 @@ gui::Panel* TetrisWindow::createMenu() {
 		setCurrentPanel(highscoreIndex_);
 	});
 
-	TextButton* b5 = new TextButton("Options", fontDefault30);
+	TextButton* b5 = new TextButton("Settings", fontDefault30);
 	b5->addActionListener([&](gui::Component*) {
-		setCurrentPanel(optionIndex_);
+		setCurrentPanel(settingsIndex_);
 	});
 
 	panel->add(b5);
@@ -331,7 +332,7 @@ void TetrisWindow::initNewHighscorePanel() {
 			char mbstr[30];
 			std::strftime(mbstr, 30, "%Y-%m-%d", std::localtime(&t));
 			highscore_->addNewRecord(name, mbstr);
-			setCurrentPanel(optionIndex_);
+			setCurrentPanel(menuIndex_);
 		}
 	});
 	panel->add(textField_);
@@ -379,6 +380,18 @@ void TetrisWindow::initCustomPlayPanel() {
 	centerPanel->add(button);
 
 	add(centerPanel, gui::BorderLayout::CENTER);
+}
+
+void TetrisWindow::initSettingsPanel() {
+	setCurrentPanel(settingsIndex_);
+	gui::Panel* bar = createBar();
+	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	b1->addActionListener([&](gui::Component*) {
+		setCurrentPanel(menuIndex_);
+	});
+
+	bar->add(b1);
+	add(bar, gui::BorderLayout::NORTH);
 }
 
 void TetrisWindow::initCreateServerPanel() {

@@ -91,6 +91,7 @@ private:
 	void initHighscorePanel();
 	void initNewHighscorePanel();
 	void initCustomPlayPanel();
+	void initSettingsPanel();
 	void initCreateServerPanel();
 	void initCreateClientPanel();
 	void initServerLoobyPanel();
@@ -104,7 +105,7 @@ private:
 		networkIndex_,
 		highscoreIndex_,
 		customIndex_,
-		optionIndex_,
+		settingsIndex_,
 		newHighscoreIndex_,
 		createClientIndex_,
 		createServerIndex_,
