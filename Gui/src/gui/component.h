@@ -170,8 +170,7 @@ namespace gui {
 		}
 
 	protected:
-		Component() : visible_(true),
-			parent_(nullptr), focus_(false), layoutIndex_(0) {
+		Component() : parent_(nullptr), layoutIndex_(0), visible_(true), focus_(false), isAdded_(false) {
 		}
 
 		// Takes care of all mouse events. And send it through to
@@ -219,6 +218,7 @@ namespace gui {
 
 		bool visible_;
 		bool focus_;
+		bool isAdded_;
 	};
 
 } // Namespace gui.

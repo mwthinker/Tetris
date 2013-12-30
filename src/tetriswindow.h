@@ -10,6 +10,7 @@
 
 class ManButton;
 class Highscore;
+class NetworkLooby;
 
 class TetrisWindow : public gui::Frame {
 public:
@@ -44,9 +45,9 @@ private:
 
 	void loadHighscore();
 	void saveHighscore();
-
+	
 	void loadAllSettings();
-	void saveAllSettings();
+	void saveAllSettings();	
 
 	TetrisGame tetrisGame_;
 
@@ -58,17 +59,22 @@ private:
 	TextButton* pauseButton_;
 	Highscore* highscore_;
 	gui::TextField* textField_;
-	gui::TextField* widthField_;
-	gui::TextField* heightField_;
-	gui::TextField* minLevel_;
-	gui::TextField* maxLevel_;
-	TextButton* networkButton_;
+
+	// initCustomPlayPanel
+	gui::TextField* customWidthField_;
+	gui::TextField* customHeightField_;
+	gui::TextField* customMinLevel_;
+	gui::TextField* customMaxLevel_;
 	
-	// Create server panel.
+	// initCreateServerPanel
 	gui::TextField* portServer_;
 	std::array<gui::Panel*, 4> playersServer_;
 	ManButton* nbrHumansServer_;
 	ManButton* nbrAisServer_;
+	gui::TextField* serverWidthField_;
+	gui::TextField* serverHeightField_;
+	gui::TextField* serverMinLevel_;
+	gui::TextField* serverMaxLevel_;
 
 	// Create client panel.
 	gui::TextField* ipClient_;
@@ -76,6 +82,12 @@ private:
 	std::array<gui::Panel*, 4> playersClient_;
 	ManButton* nbrHumansClient_;
 	ManButton* nbrAisClient_;
+
+	// initServerLoobyPanel
+	NetworkLooby* serverLooby_;
+
+	// initServerLoobyPanel
+	NetworkLooby* clientLooby_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

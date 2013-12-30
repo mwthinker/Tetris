@@ -12,6 +12,7 @@
 #include <algorithm>
 
 NetworkLooby::NetworkLooby() {
+	setPreferredSize(400, 400);
 }
 
 void NetworkLooby::draw(float deltaTime) {

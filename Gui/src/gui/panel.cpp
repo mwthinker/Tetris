@@ -3,6 +3,7 @@
 #include "flowlayout.h"
 
 #include <list>
+#include <cassert>
 
 namespace gui {
 
@@ -20,6 +21,9 @@ namespace gui {
 	}
 
 	void Panel::add(Component* component) {
+		// Is already added?
+		assert(!component->isAdded_);
+		component->isAdded_ = true;
 		component->parent_ = this;
 		component->setLayoutIndex(0);
 		components_.push_back(component);
@@ -27,6 +31,9 @@ namespace gui {
 	}
 
 	void Panel::add(Component* component, int layoutIndex) {
+		// Is already added?
+		assert(!component->isAdded_);
+		component->isAdded_ = true;
 		component->parent_ = this;
 		component->setLayoutIndex(layoutIndex);
 		components_.push_back(component);
