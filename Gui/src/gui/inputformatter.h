@@ -25,6 +25,16 @@ namespace gui {
 			maxLimit_ = maxLimit;
 		}
 
+		int getMaxLimit() const {
+			return maxLimit_;
+		}
+
+		void setMaxLimit(int maxLimit) {
+			if (maxLimit < MAX_SIZE) {
+				maxLimit_ = maxLimit;
+			}
+		}
+
 		// Returns the current input.
 		// The return value is a utf8 string.
 		std::string getText() const {
@@ -39,6 +49,7 @@ namespace gui {
 		void clear() {
 			size_ = 0;
 			marker_ = 0;
+			nbrOfCharacters_ = 0;
 		}
 
 		// Takes a c-string which must be encoded in utf8 in order
@@ -60,6 +71,9 @@ namespace gui {
 					length = 5;
 				} else {
 					length = 6; // Assumes.
+				}
+				if (nbrOfCharacters_ + length > maxLimit_) {
+					break;
 				}
 				addUtf8(text + i, length);
 			}
@@ -93,6 +107,10 @@ namespace gui {
 				}			
 		}
 
+		int getNbrOfCharacters() const {
+			return nbrOfCharacters_;
+		}
+
 		// Returns the size of the current utf8 string.
 		int getSize() const {
 			return size_;
@@ -109,6 +127,7 @@ namespace gui {
 		// May remove several character due to the encoding.
 		void removeChar(bool leftMarker) {
 			if (leftMarker && marker_ > 0) {
+				nbrOfCharacters_ -= textUtf8_[marker_ - 1];
 				int dst = marker_ - textUtf8_[marker_ - 1];
 				int src = marker_;
 				int size = size_ - marker_;
@@ -117,6 +136,7 @@ namespace gui {
 				marker_ -= textUtf8_[marker_ - 1];
 				memmove(textUtf8_ + dst, textUtf8_ + src, size);
 			} else if (!leftMarker && marker_ < size_) {
+				nbrOfCharacters_ -= textUtf8_[marker_];
 				int dst = marker_;
 				int src = marker_ + textUtf8_[marker_];
 				int size = size_ - (marker_ + textUtf8_[marker_]);
@@ -136,6 +156,7 @@ namespace gui {
 					++marker_;
 					++size_;
 				}
+				nbrOfCharacters_ += length;
 			}
 		}
 
@@ -152,8 +173,9 @@ namespace gui {
 		int maxLimit_;				// Max number of input character allowed.
 		char text_[MAX_SIZE];		// Storage of text input.
 		char textUtf8_[MAX_SIZE];	// Correspond to number of bytes corresponding utf8 takes.
-		int size_;					// Size of string input.
+		int size_;					// Size of the string.
 		int marker_;				// Marker position.
+		int nbrOfCharacters_;		// The number of readable (for a human) characters.
 	};
 
 } // Namespace gui.
