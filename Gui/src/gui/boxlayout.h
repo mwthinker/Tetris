@@ -16,6 +16,8 @@ namespace gui {
 		};
 
 		BoxLayout() {
+			// Not implemented.
+			assert(0);
 		}
 
 		void layoutContainer(Panel* parent) override {

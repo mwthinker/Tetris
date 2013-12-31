@@ -52,6 +52,7 @@ namespace gui {
 						break;
 					default:
 						// Error.
+						assert(0);
 						break;
 				}
 			}
@@ -86,6 +87,7 @@ namespace gui {
 						break;
 					default:
 						// Error.
+						assert(0);
 						break;
 				}
 			}
