@@ -7,7 +7,7 @@ namespace gui {
 
 	class CheckBox : public Button {
 	public:
-		CheckBox();
+		CheckBox(int characterSize);
 		CheckBox(std::string text, const mw::FontPtr& font);
 		CheckBox(mw::Text text);
 
