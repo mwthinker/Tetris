@@ -86,11 +86,16 @@ namespace gui {
 		if (editable_) {
 			switch (keyEvent.type) {
 				case SDL_TEXTINPUT:
-					// A Utf8 string as input.
-					inputFormatter_.update(keyEvent.text.text);
-					text_.setText(inputFormatter_.getText());
-					markerChanged_ = true;
+				{
+					// Update only if the glyph is avaiable.
+					if (0 == TTF_SizeUTF8(font_->getTtfFont(), keyEvent.text.text, 0, 0)) {
+						// A Utf8 string as input.
+						inputFormatter_.update(keyEvent.text.text);
+						text_.setText(inputFormatter_.getText());
+						markerChanged_ = true;
+					}
 					break;
+				}
 				case SDL_KEYDOWN:
 					// Reset marker animation.
 					markerDeltaTime_ = 0;
