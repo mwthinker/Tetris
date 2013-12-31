@@ -41,6 +41,8 @@ namespace gui {
 
 	protected:
 		void drawText(float deltaTime);
+
+		void drawBorder();
 		
 		// Sets the color for the text.
 		void setTextColor(const mw::Color& textColor);
@@ -51,8 +53,9 @@ namespace gui {
 
 		bool editable_;
 		mw::Text text_;
-		mw::Text marker_;
-		int cursor_;
+		float markerWidth_;
+		bool markerChanged_;
+		mw::FontPtr font_;
 
 		mw::Color color_;
 		Alignment alignment_;

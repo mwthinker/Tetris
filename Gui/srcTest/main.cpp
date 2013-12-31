@@ -11,6 +11,7 @@
 #include <gui/gridlayout.h>
 
 #include <cassert>
+#include <iostream>
 
 void testBorderLayout(gui::Frame& frame) {
 	frame.add(new gui::Button, gui::BorderLayout::NORTH);

@@ -11,15 +11,18 @@ namespace gui {
 	}
 
 	void TextField::init(std::string initialText, const mw::FontPtr& font) {
+		font_ = font;
 		inputFormatter_.update(initialText.c_str());
 		editable_ = true;
 		setPreferredSize(150, 20);
 		setBackgroundColor(mw::Color(0.8, 0.8, 0.8));
 		color_ = mw::Color(0, 0, 0);
 		text_ = mw::Text(inputFormatter_.getText(), font);
-		marker_ = mw::Text(text_.getText(), font);
+		// One pixel to the right of the last character.
+		markerWidth_ = (float) text_.getWidth() + 1;
 		alignment_ = LEFT;
 		markerDeltaTime_ = 0;
+		markerChanged_ = false;
 	}
 
 	// Get the current text.
@@ -29,7 +32,8 @@ namespace gui {
 
 	// Set the current text.
 	void TextField::setText(std::string text) {
-		return text_.setText(text);
+		text_.setText(text);
+		markerWidth_ = text_.getWidth() - 1;
 	}
 
 	// Set the textfield to be editable or not.
@@ -47,18 +51,20 @@ namespace gui {
 
 	void TextField::draw(float deltaTime) {
 		Component::draw(deltaTime);
+		drawBorder();
 
 		Dimension dim = getSize();
 		float x = 0.0;
+		// Text should 
 		switch (alignment_) {
 			case Alignment::LEFT:
-				x = 0;
+				x = 2;
 				break;
 			case Alignment::CENTER:
-				x = dim.width_ * 0.5f - (float) text_.getWidth() * 0.5f;
+				x = dim.width_ * 0.5f - ((float) text_.getWidth() - 2) * 0.5f;
 				break;
 			case Alignment::RIGHT:
-				x = dim.width_ - (float) text_.getWidth();
+				x = dim.width_ - (float) text_.getWidth() - 2;
 				break;
 		}
 
@@ -82,6 +88,8 @@ namespace gui {
 				case SDL_TEXTINPUT:
 					// A Utf8 string as input.
 					inputFormatter_.update(keyEvent.text.text);
+					text_.setText(inputFormatter_.getText());
+					markerChanged_ = true;
 					break;
 				case SDL_KEYDOWN:
 					// Reset marker animation.
@@ -91,6 +99,8 @@ namespace gui {
 							if ((keyEvent.key.keysym.mod & KMOD_CTRL) && SDL_HasClipboardText()) {
 								char* text = SDL_GetClipboardText();
 								inputFormatter_.update(SDL_GetClipboardText());
+								text_.setText(inputFormatter_.getText());
+								markerChanged_ = true;
 								SDL_free(text);
 							}
 							break;
@@ -99,23 +109,39 @@ namespace gui {
 								SDL_SetClipboardText(inputFormatter_.getText().c_str());
 							}
 							break;
+						case SDLK_x: // Cut from textfield!
+							if (keyEvent.key.keysym.mod & KMOD_CTRL) {
+								SDL_SetClipboardText(inputFormatter_.getText().c_str());
+								inputFormatter_.clear();
+								text_.setText(inputFormatter_.getText());
+								markerChanged_ = true;
+							}
+							break;
 						case SDLK_HOME:
 							inputFormatter_.update(InputFormatter::INPUT_MOVE_MARKER_HOME);
+							markerChanged_ = true;
 							break;
 						case SDLK_END:
 							inputFormatter_.update(InputFormatter::INPUT_MOVE_MARKER_END);
+							markerChanged_ = true;
 							break;
 						case SDLK_LEFT:
 							inputFormatter_.update(InputFormatter::INPUT_MOVE_MARKER_LEFT);
+							markerChanged_ = true;
 							break;
 						case SDLK_RIGHT:
 							inputFormatter_.update(InputFormatter::INPUT_MOVE_MARKER_RIGHT);
+							markerChanged_ = true;
 							break;
 						case SDLK_BACKSPACE:
 							inputFormatter_.update(InputFormatter::INPUT_ERASE_LEFT);
+							text_.setText(inputFormatter_.getText());
+							markerChanged_ = true;
 							break;
 						case SDLK_DELETE:
 							inputFormatter_.update(InputFormatter::INPUT_ERASE_RIGHT);
+							text_.setText(inputFormatter_.getText());
+							markerChanged_ = true;
 							break;
 						case SDLK_RETURN:
 							// Fall through!
@@ -130,35 +156,21 @@ namespace gui {
 					// Uninteresting events.
 					break;
 			}
-		}
-	}
-
-	void TextField::drawText(float deltaTime) {
-		Dimension dim = getSize();
-
-		color_.glColor4d();
-		//text_.setText(inputFormatter_.getText());
-		text_.draw();
-
-		if (editable_) {
-			if (hasFocus()) {
+			if (markerChanged_) {
+				markerChanged_ = false;
 				int index = inputFormatter_.getMarkerPosition();
-				marker_.setText(text_.getText().substr(0, index));
-				double x = marker_.getWidth();
-				glBegin(GL_LINES);
-				markerDeltaTime_ += deltaTime;
-				if (markerDeltaTime_ < 0.5f) {
-					glVertex2d(x + 2, text_.getCharacterSize());
-					glVertex2d(x + 2, 1);
-				} else if (markerDeltaTime_ > 1.f) {
-					markerDeltaTime_ = 0;
-				}
-
-				glEnd();
-			} else {
-				markerDeltaTime_ = 0;
+				std::string leftText = getText().substr(0, index);
+				int w, h;
+				TTF_SizeUTF8(font_->getTtfFont(), leftText.c_str(), &w, &h);
+				// One pixel to the right of the last character.
+				markerWidth_ = (float) w + 1;
 			}
 		}
+	}
+	
+	void TextField::drawBorder() {
+		Dimension dim = getSize();
+		color_.glColor4d();
 		// Draw border.
 		glBegin(GL_LINES);
 		glVertex2f(0, 0);
@@ -173,6 +185,28 @@ namespace gui {
 		glVertex2f(0, dim.height_);
 		glVertex2f(0, 0);
 		glEnd();
+	}
+
+	void TextField::drawText(float deltaTime) {
+		color_.glColor4d();
+		text_.draw();
+
+		if (editable_) {
+			if (hasFocus()) {
+				glBegin(GL_LINES);
+				markerDeltaTime_ += deltaTime;
+				if (markerDeltaTime_ < 0.5f) {
+					glVertex2d(markerWidth_, text_.getCharacterSize());
+					glVertex2d(markerWidth_, 1);
+				} else if (markerDeltaTime_ > 1.f) {
+					markerDeltaTime_ = 0;
+				}
+
+				glEnd();
+			} else {
+				markerDeltaTime_ = 0;
+			}
+		}
 	}
 
 } // Namespace gui.
