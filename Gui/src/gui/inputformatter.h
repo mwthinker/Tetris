@@ -23,6 +23,7 @@ namespace gui {
 			size_ = 0;
 			marker_ = 0;
 			maxLimit_ = maxLimit;
+			nbrOfCharacters_ = 0;
 		}
 
 		int getMaxLimit() const {
