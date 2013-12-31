@@ -8,7 +8,7 @@ namespace gui {
 	Label::Label(std::string text, const mw::FontPtr& font) {
 		text_ = mw::Text(text, font);
 		if (text_.getWidth() > 1 && text_.getWidth() > 1) {
-			setPreferredSize((float) text_.getWidth(), (float) text_.getHeight());
+			setPreferredSize((float) text_.getWidth() + 2, (float) text_.getHeight() + 2);
 		}
 		init();
 	}
@@ -16,7 +16,7 @@ namespace gui {
 	Label::Label(mw::Text text) {
 		text_ = text;
 		if (text_.getWidth() > 1 && text_.getWidth() > 1) {
-			setPreferredSize((float) text_.getWidth(), (float) text_.getHeight());
+			setPreferredSize((float) text_.getWidth() + 2, (float) text_.getHeight() + 2);
 		}
 		init();
 	}
@@ -28,25 +28,25 @@ namespace gui {
 		float x = 0.0;
 		switch (hTextAlignment_) {
 			case HorizontalAlignment::LEFT:
-				x = 0;
+				x = 1;
 				break;
 			case HorizontalAlignment::HCENTER:
-				x = dim.width_ * 0.5f - (float) text_.getWidth() * 0.5f;
+				x = dim.width_ * 0.5f - (float) (text_.getWidth() + 2) * 0.5f;
 				break;
 			case HorizontalAlignment::RIGHT:
-				x = dim.width_ - (float) text_.getWidth();
+				x = dim.width_ - (float) text_.getWidth() - 1;
 				break;
 		}
 		float y = 0.0;
 		switch (vTextAlignment_) {
 			case VerticalAlignment::BOTTOM:
-				y = 0;
+				y = 1;
 				break;
 			case VerticalAlignment::VCENTER:
-				y = dim.height_ * 0.5f - (float) text_.getHeight() * 0.5f;
+				y = dim.height_ * 0.5f - (float) (text_.getHeight() + 2) * 0.5f;
 				break;
 			case VerticalAlignment::TOP:
-				y = dim.height_ - (float) text_.getHeight();
+				y = dim.height_ - (float) text_.getHeight() - 1;
 				break;
 		}
 		color_.glColor4d();
@@ -67,7 +67,7 @@ namespace gui {
 	void Label::setText(std::string text) {
 		text_.setText(text);
 		if (text_.getWidth() > 1 && text_.getWidth() > 1) {
-			setPreferredSize((float) text_.getWidth(), (float) text_.getHeight());
+			setPreferredSize((float) text_.getWidth() + 1, (float) text_.getHeight() + 1);
 		}
 	}
 
