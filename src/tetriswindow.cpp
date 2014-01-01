@@ -276,7 +276,7 @@ void TetrisWindow::initPlayPanel() {
 		switch (keyEvent.type) {
 			case SDL_KEYDOWN:
 				switch (keyEvent.key.keysym.sym) {
-					case SDLK_F12:
+					case SDLK_F2:
 						tetrisGame_.restartGame();
 						break;
 					case SDLK_p:
