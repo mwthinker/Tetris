@@ -18,18 +18,25 @@ namespace gui {
 	using WindowListener = mw::Signal<Frame*, const SDL_Event&>;
 	using SdlEventListener = mw::Signal<Frame*, const SDL_Event&>;
 
-	// CheckboxGroup (radio buttons), List, and Choice
 	class Frame : public mw::Window {
 	public:
 		Frame();
 		Frame(int width, int height, bool resizeable = true, std::string title = "Frame", std::string icon = "");
 
+		// Adds default panel in the back in the internal vector.
+		// The panel index is returned.
 		int addPanelBack();
-
+		
+		// Adds the provided panel in the back in the internal vector.
+		// The panel index is returned.
 		int push_back(Panel* panel);
 
+		// Adds component, with layoutIndex set to default.
+		// Will assert if the component already added.
 		void add(Component* component);
 
+		// Adds component, with the provided layoutIndex.
+		// Will assert if the component already added.
 		void add(Component* component, int layoutIndex);
 
 		// Sets the layouyt manager. Takes ower the ownership of the layoutManager.
@@ -48,8 +55,13 @@ namespace gui {
 		mw::signals::Connection addWindowListener(const WindowListener::Callback& callback);
 		mw::signals::Connection addSdlEventListener(const SdlEventListener::Callback& callback);
 
+		// Set the default closing true or false.
+		// Makes the window's close by clicking the quit button or by 
+		// pressing the ESQ key if set to true. if set to false 
+		// nothing happens.
 		void setDefaultClosing(bool defaultClosing);
 
+		// Returns if the default closing is active or not.
 		bool isDefaultClosing() const;
 
 		int getNbrOfPanels() const {
