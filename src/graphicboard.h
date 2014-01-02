@@ -30,11 +30,11 @@ public:
 
 private:
 	void drawBorder() const;
-	void drawInfo(const RawTetrisBoard& tetrisBoard);
-	void drawPreviewBlock(const Block& block);
-	void drawBoard(const RawTetrisBoard& tetrisBoard);
+	void drawInfo(const RawTetrisBoard& tetrisBoard) const;
+	void drawPreviewBlock(const Block& block) const;
+	void drawBoard(const RawTetrisBoard& tetrisBoard) const;
 	void drawBeginArea() const;
-	void drawBlock(const Block& block, int maxRow);
+	void drawBlock(const Block& block, int maxRow) const;
 
 	mw::Text name_, level_, points_, nbrOfClearedRows_;
 	mw::Text middleMessage_;

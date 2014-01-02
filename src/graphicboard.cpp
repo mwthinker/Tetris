@@ -99,10 +99,10 @@ GraphicBoard::GraphicBoard() : tetrisBoard_(20, 10, BlockType::I, BlockType::I) 
 	frameColor_ = mw::Color(237/256.0,78/256.0,8/256.0); // Some type of orange.
 
 	// Define all text sizes and font usage.
-	name_ = mw::Text("Player", fontDefault30, 40);
-	level_ = mw::Text("Level 1", fontDefault30, 30);
-	points_ = mw::Text("Points 0", fontDefault30, 30);
-	nbrOfClearedRows_ = mw::Text("Rows 0", fontDefault30, 30);
+	name_ = mw::Text("", fontDefault30, 40);
+	level_ = mw::Text("", fontDefault30, 30);
+	points_ = mw::Text("", fontDefault30, 30);
+	nbrOfClearedRows_ = mw::Text("", fontDefault30, 30);
 	middleMessage_ = mw::Text("", fontDefault30, 70);
 }
 
@@ -169,7 +169,7 @@ void GraphicBoard::drawBorder() const {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawInfo(const RawTetrisBoard& tetrisBoard) {
+void GraphicBoard::drawInfo(const RawTetrisBoard& tetrisBoard) const {
 	glPushMatrix();
 	glTranslated(pixlePerSquare_ * columns_ + horizontalDistanceToText_ + voidHeight_,0,0);
 	glTranslated(0,getHeight() - name_.getCharacterSize() - 30,0);
@@ -194,7 +194,7 @@ void GraphicBoard::drawInfo(const RawTetrisBoard& tetrisBoard) {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawPreviewBlock(const Block& block) {
+void GraphicBoard::drawPreviewBlock(const Block& block) const {
 	glPushMatrix();
 
 	double x = 0, y = 0;
@@ -218,7 +218,7 @@ void GraphicBoard::drawPreviewBlock(const Block& block) {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) {
+void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glPushMatrix();
 	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
 
@@ -294,7 +294,7 @@ void GraphicBoard::drawBeginArea() const {
 	glDisable(GL_BLEND);
 }
 
-void GraphicBoard::drawBlock(const Block& block, int maxRow) {
+void GraphicBoard::drawBlock(const Block& block, int maxRow) const {
 	glEnable(GL_TEXTURE_2D);
 	
 	WHITE.glColor4d();
