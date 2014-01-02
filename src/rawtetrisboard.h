@@ -71,7 +71,7 @@ public:
 
 	// Returns true if block is outside or on an allready occupied square on the board.
 	// Else it returns false.
-	bool collision(const Block& block) const;	
+	bool collision(const Block& block) const;
 
 protected:
 	// Set all squares on the board to empty.

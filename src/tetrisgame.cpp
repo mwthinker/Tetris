@@ -30,7 +30,7 @@ void TetrisGame::updateGame(Uint32 deltaTime) {
 		if (countDown_ >= timeStep_) {
 			countDown_ -= timeStep_;
 			std::stringstream stream;
-			stream << "Start in: " << (countDown_ + 1000)/1000;
+			stream << "Start in: " << (countDown_ + 1000) / 1000;
 			for (PlayerData& playerData : players_) {
 				playerData.graphic_.setMiddleMessage(stream.str());
 			}
@@ -47,7 +47,7 @@ void TetrisGame::updateGame(Uint32 deltaTime) {
 }
 
 void TetrisGame::updatePlayer(PlayerData& playerData, Uint32 deltaTime) {
-	playerData.player_->update(deltaTime/1000.0, playerData.level_);
+	playerData.player_->update(deltaTime / 1000.0, playerData.level_);
 
 	GameEvent gameEvent;
 	while (playerData.player_->pollGameEvent(gameEvent)) {
@@ -77,10 +77,10 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 void TetrisGame::draw() {
 	int nbr = players_.size();
 	int i = 0;
-	for (PlayerData& pair: players_) {
+	for (PlayerData& pair : players_) {
 		++i;
 		glPushMatrix();
-		glTranslated(pair.graphic_.getWidth() * (nbr-i), 0, 0);
+		glTranslated(pair.graphic_.getWidth() * (nbr - i), 0, 0);
 		pair.graphic_.draw(pair.player_->getTetrisBoard());
 		glPopMatrix();
 	}
@@ -114,27 +114,27 @@ void TetrisGame::PlayerData::reset() {
 void TetrisGame::soundEffects(GameEvent gameEvent) {
 	mw::Sound sound;
 	switch (gameEvent) {
-	case GameEvent::GRAVITY_MOVES_BLOCK:
-		break;
-	case GameEvent::BLOCK_COLLISION:
-		sound = soundBlockCollision;
-		break;
-	case GameEvent::PLAYER_ROTATES_BLOCK:
-		break;
-	case GameEvent::ONE_ROW_REMOVED:
-		// Fall through
-	case GameEvent::TWO_ROW_REMOVED:
-		// Fall through
-	case GameEvent::THREE_ROW_REMOVED:
-		sound = soundRowRemoved;
-		break;
-	case GameEvent::FOUR_ROW_REMOVED:
-		sound = soundTetris;
-		break;
-	case GameEvent::GAME_OVER:
-		break;
-	default:
-		break;
+		case GameEvent::GRAVITY_MOVES_BLOCK:
+			break;
+		case GameEvent::BLOCK_COLLISION:
+			sound = soundBlockCollision;
+			break;
+		case GameEvent::PLAYER_ROTATES_BLOCK:
+			break;
+		case GameEvent::ONE_ROW_REMOVED:
+			// Fall through
+		case GameEvent::TWO_ROW_REMOVED:
+			// Fall through
+		case GameEvent::THREE_ROW_REMOVED:
+			sound = soundRowRemoved;
+			break;
+		case GameEvent::FOUR_ROW_REMOVED:
+			sound = soundTetris;
+			break;
+		case GameEvent::GAME_OVER:
+			break;
+		default:
+			break;
 	}
 	sound.play();
 }
@@ -145,68 +145,68 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 	// Nothing other than graphics is effected.
 	int rows = 0;
 	switch (gameEvent) {
-	case GameEvent::ONE_ROW_REMOVED:
-		rows = 1;
-		break;
-	case GameEvent::TWO_ROW_REMOVED:
-		rows = 2;
-		break;
-	case GameEvent::THREE_ROW_REMOVED:
-		rows = 3;
-		break;
-	case GameEvent::FOUR_ROW_REMOVED:
-		rows = 4;
-		// Multiplayer?
-		if (getNbrOfPlayers() > 1) {
-			// Add two rows to all opponents.
-			addRowsToAllPlayersExcept(playerData.player_, 2);
-		}
-		break;
-	case GameEvent::GAME_OVER:
-		// Multiplayer?
-		if (players_.size() > 1) {
-			std::stringstream stream;
-			stream << nbrOfAlivePlayers_ ;
-			if (nbrOfAlivePlayers_ == 1) {
-				stream << ":st place!";
-			} else if (nbrOfAlivePlayers_ == 2) {
-				stream << ":nd place!";
-			} else if (nbrOfAlivePlayers_ == 3) {
-				stream << ":rd place!";
-			} else {
-				stream << ":th place!";
+		case GameEvent::ONE_ROW_REMOVED:
+			rows = 1;
+			break;
+		case GameEvent::TWO_ROW_REMOVED:
+			rows = 2;
+			break;
+		case GameEvent::THREE_ROW_REMOVED:
+			rows = 3;
+			break;
+		case GameEvent::FOUR_ROW_REMOVED:
+			rows = 4;
+			// Multiplayer?
+			if (getNbrOfPlayers() > 1) {
+				// Add two rows to all opponents.
+				addRowsToAllPlayersExcept(playerData.player_, 2);
 			}
-
-			playerData.graphic_.setMiddleMessage(stream.str());
-
-			// One player more is dead.
-			--nbrOfAlivePlayers_;
-
-			// All dead except one => End game!
-			if (nbrOfAlivePlayers_ == 1) {
-				for (PlayerData& tmp : players_) {
-					// Will be noticed in the next call to PlayerManager::applyRules(...).
-					// Triggers only for not dead players.
-					tmp.player_->triggerGameOverEvent();
+			break;
+		case GameEvent::GAME_OVER:
+			// Multiplayer?
+			if (players_.size() > 1) {
+				std::stringstream stream;
+				stream << nbrOfAlivePlayers_;
+				if (nbrOfAlivePlayers_ == 1) {
+					stream << ":st place!";
+				} else if (nbrOfAlivePlayers_ == 2) {
+					stream << ":nd place!";
+				} else if (nbrOfAlivePlayers_ == 3) {
+					stream << ":rd place!";
+				} else {
+					stream << ":th place!";
 				}
-			}
-		} else { // Singleplayer.
-			playerData.graphic_.setMiddleMessage("Game over!");
-			//And is the correct settings?
-			if (playerData.player_->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
-				&& playerData.player_->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
-				&& maxLevel_ == TETRIS_MAX_LEVEL) {
+
+				playerData.graphic_.setMiddleMessage(stream.str());
+
+				// One player more is dead.
+				--nbrOfAlivePlayers_;
+
+				// All dead except one => End game!
+				if (nbrOfAlivePlayers_ == 1) {
+					for (PlayerData& tmp : players_) {
+						// Will be noticed in the next call to PlayerManager::applyRules(...).
+						// Triggers only for not dead players.
+						tmp.player_->triggerGameOverEvent();
+					}
+				}
+			} else { // Singleplayer.
+				playerData.graphic_.setMiddleMessage("Game over!");
+				//And is the correct settings?
+				if (playerData.player_->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
+					&& playerData.player_->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
+					&& maxLevel_ == TETRIS_MAX_LEVEL) {
 
 					auto local = std::dynamic_pointer_cast<LocalPlayer>(playerData.player_);
 					// Is local and a human player?
 					if (local && !local->getDevice()->isAi()) {
 						signalEvent(std::make_shared<GameOver>(playerData.points_));
 					}
+				}
 			}
-		}
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
 	}
 
 	if (rows != 0) {

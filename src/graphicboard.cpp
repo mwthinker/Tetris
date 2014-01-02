@@ -87,6 +87,7 @@ namespace {
 		glVertex2d(x1,         y2);
 		glEnd();
 	}
+
 } // Anonymous namespace.
 
 GraphicBoard::GraphicBoard() {

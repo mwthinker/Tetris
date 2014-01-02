@@ -19,7 +19,7 @@ public:
 	void draw();
 
 	// Returns the width in pixels.
-    double getWidth() const;
+	double getWidth() const;
 
 	// Returns the width in pixels.
 	double getHeight() const;
@@ -39,7 +39,7 @@ private:
 		int levelUpCounter_;   // Is used to determine when to level up.
 	};
 
-    void soundEffects(GameEvent gameEvent);
+	void soundEffects(GameEvent gameEvent);
 	void applyRules(PlayerData& playerData, GameEvent gameEvent);
 	void updateGame(Uint32 deltaTime) override;
 	void updatePlayer(PlayerData& playerData, Uint32 deltaTime);
@@ -48,13 +48,13 @@ private:
 	int nbrOfAlivePlayers_; // The total number of alive players.
 
 	// Fix timestep.
-    Uint32 timeStep_;
+	Uint32 timeStep_;
 	Uint32 accumulator_;
 
 	int maxLevel_;
 	bool local_;
 	Uint32 countDown_;
-	
+
 	std::vector<PlayerData> players_;
 };
 
