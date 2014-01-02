@@ -17,7 +17,7 @@ RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType curren
 
 // First checks if the game is over. Then perform the move.
 void RawTetrisBoard::update(Move move) {
-	// Check if gameover
+	// Game over?
 	if (collision(current_)) {
 		triggerGameOverEvent();
 	}
@@ -25,9 +25,8 @@ void RawTetrisBoard::update(Move move) {
 	if (!isGameOver_) {
 		Block block = current_;
 
-		// Gravity move
+		// Collision caused by gravity.
 		bool gravityCollision = false;
-
 		switch (move) {
 		case Move::DOWN_GRAVITY:
 			block.moveDown();
@@ -103,7 +102,7 @@ void RawTetrisBoard::update(Move move) {
 			// Updates the user controlled block.
 			current_ = next_;
 
-			// Add Game event
+			// Add event.
 			triggerEvent(GameEvent::BLOCK_COLLISION);
 
 			switch (nbr) {
@@ -121,7 +120,7 @@ void RawTetrisBoard::update(Move move) {
 				break;
 			}
 		} else {
-			// no collision, its journey can continue.
+			// No collision, its journey can continue.
 			current_ = block;
 		}
 	}
