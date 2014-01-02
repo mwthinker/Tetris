@@ -1,5 +1,4 @@
 #include "graphicboard.h"
-#include "tetrisboard.h"
 #include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisboard.h"
@@ -90,7 +89,7 @@ namespace {
 
 } // Anonymous namespace.
 
-GraphicBoard::GraphicBoard() {
+GraphicBoard::GraphicBoard() : tetrisBoard_(20, 10, BlockType::I, BlockType::I) {
 	height_ = 800; // Default height for the board.
 	voidHeight_ = 10;
 	borderLineThickness_ = 7; // Should be lower than voidHeight_.
@@ -107,25 +106,17 @@ GraphicBoard::GraphicBoard() {
 	middleMessage_ = mw::Text("", fontDefault30, 70);
 }
 
-void GraphicBoard::setNbrOfClearedRows(int nbr) {
+void GraphicBoard::update(int rowsCleared, int points, int level, std::string name) {
 	std::stringstream stream;
-	stream << "Rows " << nbr;
+	stream << "Rows " << rowsCleared;
 	nbrOfClearedRows_.setText(stream.str());
-}
-
-void GraphicBoard::setPoints(int points) {
-	std::stringstream stream;
+	stream.str("");
 	stream << "Points " << points;
 	points_.setText(stream.str());
-}
-
-void GraphicBoard::setLevel(int level) {
-	std::stringstream stream;
+	stream.str("");
 	stream << "Level " << level;
 	level_.setText(stream.str());
-}
-
-void GraphicBoard::setName(std::string name) {
+	stream.str("");
 	name_.setText(name);
 }
 
@@ -133,16 +124,20 @@ void GraphicBoard::setMiddleMessage(std::string message) {
 	middleMessage_.setText(message);
 }
 
-void GraphicBoard::draw(const TetrisBoard& tetrisBoard) {
+void GraphicBoard::update(const RawTetrisBoard& newBoard) {
+	tetrisBoard_ = newBoard;
+}
+
+void GraphicBoard::draw() {
 	// Update current dimensions.
-	rows_ = tetrisBoard.getNbrOfRows();
-	columns_ = tetrisBoard.getNbrOfColumns();
-    pixlePerSquare_ = height_ / (tetrisBoard.getNbrOfRows() + 2);
+	rows_ = tetrisBoard_.getNbrOfRows();
+	columns_ = tetrisBoard_.getNbrOfColumns();
+	pixlePerSquare_ = height_ / (tetrisBoard_.getNbrOfRows() + 2);
 	
 	glPushMatrix();
 	glTranslated(voidHeight_,voidHeight_,0.0);
-	drawBoard(tetrisBoard);
-	drawInfo(tetrisBoard);
+	drawBoard(tetrisBoard_);
+	drawInfo(tetrisBoard_);
 	glPopMatrix();
 	
 	glPushMatrix();
@@ -174,7 +169,7 @@ void GraphicBoard::drawBorder() const {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawInfo(const TetrisBoard& tetrisBoard) {
+void GraphicBoard::drawInfo(const RawTetrisBoard& tetrisBoard) {
 	glPushMatrix();
 	glTranslated(pixlePerSquare_ * columns_ + horizontalDistanceToText_ + voidHeight_,0,0);
 	glTranslated(0,getHeight() - name_.getCharacterSize() - 30,0);
@@ -223,7 +218,7 @@ void GraphicBoard::drawPreviewBlock(const Block& block) {
 	glPopMatrix();
 }
 
-void GraphicBoard::drawBoard(const TetrisBoard& tetrisBoard) {
+void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) {
 	glPushMatrix();
 	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
 

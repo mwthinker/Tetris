@@ -1,28 +1,26 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
+#include "rawtetrisboard.h"
+
 #include <mw/text.h>
 #include <mw/color.h>
 
 #include <string>
-
-class TetrisBoard;
-class Block;
 
 // Used to draw a tetris board and corresponding player info.
 class GraphicBoard {
 public:
 	GraphicBoard();
 
-	// Sets info about how many rows been cleared by the player.
-	void setNbrOfClearedRows(int nbr);
-	void setPoints(int points);
-	void setLevel(int level);
-	void setName(std::string name);
 	void setMiddleMessage(std::string message);
 
+	void update(int rowsCleared, int points, int level, std::string name);
+
+	void update(const RawTetrisBoard& newBoard);
+
 	// Draws player info and the board. Using opengl.
-	void draw(const TetrisBoard&);
+	void draw();
 
 	// Returns the width the graphic requires to draw (draw()) everything.
 	double getWidth() const;
@@ -32,9 +30,9 @@ public:
 
 private:
 	void drawBorder() const;
-	void drawInfo(const TetrisBoard& tetrisBoard);
+	void drawInfo(const RawTetrisBoard& tetrisBoard);
 	void drawPreviewBlock(const Block& block);
-	void drawBoard(const TetrisBoard& tetrisBoard);
+	void drawBoard(const RawTetrisBoard& tetrisBoard);
 	void drawBeginArea() const;
 	void drawBlock(const Block& block, int maxRow);
 
@@ -50,6 +48,8 @@ private:
 	double borderLineThickness_; // Line thickness for the border.
 	double previwBorderSizeInSquares_; // The preview border size in number of squares.
 	double horizontalDistanceToText_; // Text horizontal distance between board and text.
+
+	RawTetrisBoard tetrisBoard_;
 };
 
 #endif // GRAPHICBOARD_H

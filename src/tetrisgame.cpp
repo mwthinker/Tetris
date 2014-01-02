@@ -64,7 +64,7 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 		std::stringstream stream;
 		stream << "Player " << ++nbr;
 		players_.push_back(player);
-		players_.back().graphic_.setName(stream.str());
+		players_.back().graphic_.update(0, 0, 1, stream.str());
 		return true;
 	});
 
@@ -78,10 +78,11 @@ void TetrisGame::draw() {
 	int nbr = players_.size();
 	int i = 0;
 	for (PlayerData& pair : players_) {
+		pair.graphic_.update(pair.player_->getTetrisBoard());
 		++i;
 		glPushMatrix();
 		glTranslated(pair.graphic_.getWidth() * (nbr - i), 0, 0);
-		pair.graphic_.draw(pair.player_->getTetrisBoard());
+		pair.graphic_.draw();
 		glPopMatrix();
 	}
 }
@@ -213,8 +214,7 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		// Assign points and number of cleared rows.
 		playerData.nbrOfClearedRows_ += rows;
 		playerData.points_ += playerData.level_*rows*rows;
-		playerData.graphic_.setPoints(playerData.points_);
-		playerData.graphic_.setNbrOfClearedRows(playerData.nbrOfClearedRows_);
+		playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);		
 
 		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
@@ -232,7 +232,7 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		int level = (playerData.levelUpCounter_ / ROWS_TO_LEVEL_UP) + 1;
 		if (level <= getMaxLevel()) {
 			playerData.level_ = level;
-			playerData.graphic_.setLevel(level);
+			playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);
 		}
 	}
 }
