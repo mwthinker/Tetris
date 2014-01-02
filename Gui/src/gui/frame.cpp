@@ -97,6 +97,7 @@ namespace gui {
 			SDL_Event sdlEvent = eventQueue_.front();
 			eventQueue_.pop();
 
+			sdlEventListener_(this, sdlEvent);
 			switch (sdlEvent.type) {
 				case SDL_WINDOWEVENT:
 					if (sdlEvent.window.windowID == SDL_GetWindowID(getSdlWindow())) {
@@ -179,7 +180,6 @@ namespace gui {
 
 	// Override mw::Window
 	void Frame::eventUpdate(const SDL_Event& windowEvent) {
-		sdlEventListener_(this, windowEvent);
 		eventQueue_.push(windowEvent);
 	}
 
