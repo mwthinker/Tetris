@@ -32,13 +32,13 @@ void TetrisGame::updateGame(Uint32 deltaTime) {
 			std::stringstream stream;
 			stream << "Start in: " << (countDown_ + 1000) / 1000;
 			for (PlayerData& playerData : players_) {
-				playerData.graphic_.setMiddleMessage(stream.str());
+				//playerData.graphic_.setMiddleMessage(stream.str());
 			}
 		} else {
 			for (PlayerData& playerData : players_) {
 				// Not gameover?
 				if (!playerData.player_->getTetrisBoard().isGameOver()) {
-					playerData.graphic_.setMiddleMessage("");
+					//playerData.graphic_.setMiddleMessage("");
 				}
 				updatePlayer(playerData, timeStep_);
 			}
@@ -64,7 +64,7 @@ void TetrisGame::initGame(int columns, int rows, int maxLevel, bool local) {
 		std::stringstream stream;
 		stream << "Player " << ++nbr;
 		players_.push_back(player);
-		players_.back().graphic_.update(0, 0, 1, stream.str());
+		//players_.back().graphic_.update(0, 0, 1, stream.str());
 		return true;
 	});
 
@@ -178,7 +178,7 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 					stream << ":th place!";
 				}
 
-				playerData.graphic_.setMiddleMessage(stream.str());
+				//playerData.graphic_.setMiddleMessage(stream.str());
 
 				// One player more is dead.
 				--nbrOfAlivePlayers_;
@@ -192,7 +192,7 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 					}
 				}
 			} else { // Singleplayer.
-				playerData.graphic_.setMiddleMessage("Game over!");
+				//playerData.graphic_.setMiddleMessage("Game over!");
 				//And is the correct settings?
 				if (playerData.player_->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
 					&& playerData.player_->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
@@ -214,7 +214,7 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		// Assign points and number of cleared rows.
 		playerData.nbrOfClearedRows_ += rows;
 		playerData.points_ += playerData.level_*rows*rows;
-		playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);		
+		//playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);		
 
 		// Multiplayer?
 		if (getNbrOfPlayers() > 1) {
@@ -232,7 +232,7 @@ void TetrisGame::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 		int level = (playerData.levelUpCounter_ / ROWS_TO_LEVEL_UP) + 1;
 		if (level <= getMaxLevel()) {
 			playerData.level_ = level;
-			playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);
+			//playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);
 		}
 	}
 }

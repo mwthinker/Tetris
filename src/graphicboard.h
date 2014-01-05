@@ -8,47 +8,81 @@
 
 #include <string>
 
-// Used to draw a tetris board and corresponding player info.
-class GraphicBoard {
+class GraphicPlayerInfo {
 public:
-	GraphicBoard();
-
-	void setMiddleMessage(std::string message);
+	GraphicPlayerInfo();
 
 	void update(int rowsCleared, int points, int level, std::string name);
 
-	void update(const RawTetrisBoard& newBoard);
-
-	// Draws player info and the board. Using opengl.
+	// Draws the player info. Using opengl.
+	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
 	void draw();
 
-	// Returns the width the graphic requires to draw (draw()) everything.
+	// Returns the width the graphic is drawn in OpenGl.
 	double getWidth() const;
 
-	// Returns the height the graphic requires to draw (draw()) everything.
+	// Returns the height the graphic is drawn in OpenGl.
 	double getHeight() const;
 
 private:
-	void drawBorder() const;
-	void drawInfo(const RawTetrisBoard& tetrisBoard) const;
-	void drawPreviewBlock(const Block& block) const;
+	mw::Text name_, level_, points_, nbrOfClearedRows_;
+	
+	const double WIDTH = 200;
+	const double HEIGHT = 200;
+};
+
+class GraphicPreviewBlock {
+public:
+	GraphicPreviewBlock();
+
+	// Draws the player info. Using opengl.
+	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
+	void draw();
+
+	void update(const Block& block);
+
+	// Returns the width the graphic is drawn in OpenGl.
+	double getWidth() const;
+
+	// Returns the height the graphic is drawn in OpenGl.
+	double getHeight() const;
+
+private:
+	double previwBorderSizeInSquares_; // The preview border size in number of squares.
+	double borderLineThickness_; // Line thickness for the border.
+	mw::Color frameColor_;
+	double pixlePerSquare_;
+
+	double width_, height_;
+	Block block_;
+};
+
+// Draws a tetris board and corresponding player info.
+class GraphicBoard {
+public:
+	GraphicBoard();
+		
+	void update(const RawTetrisBoard& newBoard);
+
+	// Draws the the board. Using opengl.
+	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
+	void draw();
+
+	// Returns the width the graphic is drawn in OpenGl.
+	double getWidth() const;
+
+	// Returns the height the graphic is drawn in OpenGl.
+	double getHeight() const;
+
+private:
 	void drawBoard(const RawTetrisBoard& tetrisBoard) const;
 	void drawBeginArea() const;
-	void drawBlock(const Block& block, int maxRow) const;
-
-	mw::Text name_, level_, points_, nbrOfClearedRows_;
-	mw::Text middleMessage_;
+	
+	mw::Color frameColor_;
 
 	double pixlePerSquare_;
-	mw::Color frameColor_;
-	int columns_, rows_;
-
-	double height_; // Height for the board
-	double voidHeight_; // Height between board and outside screen, up/down and to the left.
-	double borderLineThickness_; // Line thickness for the border.
-	double previwBorderSizeInSquares_; // The preview border size in number of squares.
-	double horizontalDistanceToText_; // Text horizontal distance between board and text.
-
+	double height_, width_;
+	
 	RawTetrisBoard tetrisBoard_;
 };
 
