@@ -13,7 +13,7 @@
 class GameComponent : public gui::Component {
 public:
 	GameComponent() : quit_(false) {
-		setPreferredSize((float) tetrisGame_.getWidth(), (float) tetrisGame_.getHeight());
+		//setPreferredSize((float) tetrisGame_.getWidth(), (float) tetrisGame_.getHeight());
 		thread_ = std::thread(std::bind(&GameComponent::run,this));
 		networkEvents_.connect(std::bind(&GameComponent::callNetworkEvents, this, std::placeholders::_1));
 	}
@@ -29,6 +29,7 @@ public:
 		glPushMatrix();
 		gui::Dimension dim = getSize();
 		mutex_.lock();
+		/*
 		// Centers the game and holds the correct proportions. The sides is transparent.
 		if (tetrisGame_.getWidth() / dim.width_ > tetrisGame_.getHeight() / dim.height_) {
 			// Black sides, up and down.
@@ -41,8 +42,8 @@ public:
 			glTranslated((dim.width_ - scale*tetrisGame_.getWidth()) * 0.5, 0, 0);
 			glScaled(scale,scale,1);
 		}
-
 		tetrisGame_.draw();
+		*/
 		glPopMatrix();
 		mutex_.unlock();
 	}
