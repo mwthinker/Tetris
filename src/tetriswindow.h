@@ -3,14 +3,21 @@
 
 #include "device.h"
 #include "textbutton.h"
-#include "tetrisgame.h"
+#include "ai.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
 
+#include <array>
+#include <memory>
+
 class ManButton;
 class Highscore;
 class NetworkLooby;
+class GameComponent;
+
+class NetworkEvent;
+typedef std::shared_ptr<NetworkEvent> NetworkEventPtr;
 
 class TetrisWindow : public gui::Frame {
 public:
@@ -33,11 +40,10 @@ private:
 	void saveHighscore();
 	
 	void loadAllSettings();
-	void saveAllSettings();	
-
-	TetrisGame tetrisGame_;
+	void saveAllSettings();
 
 	// initPlayPanel
+	GameComponent* game_;
 	ManButton* nbrHumans_;
 	ManButton* nbrAis_;
 	TextButton* pauseButton_;

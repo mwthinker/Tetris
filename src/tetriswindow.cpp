@@ -86,7 +86,10 @@ namespace {
 TetrisWindow::TetrisWindow() {
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
-	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
+
+	game_ = new GameComponent;
+
+	game_->addCallback([&](NetworkEventPtr nEvent) {
 		handleConnectionEvent(nEvent);
 	});
 
@@ -137,9 +140,9 @@ TetrisWindow::TetrisWindow() {
 	initWaitToConnectPanel();
 
 	// Init local game settings.
-	tetrisGame_.closeGame();
-	tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
-	tetrisGame_.startGame();
+	game_->closeGame();
+	game_->createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
+	game_->startGame();
 
 	setCurrentPanel(menuIndex_);
 
@@ -238,30 +241,30 @@ void TetrisWindow::initPlayPanel() {
 
 	TextButton* b2 = new TextButton("Restart", fontDefault30);
 	b2->addActionListener([&](gui::Component*) {
-		tetrisGame_.restartGame();
+		game_->restartGame();
 	});
 	p1->add(b2);
 	pauseButton_ = new TextButton("Pause", fontDefault30);
 	pauseButton_->addActionListener([&](gui::Component*) {
-		tetrisGame_.pause();
+		game_->pause();
 	});
 	p2->add(pauseButton_);
 
 	nbrHumans_ = new ManButton(devices_.size(), spriteMan, spriteCross);
 	nbrHumans_->addActionListener([&](gui::Component*) {
-		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
-		tetrisGame_.startGame();
-		tetrisGame_.restartGame();
+		game_->closeGame();
+		game_->createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		game_->startGame();
+		game_->restartGame();
 	});
 	p1->add(nbrHumans_);
 	nbrAis_ = new ManButton(4, spriteComputer, spriteCross);
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component*) {
-		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
-		tetrisGame_.startGame();
-		tetrisGame_.restartGame();
+		game_->closeGame();
+		game_->createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		game_->startGame();
+		game_->restartGame();
 	});
 	p2->add(nbrAis_);
 
@@ -271,13 +274,13 @@ void TetrisWindow::initPlayPanel() {
 	bar->add(p1);
 	bar->add(p2);
 	add(bar, gui::BorderLayout::NORTH);
-	add(new GameComponent(tetrisGame_), gui::BorderLayout::CENTER);
+	add(game_, gui::BorderLayout::CENTER);
 	addKeyListener([&](gui::Component* c, const SDL_Event& keyEvent) {
 		switch (keyEvent.type) {
 			case SDL_KEYDOWN:
 				switch (keyEvent.key.keysym.sym) {
 					case SDLK_F2:
-						tetrisGame_.restartGame();
+						game_->restartGame();
 						break;
 					case SDLK_p:
 						pauseButton_->doAction();
@@ -579,10 +582,10 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
-	tetrisGame_.startGame();
+	game_->closeGame();
+	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	game_->createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
+	game_->startGame();
 }
 
 void TetrisWindow::createLocalGame() {
@@ -592,10 +595,10 @@ void TetrisWindow::createLocalGame() {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_);
-	tetrisGame_.startGame();
+	game_->closeGame();
+	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	game_->createLocalGame(tmpDevices, nbrOfComputerPlayers_);
+	game_->startGame();
 }
 
 void TetrisWindow::createServerGame(int port, int width, int height) {
@@ -605,9 +608,9 @@ void TetrisWindow::createServerGame(int port, int width, int height) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
+	game_->closeGame();
+	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	game_->createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::createClientGame(int port, std::string ip) {
@@ -617,9 +620,9 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
+	game_->closeGame();
+	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	game_->createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
