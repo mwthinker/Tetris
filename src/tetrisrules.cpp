@@ -16,10 +16,10 @@ TetrisRules::TetrisRules() {
 }
 
 void TetrisRules::applyRules() {
-	for (PlayerData& playerData : players_) {
+	for (PlayerInfoPtr& player : players_) {
 		GameEvent gameEvent;
-		while (playerData.player_->pollGameEvent(gameEvent)) {
-			applyRules(playerData, gameEvent);
+		while (player->pollGameEvent(gameEvent)) {
+			applyRules(player, gameEvent);
 		}
 	}
 }
@@ -31,7 +31,7 @@ void TetrisRules::initGame(std::vector<PlayerInfoPtr> players, int columns, int 
 	for (PlayerInfoPtr player : players) {
 		std::stringstream stream;
 		stream << "Player " << ++nbr;
-		players_.push_back(player);
+		player->setName(stream.str());
 		//players_.back().graphic_.update(0, 0, 1, stream.str());
 	}
 
@@ -40,18 +40,7 @@ void TetrisRules::initGame(std::vector<PlayerInfoPtr> players, int columns, int 
 	local_ = local;
 }
 
-TetrisRules::PlayerData::PlayerData(const PlayerInfoPtr& player) : player_(player) {
-	reset();
-}
-
-void TetrisRules::PlayerData::reset() {
-	level_ = 1;
-	points_ = 0;
-	nbrOfClearedRows_ = 0;
-	levelUpCounter_ = 0;
-}
-
-void TetrisRules::applyRules(PlayerData& playerData, GameEvent gameEvent) {
+void TetrisRules::applyRules(PlayerInfoPtr& player, GameEvent gameEvent) {
 	// Warning a slight risk of being out of sync in multiplayer.
 	// However only effecting points and level and in very subtle ways.
 	// Nothing other than graphics is effected.
@@ -96,20 +85,20 @@ void TetrisRules::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 
 				// All dead except one => End game!
 				if (nbrOfAlivePlayers_ == 1) {
-					for (PlayerData& tmp : players_) {
+					for (PlayerInfoPtr& tmp : players_) {
 						// Will be noticed in the next call to PlayerManager::applyRules(...).
 						// Triggers only for not dead players.
-						tmp.player_->triggerGameOverEvent();
+						tmp->triggerGameOverEvent();
 					}
 				}
 			} else { // Singleplayer.
 				//playerData.graphic_.setMiddleMessage("Game over!");
 				//And is the correct settings?
-				if (playerData.player_->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
-					&& playerData.player_->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
+				if (player->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
+					&& player->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
 					&& maxLevel_ == TETRIS_MAX_LEVEL) {
 
-					auto local = std::dynamic_pointer_cast<LocalPlayer>(playerData.player_);
+					auto local = std::dynamic_pointer_cast<LocalPlayer>(player);
 					// Is local and a human player?
 					if (local && !local->getDevice()->isAi()) {
 						//signalEvent(std::make_shared<GameOver>(playerData.points_));
@@ -123,26 +112,26 @@ void TetrisRules::applyRules(PlayerData& playerData, GameEvent gameEvent) {
 
 	if (rows != 0) {
 		// Assign points and number of cleared rows.
-		playerData.nbrOfClearedRows_ += rows;
-		playerData.points_ += playerData.level_*rows*rows;
+		player->addNbrClearedRows(rows);
+		player->addPoints(player->getLevel() * rows * rows);
 		//playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);		
 
 		// Multiplayer?
 		if (players_.size() > 1) {
 			// Increase level up counter for all opponents to the current player.
-			for (PlayerData& opponentData : players_) {
-				if (opponentData.player_ != playerData.player_) {
-					opponentData.levelUpCounter_ += rows;
+			for (PlayerInfoPtr& opponent : players_) {
+				if (opponent != player) {
+					opponent->addLevelUpCounter(rows);
 				}
 			}
 		} else { // Singleplayer!
-			playerData.levelUpCounter_ += rows;
+			player->addLevelUpCounter(rows);
 		}
 
 		// Set level.
-		int level = (playerData.levelUpCounter_ / ROWS_TO_LEVEL_UP) + 1;
+		int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
 		if (level <= maxLevel_) {
-			playerData.level_ = level;
+			player->setLevelUpCounter(level);
 			//playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);
 		}
 	}

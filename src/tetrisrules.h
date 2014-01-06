@@ -19,25 +19,12 @@ public:
 	void applyRules();
 
 private:
-	struct PlayerData {
-		PlayerData(const PlayerInfoPtr& player);
-
-		void reset();
-
-		PlayerInfoPtr player_;
-		int level_;			   // Current level.
-		int points_;		   // Number of points.
-		int nbrOfClearedRows_; // Number of rows the player cleared.
-		std::string name_;     // The name of the player.
-		int levelUpCounter_;   // Is used to determine when to level up.
-	};
-	
-	void applyRules(PlayerData& playerData, GameEvent gameEvent);
+	void applyRules(PlayerInfoPtr& playerData, GameEvent gameEvent);
 
 	int nbrOfAlivePlayers_; // The total number of alive players.
 	int maxLevel_;
 	bool local_;
-	std::vector<PlayerData> players_;
+	std::vector<PlayerInfoPtr> players_;
 };
 
 #endif // TETRISRULES_H
