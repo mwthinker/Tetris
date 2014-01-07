@@ -3,17 +3,18 @@
 
 #include "tetrisgame.h"
 #include "gamesound.h"
+#include "graphicboard.h"
 
 #include <gui/component.h>
 #include <mw/sound.h>
 
+#include <queue>
 #include <thread>
 #include <mutex>
 
-class GameComponent : public gui::Component {
+class GameComponent : public gui::Component, public GameHandler {
 public:
-	GameComponent() : quit_(false) {
-		//setPreferredSize((float) tetrisGame_.getWidth(), (float) tetrisGame_.getHeight());
+	GameComponent() : quit_(false), tetrisGame_(this) {
 		thread_ = std::thread(std::bind(&GameComponent::run,this));
 		networkEvents_.connect(std::bind(&GameComponent::callNetworkEvents, this, std::placeholders::_1));
 	}
@@ -26,89 +27,151 @@ public:
 	}
 
 	void draw(float deltaTime) override {
+		std::lock_guard<std::mutex> lock(mutex_);
 		glPushMatrix();
 		gui::Dimension dim = getSize();
-		mutex_.lock();
-		/*
-		// Centers the game and holds the correct proportions. The sides is transparent.
-		if (tetrisGame_.getWidth() / dim.width_ > tetrisGame_.getHeight() / dim.height_) {
-			// Black sides, up and down.
-			double scale = (double) dim.width_ / tetrisGame_.getWidth();
-			glTranslated(0, (dim.height_ - scale * tetrisGame_.getHeight()) * 0.5, 0);
+		double width = 0;
+		double height = 0;
+		int size = players_.size();
+		for (int i = 0; i < size; ++i) {
+			graphic_[i].update(players_[i]);
+			width += graphic_[i].getWidth();
+			height = graphic_[i].getHeight();
+		}
+		
+		// Centers the game and holds the correct proportions.
+		// The sides is transparent.
+		if (width / dim.width_ > height / dim.height_) {
+			// Blank sides, up and down.
+			double scale = (double) dim.width_ / width;
+			glTranslated(0, (dim.height_ - scale * height) * 0.5, 0);
 			glScaled(scale, scale, 1);
 		} else {
-			// Black sides, left and right.
-			double scale = (double) dim.height_ / tetrisGame_.getHeight();
-			glTranslated((dim.width_ - scale*tetrisGame_.getWidth()) * 0.5, 0, 0);
-			glScaled(scale,scale,1);
+			// Blank sides, left and right.
+			double scale = (double) dim.height_ / height;
+			glTranslated((dim.width_ - scale * width) * 0.5, 0, 0);
+			glScaled(scale, scale, 1);
 		}
-		tetrisGame_.draw();
-		*/
+		
+		for (int i = 0; i < size; ++i) {
+			graphic_[i].board_.draw();
+			glTranslated(graphic_[i].board_.getWidth(), 0, 0);
+		}
+		
 		glPopMatrix();
-		mutex_.unlock();
+
+		while (!gameEvents_.empty()) {
+			soundEffects(gameEvents_.front());
+			gameEvents_.pop();
+		}
 	}
 
 	void addCallback(mw::Signal<NetworkEventPtr>::Callback callback) {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		networkEvents_.connect(callback);
-		mutex_.unlock();
 	}
 
 	void closeGame() {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.closeGame();
-		mutex_.unlock();
 	}
 
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers) {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.createLocalGame(devices, nbrOfComputers);
-		mutex_.unlock();
 	}
 
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel) {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.createLocalGame(devices, nbrOfComputers, width, height, maxLevel);
-		mutex_.unlock();
 	}
 
 	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height, int maxLevel) {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.createServerGame(devices, nbrOfComputers, port, width, height, maxLevel);
-		mutex_.unlock();
 	}
 
 	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip, int maxLevel) {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.createClientGame(devices, nbrOfComputers, port, ip, maxLevel);
-		mutex_.unlock();
 	}
 
 	void startGame() {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.startGame();
-		mutex_.unlock();
 	}
 
 	void restartGame() {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.restartGame();
-		mutex_.unlock();
 	}
 
 	void pause() {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.pause();
-		mutex_.unlock();
 	}
 
 	void setAis(const Ai& ai1, const Ai& ai2, const Ai& ai3, const Ai& ai4) {
-		mutex_.lock();
+		std::lock_guard<std::mutex> lock(mutex_);
 		tetrisGame_.setAis(ai1, ai2, ai3, ai4);
-		mutex_.unlock();
+	}
+
+	// Is called by the thread.
+	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override {
+		std::lock_guard<std::mutex> lock(mutex_);
+		gameEvents_.push(gameEvent);
+	}
+
+	void initGame(const std::vector<const PlayerPtr>& players) {
+		//std::lock_guard<std::mutex> lock(mutex_);
+		players_ = players;
+		int size = players_.size();
+		graphic_ = std::vector<Graphic>(size);
+
+		double width = 0;
+		double height = 0;
+
+		for (int i = 0; i < size; ++i) {
+			graphic_[i].update(players_[i]);
+			width += graphic_[i].board_.getWidth() + 50;
+			height = graphic_[i].board_.getHeight();
+		}
+
+		setPreferredSize((float) width, (float) height);
 	}
 
 private:
+	struct Graphic {
+		Graphic() {
+		}
+
+		Graphic(const PlayerPtr& player) {
+			update(player);
+		}
+
+		void update(const PlayerPtr& player) {
+			info_.update(player->getNbrClearedRows(), player->getPoints(), player->getLevel(), player->getName());
+			preview_.update(player->getNextBlock());
+			board_.update(player->getTetrisBoard());
+		}
+
+		inline double getWidth() const {
+			return board_.getWidth();
+		}
+
+		inline double getHeight() const {
+			return board_.getHeight();
+		}
+
+		inline void draw() {
+			board_.draw();
+		}
+
+		GraphicPlayerInfo info_;
+		GraphicPreviewBlock preview_;
+		GraphicBoard board_;
+	};
+
 	// Is called by the thread.
 	void run() {
 		mutex_.lock();
@@ -158,11 +221,14 @@ private:
 		sound.play();
 	}
 
+	std::queue<GameEvent> gameEvents_;
 	mw::Signal<NetworkEventPtr> networkEvents_;
 	TetrisGame tetrisGame_;
 	std::mutex mutex_;
 	std::thread thread_;
 	bool quit_;
+	std::vector<Graphic> graphic_;
+	std::vector<const PlayerPtr> players_;
 
 	// Fix timestep.
 	Uint32 timeStep_;

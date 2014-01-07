@@ -15,15 +15,6 @@ TetrisRules::TetrisRules() {
 	maxLevel_ = 20;
 }
 
-void TetrisRules::applyRules() {
-	for (PlayerInfoPtr& player : players_) {
-		GameEvent gameEvent;
-		while (player->pollGameEvent(gameEvent)) {
-			applyRules(player, gameEvent);
-		}
-	}
-}
-
 void TetrisRules::initGame(std::vector<PlayerInfoPtr> players, int columns, int rows, int maxLevel, bool local) {
 	players_.clear();
 
@@ -40,7 +31,7 @@ void TetrisRules::initGame(std::vector<PlayerInfoPtr> players, int columns, int 
 	local_ = local;
 }
 
-void TetrisRules::applyRules(PlayerInfoPtr& player, GameEvent gameEvent) {
+void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 	// Warning a slight risk of being out of sync in multiplayer.
 	// However only effecting points and level and in very subtle ways.
 	// Nothing other than graphics is effected.

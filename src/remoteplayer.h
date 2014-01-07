@@ -8,7 +8,7 @@ public:
     RemotePlayer(int id, int width, int height) : Player(id, width, height, true, false) {
     }
 
-    void update(double deltaTime, int level) {
+    void update(double deltaTime) override {
     }
 };
 

@@ -13,7 +13,7 @@
 
 namespace {
 
-	const mw::Color WHITE(1,1,1,1);
+	const mw::Color WHITE(1, 1, 1, 1);
 
 	// Only usefull for the texture in (textureSquares) in defined in gameSprite.h.
 	// Sdl flips all images uppside down.
@@ -21,45 +21,45 @@ namespace {
 		int x = 0;
 		int y = 0;
 		switch (blockType) {
-		case BlockType::I:
-			x = 1;
-			y = 0;
-			break;
-		case BlockType::J:
-			x = 3;
-			y = 0;
-			break;
-		case BlockType::L:
-			x = 1;
-			y = 1;
-			break;
-		case BlockType::O:
-			x = 0;
-			y = 0;
-			break;
-		case BlockType::S:
-			x = 2;
-			y = 0;
-			break;
-		case BlockType::T:
-			x = 0;
-			y = 1;
-			break;
-		case BlockType::Z:
-			x = 2;
-			y = 1;
-			break;
-		default:
-			// Draw nothing!
-			return;
+			case BlockType::I:
+				x = 1;
+				y = 0;
+				break;
+			case BlockType::J:
+				x = 3;
+				y = 0;
+				break;
+			case BlockType::L:
+				x = 1;
+				y = 1;
+				break;
+			case BlockType::O:
+				x = 0;
+				y = 0;
+				break;
+			case BlockType::S:
+				x = 2;
+				y = 0;
+				break;
+			case BlockType::T:
+				x = 0;
+				y = 1;
+				break;
+			case BlockType::Z:
+				x = 2;
+				y = 1;
+				break;
+			default:
+				// Draw nothing!
+				return;
 		}
 		glTexCoord2f(x / 4.f, y / 2.f);
 		glVertex2d(0 + column, 0 + row);
-		glTexCoord2f( (x + 1) / 4.f, y / 2.f);
+		glTexCoord2f((x + 1) / 4.f, y / 2.f);
 		glVertex2d(1 + column, 0 + row);
-		glTexCoord2f( (x + 1) / 4.f, (y + 1) / 2.f);
+		glTexCoord2f((x + 1) / 4.f, (y + 1) / 2.f);
 		glVertex2d(1 + column, 1 + row);
-		glTexCoord2f( x / 4.f, (y + 1) / 2.f);
+		glTexCoord2f(x / 4.f, (y + 1) / 2.f);
 		glVertex2d(0 + column, 1 + row);
 	}
 
@@ -71,8 +71,8 @@ namespace {
 		glVertex2d(x1, y1 + width);
 
 		glVertex2d(x2 - width, y1);
-		glVertex2d(x2,         y1);
-		glVertex2d(x2,         y2);
+		glVertex2d(x2, y1);
+		glVertex2d(x2, y2);
 		glVertex2d(x2 - width, y2);
 
 		glVertex2d(x1, y2 - width);
@@ -80,10 +80,10 @@ namespace {
 		glVertex2d(x2, y2);
 		glVertex2d(x1, y2);
 
-		glVertex2d(x1,         y1);
+		glVertex2d(x1, y1);
 		glVertex2d(x1 + width, y1);
 		glVertex2d(x1 + width, y2);
-		glVertex2d(x1,         y2);
+		glVertex2d(x1, y2);
 		glEnd();
 	}
 
@@ -141,11 +141,11 @@ void GraphicPlayerInfo::draw() {
 	glPopMatrix();
 }
 
-	
+
 double GraphicPlayerInfo::getWidth() const {
 	return WIDTH;
 }
-		
+
 double GraphicPlayerInfo::getHeight() const {
 	return HEIGHT;
 }
@@ -179,8 +179,8 @@ void GraphicPreviewBlock::draw() {
 	glPopMatrix();
 }
 
-void GraphicPreviewBlock::update(const Block& block) {
-	block_ = block;
+void GraphicPreviewBlock::update(const BlockType& blockType) {
+	block_ = Block(blockType, 200, 200);
 }
 
 double GraphicPreviewBlock::getWidth() const {
@@ -193,7 +193,7 @@ double GraphicPreviewBlock::getHeight() const {
 
 GraphicBoard::GraphicBoard() : tetrisBoard_(20, 10, BlockType::I, BlockType::I) {
 	height_ = 800; // Default height for the board.
-	frameColor_ = mw::Color(237/256.0,78/256.0,8/256.0); // Some type of orange.
+	frameColor_ = mw::Color(237 / 256.0, 78 / 256.0, 8 / 256.0); // Some type of orange.
 }
 
 void GraphicBoard::update(const RawTetrisBoard& newBoard) {
@@ -219,12 +219,12 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glPushMatrix();
 	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
 
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	int rows = tetrisBoard_.getNbrOfRows();
 	int columns = tetrisBoard_.getNbrOfColumns();
-	
+
 	glBegin(GL_QUADS);
 	// Draws the outer square.
 	const float red = 0.8f, green = 0.2f, blue = 0.3f;
@@ -243,7 +243,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 			glVertex2d(0.9 + column, 0.9 + row);
 			glVertex2d(0.1 + column, 0.9 + row);
 		}
-	}	
+	}
 	glEnd();
 
 	glDisable(GL_BLEND);
@@ -270,7 +270,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 
 void GraphicBoard::drawBeginArea() const {
 	glEnable(GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glPushMatrix();
 
@@ -282,10 +282,10 @@ void GraphicBoard::drawBeginArea() const {
 	double red = 0.8, green = 0.2, blue = 0.3;
 	glColor4d(red*0.8, green*0.8, blue*0.8, 0.5);
 	glBegin(GL_QUADS);
-	glVertex2d(0.0,0.0);
-	glVertex2d(1.0,0.0);
-	glVertex2d(1.0,1.0);
-	glVertex2d(0.0,1.0);
+	glVertex2d(0.0, 0.0);
+	glVertex2d(1.0, 0.0);
+	glVertex2d(1.0, 1.0);
+	glVertex2d(0.0, 1.0);
 	glEnd();
 
 	glPopMatrix();

@@ -16,11 +16,11 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 	device_->update(getTetrisBoard());
 }
 
-void LocalPlayer::update(double deltaTime, int level) {
+void LocalPlayer::update(double deltaTime) {
     Input input = device_->currentInput();
 	
 	// The time beetween each "gravity" move.
-	double downTime = 1.0 / calculateDownSpeed(level);
+	double downTime = 1.0 / calculateDownSpeed(getLevel());
 	gravityMove_.setWaitingTime(downTime);
 	
 	gravityMove_.update(deltaTime, true);

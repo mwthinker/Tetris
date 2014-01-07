@@ -16,11 +16,9 @@ public:
 	// Is called at the beginning of every new game.
 	void initGame(std::vector<PlayerInfoPtr> players, int columns, int rows, int maxLevel, bool local);
 
-	void applyRules();
+	void applyRules(PlayerInfoPtr player, GameEvent gameEvent);
 
 private:
-	void applyRules(PlayerInfoPtr& playerData, GameEvent gameEvent);
-
 	int nbrOfAlivePlayers_; // The total number of alive players.
 	int maxLevel_;
 	bool local_;

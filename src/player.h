@@ -18,7 +18,7 @@ public:
 
 	// Is supposed to call pushMove with the appropriate move.
 	// This will indirectly update the tetrisboard.
-	virtual void update(double deltaTime, int level) = 0;
+	virtual void update(double deltaTime) = 0;
 
 	bool updateBoard(Move& move, BlockType& next);
 	void update(Move move);

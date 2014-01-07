@@ -39,7 +39,7 @@ public:
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
 	void draw();
 
-	void update(const Block& block);
+	void update(const BlockType& blockType);
 
 	// Returns the width the graphic is drawn in OpenGl.
 	double getWidth() const;

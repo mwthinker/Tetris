@@ -48,11 +48,22 @@ mw::Packet& operator>>(mw::Packet& packet, Move& move);
 mw::Packet& operator<<(mw::Packet& packet, BlockType type);
 mw::Packet& operator>>(mw::Packet& packet, BlockType& type);
 
+class GameHandler {
+public:
+	virtual void initGame(const std::vector<const PlayerPtr>& players) = 0;
+
+	virtual void eventHandler(const PlayerPtr& player, GameEvent gameEvent) = 0;
+
+protected:
+	~GameHandler() {
+	}
+};
+
 class TetrisGame : public mw::ServerFilter {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
-	TetrisGame();
+	TetrisGame(GameHandler* gameHandler);
 	~TetrisGame();
 
 	// Updates everything. Should be called each frame.
@@ -218,6 +229,7 @@ private:
 	Uint32 accumulator_;
 
 	TetrisRules tetrisRules_;
+	GameHandler* gameHandler_;
 };
 
 #endif // TETRISGAME_H

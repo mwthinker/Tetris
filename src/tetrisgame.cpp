@@ -75,7 +75,7 @@ mw::Packet& operator>>(mw::Packet& packet, BlockType& type) {
 	return packet;
 }
 
-TetrisGame::TetrisGame() {
+TetrisGame::TetrisGame(GameHandler* gameHandler) : gameHandler_(gameHandler) {
 	pause_ = false;
 	serverPort_ = 12008;
 	connectToPort_ = 12008;
@@ -874,13 +874,17 @@ void TetrisGame::clientStartGame() {
 
 	sendStartBlock();
 	std::cout << "\nSTARTGAME" << std::endl;
-	std::vector<PlayerInfoPtr> players;
-	iterateAllPlayers([&players](PlayerPtr player) {
+	std::vector<PlayerInfoPtr> playersInfo;
+	std::vector<const PlayerPtr> players;
+	iterateAllPlayers([&playersInfo, &players](PlayerPtr player) {
+		playersInfo.push_back(player);
 		players.push_back(player);
 		return true;
 	});
 
-	tetrisRules_.initGame(players, width_, height_, maxLevel_, status_ == LOCAL);
+	tetrisRules_.initGame(playersInfo, width_, height_, maxLevel_, status_ == LOCAL);
+	gameHandler_->initGame(players);
+
 	// Signals the gui that the game is not paused.
 	signalEvent(std::make_shared<GamePause>(pause_));
 }
@@ -897,10 +901,13 @@ void TetrisGame::updateGame(Uint32 msDeltaTime) {
 		accumulator_ -= timeStep_;
 		
 		iterateAllPlayers([&](PlayerPtr player) {
-			//player->update(timeStep_ / 1000.0, 1);
+			player->update(timeStep_ / 1000.0);
+			GameEvent gameEvent;
+			while (player->pollGameEvent(gameEvent)) {
+				tetrisRules_.applyRules(player, gameEvent);
+				gameHandler_->eventHandler(player, gameEvent);
+			}
 			return true;
 		});
-
-		tetrisRules_.applyRules();
 	}
 }
