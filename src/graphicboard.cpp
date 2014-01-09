@@ -141,7 +141,6 @@ void GraphicPlayerInfo::draw() {
 	glPopMatrix();
 }
 
-
 double GraphicPlayerInfo::getWidth() const {
 	return WIDTH;
 }

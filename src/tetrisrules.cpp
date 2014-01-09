@@ -4,6 +4,7 @@
 #include "playerinfo.h"
 #include "device.h"
 #include "tetrisparameters.h"
+#include "localplayer.h"
 
 #include <mw/sound.h>
 

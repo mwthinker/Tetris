@@ -4,76 +4,104 @@
 #include "player.h"
 #include "remoteplayer.h"
 #include "userconnection.h"
+#include "localplayer.h"
+#include "networkevent.h"
+#include "userconnection.h"
+#include "localplayer.h"
+#include "computer.h"
+#include "device.h"
 
 #include <mw/packet.h>
 #include <mw/enet/server.h>
 #include <mw/enet/client.h>
 #include <mw/localnetwork.h>
 
+#include <vector>
 #include <algorithm>
 #include <iostream>
 
-mw::Packet& operator<<(mw::Packet& packet, const Input& input) {
-	char data = input.rotate_;
-	data <<= 1;
-	data += input.down_;
-	data <<= 1;
-	data += input.left_;
-	data <<= 1;
-	data += input.right_;
-	packet << data;
-	return packet;
-}
+namespace {
 
-mw::Packet& operator>>(mw::Packet& packet, Input& input) {
-	char data;
-	packet >> data;
-	char bit = 1;
-	input.right_ = (bit & data) > 0;
-	bit <<= 1;
-	input.left_ = (bit & data) > 0;
-	bit <<= 1;
-	input.down_ = (bit & data) > 0;
-	bit <<= 1;
-	input.rotate_ = (bit & data) > 0;
-	return packet;
-}
+	// Is throwed when the data which is received violates the
+	// tetris protocol.
+	class ProtocolError {
+	};
 
-mw::Packet& operator<<(mw::Packet& packet, PacketType type) {
-	packet << static_cast<char>(type);
-	return packet;
-}
+	// Value of first byte sent over network. Defines the packet content.
+	enum class PacketType : char {
+		INPUT,       // Tetrisboard updates.
+		STARTGAME,   // The server starts the game. All user starts the game.
+		READY,       // The server/client is ready/unready to start.
+		SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
+		TETRIS,      // Data describing when player adds rows.
+		CLIENTINFO,  // A client send client info to the server.
+		STARTBLOCK,  // Sends the start current block and the next block.
+		PAUSE        // Pause/Unpause the game for all users.
+	};
 
-mw::Packet& operator>>(mw::Packet& packet, PacketType& type) {
-	char tmp;
-	packet >> tmp;
-	type = static_cast<PacketType>(tmp);
-	return packet;
-}
+	mw::Packet& operator<<(mw::Packet& packet, const Input& input) {
+		char data = input.rotate_;
+		data <<= 1;
+		data += input.down_;
+		data <<= 1;
+		data += input.left_;
+		data <<= 1;
+		data += input.right_;
+		packet << data;
+		return packet;
+	}
 
-mw::Packet& operator<<(mw::Packet& packet, Move move) {
-	packet << static_cast<char>(move);
-	return packet;
-}
+	mw::Packet& operator>>(mw::Packet& packet, Input& input) {
+		char data;
+		packet >> data;
+		char bit = 1;
+		input.right_ = (bit & data) > 0;
+		bit <<= 1;
+		input.left_ = (bit & data) > 0;
+		bit <<= 1;
+		input.down_ = (bit & data) > 0;
+		bit <<= 1;
+		input.rotate_ = (bit & data) > 0;
+		return packet;
+	}
 
-mw::Packet& operator>>(mw::Packet& packet, Move& move) {
-	char tmp;
-	packet >> tmp;
-	move = static_cast<Move>(tmp);
-	return packet;
-}
+	mw::Packet& operator<<(mw::Packet& packet, PacketType type) {
+		packet << static_cast<char>(type);
+		return packet;
+	}
 
-mw::Packet& operator<<(mw::Packet& packet, BlockType type) {
-	packet << static_cast<char>(type);
-	return packet;
-}
+	mw::Packet& operator>>(mw::Packet& packet, PacketType& type) {
+		char tmp;
+		packet >> tmp;
+		type = static_cast<PacketType>(tmp);
+		return packet;
+	}
 
-mw::Packet& operator>>(mw::Packet& packet, BlockType& type) {
-	char tmp;
-	packet >> tmp;
-	type = static_cast<BlockType>(tmp);
-	return packet;
-}
+	mw::Packet& operator<<(mw::Packet& packet, Move move) {
+		packet << static_cast<char>(move);
+		return packet;
+	}
+
+	mw::Packet& operator>>(mw::Packet& packet, Move& move) {
+		char tmp;
+		packet >> tmp;
+		move = static_cast<Move>(tmp);
+		return packet;
+	}
+
+	mw::Packet& operator<<(mw::Packet& packet, BlockType type) {
+		packet << static_cast<char>(type);
+		return packet;
+	}
+
+	mw::Packet& operator>>(mw::Packet& packet, BlockType& type) {
+		char tmp;
+		packet >> tmp;
+		type = static_cast<BlockType>(tmp);
+		return packet;
+	}
+
+} // Anonymous 
 
 TetrisGame::TetrisGame(GameHandler* gameHandler) : gameHandler_(gameHandler) {
 	pause_ = false;
@@ -204,17 +232,18 @@ void TetrisGame::update(Uint32 deltaTime) {
 				}
 			}
 			if (isStarted()) {
+				if (!pause_) {
+					updateGame(deltaTime);
+				}
+
+				// Updated the board for the local users.
 				for (PlayerPtr& player : *localUser_) {
 					Move move;
 					BlockType next;
 					// Update the local player tetris board and send the input to all remote players.
-					while (player->updateBoard(move,next)) {
-						sendInput(player->getId(),move,next);
+					while (player->updateBoard(move, next)) {
+						sendInput(player->getId(), move, next);
 					}
-				}
-
-				if (!pause_) {
-					updateGame(deltaTime);
 				}
 			}
 			break;

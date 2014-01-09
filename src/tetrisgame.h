@@ -1,52 +1,20 @@
 #ifndef TETRISGAME_H
 #define TETRISGAME_H
 
-#include "tetrisboard.h"
 #include "tetrisrules.h"
-
 #include "player.h"
-#include "localplayer.h"
 #include "networkevent.h"
 #include "userconnection.h"
-#include "localplayer.h"
-#include "computer.h"
 #include "device.h"
+#include "ai.h"
 
 #include <mw/signal.h>
 #include <mw/packet.h>
 #include <mw/network.h>
 
+#include <vector>
 #include <functional>
 #include <memory>
-
-// Is throwed when the data which is received violates the
-// tetris protocol.
-class ProtocolError {
-};
-
-// Value of first byte sent over network. Defines the packet content.
-enum class PacketType : char {
-	INPUT,       // Tetrisboard updates.
-	STARTGAME,   // The server starts the game. All user starts the game.
-	READY,       // The server/client is ready/unready to start.
-	SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
-	TETRIS,      // Data describing when player adds rows.
-	CLIENTINFO,  // A client send client info to the server.
-	STARTBLOCK,  // Sends the start current block and the next block.
-	PAUSE        // Pause/Unpause the game for all users.
-};
-
-mw::Packet& operator<<(mw::Packet& packet, const Input& input);
-mw::Packet& operator>>(mw::Packet& packet, Input& input);
-
-mw::Packet& operator<<(mw::Packet& packet, PacketType type);
-mw::Packet& operator>>(mw::Packet& packet, PacketType& type);
-
-mw::Packet& operator<<(mw::Packet& packet, Move move);
-mw::Packet& operator>>(mw::Packet& packet, Move& move);
-
-mw::Packet& operator<<(mw::Packet& packet, BlockType type);
-mw::Packet& operator>>(mw::Packet& packet, BlockType& type);
 
 class GameHandler {
 public:
@@ -108,7 +76,7 @@ public:
 		ais_[3] = ai4;
 	}
 
-protected:
+private:
 	void signalEvent(NetworkEventPtr nEvent);
 
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
@@ -117,7 +85,6 @@ protected:
 
     void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
-private:
 	// Is called every frame when a game is running.
 	void updateGame(Uint32 msDeltaTime);
 
