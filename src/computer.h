@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <future>
 
 class Computer : public Device {
 public:
@@ -52,6 +53,8 @@ private:
 	State latestState_;
 	Block latestBlock_;
 	Ai ai_;
+	bool activeThread_;
+	std::future<State> handle_;
 };
 
 #endif // CUMPUTER_H

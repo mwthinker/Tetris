@@ -3,14 +3,17 @@
 
 #include <vector>
 #include <string>
+#include <future>
 
 Computer::Computer() : Device(true) {
 	latestId_ = -1;
+	activeThread_ = false;
 }
 
 Computer::Computer(const Ai& ai) : Device(true) {
 	latestId_ = -1;
 	ai_ = ai;
+	activeThread_ = false;
 }
 
 Input Computer::currentInput() {
@@ -23,12 +26,21 @@ std::string Computer::getName() const {
 
 void Computer::update(const TetrisBoard& board) {
 	// New block appears?
-	if (latestId_ != board.getNbrOfUpdates()) {
+	if (latestId_ != board.getNbrOfUpdates() && !activeThread_) {
+		activeThread_ = true;
+		input_ = Input();
 		latestId_ = board.getNbrOfUpdates();
-		latestState_ = calculateBestState(board, 2);
-		input_ = calculateInput(latestState_);
-		latestBlock_ = board.currentBlock();
+		handle_ = std::async(std::launch::async|std::launch::deferred, [&] {
+			return calculateBestState(board, 2);
+		});
 	} else {
+		if (handle_.valid()) {
+			latestState_ = handle_.get();
+			latestBlock_ = board.currentBlock();
+			input_ = calculateInput(latestState_);
+			handle_ = std::future<State>();
+			activeThread_ = false;
+		}
 		Block current = board.currentBlock();
 		Square currentSq = current.getRotationSquare();
 		Square sq = latestBlock_.getRotationSquare();
