@@ -1,14 +1,16 @@
 v2.0
 
-Use SDL 2 instead of SDL library.
+Done! Use SDL 2 instead of SDL library.
 
-Game logic should be performed in a new thread to increase input response.
+Done! Game logic should be performed in a new thread to increase input response.
 
-Decouple graphic from game logic in order for thread to share data safely.
+Done! Decouple graphic from game logic in order for thread to share data safely.
+
+Done! The gui code must be made smaller and if possible into an own project.
+
+Last played game can be resumed at the same point when the window was closed.
 
 Add animation effects to game.
-
-The gui code must be made smaller and if possible into an own project.
 
 Use external TinyXMl library to load xml files.
 
