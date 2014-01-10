@@ -12,7 +12,7 @@ class GraphicPlayerInfo {
 public:
 	GraphicPlayerInfo();
 
-	void update(int rowsCleared, int points, int level, std::string name);
+	void update(int rowsCleared, int points, int level);
 
 	// Draws the player info. Using opengl.
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
@@ -25,10 +25,7 @@ public:
 	double getHeight() const;
 
 private:
-	mw::Text name_, level_, points_, nbrOfClearedRows_;
-	
-	const double WIDTH = 200;
-	const double HEIGHT = 200;
+	mw::Text level_, points_, nbrOfClearedRows_;
 };
 
 class GraphicPreviewBlock {
@@ -39,7 +36,7 @@ public:
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
 	void draw();
 
-	void update(const BlockType& blockType);
+	void update(const BlockType& blockType, double pixlePerSquare);
 
 	// Returns the width the graphic is drawn in OpenGl.
 	double getWidth() const;
@@ -48,8 +45,6 @@ public:
 	double getHeight() const;
 
 private:
-	double previwBorderSizeInSquares_; // The preview border size in number of squares.
-	double borderLineThickness_; // Line thickness for the border.
 	mw::Color frameColor_;
 	double pixlePerSquare_;
 
@@ -73,6 +68,10 @@ public:
 
 	// Returns the height the graphic is drawn in OpenGl.
 	double getHeight() const;
+
+	double getPixelPerSquare() const {
+		return pixlePerSquare_;
+	}
 
 private:
 	void drawBoard(const RawTetrisBoard& tetrisBoard) const;

@@ -11,6 +11,16 @@
 #include <queue>
 #include <map>
 
+template <class A>
+void drawLineBorder(const A& a) {
+	glBegin(GL_LINE_LOOP);
+	glVertex2d(0, 0);
+	glVertex2d(a.getWidth(), 0);
+	glVertex2d(a.getWidth(), a.getHeight());
+	glVertex2d(0, a.getHeight());
+	glEnd();
+}
+
 class GameComponent : public gui::Component, public GameHandler {
 public:
 	GameComponent() : tetrisGame_(this) {
@@ -24,11 +34,11 @@ public:
 
 		glPushMatrix();
 		gui::Dimension dim = getSize();
-		double width = 0;
-		double height = 0;
+		double width = 5;
+		double height = 5;
 		for (auto pair : graphic_) {
-			width += pair.second.getWidth();
-			height = pair.second.getHeight();
+			width += pair.second.getWidth() + 5;
+			height = 5 + pair.second.getHeight() + 5;
 		}
 		
 		// Centers the game and holds the correct proportions.
@@ -45,9 +55,10 @@ public:
 			glScaled(scale, scale, 1);
 		}
 		
+		glTranslated(5, 5, 0);
 		for (auto pair : graphic_) {
 			pair.second.draw();
-			glTranslated(pair.second.getWidth(), 0, 0);
+			glTranslated(pair.second.getWidth() + 5, 0, 0);
 		}
 
 		glPopMatrix();
@@ -96,13 +107,13 @@ public:
 	void initGame(const std::vector<const PlayerPtr>& players) override{
 		graphic_.clear();
 
-		double width = 0;
+		double width = 5;
 		double height = 0;
 
 		for (const PlayerPtr& player : players) {
 			Graphic& graphic = graphic_[player->getId()];
 			graphic = Graphic(player);
-			width += graphic.getWidth() + 50;
+			width += graphic.getWidth() + 5;
 			height = graphic.getHeight();
 		}
 
@@ -112,45 +123,62 @@ public:
 private:
 	struct Graphic {
 		Graphic() {
+			name_ = mw::Text("", fontDefault30, 20);
 		}
 
 		Graphic(const PlayerPtr& player) {
 			update(player);
+			name_ = mw::Text(player->getName(), fontDefault30, 20);
 		}
-
-		/*
-		Graphic(const Graphic& player) : info_(player.info_), preview_(player.preview_), board_(player.board_) {
-		}
-
-		Graphic& operator=(const Graphic& player) {
-			//info_ = player.info_;
-			preview_ = player.preview_;
-			board_ = player.board_;
-			return *this;
-		}
-		*/
 
 		void update(const PlayerPtr& player) {
-			//info_.update(player->getNbrClearedRows(), player->getPoints(), player->getLevel(), player->getName());
-			preview_.update(player->getNextBlock());
+			info_.update(player->getNbrClearedRows(), player->getPoints(), player->getLevel());
 			board_.update(player->getTetrisBoard());
+			preview_.update(player->getNextBlock(), board_.getPixelPerSquare());
 		}
 
 		inline double getWidth() const {
-			return board_.getWidth();
+			return 5 + board_.getWidth() + 5 + preview_.getWidth() + 5;
 		}
 
 		inline double getHeight() const {
-			return board_.getHeight();
+			return 5 + board_.getHeight() + 5;
 		}
 
 		inline void draw() {
+			glPushMatrix();
+			
+			glTranslated(5, 5, 0);
 			board_.draw();
+			mw::Color color = mw::Color(237 / 256.0, 78 / 256.0, 8 / 256.0);
+			color.glColor3d();
+			drawLineBorder(board_);
+
+			glPushMatrix();
+			glTranslated(board_.getWidth() + 5, board_.getHeight() - name_.getHeight(), 0);
+			glColor3d(1, 1, 1);
+			name_.draw();
+			glTranslated(0, -5 -preview_.getHeight(), 0);
+			preview_.draw();
+			color.glColor3d();
+			drawLineBorder(preview_);
+			glPopMatrix();
+			
+			glPushMatrix();
+			glTranslated(board_.getWidth() + 10, 10, 0);
+			info_.draw();
+			glPopMatrix();
+			
+			glPopMatrix();
+
+			glColor3d(1, 1, 1);
+			drawLineBorder(*this);
 		}
 
-		//GraphicPlayerInfo info_;
+		GraphicPlayerInfo info_;
 		GraphicPreviewBlock preview_;
 		GraphicBoard board_;
+		mw::Text name_;
 	};
 
 	// Is called by the thread.

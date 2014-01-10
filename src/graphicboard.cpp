@@ -107,13 +107,12 @@ namespace {
 
 GraphicPlayerInfo::GraphicPlayerInfo() {
 	// Define all text sizes and font usage.
-	name_ = mw::Text("", fontDefault30, 30);
-	level_ = mw::Text("", fontDefault30, 30);
-	points_ = mw::Text("", fontDefault30, 30);
-	nbrOfClearedRows_ = mw::Text("", fontDefault30, 30);
+	level_ = mw::Text("", fontDefault30, 18);
+	points_ = mw::Text("", fontDefault30, 18);
+	nbrOfClearedRows_ = mw::Text("", fontDefault30, 18);
 }
 
-void GraphicPlayerInfo::update(int rowsCleared, int points, int level, std::string name) {
+void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
 	std::stringstream stream;
 	stream << "Rows " << rowsCleared;
 	nbrOfClearedRows_.setText(stream.str());
@@ -123,35 +122,31 @@ void GraphicPlayerInfo::update(int rowsCleared, int points, int level, std::stri
 	stream.str("");
 	stream << "Level " << level;
 	level_.setText(stream.str());
-	stream.str("");
-	name_.setText(name);
 }
 
 void GraphicPlayerInfo::draw() {
 	glPushMatrix();
-	glTranslated(0, 200, 0);
 	WHITE.glColor4d();
-	level_.draw();
-	glTranslated(0, -40, 0);
+	nbrOfClearedRows_.draw();
+	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
 
 	points_.draw();
-	glTranslated(0, -40, 0);
+	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
 
-	nbrOfClearedRows_.draw();
+	level_.draw();
+	
 	glPopMatrix();
 }
 
 double GraphicPlayerInfo::getWidth() const {
-	return WIDTH;
+	return 200;
 }
 
 double GraphicPlayerInfo::getHeight() const {
-	return HEIGHT;
+	return 200;
 }
 
-
 GraphicPreviewBlock::GraphicPreviewBlock() {
-
 }
 
 void GraphicPreviewBlock::draw() {
@@ -162,24 +157,28 @@ void GraphicPreviewBlock::draw() {
 		x += sq.column_;
 		y += sq.row_;
 	}
-	x /= 1.0 * block_.nbrOfSquares();
-	y /= 1.0 * block_.nbrOfSquares();
 
+	// Center the blocks.
+	glTranslated(width_ * 0.5, height_ * 0.5, 0);
+
+	// Block scale.
 	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
-	glTranslated(-x - 0.5, -y - 0.5, 0);
-	drawBlock(block_, 100);
-	glPopMatrix();
-	glPushMatrix();
-	// Size is 5 squares.
-	glScaled(previwBorderSizeInSquares_*pixlePerSquare_, previwBorderSizeInSquares_*pixlePerSquare_, 1);
-	frameColor_.glColor4d();
-	// Makes the line thickness to borderLineThickness_.
-	drawFrame(-0.5, -0.5, 0.5, 0.5, 1.0 / (previwBorderSizeInSquares_*pixlePerSquare_)*borderLineThickness_);
+
+	// Calculate center of mass
+	x /= block_.nbrOfSquares();
+	y /= block_.nbrOfSquares();
+
+	// Move center to origo.
+	glTranslated(-x - 0.5, -y - 0.5, 0); // -0.5 Due, mass center for a square is 0.5;
+	drawBlock(block_, 10000);
 	glPopMatrix();
 }
 
-void GraphicPreviewBlock::update(const BlockType& blockType) {
-	block_ = Block(blockType, 200, 200);
+void GraphicPreviewBlock::update(const BlockType& blockType, double pixlePerSquare) {
+	block_ = Block(blockType, 100, 100);
+	pixlePerSquare_ = pixlePerSquare;
+	width_ = 5 * pixlePerSquare_;
+	height_ = 5 * pixlePerSquare_;
 }
 
 double GraphicPreviewBlock::getWidth() const {
