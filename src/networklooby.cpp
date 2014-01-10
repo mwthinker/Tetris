@@ -15,7 +15,7 @@ NetworkLooby::NetworkLooby() {
 	setPreferredSize(400, 400);
 }
 
-void NetworkLooby::draw(float deltaTime) {
+void NetworkLooby::draw(Uint32 deltaTime) {
 	glColor3d(1, 1, 1);
 
 	glPushMatrix();

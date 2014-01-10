@@ -34,13 +34,13 @@ namespace gui {
 
 		bool isEditable() const;
 
-		virtual void draw(float deltaTime) override;
+		virtual void draw(Uint32 deltaTime) override;
 
 		Alignment getAlignment() const;
 		void setAlignment(Alignment alignment);
 
 	protected:
-		void drawText(float deltaTime);
+		void drawText(Uint32 deltaTime);
 
 		void drawBorder();
 		
@@ -60,7 +60,7 @@ namespace gui {
 		mw::Color color_;
 		Alignment alignment_;
 		InputFormatter inputFormatter_;
-		float markerDeltaTime_;
+		Uint32 markerDeltaTime_;
 	};
 
 } // Namespace gui.

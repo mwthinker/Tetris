@@ -8,7 +8,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 	leftHandler_ = ActionHandler(0.09, false);
 	rightHandler_ = ActionHandler(0.09, false);
 	rotateHandler_ = ActionHandler(0.0, true);
-		
+
 	gravityMove_ = ActionHandler(1, false); // Value does'nt matter! Changes every frame.
 	downHandler_ = ActionHandler(0.04, false);
 
@@ -16,13 +16,13 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 	device_->update(getTetrisBoard());
 }
 
-void LocalPlayer::update(double deltaTime, int level) {
-    Input input = device_->currentInput();
-	
+void LocalPlayer::update(double deltaTime) {
+	Input input = device_->currentInput();
+
 	// The time beetween each "gravity" move.
-	double downTime = 1.0 / calculateDownSpeed(level);
+	double downTime = 1.0 / calculateDownSpeed(getLevel());
 	gravityMove_.setWaitingTime(downTime);
-	
+
 	gravityMove_.update(deltaTime, true);
 	if (gravityMove_.doAction()) {
 		downHandler_.reset();
@@ -38,7 +38,7 @@ void LocalPlayer::update(double deltaTime, int level) {
 	if (rightHandler_.doAction()) {
 		pushMove(Move::RIGHT);
 	}
-	
+
 	downHandler_.update(deltaTime, input.down_);
 	if (downHandler_.doAction()) {
 		pushMove(Move::DOWN);
@@ -55,5 +55,5 @@ void LocalPlayer::updateAi() {
 }
 
 double LocalPlayer::calculateDownSpeed(int level) const {
-	return 1+level*0.5;
+	return 1 + level * 0.5;
 }

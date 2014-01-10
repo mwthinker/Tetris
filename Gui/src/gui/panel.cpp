@@ -85,7 +85,7 @@ namespace gui {
 		return components_;
 	}
 
-	void Panel::draw(float deltaTime) {
+	void Panel::draw(Uint32 deltaTime) {
 		pushScissor(this);
 		Component::draw(deltaTime);
 

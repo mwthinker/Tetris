@@ -35,7 +35,6 @@ SET(SOURCES
 	src/gamesprite.h
 	src/graphicboard.cpp
 	src/graphicboard.h
-	src/group.h
 	src/highscore.cpp
 	src/highscore.h
 	src/joystick.cpp
@@ -54,8 +53,6 @@ SET(SOURCES
 	src/player.h
 	src/playerinfo.cpp
 	src/playerinfo.h
-	src/protocol.cpp
-	src/protocol.h
 	src/rawtetrisboard.cpp
 	src/rawtetrisboard.h
 	src/remoteplayer.h
@@ -64,6 +61,8 @@ SET(SOURCES
 	src/tetrisboard.h
 	src/tetrisgame.cpp
 	src/tetrisgame.h
+	src/tetrisrules.cpp
+	src/tetrisrules.h
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h

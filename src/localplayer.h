@@ -15,7 +15,7 @@ class LocalPlayer : public Player {
 public:
     LocalPlayer(int id, int width, int height, const DevicePtr& device);
 
-    void update(double deltaTime, int level) override;
+    void update(double deltaTime) override;
 	void updateAi() override;
 
 	inline const DevicePtr& getDevice() const {

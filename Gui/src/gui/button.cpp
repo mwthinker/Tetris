@@ -17,7 +17,7 @@ namespace gui {
 		init();
 	}
 
-	void Button::draw(float deltaTime) {
+	void Button::draw(Uint32 deltaTime) {
 		Component::draw(deltaTime);
 		drawLabel();
 	}

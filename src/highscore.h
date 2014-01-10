@@ -15,7 +15,7 @@ class Highscore : public gui::Component {
 public:
 	Highscore(int nbr, const mw::Color& color);
 
-	void draw(float deltaTime) override;
+	void draw(Uint32 deltaTime) override;
 
 	bool isNewRecord(int record) const;
 	void addNewRecord(std::string name, std::string date);

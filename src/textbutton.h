@@ -14,7 +14,7 @@ public:
 	TextButton(std::string text, mw::FontPtr font, mw::Color textColor, mw::Color focused, mw::Color onHover,
 		mw::Color notHover, mw::Color insideDownHover);
 
-	void draw(float deltaTime) override;
+	void draw(Uint32 deltaTime) override;
 
 private:
 	mw::Color focused_, onHover_, notHover_, insideDownHover_;

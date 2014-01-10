@@ -16,7 +16,7 @@ class NetworkLooby : public gui::Component {
 public:
 	NetworkLooby();
 
-	void draw(float deltaTime) override;
+	void draw(Uint32 deltaTime) override;
 	void addConnection(int id, int nbrOfPlayers, bool boolReady);
 	void removeConnection(int id);
 	void setReady(int id, bool ready);

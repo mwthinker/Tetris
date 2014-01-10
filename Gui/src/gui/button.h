@@ -32,7 +32,7 @@ namespace gui {
 		virtual ~Button() {
 		}
 
-		virtual void draw(float deltaTime) override;
+		virtual void draw(Uint32 deltaTime) override;
 
 		// Get the label of the Button instance.
 		std::string getLabel() const;
