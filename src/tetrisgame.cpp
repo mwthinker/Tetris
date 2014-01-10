@@ -118,6 +118,7 @@ TetrisGame::TetrisGame(GameHandler* gameHandler) : gameHandler_(gameHandler) {
 
 	timeStep_ = 17; // Fix time step.
 	accumulator_ = 0; // Time accumulator.
+	countDown_ = 3000;
 }
 
 TetrisGame::~TetrisGame() {
@@ -233,7 +234,16 @@ void TetrisGame::update(Uint32 deltaTime) {
 			}
 			if (isStarted()) {
 				if (!pause_) {
-					updateGame(deltaTime);
+					countDown_ -= deltaTime;
+					if (countDown_ < 0) {
+						if (countDown_ > -20000) { // -20000 = Time impossibnle to reach.
+							gameHandler_->countDown(countDown_);
+						}	
+						updateGame(deltaTime);
+						countDown_ = -20000;
+					} else {
+						gameHandler_->countDown(countDown_);
+					}					
 				}
 
 				// Updated the board for the local users.
@@ -542,11 +552,12 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 		if (network_->getServerId() != id) {
 			throw ProtocolError();
 		}
-
+		
 		// This is not a server?
 		if (network_->getServerId() != network_->getId()) {
 			clientStartGame();
 		}
+		countDown_ = 3000;
 		break;
 	case PacketType::PAUSE:
 		if (data.size() != 1) {
@@ -556,6 +567,8 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 
 		// Signals the gui that the game begins.
 		signalEvent(std::make_shared<GamePause>(pause_));
+
+		countDown_ = 3000;
 		break;
 	case PacketType::STARTBLOCK:
 		// Remote user?
@@ -933,7 +946,7 @@ void TetrisGame::updateGame(Uint32 msDeltaTime) {
 			player->update(timeStep_ / 1000.0);
 			GameEvent gameEvent;
 			while (player->pollGameEvent(gameEvent)) {
-				tetrisRules_.applyRules(player, gameEvent);
+				tetrisRules_.applyRules(player, gameEvent, this);
 				gameHandler_->eventHandler(player, gameEvent);
 			}
 			return true;

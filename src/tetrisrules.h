@@ -2,10 +2,11 @@
 #define TETRISRULES_H
 
 #include "playerinfo.h"
-#include "tetrisboard.h"
 
 #include <vector>
 #include <string>
+
+class TetrisGame;
 
 // Is responsible of the setting the rules for the players.
 // E.g. how the players interact with each other.
@@ -16,7 +17,7 @@ public:
 	// Is called at the beginning of every new game.
 	void initGame(std::vector<PlayerInfoPtr> players, int columns, int rows, int maxLevel, bool local);
 
-	void applyRules(PlayerInfoPtr player, GameEvent gameEvent);
+	void applyRules(PlayerInfoPtr player, GameEvent gameEvent, TetrisGame* game);
 
 private:
 	int nbrOfAlivePlayers_; // The total number of alive players.

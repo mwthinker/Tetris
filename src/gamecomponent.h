@@ -23,7 +23,7 @@ void drawLineBorder(const A& a) {
 
 class GameComponent : public gui::Component, public GameHandler {
 public:
-	GameComponent() : tetrisGame_(this) {
+	GameComponent() : tetrisGame_(this), alivePlayers_(0) {
 	}
 
 	~GameComponent() {
@@ -36,7 +36,7 @@ public:
 		gui::Dimension dim = getSize();
 		double width = 5;
 		double height = 5;
-		for (auto pair : graphic_) {
+		for (const auto& pair : graphic_) {
 			width += pair.second.getWidth() + 5;
 			height = 5 + pair.second.getHeight() + 5;
 		}
@@ -56,7 +56,12 @@ public:
 		}
 		
 		glTranslated(5, 5, 0);
-		for (auto pair : graphic_) {
+		for (auto& pair : graphic_) {
+			if (tetrisGame_.isPaused()) {
+				static mw::Text text("Paused", fontDefault30);
+				pair.second.setMiddleMessage(text);
+			}
+
 			pair.second.draw();
 			glTranslated(pair.second.getWidth() + 5, 0, 0);
 		}
@@ -116,12 +121,25 @@ public:
 			width += graphic.getWidth() + 5;
 			height = graphic.getHeight();
 		}
-
+		alivePlayers_ = players.size();
 		setPreferredSize((float) width, (float) height);
 	}
 
+	void countDown(int msCountDown) override {
+		mw::Text text("", fontDefault30);
+		if (msCountDown > 0) {
+			std::stringstream stream;
+			stream << "Start in " << (int) (msCountDown / 1000) + 1;
+			text.setText(stream.str());
+		}
+		for (auto& pair : graphic_) {
+			pair.second.setMiddleMessage(text);
+		}
+	}
+
 private:
-	struct Graphic {
+	class Graphic {
+	public:
 		Graphic() {
 			name_ = mw::Text("", fontDefault30, 20);
 		}
@@ -169,22 +187,60 @@ private:
 			info_.draw();
 			glPopMatrix();
 			
+			glPushMatrix();
+			glTranslated(board_.getWidth() * 0.5 - middleMessage_.getWidth() * 0.5,
+				board_.getHeight() * 0.5 - middleMessage_.getHeight() * 0.5, 0);
+			middleMessage_.draw();
+			glPopMatrix();
+			
 			glPopMatrix();
 
 			glColor3d(1, 1, 1);
 			drawLineBorder(*this);
 		}
 
-		GraphicPlayerInfo info_;
-		GraphicPreviewBlock preview_;
+		void setMiddleMessage(const mw::Text& text) {
+			middleMessage_ = text;
+		}
+
 		GraphicBoard board_;
+
+	private:
+		GraphicPlayerInfo info_;
+		GraphicPreviewBlock preview_;		
 		mw::Text name_;
+		mw::Text middleMessage_;
 	};
 
 	// Is called by the thread.
 	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override {
 		graphic_[player->getId()].update(player);
 		soundEffects(gameEvent);
+		switch (gameEvent) {
+			case GameEvent::GAME_OVER:
+				if (tetrisGame_.getNbrOfPlayers() == 1) {
+					mw::Text text("Game Over", fontDefault30);
+					graphic_[player->getId()].setMiddleMessage(text);
+				} else {
+					std::stringstream stream;
+					stream << alivePlayers_;
+					if (alivePlayers_ == 1) {
+						stream << ":st place!";
+					} else if (alivePlayers_ == 2) {
+						stream << ":nd place!";
+					} else if (alivePlayers_ == 3) {
+						stream << ":rd place!";
+					} else {
+						stream << ":th place!";
+					}
+					--alivePlayers_;
+					mw::Text text(stream.str(), fontDefault30);
+					graphic_[player->getId()].setMiddleMessage(text);
+				}
+				break;
+			default:
+				break;
+		}
 	}
 
 	void soundEffects(GameEvent gameEvent) const {
@@ -217,6 +273,7 @@ private:
 	
 	TetrisGame tetrisGame_;
 	std::map<int, Graphic> graphic_;
+	int alivePlayers_;
 
 	// Fix timestep.
 	Uint32 timeStep_;

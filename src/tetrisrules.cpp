@@ -1,15 +1,10 @@
+#include "tetrisrules.h"
 #include "tetrisgame.h"
-#include "gamesound.h"
-#include "graphicboard.h"
 #include "playerinfo.h"
-#include "device.h"
 #include "tetrisparameters.h"
 #include "localplayer.h"
 
-#include <mw/sound.h>
-
 #include <string>
-#include <sstream>
 
 TetrisRules::TetrisRules() {
 	nbrOfAlivePlayers_ = 0;
@@ -17,22 +12,14 @@ TetrisRules::TetrisRules() {
 }
 
 void TetrisRules::initGame(std::vector<PlayerInfoPtr> players, int columns, int rows, int maxLevel, bool local) {
-	players_.clear();
-
 	int nbr = 0;
-	for (PlayerInfoPtr player : players) {
-		std::stringstream stream;
-		stream << "Player " << ++nbr;
-		player->setName(stream.str());
-		//players_.back().graphic_.update(0, 0, 1, stream.str());
-	}
-
-	nbrOfAlivePlayers_ = players_.size();
+	players_ = players;
+	nbrOfAlivePlayers_ = players.size();
 	maxLevel_ = maxLevel;
 	local_ = local;
 }
 
-void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
+void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent, TetrisGame* game) {
 	// Warning a slight risk of being out of sync in multiplayer.
 	// However only effecting points and level and in very subtle ways.
 	// Nothing other than graphics is effected.
@@ -50,28 +37,14 @@ void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
 			// Multiplayer?
-			if (players_.size() > 1) {
+			if (game->getNbrOfPlayers() > 1) {
 				// Add two rows to all opponents.
-				// addRowsToAllPlayersExcept(playerData.player_, 2);
+				game->addRowsToAllPlayersExcept(player, 2);
 			}
 			break;
 		case GameEvent::GAME_OVER:
 			// Multiplayer?
-			if (players_.size() > 1) {
-				std::stringstream stream;
-				stream << nbrOfAlivePlayers_;
-				if (nbrOfAlivePlayers_ == 1) {
-					stream << ":st place!";
-				} else if (nbrOfAlivePlayers_ == 2) {
-					stream << ":nd place!";
-				} else if (nbrOfAlivePlayers_ == 3) {
-					stream << ":rd place!";
-				} else {
-					stream << ":th place!";
-				}
-
-				//playerData.graphic_.setMiddleMessage(stream.str());
-
+			if (game->getNbrOfPlayers() > 1) {
 				// One player more is dead.
 				--nbrOfAlivePlayers_;
 
@@ -84,7 +57,6 @@ void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 					}
 				}
 			} else { // Singleplayer.
-				//playerData.graphic_.setMiddleMessage("Game over!");
 				//And is the correct settings?
 				if (player->getTetrisBoard().getNbrOfRows() == TETRIS_HEIGHT
 					&& player->getTetrisBoard().getNbrOfColumns() == TETRIS_WIDTH
@@ -93,7 +65,7 @@ void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 					auto local = std::dynamic_pointer_cast<LocalPlayer>(player);
 					// Is local and a human player?
 					if (local && !local->getDevice()->isAi()) {
-						//signalEvent(std::make_shared<GameOver>(playerData.points_));
+						game->signalEvent(std::make_shared<GameOver>(player->getPoints()));
 					}
 				}
 			}
@@ -106,7 +78,6 @@ void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		// Assign points and number of cleared rows.
 		player->addNbrClearedRows(rows);
 		player->addPoints(player->getLevel() * rows * rows);
-		//playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);		
 
 		// Multiplayer?
 		if (players_.size() > 1) {
@@ -124,7 +95,6 @@ void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent) {
 		int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
 		if (level <= maxLevel_) {
 			player->setLevelUpCounter(level);
-			//playerData.graphic_.update(playerData.nbrOfClearedRows_, playerData.points_, playerData.level_, playerData.name_);
 		}
 	}
 }

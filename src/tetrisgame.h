@@ -22,6 +22,8 @@ public:
 
 	virtual void eventHandler(const PlayerPtr& player, GameEvent gameEvent) = 0;
 
+	virtual void countDown(int countDown) = 0;
+
 protected:
 	~GameHandler() {
 	}
@@ -76,14 +78,14 @@ public:
 		ais_[3] = ai4;
 	}
 
-private:
+	void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
+
 	void signalEvent(NetworkEventPtr nEvent);
 
+private:
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
 
 	void iterateAllPlayersInfo(std::function<bool(PlayerInfoPtr)> nextPlayer) const;
-
-    void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
 	// Is called every frame when a game is running.
 	void updateGame(Uint32 msDeltaTime);
@@ -197,6 +199,8 @@ private:
 
 	TetrisRules tetrisRules_;
 	GameHandler* gameHandler_;
+
+	int countDown_;
 };
 
 #endif // TETRISGAME_H

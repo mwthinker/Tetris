@@ -107,9 +107,9 @@ namespace {
 
 GraphicPlayerInfo::GraphicPlayerInfo() {
 	// Define all text sizes and font usage.
-	level_ = mw::Text("", fontDefault30, 18);
-	points_ = mw::Text("", fontDefault30, 18);
-	nbrOfClearedRows_ = mw::Text("", fontDefault30, 18);
+	level_ = mw::Text("", fontDefault30, 14);
+	points_ = mw::Text("", fontDefault30, 14);
+	nbrOfClearedRows_ = mw::Text("", fontDefault30, 14);
 }
 
 void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
@@ -139,11 +139,11 @@ void GraphicPlayerInfo::draw() {
 }
 
 double GraphicPlayerInfo::getWidth() const {
-	return 200;
+	return 150;
 }
 
 double GraphicPlayerInfo::getHeight() const {
-	return 200;
+	return 150;
 }
 
 GraphicPreviewBlock::GraphicPreviewBlock() {
