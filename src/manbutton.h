@@ -16,7 +16,7 @@ public:
 		return max_;
 	}
 
-	void draw(float deltaTime) override;
+	void draw(Uint32 deltaTime) override;
 
 protected:
 	void handleMouse(const SDL_Event& mouseEvent) override;

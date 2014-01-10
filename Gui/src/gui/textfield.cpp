@@ -33,7 +33,7 @@ namespace gui {
 	// Set the current text.
 	void TextField::setText(std::string text) {
 		text_.setText(text);
-		markerWidth_ = text_.getWidth() - 1;
+		markerWidth_ = (float) text_.getWidth() - 1;
 	}
 
 	// Set the textfield to be editable or not.
@@ -49,7 +49,7 @@ namespace gui {
 		color_ = color;
 	}
 
-	void TextField::draw(float deltaTime) {
+	void TextField::draw(Uint32 deltaTime) {
 		Component::draw(deltaTime);
 		drawBorder();
 
@@ -192,7 +192,7 @@ namespace gui {
 		glEnd();
 	}
 
-	void TextField::drawText(float deltaTime) {
+	void TextField::drawText(Uint32 deltaTime) {
 		color_.glColor4d();
 		text_.draw();
 
@@ -200,10 +200,10 @@ namespace gui {
 			if (hasFocus()) {
 				glBegin(GL_LINES);
 				markerDeltaTime_ += deltaTime;
-				if (markerDeltaTime_ < 0.5f) {
+				if (markerDeltaTime_ < 500) {
 					glVertex2d(markerWidth_, text_.getCharacterSize());
 					glVertex2d(markerWidth_, 1);
-				} else if (markerDeltaTime_ > 1.f) {
+				} else if (markerDeltaTime_ > 1000) {
 					markerDeltaTime_ = 0;
 				}
 

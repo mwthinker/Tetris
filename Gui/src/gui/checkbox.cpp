@@ -22,7 +22,7 @@ namespace gui {
 
 	CheckBox::CheckBox(std::string text, const mw::FontPtr& font) : Button(text, font) {
 		addActionListener(std::bind(doActionSelect, this));
-		boxSize_ = font->getCharacterSize();
+		boxSize_ = (float) font->getCharacterSize();
 		selected_ = false;
 		setPreferredSize(boxSize_ + (float) text_.getWidth() + 3, (float) text_.getHeight() + 2);
 	}
@@ -34,7 +34,7 @@ namespace gui {
 		setPreferredSize(boxSize_ + (float) text_.getWidth() + 3, (float) text_.getHeight() + 2);
 	}
 
-	void CheckBox::draw(float deltaTime) {
+	void CheckBox::draw(Uint32 deltaTime) {
 		Component::draw(deltaTime);
 		textColor_.glColor4d();
 

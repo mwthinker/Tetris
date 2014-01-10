@@ -21,7 +21,7 @@ namespace gui {
 		init();
 	}
 	
-	void Label::draw(float deltaTime) {
+	void Label::draw(Uint32 deltaTime) {
 		Component::draw(deltaTime);
 
 		Dimension dim = getSize();

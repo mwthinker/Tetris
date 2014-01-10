@@ -137,7 +137,7 @@ namespace gui {
 		// Draws the gackground color.
 		// Should be derived and should then draw the
 		// component in the size defined by getSize().
-		virtual void draw(float deltaTime);
+		virtual void draw(Uint32 deltaTime);
 
 		// Do action.
 		void doAction() {

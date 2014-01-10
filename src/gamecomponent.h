@@ -19,7 +19,7 @@ public:
 	~GameComponent() {
 	}
 
-	void draw(float deltaTime) override {
+	void draw(Uint32 deltaTime) override {
 		tetrisGame_.update(deltaTime*1000);
 
 		glPushMatrix();

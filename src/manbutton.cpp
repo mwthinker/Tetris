@@ -27,7 +27,7 @@ void ManButton::setNbr(unsigned int nbr) {
 	setPreferredSize(dim.height_ * nbr, dim.height_);
 }
 
-void ManButton::draw(float deltaTime) {
+void ManButton::draw(Uint32 deltaTime) {
 	glPushMatrix();
 	gui::Dimension dim = getSize();
 	if (nbr_ == 0) {

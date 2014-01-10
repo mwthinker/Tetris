@@ -31,7 +31,7 @@ TextButton::TextButton(std::string text, mw::FontPtr font, mw::Color textColor, 
 	insideDownHover_ = insideDownHover;
 }
 
-void TextButton::draw(float deltaTime) {
+void TextButton::draw(Uint32 deltaTime) {
 	gui::Dimension dim = getSize();
 
 	glEnable(GL_BLEND);

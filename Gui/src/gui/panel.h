@@ -47,7 +47,7 @@ namespace gui {
 		// Gets the list holding all contained components.
 		const std::list<Component*>& getComponents() const;
 
-		void draw(float deltaTime) override;
+		void draw(Uint32 deltaTime) override;
 
 		void handleMouse(const SDL_Event& mouseEvent) override;
 

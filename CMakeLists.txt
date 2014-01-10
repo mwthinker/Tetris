@@ -35,7 +35,6 @@ SET(SOURCES
 	src/gamesprite.h
 	src/graphicboard.cpp
 	src/graphicboard.h
-	src/group.h
 	src/highscore.cpp
 	src/highscore.h
 	src/joystick.cpp

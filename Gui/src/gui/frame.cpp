@@ -89,8 +89,7 @@ namespace gui {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 	}
-
-	// Override mw::Window
+	
 	void Frame::update(Uint32 deltaTime) {
 		// Perform non critical event updates.
 		while (!eventQueue_.empty()) {
@@ -175,10 +174,9 @@ namespace gui {
 					break;
 			}
 		}
-		getCurrentPanel()->draw(deltaTime / 1000.f);
+		getCurrentPanel()->draw(deltaTime);
 	}
-
-	// Override mw::Window
+	
 	void Frame::eventUpdate(const SDL_Event& windowEvent) {
 		eventQueue_.push(windowEvent);
 	}

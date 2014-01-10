@@ -2,7 +2,7 @@
 
 namespace gui {
 
-	void Component::draw(float deltaTime) {
+	void Component::draw(Uint32 deltaTime) {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

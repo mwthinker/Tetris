@@ -22,7 +22,7 @@ Highscore::Highscore(int nbr, const mw::Color& color) : color_(color) {
 	setPreferredSize(300, (float) nbr * (fontDefault30->getCharacterSize() + 2) + 28);
 }
 
-void Highscore::draw(float deltaTime) {
+void Highscore::draw(Uint32 deltaTime) {
 	glColor3d(1, 1, 1);
 	glPushMatrix();
 
