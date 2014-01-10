@@ -20,7 +20,7 @@ public:
 	}
 
 	void draw(Uint32 deltaTime) override {
-		tetrisGame_.update(deltaTime*1000);
+		tetrisGame_.update(deltaTime);
 
 		glPushMatrix();
 		gui::Dimension dim = getSize();
