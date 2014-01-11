@@ -27,10 +27,10 @@ namespace gui {
 		Component::draw(deltaTime);
 		if (pushed_ && mouseInside_) {
 			drawOnPush();
-		} else if (hasFocus()) {
-			drawOnFocus();
 		} else if (mouseInside_) {
 			drawOnMouseHover();
+		} else if (hasFocus()) {
+			drawOnFocus();
 		}
 		drawLabel();
 	}

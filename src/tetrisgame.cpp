@@ -101,7 +101,7 @@ namespace {
 		return packet;
 	}
 
-} // Anonymous 
+} // Anonymous namespace.
 
 TetrisGame::TetrisGame(GameHandler* gameHandler) : gameHandler_(gameHandler) {
 	pause_ = false;

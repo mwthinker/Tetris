@@ -100,6 +100,7 @@ namespace gui {
 			return panelChangeListener_.connect(callback);
 		}
 
+		// Todo! Not thought throug how this propagate!
 		void setAlwaysFocus(bool focus) {
 			if (alwaysFocus_ != focus) {
 				alwaysFocus_ = focus;

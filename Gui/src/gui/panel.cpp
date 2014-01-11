@@ -28,6 +28,7 @@ namespace gui {
 		component->parent_ = this;
 		component->setLayoutIndex(0);
 		components_.push_back(component);
+		setAlwaysFocus(true);
 		validate();
 	}
 
@@ -38,6 +39,7 @@ namespace gui {
 		component->parent_ = this;
 		component->setLayoutIndex(layoutIndex);
 		components_.push_back(component);
+		setAlwaysFocus(true);
 		validate();
 	}
 

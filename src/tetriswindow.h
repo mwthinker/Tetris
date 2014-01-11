@@ -2,11 +2,11 @@
 #define TETRISWINDOW_H
 
 #include "device.h"
-#include "textbutton.h"
 #include "ai.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
+#include <gui/button.h>
 
 #include <array>
 #include <memory>
@@ -46,7 +46,7 @@ private:
 	GameComponent* game_;
 	ManButton* nbrHumans_;
 	ManButton* nbrAis_;
-	TextButton* pauseButton_;
+	gui::Button* pauseButton_;
 	
 	// initHighscorePanel
 	Highscore* highscore_;

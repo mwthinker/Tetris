@@ -66,8 +66,6 @@ SET(SOURCES
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h
-	src/textbutton.cpp
-	src/textbutton.h
 	src/userconnection.h
 )
 # End of source files.

@@ -6,7 +6,6 @@
 #include "joystick.h"
 #include "keyboard.h"
 #include "computer.h"
-#include "textbutton.h"
 #include "manbutton.h"
 #include "highscore.h"
 #include "gamecomponent.h"
@@ -58,6 +57,18 @@ namespace {
 		label->setTextColor(mw::Color(1, 1, 1));
 		label->setBackgroundColor(mw::Color(1, 1, 1, 0));
 		return label;
+	}
+
+	gui::Button* createButton(std::string text, mw::FontPtr font) {
+		gui::Button* button = new gui::Button(text, font);
+		button->setFocusColor(mw::Color(.8, .1, 0, .3));
+		button->setTextColor(mw::Color(1, 0.1, 0.1));
+		button->setHoverColor(mw::Color(.6, .1, .1));
+		button->setPushColor(mw::Color(.8, .0, 0, .7));
+		button->setBackgroundColor(mw::Color(0, 0, 0, 0));
+		button->setBorderColor(mw::Color(0, 0, 0, 0));
+		button->setPreferedSizeFitText();
+		return button;
 	}
 
 	void createPlayersFields(std::array<gui::Panel*, 4>&  players) {
@@ -164,37 +175,37 @@ gui::Panel* TetrisWindow::createMenu() {
 	gui::Label* label = createLabel("MWetris", fontDefault50);
 	panel->add(label);
 
-	TextButton* b1 = new TextButton("Play", fontDefault30);
+	gui::Button* b1 = createButton("Play", fontDefault30);
 	panel->add(b1);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(playIndex_);
 	});
 
-	TextButton* b2 = new TextButton("Custom play", fontDefault30);
+	gui::Button* b2 = createButton("Custom play", fontDefault30);
 	panel->add(b2);
 	b2->addActionListener([&](gui::Component*) {
 		setCurrentPanel(customIndex_);
 	});
 
-	TextButton* b3 = new TextButton("Network play", fontDefault30);
+	gui::Button* b3 = createButton("Network play", fontDefault30);
 	panel->add(b3);
 	b3->addActionListener([&](gui::Component*) {
 		setCurrentPanel(createServerIndex_);
 	});
 
-	TextButton* b4 = new TextButton("Highscore", fontDefault30);
+	gui::Button* b4 = createButton("Highscore", fontDefault30);
 	panel->add(b4);
 	b4->addActionListener([&](gui::Component*) {
 		setCurrentPanel(highscoreIndex_);
 	});
 
-	TextButton* b5 = new TextButton("Settings", fontDefault30);
+	gui::Button* b5 = createButton("Settings", fontDefault30);
 	b5->addActionListener([&](gui::Component*) {
 		setCurrentPanel(settingsIndex_);
 	});
 
 	panel->add(b5);
-	TextButton* b6 = new TextButton("Exit", fontDefault30);
+	gui::Button* b6 = createButton("Exit", fontDefault30);
 	b6->addActionListener([&](gui::Component*) {
 		Window::quit();
 	});
@@ -209,7 +220,7 @@ TetrisWindow::~TetrisWindow() {
 void TetrisWindow::initMenuPanel(const std::vector<DevicePtr>& devices) {
 	setCurrentPanel(menuIndex_);
 
-	TextButton* b1 = new TextButton("Resume", fontDefault30);
+	gui::Button* b1 = createButton("Resume", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(playIndex_);
 	});
@@ -233,18 +244,18 @@ void TetrisWindow::initPlayPanel() {
 	p1->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 	p2->setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT, 5, 0));
 
-	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
 	p1->add(b1);
 
-	TextButton* b2 = new TextButton("Restart", fontDefault30);
+	gui::Button* b2 = createButton("Restart", fontDefault30);
 	b2->addActionListener([&](gui::Component*) {
 		game_->restartGame();
 	});
 	p1->add(b2);
-	pauseButton_ = new TextButton("Pause", fontDefault30);
+	pauseButton_ = createButton("Pause", fontDefault30);
 	pauseButton_->addActionListener([&](gui::Component*) {
 		game_->pause();
 	});
@@ -297,7 +308,7 @@ void TetrisWindow::initHighscorePanel() {
 	gui::Panel* bar = createBar();
 	//bar->setLayout(new gui::GridLayout(1, 2));
 
-	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
@@ -339,7 +350,7 @@ void TetrisWindow::initNewHighscorePanel() {
 		}
 	});
 	panel->add(textField_);
-	TextButton* button = new TextButton("Ok", fontDefault18);
+	gui::Button* button = createButton("Ok", fontDefault18);
 	button->addActionListener([&](gui::Component* c) {
 		textField_->doAction();
 	});
@@ -349,7 +360,7 @@ void TetrisWindow::initNewHighscorePanel() {
 void TetrisWindow::initCustomPlayPanel() {
 	setCurrentPanel(customIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
@@ -379,7 +390,7 @@ void TetrisWindow::initCustomPlayPanel() {
 	centerPanel->add(p1);
 	centerPanel->add(p2);
 
-	TextButton* button = new TextButton("Play", fontDefault30);
+	gui::Button* button = createButton("Play", fontDefault30);
 	centerPanel->add(button);
 
 	add(centerPanel, gui::BorderLayout::CENTER);
@@ -388,7 +399,7 @@ void TetrisWindow::initCustomPlayPanel() {
 void TetrisWindow::initSettingsPanel() {
 	setCurrentPanel(settingsIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
@@ -400,13 +411,13 @@ void TetrisWindow::initSettingsPanel() {
 void TetrisWindow::initCreateServerPanel() {
 	setCurrentPanel(createServerIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
 	bar->add(b1);
 
-	TextButton* b2 = new TextButton("Client", fontDefault30);
+	gui::Button* b2 = createButton("Client", fontDefault30);
 	b2->addActionListener([&](gui::Component*) {
 		setCurrentPanel(createClientIndex_);
 	});
@@ -467,7 +478,7 @@ void TetrisWindow::initCreateServerPanel() {
 		}
 	});
 
-	TextButton* button = new TextButton("Connect", fontDefault30);
+	gui::Button* button = createButton("Connect", fontDefault30);
 	centerPanel->add(button);
 
 	add(centerPanel, gui::BorderLayout::CENTER);
@@ -476,13 +487,13 @@ void TetrisWindow::initCreateServerPanel() {
 void TetrisWindow::initCreateClientPanel() {
 	setCurrentPanel(createClientIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Menu", fontDefault30);
+	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
 	bar->add(b1);
 
-	TextButton* b2 = new TextButton("Client", fontDefault30);
+	gui::Button* b2 = createButton("Client", fontDefault30);
 	b2->addActionListener([&](gui::Component*) {
 		setCurrentPanel(createServerIndex_);
 	});
@@ -528,7 +539,7 @@ void TetrisWindow::initCreateClientPanel() {
 		}
 	});
 
-	TextButton* button = new TextButton("Connect", fontDefault30);
+	gui::Button* button = createButton("Connect", fontDefault30);
 	centerPanel->add(button);
 
 	add(centerPanel, gui::BorderLayout::CENTER);
@@ -537,7 +548,7 @@ void TetrisWindow::initCreateClientPanel() {
 void TetrisWindow::initServerLoobyPanel() {
 	setCurrentPanel(loobyServerIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Abort", fontDefault30);
+	gui::Button* b1 = createButton("Abort", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
@@ -551,7 +562,7 @@ void TetrisWindow::initServerLoobyPanel() {
 void TetrisWindow::initClientLoobyPanel() {
 	setCurrentPanel(loobyClientIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Abort", fontDefault30);
+	gui::Button* b1 = createButton("Abort", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});
@@ -565,7 +576,7 @@ void TetrisWindow::initClientLoobyPanel() {
 void TetrisWindow::initWaitToConnectPanel() {
 	setCurrentPanel(waitToConnectIndex_);
 	gui::Panel* bar = createBar();
-	TextButton* b1 = new TextButton("Abort", fontDefault30);
+	gui::Button* b1 = createButton("Abort", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
 	});

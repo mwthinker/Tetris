@@ -99,13 +99,12 @@ namespace gui {
 		}
 
 	protected:
-		// Is drawn if the mouse is hovering and 
-		// the mouse is not pushed down while inside and this
-		// button does't have focus.
-		virtual void drawOnMouseHover();
-		// Is drawn if this buttan has focus while the mouse 
-		// button was not pushed inside this button.
+		// Is drawn if this butten has focus while the mouse 
+		// button was is oustside this button.
 		virtual void drawOnFocus();
+		// Is drawn if the mouse is hovering and 
+		// the mouse is not pushed down.
+		virtual void drawOnMouseHover();
 		// Is drawn if the button was pushed.
 		virtual void drawOnPush();
 		// Draws the label.
@@ -132,8 +131,8 @@ namespace gui {
 			hTextAlignment_ = HorizontalAlignment::HCENTER;
 			setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
 			textColor_ = mw::Color(0, 0, 0);
-			hoverColor_ = mw::Color(0, 0, 0, 0.05);
-			focusColor_ = mw::Color(0, 0, 0, 0.1);
+			focusColor_ = mw::Color(0, 0, 0, 0.05);
+			hoverColor_ = mw::Color(0, 0, 0, 0.1);
 			pushColor_ = mw::Color(0, 0, 0, 0.15);
 
 			Button::setPreferedSizeFitText();
