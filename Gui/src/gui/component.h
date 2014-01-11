@@ -100,10 +100,21 @@ namespace gui {
 			return panelChangeListener_.connect(callback);
 		}
 
+		void setAlwaysFocus(bool focus) {
+			if (alwaysFocus_ != focus) {
+				alwaysFocus_ = focus;
+				focusListener_(this);
+				focus_ = focus;
+				if (focus && parent_ != nullptr) {
+					parent_->setAlwaysFocus(true);
+				}
+			}
+		}
+
 		// Sets the focus for the component.
 		// Focuslistener is called if focus changes.
 		virtual void setFocus(bool focus) {
-			if (focus != focus_) {
+			if (!alwaysFocus_ && focus != focus_) {
 				focus_ = focus;
 				focusListener_(this);
 			}
@@ -111,7 +122,7 @@ namespace gui {
 
 		// Return the focus for the component.
 		bool hasFocus() const {
-			return focus_;
+			return alwaysFocus_ || focus_;
 		}
 
 		Component* getParent() const {
@@ -170,7 +181,8 @@ namespace gui {
 		}
 
 	protected:
-		Component() : parent_(nullptr), layoutIndex_(0), visible_(true), focus_(false), isAdded_(false) {
+		Component() : parent_(nullptr), layoutIndex_(0), visible_(true),
+			focus_(false), alwaysFocus_(false), isAdded_(false) {
 		}
 
 		// Takes care of all mouse events. And send it through to
@@ -218,6 +230,7 @@ namespace gui {
 
 		bool visible_;
 		bool focus_;
+		bool alwaysFocus_;
 		bool isAdded_;
 	};
 
