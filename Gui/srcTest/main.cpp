@@ -23,7 +23,7 @@ void testBorderLayout(gui::Frame& frame) {
 
 void testFlowLayout(gui::Frame& frame) {
 	mw::FontPtr font(new mw::Font("Ubuntu-B.ttf", 16));
-	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT));
+	frame.setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT));
 	frame.add(new gui::Button("Button 1", font));
 	frame.add(new gui::Button("Button 2", font));
 	gui::Button* button = new gui::Button("Button 3", font);
@@ -31,7 +31,10 @@ void testFlowLayout(gui::Frame& frame) {
 	frame.add(button);
 	frame.add(new gui::Button("Button 4", font));
 	frame.add(new gui::CheckBox("CheckBox 5", font));
-	frame.add(new gui::TextField("Text:", font));
+	gui::TextField* field = new gui::TextField("Text:", font);
+	field->setAlwaysFocus(true);
+	frame.add(field);
+	frame.add(new gui::TextField("", font));
 	frame.add(new gui::Label("JAjajaj", font));
 
 	gui::Panel* panel = new gui::Panel();

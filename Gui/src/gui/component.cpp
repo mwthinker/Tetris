@@ -35,6 +35,7 @@ namespace gui {
 			glVertex2f(0, dim.height_ * 1.f);
 			glEnd();
 		}
+		drawBorder();
 
 		glDisable(GL_BLEND);
 	}

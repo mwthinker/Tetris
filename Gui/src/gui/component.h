@@ -145,6 +145,14 @@ namespace gui {
 			return backgroundColor_;
 		}
 
+		void setBorderColor(const mw::Color& color) {
+			borderColor_ = color;
+		}
+
+		inline const mw::Color& getBorderColor() const {
+			return borderColor_;
+		}
+
 		// Draws the gackground color.
 		// Should be derived and should then draw the
 		// component in the size defined by getSize().
@@ -183,6 +191,7 @@ namespace gui {
 	protected:
 		Component() : parent_(nullptr), layoutIndex_(0), visible_(true),
 			focus_(false), alwaysFocus_(false), isAdded_(false) {
+			borderColor_ = mw::Color(0, 0, 0);
 		}
 
 		// Takes care of all mouse events. And send it through to
@@ -212,9 +221,20 @@ namespace gui {
 			}
 		}
 
+		virtual void drawBorder() {
+			borderColor_.glColor4d();
+			glBegin(GL_LINE_LOOP);
+			glVertex2d(0, 0);
+			glVertex2d(dimension_.width_, 0);
+			glVertex2d(dimension_.width_, dimension_.height_);
+			glVertex2d(0, dimension_.height_);
+			glEnd();
+		}
+
 	private:
 		mw::TexturePtr background_;
 		mw::Color backgroundColor_;
+		mw::Color borderColor_;
 		Component* parent_;
 		Point location_;
 		Dimension dimension_;

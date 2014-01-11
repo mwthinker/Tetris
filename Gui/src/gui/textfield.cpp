@@ -16,7 +16,7 @@ namespace gui {
 		editable_ = true;
 		setPreferredSize(150, 20);
 		setBackgroundColor(mw::Color(0.8, 0.8, 0.8));
-		color_ = mw::Color(0, 0, 0);
+		textColor_ = mw::Color(0, 0, 0);
 		text_ = mw::Text(inputFormatter_.getText(), font);
 		// One pixel to the right of the last character.
 		markerWidth_ = (float) text_.getWidth() + 1;
@@ -46,12 +46,11 @@ namespace gui {
 	}
 
 	void TextField::setTextColor(const mw::Color& color) {
-		color_ = color;
+		textColor_ = color;
 	}
 
 	void TextField::draw(Uint32 deltaTime) {
 		Component::draw(deltaTime);
-		drawBorder();
 
 		Dimension dim = getSize();
 		float x = 0.0;
@@ -172,28 +171,9 @@ namespace gui {
 			}
 		}
 	}
-	
-	void TextField::drawBorder() {
-		Dimension dim = getSize();
-		color_.glColor4d();
-		// Draw border.
-		glBegin(GL_LINES);
-		glVertex2f(0, 0);
-		glVertex2f(dim.width_, 0);
-
-		glVertex2f(dim.width_, 0);
-		glVertex2f(dim.width_, dim.height_);
-
-		glVertex2f(dim.width_, dim.height_);
-		glVertex2f(0, dim.height_);
-
-		glVertex2f(0, dim.height_);
-		glVertex2f(0, 0);
-		glEnd();
-	}
 
 	void TextField::drawText(Uint32 deltaTime) {
-		color_.glColor4d();
+		textColor_.glColor4d();
 		text_.draw();
 
 		if (editable_) {

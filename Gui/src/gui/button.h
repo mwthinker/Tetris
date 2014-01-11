@@ -65,18 +65,60 @@ namespace gui {
 		// Sets the horizontal alignment for the text label.
 		void setHorizontalAlignment(HorizontalAlignment alignment);
 
+		inline const mw::Color& getTextColor() const {
+			return textColor_;
+		}
+
 		// Sets the color for the text label.
 		void setTextColor(const mw::Color& textColor);
 
 		virtual void setPreferedSizeFitText();
 
+		inline const mw::Color& getHoverColor() const {
+			return hoverColor_;
+		}
+
+		void setHoverColor(const mw::Color& color) {
+			hoverColor_ = color;
+		}
+
+		inline const mw::Color& getFocusColor() const {
+			return focusColor_;
+		}
+
+		void setFocusColor(const mw::Color& color) {
+			focusColor_ = color;
+		}
+
+		inline const mw::Color& getPushColor() const {
+			return pushColor_;
+		}
+
+		void setPushColor(const mw::Color& color) {
+			pushColor_ = color;
+		}
+
 	protected:
-		void drawLabel();
+		// Is drawn if the mouse is hovering and 
+		// the mouse is not pushed down while inside and this
+		// button does't have focus.
+		virtual void drawOnMouseHover();
+		// Is drawn if this buttan has focus while the mouse 
+		// button was not pushed inside this button.
+		virtual void drawOnFocus();
+		// Is drawn if the button was pushed.
+		virtual void drawOnPush();
+		// Draws the label.
+		virtual void drawLabel();
 
 		mw::Text text_;
 		mw::Text toWide_;
 
 		mw::Color textColor_;
+		mw::Color hoverColor_;
+		mw::Color focusColor_;
+		mw::Color pushColor_;
+
 		VerticalAlignment vTextAlignment_;
 		HorizontalAlignment hTextAlignment_;
 
@@ -88,8 +130,11 @@ namespace gui {
 			mouseInside_ = false;
 			vTextAlignment_ = VerticalAlignment::VCENTER;
 			hTextAlignment_ = HorizontalAlignment::HCENTER;
-			textColor_ = mw::Color(0, 0, 0);
 			setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
+			textColor_ = mw::Color(0, 0, 0);
+			hoverColor_ = mw::Color(0, 0, 0, 0.05);
+			focusColor_ = mw::Color(0, 0, 0, 0.1);
+			pushColor_ = mw::Color(0, 0, 0, 0.15);
 
 			Button::setPreferedSizeFitText();
 			toWide_ = text_;

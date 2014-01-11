@@ -95,7 +95,8 @@ namespace gui {
 		color_ = mw::Color(0, 0, 0);
 		hTextAlignment_ = HCENTER;
 		vTextAlignment_ = VCENTER;
-		setBackgroundColor(mw::Color(0, 0, 0, 0));
+		setBorderColor(mw::Color(1, 1, 1, 0));
+		setBackgroundColor(mw::Color(1, 1, 1, 0));
 	}
 
 } // Namespace gui.

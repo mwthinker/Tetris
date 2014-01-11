@@ -17,8 +17,21 @@ namespace gui {
 		init();
 	}
 
+	// Draws the button. The button is drawn by calls
+	// to different functions.
+	// By default the background is drawn first and then the border. 
+	// Then one of the following functions is called: 
+	// drawOnMouseHover(), drawOnFocus() or drawOnPush().
+	// On top of everything is the drawing of the label.
 	void Button::draw(Uint32 deltaTime) {
 		Component::draw(deltaTime);
+		if (pushed_ && mouseInside_) {
+			drawOnPush();
+		} else if (hasFocus()) {
+			drawOnFocus();
+		} else if (mouseInside_) {
+			drawOnMouseHover();
+		}
 		drawLabel();
 	}
 
@@ -117,6 +130,12 @@ namespace gui {
 		textColor_ = textColor;
 	}
 
+	void Button::setPreferedSizeFitText() {
+		if (text_.getWidth() > 1 && text_.getHeight() > 1) {
+			setPreferredSize(2 + (float) text_.getWidth(), 2 + (float) text_.getHeight());
+		}
+	}
+
 	void Button::drawLabel() {
 		Dimension dim = getSize();
 
@@ -157,10 +176,46 @@ namespace gui {
 		glPopMatrix();
 	}
 
-	void Button::setPreferedSizeFitText() {
-		if (text_.getWidth() > 1 && text_.getHeight() > 1) {
-			setPreferredSize(2 + (float) text_.getWidth(), 2 + (float) text_.getHeight());
-		}
+	void Button::drawOnMouseHover() {
+		Dimension dim = getSize();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		hoverColor_.glColor4d();
+		glBegin(GL_QUADS);
+		glVertex2d(0, 0);
+		glVertex2d(dim.width_, 0);
+		glVertex2d(dim.width_, dim.height_);
+		glVertex2d(0, dim.height_);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+
+	void Button::drawOnFocus() {
+		Dimension dim = getSize();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		focusColor_.glColor4d();
+		glBegin(GL_QUADS);
+		glVertex2d(0, 0);
+		glVertex2d(dim.width_, 0);
+		glVertex2d(dim.width_, dim.height_);
+		glVertex2d(0, dim.height_);
+		glEnd();
+		glDisable(GL_BLEND);
+	}
+
+	void Button::drawOnPush() {
+		Dimension dim = getSize();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		pushColor_.glColor4d();
+		glBegin(GL_QUADS);
+		glVertex2d(0, 0);
+		glVertex2d(dim.width_, 0);
+		glVertex2d(dim.width_, dim.height_);
+		glVertex2d(0, dim.height_);
+		glEnd();
+		glDisable(GL_BLEND);
 	}
 	
 } // Namespace gui.

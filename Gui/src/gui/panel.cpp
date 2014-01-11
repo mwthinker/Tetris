@@ -10,6 +10,7 @@ namespace gui {
 	Panel::Panel() : mouseMotionInsideComponent_(false), mouseDownInsideComponent_(false), layoutManager_(nullptr) {
 		setLayout(new FlowLayout);
 		setPreferredSize(50, 50);
+		setBorderColor(mw::Color(1, 1, 1, 0));
 	}
 
 	Panel::~Panel() {

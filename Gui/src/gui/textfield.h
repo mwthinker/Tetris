@@ -40,9 +40,7 @@ namespace gui {
 		void setAlignment(Alignment alignment);
 
 	protected:
-		void drawText(Uint32 deltaTime);
-
-		void drawBorder();
+		virtual void drawText(Uint32 deltaTime);
 		
 		// Sets the color for the text.
 		void setTextColor(const mw::Color& textColor);
@@ -57,7 +55,7 @@ namespace gui {
 		bool markerChanged_;
 		mw::FontPtr font_;
 
-		mw::Color color_;
+		mw::Color textColor_;
 		Alignment alignment_;
 		InputFormatter inputFormatter_;
 		Uint32 markerDeltaTime_;
