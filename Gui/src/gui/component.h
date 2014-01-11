@@ -100,30 +100,53 @@ namespace gui {
 			return panelChangeListener_.connect(callback);
 		}
 
-		// Todo! Not thought throug how this propagate!
-		void setAlwaysFocus(bool focus) {
-			if (alwaysFocus_ != focus) {
-				alwaysFocus_ = focus;
-				focusListener_(this);
-				focus_ = focus;
-				if (focus && parent_ != nullptr) {
-					parent_->setAlwaysFocus(true);
+		// If set to true makes the component to always have focus. All parents will 
+		// also be set to have focus. If the current state is the same as the change, 
+		// nothing happens. If set to false, it will stop grabing focus unless there are 
+		// children that want to grab focus.
+		void setGrabFocus(bool grabFocus) {
+			if (grabFocus_ != grabFocus) {
+				// State is changed.
+				grabFocus_ = grabFocus;
+
+				if (grabFocus) {
+					setFocus(true);
+					if (parent_ != nullptr) {
+						// This component is one more.
+						++parent_->nbrChildGrabFocus_;
+					}
+				} else {
+					// Have children that wants focus?
+					if (nbrChildGrabFocus_ > 1) {
+						// Has a parent?
+						if (parent_ != nullptr) {
+							// One component less.
+							--parent_->nbrChildGrabFocus_;
+						}
+					}
 				}
 			}
+		}
+
+		bool isGrabFocus() const {
+			return grabFocus_;
 		}
 
 		// Sets the focus for the component.
 		// Focuslistener is called if focus changes.
 		virtual void setFocus(bool focus) {
-			if (!alwaysFocus_ && focus != focus_) {
-				focus_ = focus;
-				focusListener_(this);
+			// Change?
+			if (focus_ != focus) {
+				if (focus || grabFocus_ || (!focus && nbrChildGrabFocus_ < 1)) {
+					focus_ = focus;
+					focusListener_(this);
+				}
 			}
 		}
 
 		// Return the focus for the component.
 		bool hasFocus() const {
-			return alwaysFocus_ || focus_;
+			return focus_;
 		}
 
 		Component* getParent() const {
@@ -191,8 +214,9 @@ namespace gui {
 
 	protected:
 		Component() : parent_(nullptr), layoutIndex_(0), visible_(true),
-			focus_(false), alwaysFocus_(false), isAdded_(false) {
+			focus_(false), grabFocus_(false), isAdded_(false) {
 			borderColor_ = mw::Color(0, 0, 0);
+			nbrChildGrabFocus_ = 0;
 		}
 
 		// Takes care of all mouse events. And send it through to
@@ -251,7 +275,9 @@ namespace gui {
 
 		bool visible_;
 		bool focus_;
-		bool alwaysFocus_;
+		bool grabFocus_;
+		int nbrChildGrabFocus_;
+
 		bool isAdded_;
 	};
 

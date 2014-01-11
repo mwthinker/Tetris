@@ -32,7 +32,7 @@ void testFlowLayout(gui::Frame& frame) {
 	frame.add(new gui::Button("Button 4", font));
 	frame.add(new gui::CheckBox("CheckBox 5", font));
 	gui::TextField* field = new gui::TextField("Text:", font);
-	field->setAlwaysFocus(true);
+	field->setGrabFocus(true);
 	frame.add(field);
 	frame.add(new gui::TextField("", font));
 	frame.add(new gui::Label("JAjajaj", font));

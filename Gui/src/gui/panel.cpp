@@ -28,7 +28,11 @@ namespace gui {
 		component->parent_ = this;
 		component->setLayoutIndex(0);
 		components_.push_back(component);
-		setAlwaysFocus(true);
+		if (component->isGrabFocus()) {
+			setFocus(true);
+			++nbrChildGrabFocus_;
+		}
+		
 		validate();
 	}
 
@@ -39,7 +43,11 @@ namespace gui {
 		component->parent_ = this;
 		component->setLayoutIndex(layoutIndex);
 		components_.push_back(component);
-		setAlwaysFocus(true);
+		if (component->isGrabFocus()) {
+			setFocus(true);
+			++nbrChildGrabFocus_;
+		}
+
 		validate();
 	}
 
@@ -111,6 +119,12 @@ namespace gui {
 		Component* currentComponent = nullptr;
 		switch (mouseEvent.type) {
 			case SDL_MOUSEMOTION:
+				if (nbrChildGrabFocus_ > 0) {
+					for (Component* component : *this) {
+						component->setFocus(false);
+					}
+				}				
+
 				for (Component* component : *this) {
 					if (!component->isVisible()) {
 						continue;
@@ -138,6 +152,12 @@ namespace gui {
 			case SDL_MOUSEBUTTONDOWN:
 				// Fall through!
 			case SDL_MOUSEBUTTONUP:
+				if (nbrChildGrabFocus_ > 0) {
+					for (Component* component : *this) {
+						component->setFocus(false);
+					}
+				}
+
 				// Send the mouseEvent through to the correct component.
 				for (Component* component : *this) {
 					if (!component->isVisible()) {

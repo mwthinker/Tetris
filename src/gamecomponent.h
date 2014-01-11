@@ -24,7 +24,7 @@ void drawLineBorder(const A& a) {
 class GameComponent : public gui::Component, public GameHandler {
 public:
 	GameComponent() : tetrisGame_(this), alivePlayers_(0) {
-		setAlwaysFocus(true);
+		setGrabFocus(true);
 	}
 
 	~GameComponent() {
