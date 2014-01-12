@@ -1,6 +1,7 @@
 #include <gui/frame.h>
 #include <gui/flowlayout.h>
 #include <gui/borderlayout.h>
+#include <gui/verticallayout.h>
 #include <gui/panel.h>
 #include <gui/component.h>
 #include <gui/label.h>
@@ -15,10 +16,18 @@
 
 void testBorderLayout(gui::Frame& frame) {
 	frame.add(new gui::Button, gui::BorderLayout::NORTH);
-	frame.add(new gui::Button, gui::BorderLayout::CENTER);
+	gui::Panel* panel = new gui::Panel;
+	panel->setLayout(new gui::VerticalLayout);
+	frame.add(panel, gui::BorderLayout::CENTER);
 	frame.add(new gui::Button, gui::BorderLayout::WEST);
 	frame.add(new gui::Button, gui::BorderLayout::EAST);
 	frame.add(new gui::Button, gui::BorderLayout::SOUTH);
+	
+	panel->addToGroup(new gui::Button);
+	panel->addToGroup(new gui::Button);
+	panel->addToGroup(new gui::Button);
+	panel->addToGroup(new gui::Button);
+	
 }
 
 void testFlowLayout(gui::Frame& frame) {

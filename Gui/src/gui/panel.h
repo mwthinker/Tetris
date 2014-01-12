@@ -2,8 +2,9 @@
 #define GUI_PANEL_H
 
 #include "component.h"
+#include "traversalgroup.h"
 
-#include <list>
+#include <vector>
 
 namespace gui {
 
@@ -16,7 +17,7 @@ namespace gui {
 		// Creates a empty panel. The default LayoutManager is FlowLayout.
 		Panel();
 
-		// Deallocats all contained components.
+		// Deallocate all contained components.
 		~Panel();
 
 		// Adds the component to the container. Takes the ownership.
@@ -28,6 +29,14 @@ namespace gui {
 		// I.e. Deallocates the component when the panel is deallocated.
 		void add(Component* component, int layoutIndex);
 
+		// Same as add(Component* component) but added to 
+		// a traversal group too.
+		void addToGroup(Component* component);
+
+		// Same as add(Component* component, int layoutIndex) but added to 
+		// a traversal group too.
+		void addToGroup(Component* component, int layoutIndex);
+
 		// Sets the layouyt manager. Takes ower the ownership of the layoutManager.
 		// The old layoutManager are dealloted.
 		void setLayout(LayoutManager* layoutManager);
@@ -36,16 +45,16 @@ namespace gui {
 		// the panel takes care of that!
 		LayoutManager* getLayout() const;
 
-		std::list<Component*>::iterator begin();
-		std::list<Component*>::iterator end();
-		std::list<Component*>::const_iterator cbegin() const;
-		std::list<Component*>::const_iterator cend() const;
+		std::vector<Component*>::iterator begin();
+		std::vector<Component*>::iterator end();
+		std::vector<Component*>::const_iterator cbegin() const;
+		std::vector<Component*>::const_iterator cend() const;
 
 		// Returns the number of components contained.
 		int nbrOfComponents() const;
 
 		// Gets the list holding all contained components.
-		const std::list<Component*>& getComponents() const;
+		const std::vector<Component*>& getComponents() const;
 
 		void draw(Uint32 deltaTime) override;
 
@@ -82,8 +91,9 @@ namespace gui {
 		// The stack of the recent glscissor squares.
 		static std::stack<Square> squares_;
 
-		std::list<Component*> components_;
+		std::vector<Component*> components_;
 		LayoutManager* layoutManager_;
+		TraversalGroup group_;
 
 		Component* mouseMotionInsideComponent_;
 		Component* mouseDownInsideComponent_;

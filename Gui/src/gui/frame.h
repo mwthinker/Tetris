@@ -39,6 +39,14 @@ namespace gui {
 		// Will assert if the component already added.
 		void add(Component* component, int layoutIndex);
 
+		// Same as add(Component* component) but added to 
+		// a traversal group too.
+		void addToGroup(Component* component);
+
+		// Same as add(Component* component, int layoutIndex) but added to 
+		// a traversal group too.
+		void addToGroup(Component* component, int layoutIndex);
+
 		// Sets the layouyt manager. Takes ower the ownership of the layoutManager.
 		// The old layoutManager are dealloted.
 		void setLayout(LayoutManager* layoutManager);

@@ -32,7 +32,6 @@ namespace gui {
 			setFocus(true);
 			++nbrChildGrabFocus_;
 		}
-		
 		validate();
 	}
 
@@ -47,8 +46,17 @@ namespace gui {
 			setFocus(true);
 			++nbrChildGrabFocus_;
 		}
-
 		validate();
+	}
+
+	void Panel::addToGroup(Component* component) {
+		add(component);
+		group_.add(component);
+	}
+
+	void Panel::addToGroup(Component* component, int layoutIndex) {
+		add(component, layoutIndex);
+		group_.add(component);
 	}
 
 	void Panel::setLayout(LayoutManager* layoutManager) {
@@ -72,19 +80,19 @@ namespace gui {
 		return layoutManager_;
 	}
 
-	std::list<Component*>::iterator Panel::begin() {
+	std::vector<Component*>::iterator Panel::begin() {
 		return components_.begin();
 	}
 
-	std::list<Component*>::iterator Panel::end() {
+	std::vector<Component*>::iterator Panel::end() {
 		return components_.end();
 	}
 
-	std::list<Component*>::const_iterator Panel::cbegin() const {
+	std::vector<Component*>::const_iterator Panel::cbegin() const {
 		return components_.begin();
 	}
 
-	std::list<Component*>::const_iterator Panel::cend() const {
+	std::vector<Component*>::const_iterator Panel::cend() const {
 		return components_.end();
 	}
 
@@ -92,7 +100,7 @@ namespace gui {
 		return components_.size();
 	}
 
-	const std::list<Component*>& Panel::getComponents() const {
+	const std::vector<Component*>& Panel::getComponents() const {
 		return components_;
 	}
 
@@ -119,12 +127,6 @@ namespace gui {
 		Component* currentComponent = nullptr;
 		switch (mouseEvent.type) {
 			case SDL_MOUSEMOTION:
-				if (nbrChildGrabFocus_ > 0) {
-					for (Component* component : *this) {
-						component->setFocus(false);
-					}
-				}				
-
 				for (Component* component : *this) {
 					if (!component->isVisible()) {
 						continue;
@@ -152,12 +154,6 @@ namespace gui {
 			case SDL_MOUSEBUTTONDOWN:
 				// Fall through!
 			case SDL_MOUSEBUTTONUP:
-				if (nbrChildGrabFocus_ > 0) {
-					for (Component* component : *this) {
-						component->setFocus(false);
-					}
-				}
-
 				// Send the mouseEvent through to the correct component.
 				for (Component* component : *this) {
 					if (!component->isVisible()) {
@@ -218,6 +214,7 @@ namespace gui {
 			}
 		}
 		Component::handleKeyboard(keyEvent);
+		group_.handleKeyboard(keyEvent);
 	}
 
 	void Panel::mouseMotionLeave() {
@@ -249,6 +246,8 @@ namespace gui {
 		for (Component* child : *this) {
 			child->validate();
 		}
+
+		group_.sort();
 	}
 
 	std::stack<Panel::Square> Panel::squares_;
