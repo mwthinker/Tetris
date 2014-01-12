@@ -173,28 +173,28 @@ gui::Panel* TetrisWindow::createMenu() {
 	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
 
 	gui::Label* label = createLabel("MWetris", fontDefault50);
-	panel->add(label);
+	panel->addToGroup(label);
 
 	gui::Button* b1 = createButton("Play", fontDefault30);
-	panel->add(b1);
+	panel->addToGroup(b1);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(playIndex_);
 	});
 
 	gui::Button* b2 = createButton("Custom play", fontDefault30);
-	panel->add(b2);
+	panel->addToGroup(b2);
 	b2->addActionListener([&](gui::Component*) {
 		setCurrentPanel(customIndex_);
 	});
 
 	gui::Button* b3 = createButton("Network play", fontDefault30);
-	panel->add(b3);
+	panel->addToGroup(b3);
 	b3->addActionListener([&](gui::Component*) {
 		setCurrentPanel(createServerIndex_);
 	});
 
 	gui::Button* b4 = createButton("Highscore", fontDefault30);
-	panel->add(b4);
+	panel->addToGroup(b4);
 	b4->addActionListener([&](gui::Component*) {
 		setCurrentPanel(highscoreIndex_);
 	});
@@ -204,12 +204,12 @@ gui::Panel* TetrisWindow::createMenu() {
 		setCurrentPanel(settingsIndex_);
 	});
 
-	panel->add(b5);
+	panel->addToGroup(b5);
 	gui::Button* b6 = createButton("Exit", fontDefault30);
 	b6->addActionListener([&](gui::Component*) {
 		Window::quit();
 	});
-	panel->add(b6);
+	panel->addToGroup(b6);
 
 	return panel;
 }
