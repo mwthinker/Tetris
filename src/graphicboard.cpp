@@ -222,7 +222,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 
 	int rows = tetrisBoard_.getNbrOfRows();
 	int columns = tetrisBoard_.getNbrOfColumns();
-
+	
 	glBegin(GL_QUADS);
 	// Draws the outer square.
 	const float red = 0.8f, green = 0.2f, blue = 0.3f;
@@ -245,13 +245,13 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glEnd();
 
 	glDisable(GL_BLEND);
-
+	
 	// Draw squares.
 	glEnable(GL_TEXTURE_2D);
 	WHITE.glColor3d();
 	textureSquares->bind();
 	glBegin(GL_QUADS);
-	for (int row = 0; row < rows; ++row) {
+	for (int row = 0; row < rows + 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
 			BlockType type = tetrisBoard.getBlockType(row, column);
 			textureCoord(type, row, column);
@@ -260,8 +260,8 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	drawBlock(tetrisBoard.currentBlock(), tetrisBoard.getNbrOfRows() + 2);
 	drawBeginArea();
+	drawBlock(tetrisBoard.currentBlock(), tetrisBoard.getNbrOfRows() + 2);
 
 	glPopMatrix();
 }
