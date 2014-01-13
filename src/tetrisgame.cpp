@@ -19,6 +19,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 namespace {
 
@@ -478,7 +479,7 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 			char playerId;
 			Move move;
 			BlockType next;
-			receivInput(data,playerId,move,next);
+			receivInput(data, playerId, move, next);
 
 			// Remote player?
 			if (network_->getId() != id) {
@@ -649,6 +650,15 @@ void TetrisGame::serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet pa
 	for (int i = 0; i < nbrOfPlayers; ++i) {
 		PlayerPtr player(new RemotePlayer(++playerId_, width_, height_));
 		remote->add(player);
+		char length;
+		packet >> length;
+		std::stringstream stream;
+		for (int j = 0; j < length; ++j) {
+			char chr;
+			packet >> chr;
+			stream << chr;
+		}
+		player->setName(stream.str());
 	}
 }
 
@@ -678,6 +688,11 @@ void TetrisGame::sendServerInfo() {
 		newConnection->add(user.getId(),user.getNbrOfPlayers(),user.isReady());
 		for (PlayerPtr player : user) {
 			data << player->getId();
+			std::string name = player->getName();
+			data << name.length();
+			for (char chr : name) {
+				data << chr;
+			}
 		}
 		return true;
 	});
@@ -705,7 +720,7 @@ void TetrisGame::clientReceiveServerInfo(mw::Packet data) {
 		int nbrOfPlayers = data[++index];
 		nbrOfPlayers_ += nbrOfPlayers;
 
-		newConnection->add(id,nbrOfPlayers,ready);
+		newConnection->add(id, nbrOfPlayers, ready);
 
 		// This network (local)?
 		if (id == network_->getId()) {
@@ -716,6 +731,12 @@ void TetrisGame::clientReceiveServerInfo(mw::Packet data) {
 				PlayerPtr player(new LocalPlayer(playerId, width_, height_, devices_[i]));
 				localUser_->add(player);
 				localUser_->setReady(ready);
+				std::stringstream stream;
+				int length = data[++index];
+				for (int i = 0; i < length; ++i) {
+					stream << data[++index];
+				}
+				player->setName(stream.str());
 			}
 		} else {
 			UserConnectionPtr user(new UserConnection(id));
@@ -725,6 +746,12 @@ void TetrisGame::clientReceiveServerInfo(mw::Packet data) {
 				PlayerPtr player(new RemotePlayer(playerId, width_, height_));
 				user->add(player);
 				user->setReady(ready);
+				std::stringstream stream;
+				int length = data[++index];
+				for (int i = 0; i < length; ++i) {
+					stream << data[++index];
+				}
+				player->setName(stream.str());
 			}
 		}
 	}
@@ -738,6 +765,13 @@ void TetrisGame::sendClientInfo() {
 	mw::Packet data;
 	data << PacketType::CLIENTINFO;
 	data << devices_.size();
+	for (auto device : devices_) {
+		std::string name = device->getPlayerName();
+		data << name.length();
+		for (char chr : name) {
+			data << chr;
+		}
+	}
 	network_->pushToSendBuffer(data, mw::PacketType::RELIABLE);
 
 	std::cout << "\nSendClientInfo" << std::endl;

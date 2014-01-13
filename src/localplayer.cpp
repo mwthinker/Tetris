@@ -14,6 +14,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 
 	device_ = device;
 	device_->update(getTetrisBoard());
+	setName(device_->getPlayerName());
 }
 
 void LocalPlayer::update(double deltaTime) {

@@ -156,9 +156,7 @@ TetrisWindow::TetrisWindow() {
 	initWaitToConnectPanel();
 
 	// Init local game settings.
-	tetrisGame_.closeGame();
-	tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
-	tetrisGame_.startGame();
+	createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
 
 	setCurrentPanel(menuIndex_);
 
@@ -199,7 +197,7 @@ void TetrisWindow::initMenuPanel(const std::vector<DevicePtr>& devices) {
 	gui::Button* b1 = createButton("Play", fontDefault30);
 	panel->addToGroup(b1);
 	b1->addActionListener([&](gui::Component*) {
-		nbrHumans_->doAction();
+		createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
 		setCurrentPanel(playIndex_);
 		resume_->setVisible(true);
 	});
@@ -581,7 +579,7 @@ void TetrisWindow::initCreateClientPanel() {
 		int port;
 		std::stringstream stream1;
 		stream1 << portClient_->getText();
-		stream1 >> port;		
+		stream1 >> port;
 
 		createClientGame(port, ipClient_->getText());
 	});
@@ -628,10 +626,19 @@ void TetrisWindow::initClientLoobyPanel() {
 		tetrisGame_.closeGame();
 	});
 
+	gui::Button* b2 = createButton("Ready", fontDefault30);
+	b2->addActionListener([&](gui::Component*) {
+		tetrisGame_.changeReadyState();
+	});
+
 	clientLooby_ = new NetworkLooby;
 
 	add(bar, gui::BorderLayout::NORTH);
 	add(clientLooby_, gui::BorderLayout::CENTER);
+
+	gui::Panel* p = createPanel();
+	p->add(b2);
+	add(p, gui::BorderLayout::SOUTH);
 }
 
 void TetrisWindow::initWaitToConnectPanel() {
@@ -652,7 +659,10 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	std::vector<DevicePtr> tmpDevices;
 	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
-		devices_[i]->setPlayerName(devices_[i]->getName());
+	}
+
+	for (auto device : devices_) {
+		device->setPlayerName(device->getName());
 	}
 
 	tetrisGame_.closeGame();
