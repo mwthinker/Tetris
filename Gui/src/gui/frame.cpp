@@ -131,7 +131,7 @@ namespace gui {
 					if (sdlEvent.motion.windowID == SDL_GetWindowID(getSdlWindow())) {
 						// Reverse y-axis.
 						sdlEvent.motion.yrel *= -1;
-						sdlEvent.motion.y = getHeight() - sdlEvent.motion.y - 1;
+						sdlEvent.motion.y = getHeight() - sdlEvent.motion.y;
 						getCurrentPanel()->handleMouse(sdlEvent);
 					}
 					break;
@@ -139,7 +139,7 @@ namespace gui {
 					// Fall through!
 				case SDL_MOUSEBUTTONUP:
 					if (sdlEvent.button.windowID == SDL_GetWindowID(getSdlWindow())) {
-						sdlEvent.button.y = getHeight() - sdlEvent.motion.y - 1;
+						sdlEvent.button.y = getHeight() - sdlEvent.motion.y;
 						getCurrentPanel()->handleMouse(sdlEvent);
 					}
 					break;

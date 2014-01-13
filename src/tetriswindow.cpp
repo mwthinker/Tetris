@@ -83,7 +83,7 @@ namespace {
 		}
 	}
 
-	void showSomeHumanFields(ManButton* humans, std::array<gui::Panel*, 4>& humanPanels) {
+	void showHideHumanFields(ManButton* humans, std::array<gui::Panel*, 4>& humanPanels) {
 		for (unsigned int i = 0; i < humanPanels.size(); ++i) {
 			if (i < humans->getNbr()) {
 				humanPanels[i]->setVisible(true);
@@ -472,7 +472,7 @@ void TetrisWindow::initCreateServerPanel() {
 	p4->add(nbrAisServer_);
 
 	createPlayersFields(namesServer_, playersServer_);
-	showSomeHumanFields(nbrHumansServer_, playersServer_);
+	showHideHumanFields(nbrHumansServer_, playersServer_);
 
 	for (gui::Panel* panel : playersServer_) {
 		centerPanel->add(panel);
@@ -557,7 +557,7 @@ void TetrisWindow::initCreateClientPanel() {
 
 	createPlayersFields(namesClient_, playersClient_);
 
-	showSomeHumanFields(nbrHumansClient_, playersClient_);
+	showHideHumanFields(nbrHumansClient_, playersClient_);
 	for (gui::Panel* panel : playersClient_) {
 		centerPanel->add(panel);
 	}

@@ -5,7 +5,7 @@
 
 #include <mw/signal.h>
 #include <mw/color.h>
-#include <mw/texture.h>
+#include <mw/sprite.h>
 
 #include <sdl.h>
 
@@ -157,7 +157,7 @@ namespace gui {
 			background_ = background;
 		}
 
-		inline mw::TexturePtr getBackground() const {
+		const mw::Sprite& getBackground() const {
 			return background_;
 		}
 
@@ -247,6 +247,8 @@ namespace gui {
 		}
 
 		virtual void drawBorder() {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			borderColor_.glColor4d();
 			glBegin(GL_LINE_LOOP);
 			glVertex2d(0, 0);
@@ -254,10 +256,11 @@ namespace gui {
 			glVertex2d(dimension_.width_, dimension_.height_);
 			glVertex2d(0, dimension_.height_);
 			glEnd();
+			glDisable(GL_BLEND);
 		}
 
 	private:
-		mw::TexturePtr background_;
+		mw::Sprite background_;
 		mw::Color backgroundColor_;
 		mw::Color borderColor_;
 		Component* parent_;
