@@ -72,7 +72,11 @@ namespace gui {
 		// Sets the color for the text label.
 		void setTextColor(const mw::Color& textColor);
 
-		virtual void setPreferedSizeFitText();
+		virtual void sizeToFitText();
+
+		void setAutoSizeToFitText(bool autoFit);
+
+		bool isAutoSizeToFitText() const;
 
 		inline const mw::Color& getHoverColor() const {
 			return hoverColor_;
@@ -121,24 +125,10 @@ namespace gui {
 		VerticalAlignment vTextAlignment_;
 		HorizontalAlignment hTextAlignment_;
 
-	private:
-		inline void init() {
-			setPreferredSize(50, 50);
-			pushed_ = false;
-			mouseDown_ = false;
-			mouseInside_ = false;
-			vTextAlignment_ = VerticalAlignment::VCENTER;
-			hTextAlignment_ = HorizontalAlignment::HCENTER;
-			setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
-			textColor_ = mw::Color(0, 0, 0);
-			focusColor_ = mw::Color(0, 0, 0, 0.05);
-			hoverColor_ = mw::Color(0, 0, 0, 0.1);
-			pushColor_ = mw::Color(0, 0, 0, 0.15);
+		bool autoFit_;
 
-			Button::setPreferedSizeFitText();
-			toWide_ = text_;
-			toWide_.setText(". . .");
-		}
+	private:
+		void init();
 
 		void handleMouse(const SDL_Event&) override;
 		void handleKeyboard(const SDL_Event&) override;

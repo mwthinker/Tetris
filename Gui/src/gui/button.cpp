@@ -43,11 +43,17 @@ namespace gui {
 	// Set the label of this Button instance.
 	void Button::setLabel(std::string label) {
 		text_.setText(label);
+		if (autoFit_) {
+			sizeToFitText();
+		}
 	}
 
 	void Button::setFont(const mw::FontPtr& font) {
 		text_ = mw::Text(text_.getText(), font);
 		toWide_ = mw::Text(toWide_.getText(), font);
+		if (autoFit_) {
+			sizeToFitText();
+		}
 	}
 
 	void Button::handleKeyboard(const SDL_Event& keyEvent) {
@@ -130,10 +136,21 @@ namespace gui {
 		textColor_ = textColor;
 	}
 
-	void Button::setPreferedSizeFitText() {
+	void Button::sizeToFitText() {
 		if (text_.getWidth() > 1 && text_.getHeight() > 1) {
 			setPreferredSize(2 + (float) text_.getWidth(), 2 + (float) text_.getHeight());
 		}
+	}
+
+	void Button::setAutoSizeToFitText(bool autoFit) {
+		if (autoFit_ != autoFit) {
+			sizeToFitText();
+			autoFit_ = autoFit;
+		}
+	}
+
+	bool Button::isAutoSizeToFitText() const {
+		return autoFit_;
 	}
 
 	void Button::drawLabel() {
@@ -216,6 +233,24 @@ namespace gui {
 		glVertex2d(0, dim.height_);
 		glEnd();
 		glDisable(GL_BLEND);
+	}
+
+	void Button::init() {
+		setPreferredSize(50, 50);
+		pushed_ = false;
+		mouseDown_ = false;
+		mouseInside_ = false;
+		vTextAlignment_ = VerticalAlignment::VCENTER;
+		hTextAlignment_ = HorizontalAlignment::HCENTER;
+		setBackgroundColor(mw::Color(0.9, 0.9, 0.9));
+		textColor_ = mw::Color(0, 0, 0);
+		focusColor_ = mw::Color(0, 0, 0, 0.05);
+		hoverColor_ = mw::Color(0, 0, 0, 0.1);
+		pushColor_ = mw::Color(0, 0, 0, 0.15);
+
+		autoFit_ = false;
+		toWide_ = text_;
+		toWide_.setText(". . .");
 	}
 	
 } // Namespace gui.

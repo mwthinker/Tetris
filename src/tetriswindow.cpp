@@ -67,7 +67,7 @@ namespace {
 		button->setPushColor(mw::Color(.8, .0, 0, .7));
 		button->setBackgroundColor(mw::Color(0, 0, 0, 0));
 		button->setBorderColor(mw::Color(0, 0, 0, 0));
-		button->setPreferedSizeFitText();
+		button->setAutoSizeToFitText(true);
 		return button;
 	}
 
@@ -253,7 +253,6 @@ void TetrisWindow::initPlayPanel() {
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.closeGame();
 			menu_->setLabel("Menu");
-			menu_->setPreferedSizeFitText();
 			nbrAis_->setVisible(true);
 			nbrHumans_->setVisible(true);
 			restart_->setVisible(true);
@@ -709,10 +708,8 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 	} else if (std::shared_ptr<GamePause> gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
 		if (gameOver->pause_) {
 			pauseButton_->setLabel("Unpause");
-			pauseButton_->setPreferedSizeFitText();
 		} else {
 			pauseButton_->setLabel("Pause");
-			pauseButton_->setPreferedSizeFitText();
 		}
 	} else if (std::shared_ptr<NewConnection> newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
 		switch (newConnection->status_) {
@@ -740,7 +737,6 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 				break;
 			case GameStart::CLIENT:
 				menu_->setLabel("Abort");
-				menu_->setPreferedSizeFitText();
 				nbrAis_->setVisible(false);
 				nbrHumans_->setVisible(false);
 				restart_->setVisible(false);
@@ -748,7 +744,6 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 				break;
 			case GameStart::SERVER:
 				menu_->setLabel("Abort");
-				menu_->setPreferedSizeFitText();
 				nbrAis_->setVisible(false);
 				nbrHumans_->setVisible(false);
 				resume_->setVisible(false);
