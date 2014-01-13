@@ -3,6 +3,7 @@
 
 #include "device.h"
 #include "ai.h"
+#include "tetrisgame.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
@@ -28,8 +29,7 @@ private:
 	void updateDevices(Frame* frame, const SDL_Event& windowEvent);
 
 	gui::Panel* createMenu();
-
-	void createLocalGame();
+	
 	void createLocalGame(int width, int height, int maxLevel);
 	void createServerGame(int port, int width, int height);
 	void createClientGame(int port, std::string ip);
@@ -42,11 +42,18 @@ private:
 	void loadAllSettings();
 	void saveAllSettings();
 
+	TetrisGame tetrisGame_;
+
+	// initMenuPanel
+	gui::Button* resume_;
+
 	// initPlayPanel
 	GameComponent* game_;
 	ManButton* nbrHumans_;
 	ManButton* nbrAis_;
 	gui::Button* pauseButton_;
+	gui::Button* menu_;
+	gui::Button* restart_;
 	
 	// initHighscorePanel
 	Highscore* highscore_;
@@ -79,9 +86,11 @@ private:
 
 	// initServerLoobyPanel
 	NetworkLooby* serverLooby_;
-
+	gui::Button* serverReady_;;
+	
 	// initServerLoobyPanel
 	NetworkLooby* clientLooby_;
+	gui::Button* clientReady_;;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

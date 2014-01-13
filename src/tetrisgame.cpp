@@ -103,7 +103,7 @@ namespace {
 
 } // Anonymous namespace.
 
-TetrisGame::TetrisGame(GameHandler* gameHandler) : gameHandler_(gameHandler) {
+TetrisGame::TetrisGame() {
 	pause_ = false;
 	serverPort_ = 12008;
 	connectToPort_ = 12008;

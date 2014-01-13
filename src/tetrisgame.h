@@ -33,8 +33,12 @@ class TetrisGame : public mw::ServerFilter {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
-	TetrisGame(GameHandler* gameHandler);
+	TetrisGame();
 	~TetrisGame();
+
+	void setGameHandler(GameHandler* gameHandler) {
+		gameHandler_ = gameHandler;
+	}
 
 	// Updates everything. Should be called each frame.
 	void update(Uint32 msDeltaTime);
@@ -81,6 +85,10 @@ public:
 	void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
 
 	void signalEvent(NetworkEventPtr nEvent);
+
+	Status getStatus() const {
+		return status_;
+	}
 
 private:
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);

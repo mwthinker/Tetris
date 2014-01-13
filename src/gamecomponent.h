@@ -23,16 +23,15 @@ void drawLineBorder(const A& a) {
 
 class GameComponent : public gui::Component, public GameHandler {
 public:
-	GameComponent() : tetrisGame_(this), alivePlayers_(0) {
+	GameComponent(TetrisGame& tetrisGame) : tetrisGame_(tetrisGame), alivePlayers_(0) {
 		setGrabFocus(true);
+		tetrisGame_.setGameHandler(this);
 	}
 
 	~GameComponent() {
 	}
 
 	void draw(Uint32 deltaTime) override {
-		tetrisGame_.update(deltaTime);
-
 		glPushMatrix();
 		gui::Dimension dim = getSize();
 		double width = 5;
@@ -68,46 +67,6 @@ public:
 		}
 
 		glPopMatrix();
-	}
-
-	void addCallback(mw::Signal<NetworkEventPtr>::Callback callback) {
-		tetrisGame_.addCallback(callback);
-	}
-
-	void closeGame() {
-		tetrisGame_.closeGame();
-	}
-
-	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers) {
-		tetrisGame_.createLocalGame(devices, nbrOfComputers);
-	}
-
-	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel) {
-		tetrisGame_.createLocalGame(devices, nbrOfComputers, width, height, maxLevel);
-	}
-
-	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height, int maxLevel) {
-		tetrisGame_.createServerGame(devices, nbrOfComputers, port, width, height, maxLevel);
-	}
-
-	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip, int maxLevel) {
-		tetrisGame_.createClientGame(devices, nbrOfComputers, port, ip, maxLevel);
-	}
-
-	void startGame() {
-		tetrisGame_.startGame();
-	}
-
-	void restartGame() {
-		tetrisGame_.restartGame();
-	}
-
-	void pause() {
-		tetrisGame_.pause();
-	}
-
-	void setAis(const Ai& ai1, const Ai& ai2, const Ai& ai3, const Ai& ai4) {
-		tetrisGame_.setAis(ai1, ai2, ai3, ai4);
 	}	
 
 	void initGame(const std::vector<const PlayerPtr>& players) override{
@@ -272,7 +231,7 @@ private:
 		sound.play();
 	}
 	
-	TetrisGame tetrisGame_;
+	TetrisGame& tetrisGame_;
 	std::map<int, Graphic> graphic_;
 	int alivePlayers_;
 

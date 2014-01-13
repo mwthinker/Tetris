@@ -98,9 +98,13 @@ TetrisWindow::TetrisWindow() {
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
 
-	game_ = new GameComponent;
+	game_ = new GameComponent(tetrisGame_);
 
-	game_->addCallback([&](NetworkEventPtr nEvent) {
+	addUpdateListener([&](gui::Frame* frame, Uint32 deltaTime) {
+		tetrisGame_.update(deltaTime);
+	});
+
+	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
 		handleConnectionEvent(nEvent);
 	});
 
@@ -151,9 +155,9 @@ TetrisWindow::TetrisWindow() {
 	initWaitToConnectPanel();
 
 	// Init local game settings.
-	game_->closeGame();
-	game_->createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
-	game_->startGame();
+	tetrisGame_.closeGame();
+	tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + 1), 0, TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
+	tetrisGame_.startGame();
 
 	setCurrentPanel(menuIndex_);
 
@@ -167,7 +171,23 @@ void TetrisWindow::updateDevices(Frame* frame, const SDL_Event& windowEvent) {
 	}
 }
 
-gui::Panel* TetrisWindow::createMenu() {
+TetrisWindow::~TetrisWindow() {
+}
+
+void TetrisWindow::initMenuPanel(const std::vector<DevicePtr>& devices) {
+	setCurrentPanel(menuIndex_);
+
+	resume_ = createButton("Resume", fontDefault30);
+	resume_->addActionListener([&](gui::Component*) {
+		setCurrentPanel(playIndex_);
+	});
+	resume_->setVisible(false);
+
+	gui::Panel* bar = createBar();
+	bar->add(resume_);
+
+	add(bar, gui::BorderLayout::NORTH);
+
 	gui::Panel* panel = createPanel(400, 400);
 	panel->setLayout(new gui::VerticalLayout(5, 15, 10));
 	panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
@@ -178,7 +198,9 @@ gui::Panel* TetrisWindow::createMenu() {
 	gui::Button* b1 = createButton("Play", fontDefault30);
 	panel->addToGroup(b1);
 	b1->addActionListener([&](gui::Component*) {
+		nbrHumans_->doAction();
 		setCurrentPanel(playIndex_);
+		resume_->setVisible(true);
 	});
 
 	gui::Button* b2 = createButton("Custom play", fontDefault30);
@@ -211,25 +233,7 @@ gui::Panel* TetrisWindow::createMenu() {
 	});
 	panel->addToGroup(b6);
 
-	return panel;
-}
-
-TetrisWindow::~TetrisWindow() {
-}
-
-void TetrisWindow::initMenuPanel(const std::vector<DevicePtr>& devices) {
-	setCurrentPanel(menuIndex_);
-
-	gui::Button* b1 = createButton("Resume", fontDefault30);
-	b1->addActionListener([&](gui::Component*) {
-		setCurrentPanel(playIndex_);
-	});
-
-	gui::Panel* bar = createBar();
-	bar->add(b1);
-
-	add(bar, gui::BorderLayout::NORTH);
-	add(createMenu(), gui::BorderLayout::WEST);
+	add(panel, gui::BorderLayout::WEST);	
 }
 
 void TetrisWindow::initPlayPanel() {
@@ -244,43 +248,51 @@ void TetrisWindow::initPlayPanel() {
 	p1->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 	p2->setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT, 5, 0));
 
-	gui::Button* b1 = createButton("Menu", fontDefault30);
-	b1->addActionListener([&](gui::Component*) {
+	menu_ = createButton("Menu", fontDefault30);
+	menu_->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
+		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
+			tetrisGame_.closeGame();
+			menu_->setLabel("Menu");
+			menu_->setPreferedSizeFitText();
+			nbrAis_->setVisible(true);
+			nbrHumans_->setVisible(true);
+			restart_->setVisible(true);
+		}
 	});
-	p1->add(b1);
+	p1->add(menu_);
 
-	gui::Button* b2 = createButton("Restart", fontDefault30);
-	b2->addActionListener([&](gui::Component*) {
-		game_->restartGame();
+	restart_ = createButton("Restart", fontDefault30);
+	restart_->addActionListener([&](gui::Component*) {
+		tetrisGame_.restartGame();
 	});
-	p1->add(b2);
+	p1->add(restart_);
 	pauseButton_ = createButton("Pause", fontDefault30);
 	pauseButton_->addActionListener([&](gui::Component*) {
-		game_->pause();
+		tetrisGame_.pause();
 	});
 	p2->add(pauseButton_);
 
 	nbrHumans_ = new ManButton(devices_.size(), spriteMan, spriteCross);
 	nbrHumans_->addActionListener([&](gui::Component*) {
-		game_->closeGame();
-		game_->createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
-		game_->startGame();
-		game_->restartGame();
+		tetrisGame_.closeGame();
+		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		tetrisGame_.startGame();
+		tetrisGame_.restartGame();
 	});
 	p1->add(nbrHumans_);
 	nbrAis_ = new ManButton(4, spriteComputer, spriteCross);
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component*) {
-		game_->closeGame();
-		game_->createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
-		game_->startGame();
-		game_->restartGame();
+		tetrisGame_.closeGame();
+		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		tetrisGame_.startGame();
+		tetrisGame_.restartGame();
 	});
 	p2->add(nbrAis_);
 
-	p1->setPreferredSize(b1->getPreferredSize() + b2->getPreferredSize());
-	p2->setPreferredSize(b2->getPreferredSize());
+	p1->setPreferredSize(menu_->getPreferredSize() + restart_->getPreferredSize());
+	p2->setPreferredSize(restart_->getPreferredSize());
 
 	bar->add(p1);
 	bar->add(p2);
@@ -291,7 +303,7 @@ void TetrisWindow::initPlayPanel() {
 			case SDL_KEYDOWN:
 				switch (keyEvent.key.keysym.sym) {
 					case SDLK_F2:
-						game_->restartGame();
+						tetrisGame_.restartGame();
 						break;
 					case SDLK_p:
 						pauseButton_->doAction();
@@ -468,6 +480,10 @@ void TetrisWindow::initCreateServerPanel() {
 		centerPanel->add(panel);
 	}
 
+	nbrAisServer_->addActionListener([&](gui::Component* c) {
+		nbrOfComputerPlayers_ = nbrAisServer_->getNbr();
+	});
+
 	nbrHumansServer_->addActionListener([&](gui::Component* c) {
 		for (unsigned int i = 0; i < playersServer_.size(); ++i) {
 			if (i < nbrHumansServer_->getNbr()) {
@@ -476,10 +492,25 @@ void TetrisWindow::initCreateServerPanel() {
 				playersServer_[i]->setVisible(false);
 			}
 		}
+		nbrOfHumanPlayers_ = nbrHumansServer_->getNbr();
 	});
 
 	gui::Button* button = createButton("Connect", fontDefault30);
 	centerPanel->add(button);
+	button->addActionListener([&](gui::Component* c) {
+		int port, width, height;
+		std::stringstream stream1;
+		stream1 << portServer_->getText();
+		stream1 >> port;
+		std::stringstream stream2;
+		stream2 << serverWidthField_->getText();
+		stream2 >> width;
+		std::stringstream stream3;
+		stream3 << serverHeightField_->getText();
+		stream3 >> height;
+		
+		createServerGame(port, width, height);
+	});
 
 	add(centerPanel, gui::BorderLayout::CENTER);
 }
@@ -551,12 +582,26 @@ void TetrisWindow::initServerLoobyPanel() {
 	gui::Button* b1 = createButton("Abort", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
+		tetrisGame_.closeGame();
 	});
+	bar->add(b1);
 
 	serverLooby_ = new NetworkLooby;
 
 	add(bar, gui::BorderLayout::NORTH);
 	add(serverLooby_, gui::BorderLayout::CENTER);
+	gui::Panel* p = createPanel();
+	gui::Button* b2 = createButton("Ready", fontDefault30);
+	p->add(b2);
+	b2->addActionListener([&](gui::Component*) {
+		tetrisGame_.changeReadyState();
+	});
+	gui::Button* b3 = createButton("Start", fontDefault30);
+	b3->addActionListener([&](gui::Component*) {
+		tetrisGame_.startGame();
+	});
+	p->add(b3);
+	add(p, gui::BorderLayout::SOUTH);
 }
 
 void TetrisWindow::initClientLoobyPanel() {
@@ -593,23 +638,10 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	game_->closeGame();
-	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	game_->createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
-	game_->startGame();
-}
-
-void TetrisWindow::createLocalGame() {
-	const int size = devices_.size();
-	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
-		tmpDevices.push_back(devices_[i]);
-	}
-
-	game_->closeGame();
-	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	game_->createLocalGame(tmpDevices, nbrOfComputerPlayers_);
-	game_->startGame();
+	tetrisGame_.closeGame();
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
+	tetrisGame_.startGame();
 }
 
 void TetrisWindow::createServerGame(int port, int width, int height) {
@@ -619,9 +651,9 @@ void TetrisWindow::createServerGame(int port, int width, int height) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	game_->closeGame();
-	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	game_->createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
+	tetrisGame_.closeGame();
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::createClientGame(int port, std::string ip) {
@@ -631,9 +663,9 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	game_->closeGame();
-	game_->setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	game_->createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
+	tetrisGame_.closeGame();
+	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
+	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
@@ -678,8 +710,19 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 			case GameStart::LOCAL:
 				break;
 			case GameStart::CLIENT:
+				menu_->setLabel("Abort");
+				menu_->setPreferedSizeFitText();
+				nbrAis_->setVisible(false);
+				nbrHumans_->setVisible(false);
+				restart_->setVisible(false);
+				resume_->setVisible(false);
 				break;
 			case GameStart::SERVER:
+				menu_->setLabel("Abort");
+				menu_->setPreferedSizeFitText();
+				nbrAis_->setVisible(false);
+				nbrHumans_->setVisible(false);
+				resume_->setVisible(false);
 				break;
 		}
 		setCurrentPanel(playIndex_);

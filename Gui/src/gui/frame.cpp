@@ -99,6 +99,8 @@ namespace gui {
 	}
 	
 	void Frame::update(Uint32 deltaTime) {
+		updateListener_(this, deltaTime);
+
 		// Perform non critical event updates.
 		while (!eventQueue_.empty()) {
 			SDL_Event sdlEvent = eventQueue_.front();

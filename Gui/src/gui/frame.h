@@ -17,6 +17,7 @@ namespace gui {
 	class Frame;
 	using WindowListener = mw::Signal<Frame*, const SDL_Event&>;
 	using SdlEventListener = mw::Signal<Frame*, const SDL_Event&>;
+	using UpdateListener = mw::Signal<Frame*, Uint32>;
 
 	class Frame : public mw::Window {
 	public:
@@ -113,6 +114,10 @@ namespace gui {
 			return getCurrentPanel()->addPanelChangeListener(callback);
 		}
 
+		inline mw::signals::Connection addUpdateListener(const UpdateListener::Callback& callback) {
+			return updateListener_.connect(callback);
+		}
+
 	private:
 		// Override mw::Window.
 		void update(Uint32 deltaTime) override;
@@ -127,7 +132,8 @@ namespace gui {
 		std::queue<SDL_Event> eventQueue_;
 		WindowListener windowListener_;
 		SdlEventListener sdlEventListener_;
-		
+		UpdateListener updateListener_;
+
 		bool defaultClosing_;
 		std::vector<Panel*> panels_;
 		int currentPanel_;
