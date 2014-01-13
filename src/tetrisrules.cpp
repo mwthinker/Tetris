@@ -17,6 +17,13 @@ void TetrisRules::initGame(std::vector<PlayerInfoPtr> players, int columns, int 
 	nbrOfAlivePlayers_ = players.size();
 	maxLevel_ = maxLevel;
 	local_ = local;
+
+	for (auto& p : players) {
+		p->setLevel(1);
+		p->setLevelUpCounter(0);
+		p->setPoints(0);
+		p->setNbrClearedRows(0);
+	}
 }
 
 void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent, TetrisGame* game) {
@@ -94,7 +101,7 @@ void TetrisRules::applyRules(PlayerInfoPtr player, GameEvent gameEvent, TetrisGa
 		// Set level.
 		int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
 		if (level <= maxLevel_) {
-			player->setLevelUpCounter(level);
+			player->setLevel(level);
 		}
 	}
 }
