@@ -29,139 +29,79 @@ namespace gui {
 		}
 
 		// Return the component's location in the parent's coordinate space.
-		Point getLocation() const {
+		inline Point getLocation() const {
 			return location_;
 		}
 
-		void setLocation(float x, float y) {
+		inline void setLocation(const Point& point) {
+			location_ = point;
+		}
+
+		inline void setLocation(float x, float y) {
 			location_ = Point(x, y);
 		}
 
-		// Returns the alignment along the Y and X axis. The return value = [0,1].
-		Dimension getAlignment() const {
-			return alignment_;
-		}
+		void setPreferredSize(float width, float height);
 
-		void setPreferredSize(float width, float height) {
-			preferedDimension_ = Dimension(width, height);
-			validateParent();
-		}
+		void setPreferredSize(const Dimension& dimension);
 
-		void setPreferredSize(const Dimension& dimension) {
-			preferedDimension_ = dimension;
-			validateParent();
-		}
-
-		Dimension getPreferredSize() const {
+		inline Dimension getPreferredSize() const {
 			return preferedDimension_;
 		}
 
 		// Return the components size.
-		Dimension getSize() const {
+		inline Dimension getSize() const {
 			return dimension_;
 		}
 
-		void setSize(float width, float height) {
+		inline void setSize(float width, float height) {
 			dimension_ = Dimension(width, height);
 		}
 
-		void setSize(const Dimension& dimension) {
+		inline void setSize(const Dimension& dimension) {
 			dimension_ = dimension;
 		}
 
-		void setVisible(bool visible) {
-			if (visible_ != visible) {
-				visible_ = visible;
-				validateParent();
-			}
-		}
+		void setVisible(bool visible);
 
-		bool isVisible() const {
+		inline bool isVisible() const {
 			return visible_;
 		}
 
-		mw::signals::Connection addKeyListener(const KeyListener::Callback& callback) {
-			return keyListener_.connect(callback);
-		}
-
-		mw::signals::Connection addMouseListener(const MouseListener::Callback& callback) {
-			return mouseListener_.connect(callback);
-		}
-
-		mw::signals::Connection addFocusListener(const FocusListener::Callback& callback) {
-			return focusListener_.connect(callback);
-		}
-
-		mw::signals::Connection addActionListener(const ActionListener::Callback& callback) {
-			return actionListener_.connect(callback);
-		}
-
-		mw::signals::Connection addPanelChangeListener(const PanelChangeListener::Callback& callback) {
-			return panelChangeListener_.connect(callback);
-		}
+		mw::signals::Connection addKeyListener(const KeyListener::Callback& callback);
+		mw::signals::Connection addMouseListener(const MouseListener::Callback& callback);
+		mw::signals::Connection addFocusListener(const FocusListener::Callback& callback);
+		mw::signals::Connection addActionListener(const ActionListener::Callback& callback);
+		mw::signals::Connection addPanelChangeListener(const PanelChangeListener::Callback& callback);
 
 		// If set to true makes the component to always have focus. All parents will 
 		// also be set to have focus. If the current state is the same as the change, 
 		// nothing happens. If set to false, it will stop grabing focus unless there are 
 		// children that want to grab focus.
-		void setGrabFocus(bool grabFocus) {
-			if (grabFocus_ != grabFocus) {
-				// State is changed.
-				grabFocus_ = grabFocus;
+		void setGrabFocus(bool grabFocus);
 
-				if (grabFocus) {
-					setFocus(true);
-					if (parent_ != nullptr) {
-						// This component is one more.
-						++parent_->nbrChildGrabFocus_;
-					}
-				} else {
-					// Have children that wants focus?
-					if (nbrChildGrabFocus_ > 1) {
-						// Has a parent?
-						if (parent_ != nullptr) {
-							// One component less.
-							--parent_->nbrChildGrabFocus_;
-						}
-					}
-				}
-			}
-		}
-
-		bool isGrabFocus() const {
-			return grabFocus_;
-		}
+		bool isGrabFocus() const;
 
 		// Sets the focus for the component.
 		// Focuslistener is called if focus changes.
-		virtual void setFocus(bool focus) {
-			// Change?
-			if (focus_ != focus) {
-				if (focus || grabFocus_ || (!focus && nbrChildGrabFocus_ < 1)) {
-					focus_ = focus;
-					focusListener_(this);
-				}
-			}
-		}
+		virtual void setFocus(bool focus);
 
 		// Return the focus for the component.
-		bool hasFocus() const {
-			return focus_;
-		}
+		bool hasFocus() const;
 
-		Component* getParent() const {
+		inline Component* getParent() const {
 			return parent_;
 		}
 
-		void setBackground(const mw::TexturePtr& background) {
+		inline void setBackground(const mw::Sprite& background) {
 			background_ = background;
 		}
 
-		const mw::Sprite& getBackground() const {
+		inline const mw::Sprite& getBackground() const {
 			return background_;
 		}
 
-		void setBackgroundColor(const mw::Color& color) {
+		inline void setBackgroundColor(const mw::Color& color) {
 			backgroundColor_ = color;
 		}
 
@@ -169,7 +109,7 @@ namespace gui {
 			return backgroundColor_;
 		}
 
-		void setBorderColor(const mw::Color& color) {
+		inline void setBorderColor(const mw::Color& color) {
 			borderColor_ = color;
 		}
 
@@ -183,81 +123,50 @@ namespace gui {
 		virtual void draw(Uint32 deltaTime);
 
 		// Do action.
-		void doAction() {
-			actionListener_(this);
-		}
+		void doAction();
 
 		// Only called when the mouse leave the component.
-		virtual void mouseMotionLeave() {
+		inline virtual void mouseMotionLeave() {
 		}
 
 		// Only called when the mouse up was inside the component.
 		// And the up event was outside.
-		virtual void mouseOutsideUp() {
+		inline virtual void mouseOutsideUp() {
 		}
 
-		virtual void panelChanged(bool active) {
-			panelChangeListener_(this, active);
-		}
+		virtual void panelChanged(bool active);
 
 		// Gets the layout index for the component.
 		// 0 is the default value.
-		int getLayoutIndex() const {
-			return layoutIndex_;
-		}
+		int getLayoutIndex() const;
 
 		// Defines the layout for the component.
 		// Must correspond to the active LayoutManager.
-		void setLayoutIndex(int layoutIndex) {
-			layoutIndex_ = layoutIndex;
-		}
+		void setLayoutIndex(int layoutIndex);
 
 	protected:
-		Component() : parent_(nullptr), layoutIndex_(0), visible_(true),
-			focus_(false), grabFocus_(false), isAdded_(false) {
-			borderColor_ = mw::Color(0, 0, 0);
-			nbrChildGrabFocus_ = 0;
-		}
+		Component();
 
 		// Takes care of all mouse events. And send it through to
 		// all mouse listener callbacks.
 		// Mouse events: SDL_MOUSEMOTION, SDL_MOUSEBUTTONDOWN and SDL_MOUSEBUTTONUP.
-		virtual void handleMouse(const SDL_Event& mouseEvent) {
-			mouseListener_(this, mouseEvent);
-		}
+		virtual void handleMouse(const SDL_Event& mouseEvent);
 
 		// Takes care of all key events. And send it through to
 		// all key listener callbacks.
 		// Key events: SDL_TEXTINPUT, SDL_TEXTEDITING, SDL_KEYDOWN and SDL_KEYUP.
-		virtual void handleKeyboard(const SDL_Event& keyEvent) {
-			keyListener_(this, keyEvent);
-		}
+		virtual void handleKeyboard(const SDL_Event& keyEvent);
 
 		// Fixes all child components sizes.
 		// If there are no childs nothing happens.
-		virtual void validate() {
+		inline virtual void validate() {
 		}
 
 		// Is called in order to signal the parent component that
 		// the childrens sizes must be recalculated.
-		void validateParent() {
-			if (parent_ != nullptr) {
-				parent_->validate();
-			}
-		}
+		void validateParent();
 
-		virtual void drawBorder() {
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			borderColor_.glColor4d();
-			glBegin(GL_LINE_LOOP);
-			glVertex2d(0, 0);
-			glVertex2d(dimension_.width_, 0);
-			glVertex2d(dimension_.width_, dimension_.height_);
-			glVertex2d(0, dimension_.height_);
-			glEnd();
-			glDisable(GL_BLEND);
-		}
+		virtual void drawBorder();
 
 	private:
 		mw::Sprite background_;
@@ -267,7 +176,6 @@ namespace gui {
 		Point location_;
 		Dimension dimension_;
 		Dimension preferedDimension_;
-		Dimension alignment_;
 		int layoutIndex_;
 
 		FocusListener focusListener_;
