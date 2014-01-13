@@ -14,6 +14,7 @@ Computer::Computer(const Ai& ai) : Device(true) {
 	latestId_ = -1;
 	ai_ = ai;
 	activeThread_ = false;
+	playerName_ = ai.getName();
 }
 
 Input Computer::currentInput() {
@@ -22,6 +23,10 @@ Input Computer::currentInput() {
 
 std::string Computer::getName() const {
 	return "Computer";
+}
+
+std::string Computer::getPlayerName() const {
+	return playerName_;
 }
 
 void Computer::update(const TetrisBoard& board) {

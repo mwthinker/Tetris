@@ -20,6 +20,12 @@ public:
 
 	std::string getName() const override;
 
+	std::string getPlayerName() const override;
+
+	void setPlayerName(std::string playerName) override {
+		playerName_ = playerName;
+	}
+
 	void update(const TetrisBoard& board) override;
 
 private:
@@ -55,6 +61,7 @@ private:
 	Ai ai_;
 	bool activeThread_;
 	std::future<State> handle_;
+	std::string playerName_;
 };
 
 #endif // CUMPUTER_H

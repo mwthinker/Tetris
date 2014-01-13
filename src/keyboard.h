@@ -12,12 +12,21 @@ public:
 
 	Input currentInput() override;
 	std::string getName() const override;
+
+	std::string getPlayerName() const override {
+		return playerName_;
+	}
+
+	void setPlayerName(std::string playerName) override {
+		playerName_ = playerName;
+	}
 private:
 	void eventUpdate(const SDL_Event& windowEvent) override;
 
 	Input input_;
 	SDL_Keycode down_, right_, left_, rotate_;
 	std::string name_;
+	std::string playerName_;
 };
 
 #endif // KEYBOARD_H

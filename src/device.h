@@ -37,6 +37,10 @@ public:
 
 	virtual std::string getName() const = 0;
 
+	virtual std::string getPlayerName() const = 0;
+
+	virtual void setPlayerName(std::string playerName) = 0;
+
 	virtual void update(const TetrisBoard& board) {
 	}
 

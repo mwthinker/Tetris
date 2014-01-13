@@ -71,18 +71,19 @@ namespace {
 		return button;
 	}
 
-	void createPlayersFields(std::array<gui::Panel*, 4>&  players) {
+	void createPlayersFields(std::array<gui::TextField*, 4>& names, std::array<gui::Panel*, 4>&  players) {
 		for (unsigned int i = 0; i < players.size(); ++i) {
 			players[i] = createPanel(400, 35);
 			std::stringstream stream;
 			stream << "Human " << i + 1;
 			players[i]->add(createLabel(stream.str(), fontDefault18));
-			players[i]->add(new gui::TextField(stream.str(), fontDefault18));
+			names[i] = new gui::TextField(stream.str(), fontDefault18);
+			players[i]->add(names[i]);
 			players[i]->setVisible(false);
 		}
 	}
 
-	void createHumanFields(ManButton* humans, std::array<gui::Panel*, 4>& humanPanels) {
+	void showSomeHumanFields(ManButton* humans, std::array<gui::Panel*, 4>& humanPanels) {
 		for (unsigned int i = 0; i < humanPanels.size(); ++i) {
 			if (i < humans->getNbr()) {
 				humanPanels[i]->setVisible(true);
@@ -473,8 +474,8 @@ void TetrisWindow::initCreateServerPanel() {
 	nbrAisServer_ = new ManButton(activeAis_.size(), spriteComputer, spriteCross);
 	p4->add(nbrAisServer_);
 
-	createPlayersFields(playersServer_);
-	createHumanFields(nbrHumansServer_, playersServer_);
+	createPlayersFields(namesServer_, playersServer_);
+	showSomeHumanFields(nbrHumansServer_, playersServer_);
 
 	for (gui::Panel* panel : playersServer_) {
 		centerPanel->add(panel);
@@ -551,11 +552,15 @@ void TetrisWindow::initCreateClientPanel() {
 	nbrHumansClient_ = new ManButton(devices_.size(), spriteMan, spriteCross);
 	p2->add(nbrHumansClient_);
 	nbrAisClient_ = new ManButton(activeAis_.size(), spriteComputer, spriteCross);
+	nbrAisClient_->addActionListener([&](gui::Component* c) {
+		nbrOfComputerPlayers_ = nbrAisServer_->getNbr();
+	});
+
 	p2->add(nbrAisClient_);
 
-	createPlayersFields(playersClient_);
+	createPlayersFields(namesClient_, playersClient_);
 
-	createHumanFields(nbrHumansClient_, playersClient_);
+	showSomeHumanFields(nbrHumansClient_, playersClient_);
 	for (gui::Panel* panel : playersClient_) {
 		centerPanel->add(panel);
 	}
@@ -568,9 +573,19 @@ void TetrisWindow::initCreateClientPanel() {
 				playersClient_[i]->setVisible(false);
 			}
 		}
+		nbrOfHumanPlayers_ = nbrHumansServer_->getNbr();
 	});
 
 	gui::Button* button = createButton("Connect", fontDefault30);
+	button->addActionListener([&](gui::Component* c) {
+		int port;
+		std::stringstream stream1;
+		stream1 << portClient_->getText();
+		stream1 >> port;		
+
+		createClientGame(port, ipClient_->getText());
+	});
+
 	centerPanel->add(button);
 
 	add(centerPanel, gui::BorderLayout::CENTER);
@@ -610,6 +625,7 @@ void TetrisWindow::initClientLoobyPanel() {
 	gui::Button* b1 = createButton("Abort", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
+		tetrisGame_.closeGame();
 	});
 
 	clientLooby_ = new NetworkLooby;
@@ -636,6 +652,7 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 	std::vector<DevicePtr> tmpDevices;
 	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
+		devices_[i]->setPlayerName(devices_[i]->getName());
 	}
 
 	tetrisGame_.closeGame();
@@ -649,6 +666,7 @@ void TetrisWindow::createServerGame(int port, int width, int height) {
 	std::vector<DevicePtr> tmpDevices;
 	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
+		devices_[i]->setPlayerName(namesServer_[i]->getText());
 	}
 
 	tetrisGame_.closeGame();
@@ -661,6 +679,7 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	std::vector<DevicePtr> tmpDevices;
 	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
 		tmpDevices.push_back(devices_[i]);
+		devices_[i]->setPlayerName(namesClient_[i]->getText());
 	}
 
 	tetrisGame_.closeGame();

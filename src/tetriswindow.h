@@ -70,6 +70,7 @@ private:
 	// initCreateServerPanel
 	gui::TextField* portServer_;
 	std::array<gui::Panel*, 4> playersServer_;
+	std::array<gui::TextField*, 4> namesServer_;
 	ManButton* nbrHumansServer_;
 	ManButton* nbrAisServer_;
 	gui::TextField* serverWidthField_;
@@ -81,6 +82,7 @@ private:
 	gui::TextField* ipClient_;
 	gui::TextField* portClient_;
 	std::array<gui::Panel*, 4> playersClient_;
+	std::array<gui::TextField*, 4> namesClient_;
 	ManButton* nbrHumansClient_;
 	ManButton* nbrAisClient_;
 
