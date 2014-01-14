@@ -26,7 +26,7 @@ namespace gui {
 		FlowLayout(Alignment alignment) {
 			alignment_ = alignment;
 			hGap_ = 5;
-			vGap_ = 5;			
+			vGap_ = 5;
 		}
 
 		FlowLayout(Alignment alignment, float hGap, float vGap) {

@@ -239,10 +239,10 @@ void TetrisWindow::initPlayPanel() {
 	setCurrentPanel(playIndex_);
 
 	gui::Panel* bar = createBar();
-	bar->setLayout(new gui::GridLayout(1, 2));
+	bar->setLayout(new gui::BorderLayout);
 
-	gui::Panel* p1 = createPanel();
-	gui::Panel* p2 = createPanel();
+	gui::Panel* p1 = createPanel(400.f, 100.f);
+	gui::Panel* p2 = createPanel(400.f, 100.f);
 	// Make panels transparent.
 	p1->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 	p2->setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT, 5, 0));
@@ -288,14 +288,12 @@ void TetrisWindow::initPlayPanel() {
 		tetrisGame_.restartGame();
 	});
 	p2->add(nbrAis_);
-
-	p1->setPreferredSize(menu_->getPreferredSize() + restart_->getPreferredSize());
-	p2->setPreferredSize(restart_->getPreferredSize());
-
-	bar->add(p1);
-	bar->add(p2);
+		
+	bar->add(p1, gui::BorderLayout::WEST);
+	bar->add(p2, gui::BorderLayout::EAST);
 	add(bar, gui::BorderLayout::NORTH);
 	add(game_, gui::BorderLayout::CENTER);
+	
 	addKeyListener([&](gui::Component* c, const SDL_Event& keyEvent) {
 		switch (keyEvent.type) {
 			case SDL_KEYDOWN:
