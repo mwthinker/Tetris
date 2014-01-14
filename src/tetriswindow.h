@@ -103,7 +103,7 @@ private:
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
 
 	// All panels.
-	void initMenuPanel(const std::vector<DevicePtr>& devices);
+	void initMenuPanel();
 	void initPlayPanel();
 	void initHighscorePanel();
 	void initNewHighscorePanel();

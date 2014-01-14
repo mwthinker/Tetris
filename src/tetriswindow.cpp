@@ -143,7 +143,7 @@ TetrisWindow::TetrisWindow() {
 	networkPlayIndex_ = push_back(createBackgroundPanel());
 	aiIndex_ = push_back(createBackgroundPanel());
 
-	initMenuPanel(devices_);
+	initMenuPanel();
 	initPlayPanel();
 	initHighscorePanel();
 	initNewHighscorePanel();
@@ -173,7 +173,7 @@ void TetrisWindow::updateDevices(Frame* frame, const SDL_Event& windowEvent) {
 TetrisWindow::~TetrisWindow() {
 }
 
-void TetrisWindow::initMenuPanel(const std::vector<DevicePtr>& devices) {
+void TetrisWindow::initMenuPanel() {
 	setCurrentPanel(menuIndex_);
 
 	resume_ = createButton("Resume", fontDefault30);
@@ -241,8 +241,8 @@ void TetrisWindow::initPlayPanel() {
 	gui::Panel* bar = createBar();
 	bar->setLayout(new gui::BorderLayout);
 
-	gui::Panel* p1 = createPanel(400.f, 100.f);
-	gui::Panel* p2 = createPanel(400.f, 100.f);
+	gui::Panel* p1 = createPanel(300.f, 100.f);
+	gui::Panel* p2 = createPanel(300.f, 100.f);
 	// Make panels transparent.
 	p1->setLayout(new gui::FlowLayout(gui::FlowLayout::LEFT, 5, 0));
 	p2->setLayout(new gui::FlowLayout(gui::FlowLayout::RIGHT, 5, 0));
@@ -314,8 +314,6 @@ void TetrisWindow::initHighscorePanel() {
 	setCurrentPanel(highscoreIndex_);
 
 	gui::Panel* bar = createBar();
-	//bar->setLayout(new gui::GridLayout(1, 2));
-
 	gui::Button* b1 = createButton("Menu", fontDefault30);
 	b1->addActionListener([&](gui::Component*) {
 		setCurrentPanel(menuIndex_);
@@ -658,7 +656,7 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 		tmpDevices.push_back(devices_[i]);
 	}
 
-	for (auto device : devices_) {
+	for (DevicePtr& device : devices_) {
 		device->setPlayerName(device->getName());
 	}
 
