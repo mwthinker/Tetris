@@ -8,7 +8,7 @@
 #include <gui/button.h>
 #include <gui/textfield.h>
 #include <gui/checkbox.h>
-#include <gui/boxlayout.h>
+#include <gui/horizontallayout.h>
 #include <gui/gridlayout.h>
 
 #include <cassert>

@@ -39,7 +39,7 @@ namespace gui {
 			Dimension dimP = parent->getSize();
 
 			float w = hGap_;
-			float h = vGap_;
+			float h = 0;
 			float maxH = 0;
 			for (Component* c : *parent) {
 				Dimension dimC = c->getPreferredSize();

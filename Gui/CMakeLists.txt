@@ -16,7 +16,6 @@ endif (MSVC)
 
 # Source files.
 SET(SOURCES
-	src/gui/boxlayout.h
 	src/gui/borderlayout.h
 	src/gui/button.cpp
 	src/gui/button.h
@@ -38,6 +37,7 @@ SET(SOURCES
 	src/gui/panel.cpp
 	src/gui/panel.h
 	src/gui/verticallayout.h
+	src/gui/horizontallayout.h
 	src/gui/textfield.cpp
 	src/gui/textfield.h
 )
