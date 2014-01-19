@@ -19,7 +19,22 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 	glColor3d(1, 1, 1);
 
 	glPushMatrix();
+	gui::Dimension dim = getSize();
+	glTranslated(0, dim.height_, 0);
+
+	static mw::Text id("Id", fontDefault18);
+	glTranslated(0, -id.getCharacterSize() - 2, 0);
+	glPushMatrix();
+	id.draw();
+	glTranslated(50, 0, 0);
+	static mw::Text nbr("Number Of Players", fontDefault18);
+	nbr.draw();
+	glTranslated(200, 0, 0);
+	static mw::Text ready("Ready to Start?", fontDefault18);
+	ready.draw();
+	glPopMatrix();
 	for (Connection& connection : ascList_) {
+		glTranslated(0, -(id.getCharacterSize() + 4), 0);
 		glPushMatrix();
 		connection.id_.draw();
 		glTranslated(50, 0, 0);
@@ -31,18 +46,7 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 			Connection::unready.draw();
 		}
 		glPopMatrix();
-		glTranslated(0, fontDefault18->getCharacterSize() + 2, 0);
 	}
-
-	glTranslated(0, 4, 0);
-	static mw::Text id("Id", fontDefault18);
-	id.draw();
-	glTranslated(50, 0, 0);
-	static mw::Text nbr("Number Of Players", fontDefault18);
-	nbr.draw();
-	glTranslated(200, 0, 0);
-	static mw::Text ready("Ready to Start?", fontDefault18);
-	ready.draw();
 	glPopMatrix();
 }
 
