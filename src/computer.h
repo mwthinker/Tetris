@@ -54,7 +54,7 @@ private:
 	// I.e. The possible state.
 	std::vector<State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block) const;
 
-	int latestId_;
+	int nbrOfUpdates_;
 	Input input_;
 	State latestState_;
 	Block latestBlock_;

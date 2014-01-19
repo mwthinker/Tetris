@@ -6,12 +6,12 @@
 #include <future>
 
 Computer::Computer() : Device(true) {
-	latestId_ = -1;
+	nbrOfUpdates_ = -1;
 	activeThread_ = false;
 }
 
 Computer::Computer(const Ai& ai) : Device(true) {
-	latestId_ = -1;
+	nbrOfUpdates_ = -1;
 	ai_ = ai;
 	activeThread_ = false;
 	playerName_ = ai.getName();
@@ -31,10 +31,10 @@ std::string Computer::getPlayerName() const {
 
 void Computer::update(const TetrisBoard& board) {
 	// New block appears?
-	if (latestId_ != board.getNbrOfUpdates() && !activeThread_) {
+	if (nbrOfUpdates_ != board.getNbrOfUpdates() && !activeThread_) {
 		activeThread_ = true;
 		input_ = Input();
-		latestId_ = board.getNbrOfUpdates();
+		nbrOfUpdates_ = board.getNbrOfUpdates();
 		handle_ = std::async(std::launch::async|std::launch::deferred, [&] {
 			return calculateBestState(board, 2);
 		});

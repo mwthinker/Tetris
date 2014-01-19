@@ -14,6 +14,7 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 
 	device_ = device;
 	device_->update(getTetrisBoard());
+	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
 	setName(device_->getPlayerName());
 }
 
@@ -52,7 +53,15 @@ void LocalPlayer::update(double deltaTime) {
 }
 
 void LocalPlayer::updateAi() {
-	device_->update(getTetrisBoard());
+	const TetrisBoard& board = getTetrisBoard();
+	// New block appears?
+	if (nbrOfUpdates_ != board.getNbrOfUpdates()) {
+		nbrOfUpdates_ = board.getNbrOfUpdates();
+		leftHandler_.reset();
+		rightHandler_.reset();
+		downHandler_.reset();
+	}
+	device_->update(board);
 }
 
 double LocalPlayer::calculateDownSpeed(int level) const {

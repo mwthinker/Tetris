@@ -26,6 +26,7 @@ private:
 
     // Controls how the moving block is moved.
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
+	int nbrOfUpdates_;
     DevicePtr device_;
 };
 

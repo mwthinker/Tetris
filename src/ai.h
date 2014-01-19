@@ -32,7 +32,7 @@ private:
 	double columnRoughness_;
 	double edges_;
 	double meanHeight_;
-	double blockMeanHeight_;	
+	double blockMeanHeight_;
 	double nbrOfRows_;
 	double nbrOfColumns_;
 
