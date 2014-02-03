@@ -26,9 +26,7 @@ public:
 	~TetrisWindow();
 
 private:
-	void updateDevices(Frame* frame, const SDL_Event& windowEvent);
-
-	gui::Panel* createMenu();
+	void updateDevices(Frame& frame, const SDL_Event& windowEvent);
 	
 	void createLocalGame(int width, int height, int maxLevel);
 	void createServerGame(int port, int width, int height);
@@ -45,54 +43,54 @@ private:
 	TetrisGame tetrisGame_;
 
 	// initMenuPanel
-	gui::Button* resume_;
+	std::shared_ptr<gui::Button> resume_;
 
 	// initPlayPanel
-	GameComponent* game_;
-	ManButton* nbrHumans_;
-	ManButton* nbrAis_;
-	gui::Button* pauseButton_;
-	gui::Button* menu_;
-	gui::Button* restart_;
+	std::shared_ptr<GameComponent> game_;
+	std::shared_ptr<ManButton> nbrHumans_;
+	std::shared_ptr<ManButton> nbrAis_;
+	std::shared_ptr<gui::Button> pauseButton_;
+	std::shared_ptr<gui::Button> menu_;
+	std::shared_ptr<gui::Button> restart_;
 	
 	// initHighscorePanel
-	Highscore* highscore_;
+	std::shared_ptr<Highscore> highscore_;
 	
 	// initNewHighscorePanel
-	gui::TextField* textField_;
+	std::shared_ptr<gui::TextField> textField_;
 
 	// initCustomPlayPanel
-	gui::TextField* customWidthField_;
-	gui::TextField* customHeightField_;
-	gui::TextField* customMinLevel_;
-	gui::TextField* customMaxLevel_;
+	std::shared_ptr<gui::TextField> customWidthField_;
+	std::shared_ptr<gui::TextField> customHeightField_;
+	std::shared_ptr<gui::TextField> customMinLevel_;
+	std::shared_ptr<gui::TextField> customMaxLevel_;
 	
 	// initCreateServerPanel
-	gui::TextField* portServer_;
-	std::array<gui::Panel*, 4> playersServer_;
-	std::array<gui::TextField*, 4> namesServer_;
-	ManButton* nbrHumansServer_;
-	ManButton* nbrAisServer_;
-	gui::TextField* serverWidthField_;
-	gui::TextField* serverHeightField_;
-	gui::TextField* serverMinLevel_;
-	gui::TextField* serverMaxLevel_;
+	std::shared_ptr<gui::TextField> portServer_;
+	std::array<std::shared_ptr<gui::Panel>, 4> playersServer_;
+	std::array<std::shared_ptr<gui::TextField>, 4> namesServer_;
+	std::shared_ptr<ManButton> nbrHumansServer_;
+	std::shared_ptr<ManButton> nbrAisServer_;
+	std::shared_ptr<gui::TextField> serverWidthField_;
+	std::shared_ptr<gui::TextField> serverHeightField_;
+	std::shared_ptr<gui::TextField> serverMinLevel_;
+	std::shared_ptr<gui::TextField> serverMaxLevel_;
 
 	// initCreateClientPanel
-	gui::TextField* ipClient_;
-	gui::TextField* portClient_;
-	std::array<gui::Panel*, 4> playersClient_;
-	std::array<gui::TextField*, 4> namesClient_;
-	ManButton* nbrHumansClient_;
-	ManButton* nbrAisClient_;
+	std::shared_ptr<gui::TextField> ipClient_;
+	std::shared_ptr<gui::TextField> portClient_;
+	std::array<std::shared_ptr<gui::Panel>, 4> playersClient_;
+	std::array<std::shared_ptr<gui::TextField>, 4> namesClient_;
+	std::shared_ptr<ManButton> nbrHumansClient_;
+	std::shared_ptr<ManButton> nbrAisClient_;
 
 	// initServerLoobyPanel
-	NetworkLooby* serverLooby_;
-	gui::Button* serverReady_;;
+	std::shared_ptr<NetworkLooby> serverLooby_;
+	std::shared_ptr<gui::Button> serverReady_;;
 	
 	// initServerLoobyPanel
-	NetworkLooby* clientLooby_;
-	gui::Button* clientReady_;;
+	std::shared_ptr<NetworkLooby> clientLooby_;
+	std::shared_ptr<gui::Button> clientReady_;;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;
