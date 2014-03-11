@@ -52,14 +52,14 @@ namespace {
 		return panel;
 	}
 
-	std::shared_ptr<gui::Label> createLabel(std::string text, mw::FontPtr font) {
+	std::shared_ptr<gui::Label> createLabel(std::string text, mw::Font font) {
 		std::shared_ptr<gui::Label> label = std::make_shared<gui::Label>(text, font);
 		label->setTextColor(mw::Color(1, 1, 1));
 		label->setBackgroundColor(mw::Color(1, 1, 1, 0));
 		return label;
 	}
 
-	std::shared_ptr<gui::Button> createButton(std::string text, mw::FontPtr font) {
+	std::shared_ptr<gui::Button> createButton(std::string text, mw::Font font) {
 		std::shared_ptr<gui::Button> button = std::make_shared<gui::Button>(text, font);
 		button->setFocusColor(mw::Color(.8, .1, 0, .3));
 		button->setTextColor(mw::Color(1, 0.1, 0.1));

@@ -9,6 +9,6 @@ extern const mw::Sprite spriteMan;
 extern const mw::Sprite spriteComputer;
 extern const mw::Sprite spriteCross;
 
-extern const mw::TexturePtr textureSquares;
+extern const mw::Texture textureSquares;
 
 #endif // GAMESPRITE_H

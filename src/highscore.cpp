@@ -19,7 +19,7 @@ Highscore::Highscore(int nbr, const mw::Color& color) : color_(color) {
 		stream << nbr - i << ":";
 		numbers_.push_back(mw::Text(stream.str(), fontDefault30, 25));
 	}
-	setPreferredSize(300, (float) nbr * (fontDefault30->getCharacterSize() + 2) + 28);
+	setPreferredSize(300, (float) nbr * (fontDefault30.getCharacterSize() + 2) + 28);
 }
 
 void Highscore::draw(Uint32 deltaTime) {
@@ -42,7 +42,7 @@ void Highscore::draw(Uint32 deltaTime) {
 		date.draw();
 		glPopMatrix();
 
-		glTranslated(0, fontDefault30->getCharacterSize() + 2, 0);
+		glTranslated(0, fontDefault30.getCharacterSize() + 2, 0);
 	}
 
 	static mw::Text pointsH("Points", fontDefault30, 28);

@@ -3,8 +3,8 @@
 
 #include <mw/font.h>
 
-extern const mw::FontPtr fontDefault18;
-extern const mw::FontPtr fontDefault30;
-extern const mw::FontPtr fontDefault50;
+extern const mw::Font fontDefault18;
+extern const mw::Font fontDefault30;
+extern const mw::Font fontDefault50;
 
 #endif // GAMEFONT_H

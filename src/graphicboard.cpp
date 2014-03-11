@@ -91,7 +91,7 @@ namespace {
 		glEnable(GL_TEXTURE_2D);
 
 		WHITE.glColor4d();
-		textureSquares->bind();
+		textureSquares.bind();
 		glBegin(GL_QUADS);
 		for (const Square& sq : block) {
 			if (sq.row_ < maxRow) {
@@ -249,7 +249,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	// Draw squares.
 	glEnable(GL_TEXTURE_2D);
 	WHITE.glColor3d();
-	textureSquares->bind();
+	textureSquares.bind();
 	glBegin(GL_QUADS);
 	for (int row = 0; row < rows + 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
