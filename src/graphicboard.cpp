@@ -18,48 +18,43 @@ namespace {
 	// Only usefull for the texture in (textureSquares) in defined in gameSprite.h.
 	// Sdl flips all images uppside down.
 	inline void textureCoord(BlockType blockType, int row, int column) {
-		int x = 0;
-		int y = 0;
+		mw::Sprite sprite;
 		switch (blockType) {
 			case BlockType::I:
-				x = 1;
-				y = 0;
+				sprite = spriteI;
 				break;
 			case BlockType::J:
-				x = 3;
-				y = 0;
+				sprite = spriteJ;
 				break;
 			case BlockType::L:
-				x = 1;
-				y = 1;
+				sprite = spriteL;
 				break;
 			case BlockType::O:
-				x = 0;
-				y = 0;
+				sprite = spriteO;
 				break;
 			case BlockType::S:
-				x = 2;
-				y = 0;
+				sprite = spriteS;
 				break;
 			case BlockType::T:
-				x = 0;
-				y = 1;
+				sprite = spriteT;
 				break;
 			case BlockType::Z:
-				x = 2;
-				y = 1;
+				sprite = spriteZ;
 				break;
 			default:
 				// Draw nothing!
 				return;
 		}
-		glTexCoord2f(x / 4.f, y / 2.f);
+		float h = (float) sprite.getTexture().getHeight();
+		float w = (float) sprite.getTexture().getWidth();
+
+		glTexCoord2f(sprite.getX() / w, sprite.getY() / h);
 		glVertex2d(0 + column, 0 + row);
-		glTexCoord2f((x + 1) / 4.f, y / 2.f);
+		glTexCoord2f((sprite.getX() + sprite.getWidth()) / w, sprite.getY() / h);
 		glVertex2d(1 + column, 0 + row);
-		glTexCoord2f((x + 1) / 4.f, (y + 1) / 2.f);
+		glTexCoord2f((sprite.getX() + sprite.getWidth()) / w, (sprite.getY() + sprite.getHeight()) / h);
 		glVertex2d(1 + column, 1 + row);
-		glTexCoord2f(x / 4.f, (y + 1) / 2.f);
+		glTexCoord2f(sprite.getX() / w, (sprite.getY() + sprite.getHeight()) / h);
 		glVertex2d(0 + column, 1 + row);
 	}
 
@@ -88,9 +83,10 @@ namespace {
 	}
 
 	void drawBlock(const Block& block, int maxRow) {
-		glEnable(GL_TEXTURE_2D);
-
 		WHITE.glColor4d();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);		
+		glEnable(GL_TEXTURE_2D);
 		textureSquares.bind();
 		glBegin(GL_QUADS);
 		for (const Square& sq : block) {
@@ -99,8 +95,8 @@ namespace {
 			}
 		}
 		glEnd();
-
 		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
 	}
 
 } // Anonymous namespace.
@@ -134,7 +130,7 @@ void GraphicPlayerInfo::draw() {
 	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
 
 	level_.draw();
-	
+
 	glPopMatrix();
 }
 
@@ -218,11 +214,10 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
 
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 	int rows = tetrisBoard_.getNbrOfRows();
 	int columns = tetrisBoard_.getNbrOfColumns();
-	
+
 	glBegin(GL_QUADS);
 	// Draws the outer square.
 	const float red = 0.8f, green = 0.2f, blue = 0.3f;
@@ -242,13 +237,12 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 			glVertex2d(0.1 + column, 0.9 + row);
 		}
 	}
-	glEnd();
+	glEnd();	
 
-	glDisable(GL_BLEND);
-	
+	WHITE.glColor4d();
+
 	// Draw squares.
 	glEnable(GL_TEXTURE_2D);
-	WHITE.glColor3d();
 	textureSquares.bind();
 	glBegin(GL_QUADS);
 	for (int row = 0; row < rows + 2; ++row) {
@@ -259,6 +253,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	}
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
 
 	drawBeginArea();
 	drawBlock(tetrisBoard.currentBlock(), tetrisBoard.getNbrOfRows() + 2);
@@ -267,9 +262,6 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 }
 
 void GraphicBoard::drawBeginArea() const {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	glPushMatrix();
 
 	int rows = tetrisBoard_.getNbrOfRows();
@@ -287,6 +279,4 @@ void GraphicBoard::drawBeginArea() const {
 	glEnd();
 
 	glPopMatrix();
-
-	glDisable(GL_BLEND);
 }
