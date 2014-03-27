@@ -3,8 +3,8 @@ project(MWetris)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 if (MSVC)
 	# Exception handler model.
-	set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
-	set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc")
 	set(WINDOWS_ENET_DEPENDENCIES "ws2_32;winmm") # ENET
 	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32)
@@ -85,9 +85,8 @@ include_directories(
 	${SDL2_MIXER_INCLUDE_DIRS} 
 	${SDL2_IMAGE_INCLUDE_DIRS}
 	${OpenGL_INCLUDE_DIR}
-	MwEnet/MwExtra/src
-	MwEnet/
-	MwEnet/enet-1.3.9/
+	MwEnet/src
+	MwEnet/Enet/src
 	SdlGui/src
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
@@ -101,7 +100,7 @@ if (MSVC)
 endif (MSVC)
 
 target_link_libraries(MWetris
-	MwExtra
+	Enet
 	MwEnet
 	MwLibrary2
 	Signal

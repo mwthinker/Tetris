@@ -12,8 +12,8 @@
 #include "device.h"
 
 #include <mw/packet.h>
-#include <mw/enet/server.h>
-#include <mw/enet/client.h>
+#include <mw/server.h>
+#include <mw/client.h>
 #include <mw/localnetwork.h>
 
 #include <vector>
@@ -303,7 +303,7 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 			}
 			break;
 		case SERVER:
-			network_ = new mw::enet::Server(serverPort_,this);
+			network_ = new mw::Server(serverPort_,this);
 			network_->start();
 
 			localUser_ = UserConnectionPtr(new UserConnection(network_->getId()));
@@ -319,7 +319,7 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 			}
 			break;
 		case CLIENT:
-			network_ = new mw::enet::Client(connectToPort_,connectToIp_);
+			network_ = new mw::Client(connectToPort_,connectToIp_);
 			network_->start();
 			sendClientInfo();
 			break;
