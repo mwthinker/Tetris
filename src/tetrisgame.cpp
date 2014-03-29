@@ -156,14 +156,14 @@ void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbr
 
 void TetrisGame::startGame() {
 	// And game is not started? And network is not null? And network is active and this is a server?
-	if (!isStarted() && network_ != 0 && network_->getStatus() == mw::Network::ACTIVE && network_->getId() == network_->getServerId()) {
+	if (!isStarted() && network_ != 0 && network_->getStatus() == mw::Network::ACTIVE && network_->getId() == mw::Network::SERVER_ID) {
 		serverSendStartGame();
 	}
 }
 
 void TetrisGame::restartGame() {
 	// Network is not null? And this is a server? And game is started?
-	if (network_ != 0 && network_->getId() == network_->getServerId() && isStarted()) {
+	if (network_ != 0 && network_->getId() == mw::Network::SERVER_ID && isStarted()) {
 		serverSendStartGame();
 	}
 }
@@ -221,7 +221,6 @@ void TetrisGame::signalEvent(NetworkEventPtr nEvent) {
 
 void TetrisGame::update(Uint32 deltaTime) {
 	if (network_ != 0) {
-		network_->update();
 		switch (network_->getStatus()) {
 		case mw::Network::NOT_ACTIVE:
 			break;
@@ -237,9 +236,9 @@ void TetrisGame::update(Uint32 deltaTime) {
 				if (!pause_) {
 					countDown_ -= deltaTime;
 					if (countDown_ < 0) {
-						if (countDown_ > -20000) { // -20000 = Time impossibnle to reach.
+						if (countDown_ > -20000) { // -20000 = Time impossible to reach.
 							gameHandler_->countDown(countDown_);
-						}	
+						}
 						updateGame(deltaTime);
 						countDown_ = -20000;
 					} else {
@@ -260,7 +259,7 @@ void TetrisGame::update(Uint32 deltaTime) {
 			break;
 		case mw::Network::DISCONNECTING:
 			// Will soon change status to not active.
-			std::cout << "\nDISCONNECTING: " << std::endl;
+			//std::cout << "\nDISCONNECTING: " << std::endl;
 			break;
 		}
 	} else {
@@ -379,14 +378,14 @@ bool TetrisGame::sendThrough(const mw::Packet& packet, int fromId, int toId, Typ
 				return false;
 			case PacketType::SERVERINFO:
 				// Data not from server?
-				if (network_->getServerId() != fromId) {
+				if (mw::Network::SERVER_ID != fromId) {
 					throw ProtocolError();
 				}
 
 				return true;
 			case PacketType::STARTGAME:
 				// Data not from server?
-				if (network_->getServerId() != fromId) {
+				if (mw::Network::SERVER_ID != fromId) {
 					throw ProtocolError();
 				}
 
@@ -451,12 +450,12 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 			}
 
 			// Sent from a client?
-			if (id != network_->getServerId()) {
+			if (id != mw::Network::SERVER_ID) {
 				throw ProtocolError();
 			}
 
 			// This is not a server?
-			if (network_->getId() != network_->getServerId()) {
+			if (network_->getId() != mw::Network::SERVER_ID) {
 				// Only real clients (i.e. not server).
 				clientReceiveServerInfo(data);
 				std::cout << "\nClientReceiveServerInfo" << std::endl;
@@ -550,12 +549,12 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 		// Signals the game to start. Only sent by the server.
 
 		// Is not sended by server?
-		if (network_->getServerId() != id) {
+		if (mw::Network::SERVER_ID != id) {
 			throw ProtocolError();
 		}
 		
 		// This is not a server?
-		if (network_->getServerId() != network_->getId()) {
+		if (mw::Network::SERVER_ID != network_->getId()) {
 			clientStartGame();
 		}
 		countDown_ = 3000;
