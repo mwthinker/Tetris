@@ -950,7 +950,7 @@ void TetrisGame::clientStartGame() {
 	sendStartBlock();
 	std::cout << "\nSTARTGAME" << std::endl;
 	std::vector<PlayerInfoPtr> playersInfo;
-	std::vector<const PlayerPtr> players;
+	std::vector<PlayerPtr> players;
 	iterateAllPlayers([&playersInfo, &players](PlayerPtr player) {
 		playersInfo.push_back(player);
 		players.push_back(player);

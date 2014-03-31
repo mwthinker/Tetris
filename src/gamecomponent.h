@@ -69,7 +69,7 @@ public:
 		glPopMatrix();
 	}	
 
-	void initGame(const std::vector<const PlayerPtr>& players) override{
+	void initGame(const std::vector<PlayerPtr>& players) override{
 		graphic_.clear();
 
 		double width = 5;
