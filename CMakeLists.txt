@@ -100,8 +100,8 @@ if (MSVC)
 endif (MSVC)
 
 target_link_libraries(MWetris
-	Enet
 	MwEnet
+	Enet
 	MwLibrary2
 	Signal
 	SdlGui
