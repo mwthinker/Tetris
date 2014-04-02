@@ -238,8 +238,9 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 		}
 	}
 	glEnd();	
-
-	WHITE.glColor4d();
+	
+	drawBeginArea();
+	WHITE.glColor4d();	
 
 	// Draw squares.
 	glEnable(GL_TEXTURE_2D);
@@ -254,8 +255,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
-
-	drawBeginArea();
+	
 	drawBlock(tetrisBoard.currentBlock(), tetrisBoard.getNbrOfRows() + 2);
 
 	glPopMatrix();
