@@ -11,6 +11,7 @@
 #include <mw/signal.h>
 #include <mw/packet.h>
 #include <mw/network.h>
+#include <mw/server.h>
 
 #include <vector>
 #include <functional>
@@ -29,7 +30,7 @@ protected:
 	}
 };
 
-class TetrisGame : public mw::ServerFilter {
+class TetrisGame : public mw::ServerInterface {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
@@ -160,11 +161,11 @@ private:
 	// Returns the ip to the server.
 	std::string getConnectToIp() const;
 
-	// @Override ServerFilter. Is only called in server/local mode.
-	// Data (data) is received from client (id). Type (type)
-	// describes the type of event. The return value is the
-	// data which will be sent to all clients.
-	bool sendThrough(const mw::Packet& packet, int fromId, int toId, Type type) override;
+	void receiveToServer(const mw::Packet& packet, int clientId) override;
+
+	bool connectToServer(int clientId) override;
+
+	void disconnectToServer(int clientId) override;
 
 	// Server sends data of all the players in the game.
 	void sendServerInfo();
