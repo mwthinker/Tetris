@@ -30,10 +30,10 @@ namespace {
 	enum class PacketType : char {
 		INPUT,       // Tetrisboard updates.
 		STARTGAME,   // The server starts the game. All user starts the game.
-		READY,       // The server/client is ready/unready to start.
+		READY,       // The client is ready/unready to start.
 		SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
 		TETRIS,      // Data describing when player adds rows.
-		CLIENTINFO,  // A client send client info to the server.
+		CLIENTINFO,  // A client send info to the server.
 		STARTBLOCK,  // Sends the start current block and the next block.
 		PAUSE        // Pause/Unpause the game for all users.
 	};
@@ -100,6 +100,13 @@ namespace {
 		return packet;
 	}
 
+	// char type = STARTGAME
+	void serverSendStartGame(mw::Server* server) {
+		mw::Packet data;
+		data << PacketType::STARTGAME;
+		server->serverPushToSendBuffer(data, mw::Network::RELIABLE);
+	}
+
 } // Anonymous namespace.
 
 TetrisGame::TetrisGame() {
@@ -109,6 +116,7 @@ TetrisGame::TetrisGame() {
 	start_ = false;
 	connectToIp_ = "localhost";
 	network_ = nullptr;
+	server_ = nullptr;
 	acceptNewConnections_ = false;
 	status_ = WAITING_TO_CONNECT;
 	nbrOfPlayers_ = 0;
@@ -129,14 +137,16 @@ void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrO
 	connect(devices, nbrOfComputers, LOCAL);
 }
 
-void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel) {
+void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
+	int width, int height, int maxLevel) {
     width_ = width;
 	height_ = height;
 	maxLevel_ = maxLevel;
 	connect(devices, nbrOfComputers, LOCAL);
 }
 
-void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height, int maxLevel) {
+void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, 
+	int port, int width, int height, int maxLevel) {
 	width_ = width;
 	height_ = height;
 	maxLevel_ = maxLevel;
@@ -144,7 +154,8 @@ void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbr
 	connect(devices, nbrOfComputers, SERVER);
 }
 
-void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip, int maxLevel) {
+void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, 
+	int port, std::string ip, int maxLevel) {
 	if (status_ == WAITING_TO_CONNECT) {
 		setConnectToIp(ip);
 		setConnectToPort(port);
@@ -153,16 +164,18 @@ void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbr
 }
 
 void TetrisGame::startGame() {
-	// And game is not started? And network is not null? And network is active and this is a server?
-	if (!isStarted() && network_ != 0 && network_->getStatus() == mw::Network::ACTIVE && network_->getId() == mw::Network::SERVER_ID) {
-		serverSendStartGame();
+	// Game is not started? And this is a server? And network is active?
+	if (!start_ && server_ != nullptr && network_->getStatus() == mw::Network::ACTIVE) {
+		// Only the server can start the game!
+		serverSendStartGame(server_);
 	}
 }
 
 void TetrisGame::restartGame() {
-	// Network is not null? And this is a server? And game is started?
-	if (network_ != 0 && network_->getId() == mw::Network::SERVER_ID && isStarted()) {
-		serverSendStartGame();
+	// Game is started? And this is a server?
+	if (start_ && server_ != nullptr) {
+		// Only the server can restart the game!
+		serverSendStartGame(server_);
 	}
 }
 
@@ -257,7 +270,6 @@ void TetrisGame::update(Uint32 deltaTime) {
 			break;
 		case mw::Network::DISCONNECTING:
 			// Will soon change status to not active.
-			//std::cout << "\nDISCONNECTING: " << std::endl;
 			break;
 		}
 	} else {
@@ -271,6 +283,7 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 		// Settings.
 		delete network_;
 		network_ = nullptr;
+		server_ = nullptr;
 		status_ = status;
 		acceptNewConnections_ = true;
 		devices_ = devices;
@@ -286,9 +299,13 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 
 		switch (status) {
 		case WAITING_TO_CONNECT:
-			break;
+			return;
 		case LOCAL:
-			network_ = new mw::LocalNetwork(*this);
+		{
+			mw::LocalNetwork* server = new mw::LocalNetwork(*this);
+			network_ = server;
+			server_ = server;
+		}
 			network_->start();
 
 			localUser_ = UserConnectionPtr(new UserConnection(network_->getId()));
@@ -300,8 +317,12 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 			}
 			break;
 		case SERVER:
-			network_ = new mw::EnetServer(serverPort_, *this);
-			network_->start();
+		{
+			mw::EnetServer* server = new mw::EnetServer(serverPort_, *this);
+			network_ = server;
+			server_ = server;
+		}
+			network_->start();			
 
 			localUser_ = UserConnectionPtr(new UserConnection(network_->getId()));
 			users_.push_back(localUser_);
@@ -327,10 +348,20 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 void TetrisGame::receiveToServer(const mw::Packet& packet, int clientId) {
 	PacketType type = static_cast<PacketType>(packet[0]);
 	switch (type) {
+		case PacketType::SERVERINFO:
+			// Game started?
+			if (start_) {
+				throw mw::Exception("Protocol error!\n");
+			}
+
+			// This is not a server?
+			if (dynamic_cast<mw::Server*>(network_) != 0) {
+				// Only real clients (i.e. not server).
+				clientReceiveServerInfo(packet);
+			}
+			break;
 	case PacketType::CLIENTINFO:
 		{
-			std::cout << "\nCLIENTINFO" << std::endl;
-
 			// Game started?
 			if (start_) {
 				throw mw::Exception("Protocol error!\n");
@@ -349,11 +380,10 @@ void TetrisGame::receiveToServer(const mw::Packet& packet, int clientId) {
 				throw mw::Exception("Protocol error!\n");
 			}
 
-			serverReceiveClientInfo(remote,packet);
+			serverReceiveClientInfo(remote, packet);
 
 			sendServerInfo(); // Is sent before the data will be sent.
 		}
-		// Do not send to clients.
 		break;
 	case PacketType::STARTGAME:
 		// Data not from server?
@@ -417,34 +447,11 @@ void TetrisGame::disconnectToServer(int clientId) {
 }
 
 
-// Receives data (data) received from user with id (id).
-// First element in (data) must be of a value
-// defined in PacketType.
+// Receives data from a client or server.
+// First element must be a value defined in PacketType.
 void TetrisGame::receiveData(const mw::Packet& data, int id) {
 	PacketType type = static_cast<PacketType>(data[0]);
-	switch (type) {
-	case PacketType::SERVERINFO:
-		{
-			// Game started?
-			if (start_) {
-				throw mw::Exception("Protocol error!\n");
-			}
-
-			// Sent from a client?
-			if (id != mw::Network::SERVER_ID) {
-				throw mw::Exception("Protocol error!\n");
-			}
-
-			// This is not a server?
-			if (network_->getId() != mw::Network::SERVER_ID) {
-				// Only real clients (i.e. not server).
-				clientReceiveServerInfo(data);
-				std::cout << "\nClientReceiveServerInfo" << std::endl;
-			}
-
-			std::cout << "\nSERVERINFO" << std::endl;
-		}
-		break;
+	switch (type) {	
 	case PacketType::INPUT:
 		{
 			// Game not started?
@@ -492,8 +499,6 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 			// User not found, keep iterating!!
 			return true;
 		});
-
-		std::cout << "\n" << "READY" << std::endl;
 		break;
 	case PacketType::TETRIS:
 		{
@@ -523,7 +528,6 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 				}
 				return !findPlayer;
 			});
-			std::cout << "\n" << "TETRIS" << std::endl;
 		}
 		break;
 	case PacketType::STARTGAME:
@@ -535,7 +539,7 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 		}
 		
 		// This is not a server?
-		if (mw::Network::SERVER_ID != network_->getId()) {
+		if (server_ == nullptr) {
 			clientStartGame();
 		}
 		countDown_ = 3000;
@@ -556,8 +560,6 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 		if (network_->getId() != id) {
 			receiveStartBlock(data,id);
 		}
-
-		std::cout << "\n" << "STARTBLOCK" << std::endl;
 		break;
 	case PacketType::CLIENTINFO:
 		// Sent by yourself to the server. Do nothing.
@@ -678,7 +680,7 @@ void TetrisGame::sendServerInfo() {
 	});
 
 	signalEvent(newConnection);
-	network_->pushToSendBuffer(data, mw::Network::RELIABLE);
+	server_->serverPushToSendBuffer(data, mw::Network::RELIABLE);
 }
 
 void TetrisGame::clientReceiveServerInfo(mw::Packet data) {
@@ -751,13 +753,6 @@ void TetrisGame::sendClientInfo() {
 			data << chr;
 		}
 	}
-	network_->pushToSendBuffer(data, mw::Network::RELIABLE);
-}
-
-// char type = STARTGAME
-void TetrisGame::serverSendStartGame() {
-	mw::Packet data;
-	data << PacketType::STARTGAME;
 	network_->pushToSendBuffer(data, mw::Network::RELIABLE);
 }
 

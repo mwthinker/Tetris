@@ -120,9 +120,6 @@ private:
 	// Should be sent when client is in looby.
 	void sendReady();
 
-	// Sent by server to signal that the game starts.
-	void serverSendStartGame();
-
 	// Send the current input (input) and tetrisboard move (move) from player local player
 	// with id (id).
 	void sendInput(char playerId, Move move, BlockType next);
@@ -196,6 +193,8 @@ private:
     std::vector<DevicePtr> devices_;
 
 	mw::Network* network_; // The connection manager.
+	mw::Server* server_;
+
 	int playerId_; // The id for the last added player.
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 	Status status_;
