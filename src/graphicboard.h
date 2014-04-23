@@ -24,8 +24,17 @@ public:
 	// Returns the height the graphic is drawn in OpenGl.
 	double getHeight() const;
 
+	inline void showPoints() {
+		showPoints_ = true;
+	}
+
+	inline void hidePoints() {
+		showPoints_ = false;
+	}
+
 private:
 	mw::Text level_, points_, nbrOfClearedRows_;
+	bool showPoints_;
 };
 
 class GraphicPreviewBlock {

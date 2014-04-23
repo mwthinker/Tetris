@@ -7,6 +7,7 @@
 #include "userconnection.h"
 #include "device.h"
 #include "ai.h"
+#include "gamehandler.h"
 
 #include <mw/signal.h>
 #include <mw/packet.h>
@@ -16,19 +17,6 @@
 #include <vector>
 #include <functional>
 #include <memory>
-
-class GameHandler {
-public:
-	virtual void initGame(const std::vector<PlayerPtr>& players) = 0;
-
-	virtual void eventHandler(const PlayerPtr& player, GameEvent gameEvent) = 0;
-
-	virtual void countDown(int countDown) = 0;
-
-protected:
-	~GameHandler() {
-	}
-};
 
 class TetrisGame : public mw::ServerInterface {
 public:

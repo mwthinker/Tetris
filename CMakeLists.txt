@@ -23,9 +23,11 @@ set(SOURCES
 	src/computer.cpp
 	src/computer.h
 	src/device.h
+	src/gamecomponent.cpp
 	src/gamecomponent.h
 	src/gamefont.cpp
 	src/gamefont.h
+	src/gamehandler.h
 	src/gamesound.cpp
 	src/gamesound.h
 	src/gamesprite.cpp

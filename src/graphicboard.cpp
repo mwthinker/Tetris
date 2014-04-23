@@ -106,6 +106,7 @@ GraphicPlayerInfo::GraphicPlayerInfo() {
 	level_ = mw::Text("", fontDefault30, 14);
 	points_ = mw::Text("", fontDefault30, 14);
 	nbrOfClearedRows_ = mw::Text("", fontDefault30, 14);
+	showPoints_ = true;
 }
 
 void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
@@ -125,9 +126,10 @@ void GraphicPlayerInfo::draw() {
 	WHITE.glColor4d();
 	nbrOfClearedRows_.draw();
 	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
-
-	points_.draw();
-	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
+	if (showPoints_) {
+		points_.draw();
+		glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
+	}
 
 	level_.draw();
 
