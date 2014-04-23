@@ -355,7 +355,7 @@ void TetrisGame::receiveToServer(const mw::Packet& packet, int clientId) {
 			}
 
 			// This is not a server?
-			if (dynamic_cast<mw::Server*>(network_) != 0) {
+			if (server_ != 0) {
 				// Only real clients (i.e. not server).
 				clientReceiveServerInfo(packet);
 			}
@@ -536,12 +536,10 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 		// Is not sended by server?
 		if (mw::Network::SERVER_ID != id) {
 			throw mw::Exception("Protocol error!\n");
-		}
+		}		
 		
-		// This is not a server?
-		if (server_ == nullptr) {
-			clientStartGame();
-		}
+		clientStartGame();
+
 		countDown_ = 3000;
 		break;
 	case PacketType::PAUSE:
