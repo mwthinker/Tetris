@@ -99,6 +99,23 @@ namespace {
 		glDisable(GL_BLEND);
 	}
 
+	class RemoveRowsAnimation {
+	public:
+		RemoveRowsAnimation() {
+		}
+
+		void update(float deltaTime) {
+
+		}
+
+		void draw() {
+
+		}
+
+	private:
+
+	};
+
 } // Anonymous namespace.
 
 GraphicPlayerInfo::GraphicPlayerInfo() {
@@ -136,11 +153,11 @@ void GraphicPlayerInfo::draw() {
 	glPopMatrix();
 }
 
-double GraphicPlayerInfo::getWidth() const {
+float GraphicPlayerInfo::getWidth() const {
 	return 150;
 }
 
-double GraphicPlayerInfo::getHeight() const {
+float GraphicPlayerInfo::getHeight() const {
 	return 150;
 }
 
@@ -172,18 +189,18 @@ void GraphicPreviewBlock::draw() {
 	glPopMatrix();
 }
 
-void GraphicPreviewBlock::update(const BlockType& blockType, double pixlePerSquare) {
+void GraphicPreviewBlock::update(const BlockType& blockType, float pixlePerSquare) {
 	block_ = Block(blockType, 100, 100);
 	pixlePerSquare_ = pixlePerSquare;
 	width_ = 5 * pixlePerSquare_;
 	height_ = 5 * pixlePerSquare_;
 }
 
-double GraphicPreviewBlock::getWidth() const {
+float GraphicPreviewBlock::getWidth() const {
 	return width_;
 }
 
-double GraphicPreviewBlock::getHeight() const {
+float GraphicPreviewBlock::getHeight() const {
 	return height_;
 }
 
@@ -203,11 +220,11 @@ void GraphicBoard::draw() {
 	drawBoard(tetrisBoard_);
 }
 
-double GraphicBoard::getWidth() const {
+float GraphicBoard::getWidth() const {
 	return width_;
 }
 
-double GraphicBoard::getHeight() const {
+float GraphicBoard::getHeight() const {
 	return height_;
 }
 

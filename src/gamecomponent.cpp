@@ -123,11 +123,11 @@ void GameComponent::Graphic::update(const PlayerPtr& player) {
 	preview_.update(player->getNextBlock(), board_.getPixelPerSquare());
 }
 
-double GameComponent::Graphic::getWidth() const {
+float GameComponent::Graphic::getWidth() const {
 	return 5 + board_.getWidth() + 5 + preview_.getWidth() + 5;
 }
 
-double GameComponent::Graphic::getHeight() const {
+float GameComponent::Graphic::getHeight() const {
 	return 5 + board_.getHeight() + 5;
 }
 
@@ -171,7 +171,6 @@ void GameComponent::Graphic::setMiddleMessage(const mw::Text& text) {
 	middleMessage_ = text;
 }
 
-// Is called by the thread.
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	graphic_[player->getId()].update(player);
 	soundEffects(gameEvent);

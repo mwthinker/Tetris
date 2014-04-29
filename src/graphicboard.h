@@ -19,10 +19,10 @@ public:
 	void draw();
 
 	// Returns the width the graphic is drawn in OpenGl.
-	double getWidth() const;
+	float getWidth() const;
 
 	// Returns the height the graphic is drawn in OpenGl.
-	double getHeight() const;
+	float getHeight() const;
 
 	inline void showPoints() {
 		showPoints_ = true;
@@ -45,19 +45,19 @@ public:
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
 	void draw();
 
-	void update(const BlockType& blockType, double pixlePerSquare);
+	void update(const BlockType& blockType, float pixlePerSquare);
 
 	// Returns the width the graphic is drawn in OpenGl.
-	double getWidth() const;
+	float getWidth() const;
 
 	// Returns the height the graphic is drawn in OpenGl.
-	double getHeight() const;
+	float getHeight() const;
 
 private:
 	mw::Color frameColor_;
-	double pixlePerSquare_;
+	float pixlePerSquare_;
 
-	double width_, height_;
+	float width_, height_;
 	Block block_;
 };
 
@@ -73,12 +73,12 @@ public:
 	void draw();
 
 	// Returns the width the graphic is drawn in OpenGl.
-	double getWidth() const;
+	float getWidth() const;
 
 	// Returns the height the graphic is drawn in OpenGl.
-	double getHeight() const;
+	float getHeight() const;
 
-	double getPixelPerSquare() const {
+	float getPixelPerSquare() const {
 		return pixlePerSquare_;
 	}
 
@@ -88,8 +88,8 @@ private:
 	
 	mw::Color frameColor_;
 
-	double pixlePerSquare_;
-	double height_, width_;
+	float pixlePerSquare_;
+	float height_, width_;
 	
 	RawTetrisBoard tetrisBoard_;
 };

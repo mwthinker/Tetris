@@ -33,9 +33,9 @@ private:
 
 		void update(const PlayerPtr& player);
 
-		inline double getWidth() const;
+		inline float getWidth() const;
 
-		inline double getHeight() const;
+		inline float getHeight() const;
 
 		inline void draw();
 
