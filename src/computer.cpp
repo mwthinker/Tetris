@@ -41,12 +41,12 @@ void Computer::update(const TetrisBoard& board) {
 	} else {
 		if (handle_.valid()) {
 			latestState_ = handle_.get();
-			latestBlock_ = board.currentBlock();
+			latestBlock_ = board.getBlock();
 			input_ = calculateInput(latestState_);
 			handle_ = std::future<State>();
 			activeThread_ = false;
 		}
-		Block current = board.currentBlock();
+		Block current = board.getBlock();
 		Square currentSq = current.getRotationSquare();
 		Square sq = latestBlock_.getRotationSquare();
 
@@ -130,7 +130,7 @@ Input Computer::calculateInput(State state) const {
 // Find the best state for the block to move.
 Computer::State Computer::calculateBestState(RawTetrisBoard board, int depth) {
 	if (depth != 0) {
-		std::vector<State> states = calculateAllPossibleStates(board, board.currentBlock());
+		std::vector<State> states = calculateAllPossibleStates(board, board.getBlock());
 
 		double highestValue = -100000;
 		int hIndex = -1;
@@ -157,7 +157,7 @@ Computer::State Computer::calculateBestState(RawTetrisBoard board, int depth) {
 				childBoard.update(Move::DOWN_GRAVITY);
 			}
 			// Save the current block before impact.
-			Block block = childBoard.currentBlock();
+			Block block = childBoard.getBlock();
 			// Impact, the block is now a part of the board.
 			childBoard.update(Move::DOWN_GRAVITY);
 

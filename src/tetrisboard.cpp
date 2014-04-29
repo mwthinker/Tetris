@@ -10,7 +10,7 @@ TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, Blo
 	: RawTetrisBoard(nbrOfRows, nbrOfColumns, current, next) {
 	nbrOfUpdates_ = 0;
 	setCurrentBlock(current);
-	setNextBlock(next);
+	setNextBlockType(next);
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
@@ -18,7 +18,7 @@ void TetrisBoard::restart(BlockType current, BlockType next) {
 	nextBlockQueue_ = std::queue<BlockType>();
 	gameEvents_ = std::queue<GameEvent>();
 	setCurrentBlock(current);
-	setNextBlock(next);
+	setNextBlockType(next);
 	clearBoard();
 	nbrOfUpdates_ = 0;
 }
@@ -27,11 +27,12 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 	gameEvents_.push(gameEvent);
 	switch (gameEvent) {
 	case GameEvent::BLOCK_COLLISION:
-		setNextBlock(nextBlockQueue_.front());
+		setNextBlockType(nextBlockQueue_.front());
 		nextBlockQueue_.pop();
 		++nbrOfUpdates_;
 		break;
     default:
+		// Do nothing!
         break;
 	}
 }

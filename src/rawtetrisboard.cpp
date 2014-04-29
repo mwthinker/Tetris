@@ -10,12 +10,11 @@ RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType curren
 	isGameOver_ = false;
 
 	current_ = createBlock(current);
-	next_ = createBlock(next);
+	next_ = next;
 
 	gameboard_ = std::vector<BlockType>( (nbrOfRows + 4) * (nbrOfColumns) , BlockType::EMPTY);
 }
 
-// First checks if the game is over. Then perform the move.
 void RawTetrisBoard::update(Move move) {
 	// Game over?
 	if (collision(current_)) {
@@ -88,10 +87,10 @@ void RawTetrisBoard::update(Move move) {
 		}
 
 		if (gravityCollision) {
-			// Collision detected, add squares to gameboard.
+			// Collision detected, add squares to the gameboard.
 			addBlockToBoard(current_);
 			
-			// Remove any filled rows on the gameboard.
+			// Remove any filled row on the gameboard.
 			int nbr = removeFilledRows(current_);
 
 			// Add rows due to some external event.
@@ -99,8 +98,8 @@ void RawTetrisBoard::update(Move move) {
 			gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
 			gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
 
-			// Updates the user controlled block.
-			current_ = next_;
+			// Update the user controlled block.
+			current_ = createBlock(next_);
 
 			// Add event.
 			triggerEvent(GameEvent::BLOCK_COLLISION);
@@ -133,32 +132,8 @@ void RawTetrisBoard::triggerGameOverEvent() {
 	}
 }
 
-int RawTetrisBoard::getNbrOfRows() const {
-	return nbrOfRows_;
-}
-
-int RawTetrisBoard::getNbrOfColumns() const {
-	return nbrOfColumns_;
-}
-
-bool RawTetrisBoard::isGameOver() const {
-	return isGameOver_;
-}
-
 const std::vector<BlockType>& RawTetrisBoard::getBoardVector() const {
 	return gameboard_;
-}
-
-Block RawTetrisBoard::currentBlock() const {
-	return current_;
-}
-
-Block RawTetrisBoard::nextBlock() const {
-	return next_;
-}
-
-void RawTetrisBoard::setNextBlock(BlockType next) {
-	next_ = createBlock(next);
 }
 
 void RawTetrisBoard::setCurrentBlock(BlockType current) {
@@ -166,14 +141,14 @@ void RawTetrisBoard::setCurrentBlock(BlockType current) {
 }
 
 void RawTetrisBoard::addBlockToBoard(const Block& block) {
-	// All squares in the block to be added to the board.
+	// All squares in the block is added to the gameboard.
 	for (const Square& sq :block) {
 		blockType(sq.row_, sq.column_) = sq.blockType_;
 	}
 }
 
 Block RawTetrisBoard::createBlock(BlockType blockType) const {
-	return Block(blockType, nbrOfRows_, nbrOfColumns_/2 - 1);
+	return Block(blockType, nbrOfRows_, nbrOfColumns_ / 2 - 1);
 }
 
 bool RawTetrisBoard::collision(const Block& block) const {

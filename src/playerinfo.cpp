@@ -14,11 +14,11 @@ void PlayerInfo::triggerGameOverEvent() {
 }
 
 BlockType PlayerInfo::getCurrentBlock() const {
-	return tetrisBoard_.currentBlock().blockType();
+	return tetrisBoard_.getBlockType();
 }
 
 BlockType PlayerInfo::getNextBlock() const {
-	return tetrisBoard_.nextBlock().blockType();
+	return tetrisBoard_.getBlockType();
 }
 
 void PlayerInfo::setLevel(int level) {

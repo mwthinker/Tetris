@@ -97,24 +97,7 @@ namespace {
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_BLEND);
-	}
-
-	class RemoveRowsAnimation {
-	public:
-		RemoveRowsAnimation() {
-		}
-
-		void update(float deltaTime) {
-
-		}
-
-		void draw() {
-
-		}
-
-	private:
-
-	};
+	}	
 
 } // Anonymous namespace.
 
@@ -275,7 +258,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
 	
-	drawBlock(tetrisBoard.currentBlock(), tetrisBoard.getNbrOfRows() + 2);
+	drawBlock(tetrisBoard.getBlock(), tetrisBoard.getNbrOfRows() + 2);
 
 	glPopMatrix();
 }
