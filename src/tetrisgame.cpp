@@ -441,7 +441,7 @@ void TetrisGame::disconnectToServer(int clientId) {
 		// Game is started. Set offline players to gameOver.
 		UserConnectionPtr tmp = *it;
 		for (PlayerPtr player : *tmp) {
-			player->triggerGameOverEvent();
+			//player->triggerGameOverEvent();
 		}
 	}
 }
@@ -566,10 +566,6 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 		throw mw::Exception("Protocol error!\n");
 		break;
 	}
-}
-
-void TetrisGame::iterateAllPlayersInfo(std::function<bool(PlayerInfoPtr)> nextPlayer) const {
-	iterateAllPlayers(nextPlayer); // Is this dangerous??
 }
 
 void TetrisGame::iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const {
@@ -822,7 +818,7 @@ void TetrisGame::receiveStartBlock(const mw::Packet& data, int id) {
 	}
 }
 
-void TetrisGame::addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows) {
+void TetrisGame::addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows) {
 	for (PlayerPtr local : *localUser_) {
 		// Is the player to avoid?
 		if (player != local) {
@@ -911,15 +907,13 @@ void TetrisGame::clientStartGame() {
 	});
 
 	sendStartBlock();
-	std::vector<PlayerInfoPtr> playersInfo;
 	std::vector<PlayerPtr> players;
-	iterateAllPlayers([&playersInfo, &players](PlayerPtr player) {
-		playersInfo.push_back(player);
+	iterateAllPlayers([&players](PlayerPtr player) {
 		players.push_back(player);
 		return true;
 	});
 
-	tetrisRules_.initGame(playersInfo, width_, height_, maxLevel_, status_ == LOCAL);
+	tetrisRules_.initGame(players, width_, height_, maxLevel_, status_ == LOCAL);
 	gameHandler_->initGame(players);
 
 	// Signals the gui that the game is not paused.

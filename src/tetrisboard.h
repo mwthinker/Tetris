@@ -4,6 +4,8 @@
 #include "block.h"
 #include "rawtetrisboard.h"
 
+#include <mw/signal.h>
+
 #include <vector>
 #include <queue>
 
@@ -17,9 +19,9 @@ public:
 
 	// Add next block.
 	void add(BlockType next);
-
-	// Returns true as long as there are more game events to be poll to parameter (gameEvent).
-    bool pollGameEvent(GameEvent& gameEvent);
+		
+	void addGameEventListener(const mw::Signal<GameEvent>::Callback& callback);
+	void removeAllListeners();
 
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
@@ -34,8 +36,9 @@ private:
 	std::vector<BlockType> addExternalRows() override;
 
 	std::vector<BlockType> squaresToAdd_;
-	std::queue<GameEvent> gameEvents_;
 	std::queue<BlockType> nextBlockQueue_;
+	mw::Signal<GameEvent> gameEventFunctions_;
+	
 	int nbrOfUpdates_;
 };
 

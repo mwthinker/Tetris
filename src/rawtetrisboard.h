@@ -26,7 +26,8 @@ enum class Move : char {
 	DOWN_GRAVITY,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+	GAME_OVER
 };
 
 // Represents a tetris board.
@@ -37,10 +38,7 @@ public:
 	inline virtual ~RawTetrisBoard() {
 	}
 
-	// To trigger a gameover event to be added to the event queue.
-	void triggerGameOverEvent();
-
-	// Move the block. Will only move if the game is not over.
+	// Move the block. The board will stay constant if game over is true.
     void update(Move move);
     
 	// Return the number of rows.

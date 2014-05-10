@@ -17,11 +17,13 @@ RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType curren
 
 void RawTetrisBoard::update(Move move) {
 	// Game over?
-	if (collision(current_)) {
-		triggerGameOverEvent();
-	}
-
-	if (!isGameOver_) {
+	if (isGameOver_ || move == Move::GAME_OVER || collision(current_)) {
+		if (!isGameOver_) {
+			// Only called when the game becomes game over.
+			isGameOver_ = true;
+			triggerEvent(GameEvent::GAME_OVER);
+		}
+	} else {
 		Block block = current_;
 
 		// Collision caused by gravity.
@@ -122,13 +124,6 @@ void RawTetrisBoard::update(Move move) {
 			// No collision, its journey can continue.
 			current_ = block;
 		}
-	}
-}
-
-void RawTetrisBoard::triggerGameOverEvent() {
-	if (!isGameOver_) {
-		triggerEvent(GameEvent::GAME_OVER);
-		isGameOver_ = true;
 	}
 }
 

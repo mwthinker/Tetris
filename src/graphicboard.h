@@ -1,7 +1,7 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
-#include "rawtetrisboard.h"
+#include "tetrisboard.h"
 
 #include <mw/text.h>
 #include <mw/color.h>
@@ -64,7 +64,7 @@ private:
 // Draws a tetris board and corresponding player info.
 class GraphicBoard {
 public:
-	GraphicBoard();
+	GraphicBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
 		
 	void update(const RawTetrisBoard& newBoard);
 
@@ -90,7 +90,6 @@ private:
 
 	float pixlePerSquare_;
 	float height_, width_;
-	
 	RawTetrisBoard tetrisBoard_;
 };
 

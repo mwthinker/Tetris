@@ -22,7 +22,7 @@ namespace {
 
 }
 
-Player::Player(int id, int width, int height, bool remote, bool ai) : PlayerInfo(width, height), ai_(ai), id_(id) {
+Player::Player(int id, int width, int height, bool remote, bool ai) : tetrisBoard_(width, height, BlockType::I, BlockType::I), ai_(ai), id_(id) {
 	if (!remote) {
 		update(generateBlockType(), generateBlockType());
 	}
@@ -112,4 +112,37 @@ bool Player::pollMove(Move& move) {
 
 int Player::getId() const {
 	return id_;
+}
+
+void Player::setName(std::string name) {
+	name_ = name;
+}
+
+std::string Player::getName() const {
+	return name_;
+}
+
+const TetrisBoard& Player::getTetrisBoard() const {
+	return tetrisBoard_;
+}
+
+void Player::setLevel(int level) {
+	level_ = level;
+}
+
+int Player::getLevel() const {
+	return level_;
+}
+
+BlockType Player::getCurrentBlock() const {
+	return tetrisBoard_.getBlockType();
+}
+
+BlockType Player::getNextBlock() const {
+	return tetrisBoard_.getBlockType();
+}
+
+bool Player::pollGameEvent(GameEvent& gameEvent) {
+	return false;
+	//return tetrisBoard_.pollGameEvent(gameEvent);
 }

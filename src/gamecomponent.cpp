@@ -118,30 +118,30 @@ GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints) {
 }
 
 void GameComponent::Graphic::update(const PlayerPtr& player) {
-	info_.update(player->getNbrClearedRows(), player->getPoints(), player->getLevel());
-	board_.update(player->getTetrisBoard());
-	preview_.update(player->getNextBlock(), board_.getPixelPerSquare());
+	//info_.update(player->getNbrClearedRows(), player->getPoints(), player->getLevel());
+	//board_->update(player->getTetrisBoard());
+	//preview_.update(player->getNextBlock(), board_->getPixelPerSquare());
 }
 
 float GameComponent::Graphic::getWidth() const {
-	return 5 + board_.getWidth() + 5 + preview_.getWidth() + 5;
+	return 5 + board_->getWidth() + 5 + preview_.getWidth() + 5;
 }
 
 float GameComponent::Graphic::getHeight() const {
-	return 5 + board_.getHeight() + 5;
+	return 5 + board_->getHeight() + 5;
 }
 
 void GameComponent::Graphic::draw() {
 	glPushMatrix();
 
 	glTranslated(5, 5, 0);
-	board_.draw();
+	board_->draw();
 	mw::Color color(237 / 256.0, 78 / 256.0, 8 / 256.0);
 	color.glColor3d();
-	drawLineBorder(board_);
+	drawLineBorder(*board_);
 
 	glPushMatrix();
-	glTranslated(board_.getWidth() + 5, board_.getHeight() - name_.getHeight(), 0);
+	glTranslated(board_->getWidth() + 5, board_->getHeight() - name_.getHeight(), 0);
 	glColor3d(1, 1, 1);
 	name_.draw();
 	glTranslated(0, -5 - preview_.getHeight(), 0);
@@ -151,13 +151,13 @@ void GameComponent::Graphic::draw() {
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslated(board_.getWidth() + 10, 10, 0);
+	glTranslated(board_->getWidth() + 10, 10, 0);
 	info_.draw();
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslated(board_.getWidth() * 0.5 - middleMessage_.getWidth() * 0.5,
-		board_.getHeight() * 0.5 - middleMessage_.getHeight() * 0.5, 0);
+	glTranslated(board_->getWidth() * 0.5 - middleMessage_.getWidth() * 0.5,
+		board_->getHeight() * 0.5 - middleMessage_.getHeight() * 0.5, 0);
 	middleMessage_.draw();
 	glPopMatrix();
 

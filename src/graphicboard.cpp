@@ -187,16 +187,16 @@ float GraphicPreviewBlock::getHeight() const {
 	return height_;
 }
 
-GraphicBoard::GraphicBoard() : tetrisBoard_(20, 10, BlockType::I, BlockType::I) {
+GraphicBoard::GraphicBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next) : tetrisBoard_(nbrOfRows, nbrOfColumns, current, next) {
 	height_ = 800; // Default height for the board.
 	frameColor_ = mw::Color(237 / 256.0, 78 / 256.0, 8 / 256.0); // Some type of orange.
 }
 
 void GraphicBoard::update(const RawTetrisBoard& newBoard) {
-	tetrisBoard_ = newBoard;
+	//tetrisBoard_ = newBoard;
 	height_ = 400;
-	pixlePerSquare_ = height_ / (tetrisBoard_.getNbrOfRows() + 2);
-	width_ = tetrisBoard_.getNbrOfColumns() * pixlePerSquare_;
+	pixlePerSquare_ = height_ / (newBoard.getNbrOfRows() + 2);
+	width_ = newBoard.getNbrOfColumns() * pixlePerSquare_;
 }
 
 void GraphicBoard::draw() {
@@ -217,8 +217,8 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
-	int rows = tetrisBoard_.getNbrOfRows();
-	int columns = tetrisBoard_.getNbrOfColumns();
+	int rows = tetrisBoard.getNbrOfRows();
+	int columns = tetrisBoard.getNbrOfColumns();
 
 	glBegin(GL_QUADS);
 	// Draws the outer square.
@@ -270,6 +270,7 @@ void GraphicBoard::drawBeginArea() const {
 	int columns = tetrisBoard_.getNbrOfColumns();
 	glTranslated(0, rows, 0);
 	glScaled(columns, 2, 0);
+	
 	// Draws the outer square
 	double red = 0.8, green = 0.2, blue = 0.3;
 	glColor4d(red*0.8, green*0.8, blue*0.8, 0.5);

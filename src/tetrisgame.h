@@ -71,7 +71,7 @@ public:
 		ais_[3] = ai4;
 	}
 
-	void addRowsToAllPlayersExcept(PlayerInfoPtr player, int nbrOfRows);
+	void addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows);
 
 	void signalEvent(NetworkEventPtr nEvent);
 
@@ -81,8 +81,6 @@ public:
 
 private:
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
-
-	void iterateAllPlayersInfo(std::function<bool(PlayerInfoPtr)> nextPlayer) const;
 
 	// Is called every frame when a game is running.
 	void updateGame(Uint32 msDeltaTime);

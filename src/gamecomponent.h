@@ -41,7 +41,7 @@ private:
 
 		void setMiddleMessage(const mw::Text& text);
 
-		GraphicBoard board_;
+		GraphicBoard* board_;
 
 	private:
 		GraphicPlayerInfo info_;

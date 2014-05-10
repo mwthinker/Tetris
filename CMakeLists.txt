@@ -50,8 +50,6 @@ set(SOURCES
 	src/networklooby.h
 	src/player.cpp
 	src/player.h
-	src/playerinfo.cpp
-	src/playerinfo.h
 	src/rawtetrisboard.cpp
 	src/rawtetrisboard.h
 	src/remoteplayer.h
