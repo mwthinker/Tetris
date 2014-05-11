@@ -119,7 +119,7 @@ private:
     void moveRowsOneStepDown(int rowToRemove);
     
 	bool isGameOver_;					// True when game is over, else false.
-	BlockType next_;						// Next block for the player to control.
+	BlockType next_;					// Next block for the player to control.
 	Block current_;						// The current block for the player to control.
 	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	int nbrOfRows_, nbrOfColumns_;		// The size of the gameboard.

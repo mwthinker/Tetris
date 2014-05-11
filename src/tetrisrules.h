@@ -1,30 +1,28 @@
 #ifndef TETRISRULES_H
 #define TETRISRULES_H
 
-#include "player.h"
+#include "playerinteraction.h"
+#include "rawtetrisboard.h"
 
 #include <map>
-#include <string>
+#include <vector>
 
-class TetrisGame;
-
-// Is responsible of the setting the rules for the players.
-// E.g. how the players interact with each other.
+// Is responsible to inforce the game rules for the players.
+// I.e. how the players interact with each other.
 class TetrisRules {
 public:
 	TetrisRules();
 
 	// Is called at the beginning of every new game.
-	void initGame(std::vector<PlayerPtr> players, int columns, int rows, int maxLevel, bool local);
+	void initGame(std::vector<int> playerIds, int columns, int rows, int maxLevel, bool local);
 
-	void applyRules(PlayerPtr player, GameEvent gameEvent, TetrisGame* game);
+	void applyRules(int playerId, int level, GameEvent gameEvent, PlayerInteraction& game);
 
 private:
 	struct PlayerInfo {
 		PlayerInfo() : points_(0), nbrClearedRows_(0), levelUpCounter_(0) {
 		}
-
-		PlayerPtr player_;
+		
 		int points_, nbrClearedRows_, levelUpCounter_;
 	};
 

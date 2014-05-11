@@ -12,14 +12,14 @@ RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType curren
 	current_ = createBlock(current);
 	next_ = next;
 
-	gameboard_ = std::vector<BlockType>( (nbrOfRows + 4) * (nbrOfColumns) , BlockType::EMPTY);
+	gameboard_ = std::vector<BlockType>((nbrOfRows + 4) * (nbrOfColumns), BlockType::EMPTY);
 }
 
 void RawTetrisBoard::update(Move move) {
 	// Game over?
-	if (isGameOver_ || move == Move::GAME_OVER || collision(current_)) {
+	if (isGameOver_ || collision(current_)) {
 		if (!isGameOver_) {
-			// Only called when the game becomes game over.
+			// Only called once when the game becomes game over.
 			isGameOver_ = true;
 			triggerEvent(GameEvent::GAME_OVER);
 		}
@@ -29,24 +29,29 @@ void RawTetrisBoard::update(Move move) {
 		// Collision caused by gravity.
 		bool gravityCollision = false;
 		switch (move) {
-		case Move::DOWN_GRAVITY:
-			block.moveDown();
-			gravityCollision = collision(block);
-			if (!gravityCollision) {
-				triggerEvent(GameEvent::GRAVITY_MOVES_BLOCK);
-			}
-			break;
-		case Move::LEFT:
+			case Move::GAME_OVER:
+				// Only called once when the game becomes game over.
+				isGameOver_ = true;
+				triggerEvent(GameEvent::GAME_OVER);
+				break;
+			case Move::DOWN_GRAVITY:
+				block.moveDown();
+				gravityCollision = collision(block);
+				if (!gravityCollision) {
+					triggerEvent(GameEvent::GRAVITY_MOVES_BLOCK);
+				}
+				break;
+			case Move::LEFT:
 			{
 				Block tmp = block;
 				tmp.moveLeft();
 				if (!collision(tmp)) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_LEFT);
-				}
+				}			
+				break;
 			}
-			break;
-		case Move::RIGHT:
+			case Move::RIGHT:
 			{
 				Block tmp = block;
 				tmp.moveRight();
@@ -54,9 +59,9 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_RIGHT);
 				}
+				break;
 			}
-			break;
-		case Move::DOWN:
+			case Move::DOWN:
 			{
 				Block tmp = block;
 				tmp.moveDown();
@@ -64,9 +69,9 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_DOWN);
 				}
+				break;
 			}
-			break;
-        case Move::ROTATE_RIGHT:
+			case Move::ROTATE_RIGHT:
 			{
 				Block tmp = block;
 				tmp.rotateRight();
@@ -74,9 +79,9 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
 				}
+				break;
 			}
-			break;
-		case Move::ROTATE_LEFT:
+			case Move::ROTATE_LEFT:
 			{
 				Block tmp = block;
 				tmp.rotateLeft();
@@ -84,14 +89,14 @@ void RawTetrisBoard::update(Move move) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
 				}
+				break;
 			}
-			break;
 		}
 
 		if (gravityCollision) {
 			// Collision detected, add squares to the gameboard.
 			addBlockToBoard(current_);
-			
+
 			// Remove any filled row on the gameboard.
 			int nbr = removeFilledRows(current_);
 
@@ -107,18 +112,18 @@ void RawTetrisBoard::update(Move move) {
 			triggerEvent(GameEvent::BLOCK_COLLISION);
 
 			switch (nbr) {
-			case 1:
-				triggerEvent(GameEvent::ONE_ROW_REMOVED);
-				break;
-			case 2:
-				triggerEvent(GameEvent::TWO_ROW_REMOVED);
-				break;
-			case 3:
-				triggerEvent(GameEvent::THREE_ROW_REMOVED);
-				break;
-			case 4:
-				triggerEvent(GameEvent::FOUR_ROW_REMOVED);
-				break;
+				case 1:
+					triggerEvent(GameEvent::ONE_ROW_REMOVED);
+					break;
+				case 2:
+					triggerEvent(GameEvent::TWO_ROW_REMOVED);
+					break;
+				case 3:
+					triggerEvent(GameEvent::THREE_ROW_REMOVED);
+					break;
+				case 4:
+					triggerEvent(GameEvent::FOUR_ROW_REMOVED);
+					break;
 			}
 		} else {
 			// No collision, its journey can continue.
@@ -137,7 +142,7 @@ void RawTetrisBoard::setCurrentBlock(BlockType current) {
 
 void RawTetrisBoard::addBlockToBoard(const Block& block) {
 	// All squares in the block is added to the gameboard.
-	for (const Square& sq :block) {
+	for (const Square& sq : block) {
 		blockType(sq.row_, sq.column_) = sq.blockType_;
 	}
 }
@@ -165,12 +170,12 @@ bool RawTetrisBoard::collision(const Block& block) const {
 			break;
 		}
 	}
-	
+
 	return collision;
 }
 
 void RawTetrisBoard::clearBoard() {
-	gameboard_ = std::vector<BlockType>( (nbrOfRows_ + 4) * (nbrOfColumns_) , BlockType::EMPTY);
+	gameboard_ = std::vector<BlockType>((nbrOfRows_ + 4) * (nbrOfColumns_), BlockType::EMPTY);
 	isGameOver_ = false;
 }
 
@@ -197,7 +202,7 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 			++row;
 		}
 	}
-	
+
 	return nbr;
 }
 

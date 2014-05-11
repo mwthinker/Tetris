@@ -8,6 +8,7 @@
 #include "device.h"
 #include "ai.h"
 #include "gamehandler.h"
+#include "playerinteraction.h"
 
 #include <mw/signal.h>
 #include <mw/packet.h>
@@ -18,7 +19,7 @@
 #include <functional>
 #include <memory>
 
-class TetrisGame : public mw::ServerInterface {
+class TetrisGame : public mw::ServerInterface, public PlayerInteraction {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
@@ -78,6 +79,14 @@ public:
 	Status getStatus() const {
 		return status_;
 	}
+
+	void addRows(int playerId, int rows) override;
+
+	void forceGameOver(int playerId) override;
+
+	void gameIsOver(int points) override;
+
+	void setLevel(int playerId, int level) override;
 
 private:
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
