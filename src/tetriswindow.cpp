@@ -95,7 +95,7 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow() {
+TetrisWindow::TetrisWindow() : gui::Frame(512, 512, true, "MWetris", "images/tetris.bmp") {
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
 

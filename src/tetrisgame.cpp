@@ -928,44 +928,6 @@ void TetrisGame::updateGame(Uint32 msDeltaTime) {
 	}
 }
 
-/*
-void TetrisGame::addRows(int playerId, int rows) {
-	// Add rows only for local players. Remote players will add
-	// indirectly.
-	for (PlayerPtr local : *localUser_) {
-		if (playerId == local->getId()) {
-			std::vector<BlockType> blockTypes;
-			for (int i = 0; i < rows; ++i) {
-				std::vector<BlockType> tmp = local->generateRow();
-				blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
-			}
-			sendTetrisInfo(local->getId(), blockTypes);
-		}
-	}
-}
-
-void TetrisGame::forceGameOver(int playerId) {
-	iterateAllPlayers([&](PlayerPtr player) {
-		if (playerId == player->getId()) {
-			player->update(Move::GAME_OVER);
-			return false;
-		}
-		return true;
-	});
-}
-
-void TetrisGame::gameIsOver(int points) {
-	eventHandler_(std::make_shared<GameOver>(points));
-}
-
-void TetrisGame::setLevel(int playerId, int level) {
-	for (PlayerPtr local : *localUser_) {
-		if (playerId == local->getId()) {
-			local->setLevel(level);
-		}
-	}
-}
-*/
 void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 	PlayerInfo& pInfo = player.getPlayerInfo();
 	int rows = 0;
