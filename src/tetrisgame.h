@@ -1,14 +1,12 @@
 #ifndef TETRISGAME_H
 #define TETRISGAME_H
 
-#include "tetrisrules.h"
 #include "player.h"
 #include "networkevent.h"
 #include "userconnection.h"
 #include "device.h"
 #include "ai.h"
 #include "gamehandler.h"
-#include "playerinteraction.h"
 
 #include <mw/signal.h>
 #include <mw/packet.h>
@@ -16,10 +14,8 @@
 #include <mw/server.h>
 
 #include <vector>
-#include <functional>
-#include <memory>
 
-class TetrisGame : public mw::ServerInterface, public PlayerInteraction {
+class TetrisGame : public mw::ServerInterface {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
@@ -55,6 +51,8 @@ public:
 	// Returns true if the game is started.
 	bool isStarted() const;
 
+	// Restarts the active game. If the game is not started nothing happens.
+	// Only the server can restart the game.
 	void restartGame();
 
 	void addCallback(mw::Signal<NetworkEventPtr>::Callback callback);
@@ -72,21 +70,9 @@ public:
 		ais_[3] = ai4;
 	}
 
-	void addRowsToAllPlayersExcept(PlayerPtr player, int nbrOfRows);
-
-	void signalEvent(NetworkEventPtr nEvent);
-
 	Status getStatus() const {
 		return status_;
 	}
-
-	void addRows(int playerId, int rows) override;
-
-	void forceGameOver(int playerId) override;
-
-	void gameIsOver(int points) override;
-
-	void setLevel(int playerId, int level) override;
 
 private:
 	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
@@ -172,7 +158,10 @@ private:
 	// Receives the starting block from remote player.
 	void receiveStartBlock(const mw::Packet& data, int id);
 
+	// All client will start the game.
 	void clientStartGame();
+
+	void applyRules(Player& player, GameEvent gameEvent);
 
 	mw::Signal<NetworkEventPtr> eventHandler_;
 	bool start_; // The game is started?
@@ -199,9 +188,9 @@ private:
 	// Fix timestep.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
-
-	TetrisRules tetrisRules_;
+	
 	GameHandler* gameHandler_;
+	int nbrOfAlivePlayers_; // The total number of alive players.
 
 	int countDown_;
 };

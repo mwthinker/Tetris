@@ -64,6 +64,9 @@ private:
 // Draws a tetris board and corresponding player info.
 class GraphicBoard {
 public:
+	GraphicBoard() : tetrisBoard_(20, 10, BlockType::I, BlockType::I) {
+	}
+
 	GraphicBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
 		
 	void update(const RawTetrisBoard& newBoard);

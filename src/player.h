@@ -7,6 +7,13 @@
 #include <queue>
 #include <memory>
 
+struct PlayerInfo {
+	PlayerInfo() : points_(0), nbrClearedRows_(0), levelUpCounter_(0) {
+	}
+
+	int points_, nbrClearedRows_, levelUpCounter_;
+};
+
 class Player;
 typedef std::shared_ptr<Player> PlayerPtr;
 
@@ -29,6 +36,10 @@ public:
 	void update(BlockType current, BlockType next);
 	void update(Move move, BlockType next);
 	void update(const std::vector<BlockType>& blockTypes);
+
+	// Creates a row represented by a vector filled with true or false.
+	// True means it is filled with a square. False means empty.
+	// The percentage of true per row is squaresPerLength_.
 	std::vector<BlockType> generateRow() const;
 
 	virtual void updateAi() {
@@ -52,8 +63,20 @@ public:
 	void setLevel(int level);
 	int getLevel() const;
 
+	inline void setPlayerInfo(const PlayerInfo& playerInfo) {
+		playerInfo_ = playerInfo;
+	}
+
+	inline PlayerInfo& getPlayerInfo() {
+		return playerInfo_;
+	}
+
 	// Returns the tetrisboard.
 	const TetrisBoard& getTetrisBoard() const;
+
+	bool isAi() const {
+		return ai_;
+	}
 
 protected:
 	// Pushed to a queue.
@@ -62,6 +85,7 @@ protected:
 private:
 	// Remove from the queue.
 	bool pollMove(Move& move);
+		
 	std::queue<Move> moves_;
 	std::queue<GameEvent> gameEvents_;
 
@@ -72,6 +96,7 @@ private:
 	std::string name_;
 	TetrisBoard tetrisBoard_;
 	int level_;
+	PlayerInfo playerInfo_;
 };
 
 #endif // PLAYER_H

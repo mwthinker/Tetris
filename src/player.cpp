@@ -66,9 +66,6 @@ void Player::update(const std::vector<BlockType>& blockTypes) {
 }
 
 std::vector<BlockType> Player::generateRow() const {
-	// Creates a row represented by a vector filled with true or false.
-	// True means it is filled with a square. False means empty.
-	// The percentage of true per row is squaresPerLength_.
 	const unsigned int size = tetrisBoard_.getNbrOfColumns();
 	std::vector<bool> row(size);
 	std::uniform_int_distribution<int> distribution(0, size - 1);
