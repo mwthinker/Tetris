@@ -12,13 +12,13 @@ public:
 		blockMeanHeight_(-10), nbrOfRows_(0), nbrOfColumns_(0), name_("DefaultAi") {
 	}
 
-	inline Ai(std::string name, double rowRoughness, double columnRoughness, double edges, double meanHeight,
-		double blockMeanHeight, double nbrOfRows, double nbrOfColumns) : rowRoughness_(rowRoughness), columnRoughness_(columnRoughness), edges_(edges), meanHeight_(meanHeight),
+	inline Ai(std::string name, float rowRoughness, float columnRoughness, float edges, float meanHeight,
+		float blockMeanHeight, float nbrOfRows, float nbrOfColumns) : rowRoughness_(rowRoughness), columnRoughness_(columnRoughness), edges_(edges), meanHeight_(meanHeight),
 		blockMeanHeight_(blockMeanHeight), nbrOfRows_(nbrOfRows), nbrOfColumns_(nbrOfColumns), name_(name) {
 	}
 
-	inline double calculateValue(double rowRoughness, double columnRoughness, double edges, double meanHeight,
-		double blockMeanHeight, double nbrOfRows, double nbrOfColumns) const {
+	inline float calculateValue(float rowRoughness, float columnRoughness, float edges, float meanHeight,
+		float blockMeanHeight, float nbrOfRows, float nbrOfColumns) const {
 		return rowRoughness_*rowRoughness + columnRoughness_*columnRoughness + edges_*edges + meanHeight_*meanHeight +
 			blockMeanHeight_*blockMeanHeight + nbrOfRows_*nbrOfRows + nbrOfColumns_*nbrOfColumns;
 	}
@@ -28,13 +28,13 @@ public:
 	}
 
 private:
-	double rowRoughness_;
-	double columnRoughness_;
-	double edges_;
-	double meanHeight_;
-	double blockMeanHeight_;
-	double nbrOfRows_;
-	double nbrOfColumns_;
+	float rowRoughness_;
+	float columnRoughness_;
+	float edges_;
+	float meanHeight_;
+	float blockMeanHeight_;
+	float nbrOfRows_;
+	float nbrOfColumns_;
 
 	std::string name_;
 };

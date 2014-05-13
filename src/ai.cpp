@@ -9,13 +9,13 @@
 bool loadAi(Ai& ai, std::string dir, std::string str) {
 	std::ifstream file(dir+str);
 	if (file.is_open()) {
-		std::vector<double> values;
+		std::vector<float> values;
 		while (file.good()) {
 			std::string line;
 			std::getline(file, line);
 			std::stringstream strStream(line);
 			std::string word;
-			double value;
+			float value;
 			strStream >> word >> value; // E.g. word = "rowRoughness". calue = 10.1 .
 			values.push_back(value);
 		}

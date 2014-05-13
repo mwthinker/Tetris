@@ -35,7 +35,7 @@ void Computer::update(const TetrisBoard& board) {
 		activeThread_ = true;
 		input_ = Input();
 		nbrOfUpdates_ = board.getNbrOfUpdates();
-		handle_ = std::async(std::launch::async|std::launch::deferred, [&] {
+		handle_ = std::async(std::launch::async | std::launch::deferred, [&] {
 			return calculateBestState(board, 2);
 		});
 	} else {
@@ -62,12 +62,12 @@ void Computer::update(const TetrisBoard& board) {
 	}
 }
 
-double Computer::calculateValue(const RawTetrisBoard& board, const Block& block) const {
+float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) const {
 	int lowestRow = board.getNbrOfRows() + 4;
-	double meanHeight = 0;
+	float meanHeight = 0;
 	int nbrOfSquares = 0;
 
-	double rowRoughness = 0;
+	float rowRoughness = 0;
 	for (int row = 0; row < lowestRow; ++row) {
 		bool lastHole = false;
 		for (int column = 0; column < board.getNbrOfColumns(); ++column) {
@@ -85,7 +85,7 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 
 	meanHeight /= nbrOfSquares;
 
-	double columnRoughness = 0;	
+	float columnRoughness = 0;
 	for (int column = 0; column < board.getNbrOfColumns(); ++column) {
 		bool lastHole = false;
 		for (int row = 0; row < lowestRow; ++row) {
@@ -98,16 +98,16 @@ double Computer::calculateValue(const RawTetrisBoard& board, const Block& block)
 	}
 
 	int edges = 0;
-	int blockMeanHeight = 0;
+	float blockMeanHeight = 0;
 	for (const Square& sq : block) {
-		board.getBlockType(sq.row_, sq.column_-1) != BlockType::EMPTY ? ++edges : 0;
-		board.getBlockType(sq.row_-1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
-		board.getBlockType(sq.row_, sq.column_+1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_, sq.column_ - 1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_ - 1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_, sq.column_ + 1) != BlockType::EMPTY ? ++edges : 0;
 		blockMeanHeight += sq.row_;
 	}
 	blockMeanHeight /= 4;
-	
-	return ai_.calculateValue(rowRoughness,columnRoughness,edges,meanHeight,blockMeanHeight,board.getNbrOfRows(),board.getNbrOfColumns());
+
+	return ai_.calculateValue(rowRoughness, columnRoughness, (float) edges, meanHeight, blockMeanHeight, (float) board.getNbrOfRows(), (float) board.getNbrOfColumns());
 }
 
 // Calculate and return the best input to achieve the current state.
@@ -153,7 +153,7 @@ Computer::State Computer::calculateBestState(RawTetrisBoard board, int depth) {
 			}
 
 			// Move down the block and stop just before impact.
-			for (int i = 0; i < state.down_-1; ++i) {
+			for (int i = 0; i < state.down_ - 1; ++i) {
 				childBoard.update(Move::DOWN_GRAVITY);
 			}
 			// Save the current block before impact.
