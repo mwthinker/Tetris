@@ -51,7 +51,7 @@ public:
 	// Returns true if the game is started.
 	bool isStarted() const;
 
-	// Restarts the active game. If the game is not started nothing happens.
+	// Restarts the active game. If the game is not started, nothing happens.
 	// Only the server can restart the game.
 	void restartGame();
 
@@ -63,7 +63,7 @@ public:
 		return maxLevel_;
 	}
 
-	inline void setAis(Ai ai1, Ai ai2, Ai ai3, Ai ai4) {
+	inline void setAis(const Ai& ai1, const Ai& ai2, const Ai& ai3, const Ai& ai4) {
 		ais_[0] = ai1;
 		ais_[1] = ai2;
 		ais_[2] = ai3;

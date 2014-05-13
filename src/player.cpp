@@ -140,6 +140,5 @@ BlockType Player::getNextBlock() const {
 }
 
 bool Player::pollGameEvent(GameEvent& gameEvent) {
-	return false;
-	//return tetrisBoard_.pollGameEvent(gameEvent);
+	return tetrisBoard_.pollGameEvent(gameEvent);
 }

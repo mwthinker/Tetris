@@ -23,12 +23,11 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <memory>
 
 namespace {
 
 	// Defines the packet content.
-	// Value of first byte by a client.
+	// Value of the first byte.
 	enum class PacketType : char {
 		INPUT,       // Tetrisboard updates.
 		STARTGAME,   // The server starts the game. All user starts the game.

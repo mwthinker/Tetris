@@ -23,6 +23,7 @@ void TetrisBoard::restart(BlockType current, BlockType next) {
 }
 
 void TetrisBoard::triggerEvent(GameEvent gameEvent) {
+	gameEvents_.push(gameEvent);
 	switch (gameEvent) {
 	case GameEvent::BLOCK_COLLISION:
 		setNextBlockType(nextBlockQueue_.front());
@@ -33,15 +34,6 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 		// Do nothing!
         break;
 	}
-	gameEventFunctions_(gameEvent);
-}
-
-void TetrisBoard::addGameEventListener(const mw::Signal<GameEvent>::Callback& callback) {
-	gameEventFunctions_.connect(callback);
-}
-
-void TetrisBoard::removeAllListeners() {
-	gameEventFunctions_.clear();
 }
 
 void TetrisBoard::add(BlockType next) {
@@ -56,4 +48,14 @@ std::vector<BlockType> TetrisBoard::addExternalRows() {
 	std::vector<BlockType> tmp = squaresToAdd_;
 	squaresToAdd_.clear();
 	return tmp;
+}
+
+bool TetrisBoard::pollGameEvent(GameEvent& gameEvent) {
+	if (gameEvents_.empty()) {
+		return false;
+	}
+
+	gameEvent = gameEvents_.front();
+	gameEvents_.pop();
+	return true;
 }
