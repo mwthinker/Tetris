@@ -39,11 +39,10 @@ private:
 
 		inline void draw();
 
-		void setMiddleMessage(const mw::Text& text);
-
-		GraphicBoard* board_;
+		void setMiddleMessage(const mw::Text& text);		
 
 	private:
+		GraphicBoard board_;
 		GraphicPlayerInfo info_;
 		GraphicPreviewBlock preview_;
 		mw::Text name_;

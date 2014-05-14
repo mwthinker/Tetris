@@ -187,7 +187,10 @@ float GraphicPreviewBlock::getHeight() const {
 	return height_;
 }
 
-GraphicBoard::GraphicBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next) : tetrisBoard_(nbrOfRows, nbrOfColumns, current, next) {
+GraphicBoard::GraphicBoard() : tetrisBoard_(nullptr) {
+}
+
+GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(&tetrisBoard) {
 	height_ = 800; // Default height for the board.
 	frameColor_ = mw::Color(237 / 256.0, 78 / 256.0, 8 / 256.0); // Some type of orange.
 }
@@ -200,7 +203,7 @@ void GraphicBoard::update(const RawTetrisBoard& newBoard) {
 }
 
 void GraphicBoard::draw() {
-	drawBoard(tetrisBoard_);
+	drawBoard(*tetrisBoard_);
 }
 
 float GraphicBoard::getWidth() const {
@@ -266,8 +269,8 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 void GraphicBoard::drawBeginArea() const {
 	glPushMatrix();
 
-	int rows = tetrisBoard_.getNbrOfRows();
-	int columns = tetrisBoard_.getNbrOfColumns();
+	int rows = tetrisBoard_->getNbrOfRows();
+	int columns = tetrisBoard_->getNbrOfColumns();
 	glTranslated(0, rows, 0);
 	glScaled(columns, 2, 0);
 	

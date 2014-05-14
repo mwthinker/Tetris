@@ -3,9 +3,6 @@
 
 #include "player.h"
 
-#include <vector>
-#include <memory>
-
 class GameHandler {
 public:
 	virtual void initGame(const std::vector<PlayerPtr>& players) = 0;

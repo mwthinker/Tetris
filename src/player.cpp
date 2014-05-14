@@ -22,7 +22,7 @@ namespace {
 
 }
 
-Player::Player(int id, int width, int height, bool remote, bool ai) : tetrisBoard_(width, height, BlockType::I, BlockType::I), ai_(ai), id_(id) {
+Player::Player(int id, int width, int height, bool remote, bool ai) : tetrisBoard_(height, width, BlockType::I, BlockType::I), ai_(ai), id_(id) {
 	if (!remote) {
 		update(generateBlockType(), generateBlockType());
 	}
@@ -54,6 +54,7 @@ void Player::update(Move move) {
 
 void Player::update(BlockType current, BlockType next) {
 	tetrisBoard_.restart(current, next);
+	level_ = 1;
 }
 
 void Player::update(Move move, BlockType next) {

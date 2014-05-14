@@ -64,10 +64,9 @@ private:
 // Draws a tetris board and corresponding player info.
 class GraphicBoard {
 public:
-	GraphicBoard() : tetrisBoard_(20, 10, BlockType::I, BlockType::I) {
-	}
+	GraphicBoard();
 
-	GraphicBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
+	GraphicBoard(const TetrisBoard& tetrisBoard);
 		
 	void update(const RawTetrisBoard& newBoard);
 
@@ -81,7 +80,7 @@ public:
 	// Returns the height the graphic is drawn in OpenGl.
 	float getHeight() const;
 
-	float getPixelPerSquare() const {
+	inline float getPixelPerSquare() const {
 		return pixlePerSquare_;
 	}
 
@@ -93,7 +92,8 @@ private:
 
 	float pixlePerSquare_;
 	float height_, width_;
-	RawTetrisBoard tetrisBoard_;
+	
+	const TetrisBoard* tetrisBoard_;
 };
 
 #endif // GRAPHICBOARD_H
