@@ -75,14 +75,15 @@ public:
 		return next_;
 	}
 
+	// Return the blocktype for a given position.
 	inline BlockType getBlockType(int row, int column) const {
 		if (row >= 0 && row < nbrOfRows_+4 && column >= 0 && column < nbrOfColumns_) {
 			return gameboard_[row * nbrOfColumns_ + column];
 		}
-		return BlockType::EMPTY;
+		return BlockType::WALL;
 	}
 
-	// Return true if the block is outside or on an allready occupied square on the board.
+	// Return true if the block is outside or on an already occupied square on the board.
 	// Otherwise it return false.
 	bool collision(const Block& block) const;
 

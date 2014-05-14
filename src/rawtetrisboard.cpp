@@ -153,19 +153,9 @@ Block RawTetrisBoard::createBlock(BlockType blockType) const {
 
 bool RawTetrisBoard::collision(const Block& block) const {
 	bool collision = false;
-	int nbrOfSquares = block.nbrOfSquares();
 
-	for (int i = 0; i < nbrOfSquares; ++i) {
-		Square square = block[i];
-		if (square.row_ < 0) {
-			collision = true;
-			break;
-		}
-		if (square.column_ < 0 || square.column_ >= nbrOfColumns_) {
-			collision = true;
-			break;
-		}
-		if (getBlockType(block[i].row_, block[i].column_) != BlockType::EMPTY) {
+	for (const Square& sq : block) {
+		if (getBlockType(sq.row_, sq.column_) != BlockType::EMPTY) {
 			collision = true;
 			break;
 		}

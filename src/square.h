@@ -9,7 +9,8 @@ enum class BlockType : char {
 	S,
 	T,
 	Z,
-	EMPTY
+	EMPTY,
+	WALL
 };
 
 class Square {
