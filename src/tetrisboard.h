@@ -28,7 +28,7 @@ public:
 	bool pollGameEvent(GameEvent& gameEvent);
 
 private:
-	void triggerEvent(GameEvent gameEvent) override;
+	void triggerEvent(GameEvent gameEvent, int row1, int row2, int row3, int row4) override;
 
 	std::vector<BlockType> addExternalRows() override;
 

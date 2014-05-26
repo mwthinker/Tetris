@@ -94,6 +94,9 @@ void RawTetrisBoard::update(Move move) {
 		}
 
 		if (gravityCollision) {
+			// Add event.
+			triggerEvent(GameEvent::BLOCK_COLLISION);
+
 			// Collision detected, add squares to the gameboard.
 			addBlockToBoard(current_);
 
@@ -107,9 +110,6 @@ void RawTetrisBoard::update(Move move) {
 
 			// Update the user controlled block.
 			current_ = createBlock(next_);
-
-			// Add event.
-			triggerEvent(GameEvent::BLOCK_COLLISION);
 
 			switch (nbr) {
 				case 1:
@@ -177,8 +177,9 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
 		if (row >= 0) {
+			int index = row * nbrOfColumns_;
 			for (int column = 0; column < nbrOfColumns_; ++column) {
-				if (blockType(row, column) == BlockType::EMPTY) {
+				if (gameboard_[index + column] == BlockType::EMPTY) {
 					filled = false;
 				}
 			}
