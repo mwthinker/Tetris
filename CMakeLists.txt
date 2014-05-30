@@ -25,6 +25,8 @@ set(SOURCES
 	src/device.h
 	src/gamecomponent.cpp
 	src/gamecomponent.h
+	src/gamedata.cpp
+	src/gamedata.h
 	src/gamefont.cpp
 	src/gamefont.h
 	src/gamehandler.h
@@ -88,6 +90,7 @@ include_directories(
 	SdlGui/src
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
+	TinyXML2/src
 )
 
 add_executable(MWetris ${SOURCES})
@@ -98,6 +101,7 @@ if (MSVC)
 endif (MSVC)
 
 target_link_libraries(MWetris
+	TinyXML2
 	MwEnet
 	Enet
 	MwLibrary2

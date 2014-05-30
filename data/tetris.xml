@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tetris>
+	<window>
+		<bar>
+			<height>35</height>
+			<color>(.5, 0, 0, .30)</color>
+		</bar>
+		<label>
+			<textColor>(1, 1, 1)</textColor>
+			<backgroundColor>(1, 1, 1)</backgroundColor>
+		</label>
+		<button>
+			<focusColor>(.8, .1, 0, .3)</focusColor>
+			<textColor>(1, 0.1, 0.1)</textColor>
+			<hoverColor>(.6, .1, .1)</hoverColor>
+			<pushColor>(.8, .0, 0, .7)</pushColor>
+			<backgroundColor>(0, 0, 0, 0)</backgroundColor>
+			<borderColor>(0, 0, 0, 0)</borderColor>
+		</button>		
+		<font>Ubuntu-B.ttf</font>
+		<width>600</width>
+		<height>600</height>
+		<icon>tetris.bmp</icon>
+		<sounds>
+			<buttonPush></buttonPush>
+			<blockCollision>blockCollision.wav</blockCollision>
+			<rowRemoved>rowRemoved.wav</rowRemoved>
+			<tetris>tetris.wav</tetris>
+			<highscore></highscore>
+		</sounds>
+		<sprites>
+			<background>background.png</background>
+			<computer x=1 y=1 w=62 h=62>tetris.png</computer>
+			<human x=65 y=1 w=62 h=62>tetris.png</human>
+			<cross x=129 y=1 w=62 h=62>tetris.png</cross>
+			<zoom x=193 y=1 w=62 h=62>tetris.png</zoom>
+			<squareZ x=1 y=65 w=62 h=62>tetris.png</squareZ>
+			<squareS x=65 y=65 w=62 h=62>tetris.png</squareS>
+			<squareJ x=129 y=65 w=62 h=62>tetris.png</squareJ>
+			<squareI x=193 y=65 w=62 h=62>tetris.png</squareI>
+			<squareL x=257 y=65 w=62 h=62>tetris.png</squareL>
+			<squareT x=321 y=65 w=62 h=62>tetris.png</squareT>
+			<squareO x=385 y=65 w=62 h=62>tetris.png</squareO>
+		</sprites>
+	</window>
+	<game>
+		<maxNbrAis>4</maxNbrAis>
+		<maxNbrHumans>4</maxNbrHumans>
+	</game>
+	<network>
+		<local>
+			<port>50012</port>
+		</local>
+		<remote max=1>
+			<server nbr=1>
+				<ip>127.0.0.1</ip>
+				<port>50012</port>
+			</server>
+		</remote>
+	</network>
+	<players>
+		<humans>
+			<player number=1>
+				<name>Player 1</name>
+				<device>Keyboard 1</device>
+			</player>
+			<player number=2>
+				<name>Player 2</name>
+				<device>Keyboard 2</device>
+			</player>
+		</humans>
+		<ais>
+			<player number=1>
+				<name>Default</name>
+				<valueFunction number=2>-5*rowRoughness -10*columnRoughness + 0*edges + 10*meanHeight -1*blockMeanHeight + 0*nbrOfRows + 0*nbrOfColumns</valueFunction>
+			</player>
+			<player number=2>
+				<name>Defensive</name>
+				<valueFunction number=2>-5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight + 0*nbrOfRows + 0*nbrOfColumns</valueFunction>
+			</player>
+			<player number=3>
+				<name>Worthless</name>
+				<valueFunction number=2>-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight + 0*nbrOfRows + 0*nbrOfColumns</valueFunction>
+			</player>
+		</ais>
+	</players>
+	<highscore max=10>
+		<item number=1>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=2>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=3>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=4>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=5>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=6>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=7>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=8>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=9>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+		<item number=10>
+			<name></name>
+			<date></date>
+			<point></point>
+		</item>
+	</highscore>
+</tetris>
