@@ -11,6 +11,7 @@
 #include "gamecomponent.h"
 #include "joystick.h"
 #include "networklooby.h"
+#include "gamedata.h"
 
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
@@ -95,7 +96,7 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow() : gui::Frame(512, 512, true, "MWetris", "images/tetris.bmp") {
+TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame(gameData.width_, gameData.height_, true, "MWetris", gameData.icon_) {
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
 

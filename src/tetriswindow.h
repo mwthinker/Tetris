@@ -20,9 +20,11 @@ class GameComponent;
 class NetworkEvent;
 typedef std::shared_ptr<NetworkEvent> NetworkEventPtr;
 
+class GameData;
+
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow();
+	TetrisWindow(GameData& gameData);
 	~TetrisWindow();
 
 private:
@@ -129,6 +131,8 @@ private:
 		waitToConnectIndex_,
 		networkPlayIndex_,
 		aiIndex_;
+
+	GameData& gameData_;
 };
 
 #endif // TETRISWINDOW_H

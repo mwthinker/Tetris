@@ -5,6 +5,7 @@
 #include <tinyxml2.h>
 
 #include <sstream>
+#include <iostream>
 
 namespace {
 
@@ -62,53 +63,62 @@ void GameData::load(tinyxml2::XMLHandle handle) {
 
 void GameData::loadWindow(tinyxml2::XMLHandle handle) {
 	// <bar>.
-	::extract(barHeight_, handle.NextSiblingElement("bar").FirstChildElement("height"));
-	::extract(barColor_, handle.NextSiblingElement().FirstChildElement("color"));
+	handle = handle.FirstChildElement("bar");
+	::extract(barHeight_, handle.FirstChildElement("height"));
+	::extract(barColor_, handle.FirstChildElement("color"));
 	
 	// <label>.
-	::extract(labelTextColor_, handle.NextSiblingElement("label").FirstChildElement("textColor"));
-	::extract(labelBackgroundColor_, handle.NextSiblingElement().FirstChildElement("backgroundColor"));
+	handle = handle.NextSiblingElement("label");
+	::extract(labelTextColor_, handle.FirstChildElement("textColor"));
+	::extract(labelBackgroundColor_, handle.FirstChildElement("backgroundColor"));
 	
 	// <button>.
-	::extract(buttonFocusColor_, handle.NextSiblingElement("button").FirstChildElement("focusColor"));
-	::extract(buttonTextColor_, handle.NextSiblingElement().FirstChildElement("textColor"));
-	::extract(buttonHoverColor_, handle.NextSiblingElement().FirstChildElement("hoverColor"));
-	::extract(buttonPushColor_, handle.NextSiblingElement().FirstChildElement("pushColor"));
-	::extract(buttonBackgroundColor_, handle.NextSiblingElement().FirstChildElement("backgroundColor"));
-	::extract(buttonBorderColor_, handle.NextSiblingElement().FirstChildElement("borderColor"));
+	handle = handle.NextSiblingElement("button");
+	::extract(buttonFocusColor_, handle.FirstChildElement("focusColor"));
+	::extract(buttonTextColor_, handle.FirstChildElement("textColor"));
+	::extract(buttonHoverColor_, handle.FirstChildElement("hoverColor"));
+	::extract(buttonPushColor_, handle.FirstChildElement("pushColor"));
+	::extract(buttonBackgroundColor_, handle.FirstChildElement("backgroundColor"));
+	::extract(buttonBorderColor_, handle.FirstChildElement("borderColor"));
 
 	// <font>.
-	::extract(font_, handle.NextSiblingElement("font"));
+	handle = handle.NextSiblingElement("font");
+	::extract(font_, handle);
 
 	// <width>.
-	::extract(width_, handle.NextSiblingElement("width"));
+	handle = handle.NextSiblingElement("width");
+	::extract(width_, handle);
 	
 	// <height>.
-	::extract(height_, handle.NextSiblingElement("height"));
+	handle = handle.NextSiblingElement("height");
+	::extract(height_, handle);
 
 	// <icon>.
-	::extract(icon_, handle.NextSiblingElement("icon"));	
+	handle = handle.NextSiblingElement("icon");
+	::extract(icon_, handle);
 
 	// <sounds>.
-	extract(soundButtonPush_, handle.NextSiblingElement("sounds").FirstChildElement("buttonPush"));
-	extract(soundBlockCollision, handle.NextSiblingElement().FirstChildElement("blockCollision"));
-	extract(soundRowRemoved, handle.NextSiblingElement().FirstChildElement("rowRemoved"));
-	extract(soundTetris, handle.NextSiblingElement().FirstChildElement("tetris"));
-	extract(soundHighscore, handle.NextSiblingElement().FirstChildElement("highscore"));
+	handle = handle.NextSiblingElement("sounds");
+	extract(soundButtonPush_, handle.FirstChildElement("buttonPush"));
+	extract(soundBlockCollision, handle.FirstChildElement("blockCollision"));
+	extract(soundRowRemoved, handle.FirstChildElement("rowRemoved"));
+	extract(soundTetris, handle.FirstChildElement("tetris"));
+	extract(soundHighscore, handle.FirstChildElement("highscore"));
 
 	// <sprites>.
-	extract(spriteBackground_, handle.NextSiblingElement("sprites").FirstChildElement("background"));
-	extract(spriteComputer_, handle.NextSiblingElement().FirstChildElement("computer"));
-	extract(spriteHuman_, handle.NextSiblingElement().FirstChildElement("human"));
-	extract(spriteCross_, handle.NextSiblingElement().FirstChildElement("cross"));
-	extract(spriteZoom_, handle.NextSiblingElement().FirstChildElement("zoom"));
-	extract(spriteZ_, handle.NextSiblingElement().FirstChildElement("squareZ"));
-	extract(spriteS_, handle.NextSiblingElement().FirstChildElement("squareS"));
-	extract(spriteJ, handle.NextSiblingElement().FirstChildElement("squareJ"));
-	extract(spriteI_, handle.NextSiblingElement().FirstChildElement("squareI"));
-	extract(spriteL, handle.NextSiblingElement().FirstChildElement("squareL"));
-	extract(spriteT, handle.NextSiblingElement().FirstChildElement("squareT"));
-	extract(spriteO, handle.NextSiblingElement().FirstChildElement("squareO"));
+	handle = handle.NextSiblingElement("sprites");
+	extract(spriteBackground_, handle.FirstChildElement("background"));
+	extract(spriteComputer_, handle.FirstChildElement("computer"));
+	extract(spriteHuman_, handle.FirstChildElement("human"));
+	extract(spriteCross_, handle.FirstChildElement("cross"));
+	extract(spriteZoom_, handle.FirstChildElement("zoom"));
+	extract(spriteZ_, handle.FirstChildElement("squareZ"));
+	extract(spriteS_, handle.FirstChildElement("squareS"));
+	extract(spriteJ, handle.FirstChildElement("squareJ"));
+	extract(spriteI_, handle.FirstChildElement("squareI"));
+	extract(spriteL, handle.FirstChildElement("squareL"));
+	extract(spriteT, handle.FirstChildElement("squareT"));
+	extract(spriteO, handle.FirstChildElement("squareO"));
 }
 
 void GameData::loadGame(tinyxml2::XMLHandle handle) {
@@ -159,7 +169,7 @@ mw::Texture GameData::loadTexture(std::string file) {
 
 		// Image not valid?
 		if (!texture.isValid()) {
-			//assert(0);
+			std::cerr << file << " failed to load!" << std::endl;
 		}
 	}
 

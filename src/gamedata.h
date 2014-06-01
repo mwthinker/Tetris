@@ -20,7 +20,7 @@ public:
 	}	
 		
 	// Window.
-	int width_, height_;	
+	int width_, height_;
 	
 	// Bar.
 	mw::Color barColor_;
@@ -57,6 +57,9 @@ public:
 	mw::Sprite spriteZoom_;
 	mw::Sprite spriteZ_, spriteS_, spriteJ, spriteI_, spriteL, spriteT, spriteO;
 
+	// Icon path.
+	std::string icon_;
+
 private:
 	void load(tinyxml2::XMLHandle handle);
 	void loadWindow(tinyxml2::XMLHandle handle);
@@ -69,10 +72,7 @@ private:
 	void extract(mw::Sound& sound, tinyxml2::XMLHandle handle);
 
 	// Font path.
-	std::string font_;
-
-	// Icon path.
-	std::string icon_;
+	std::string font_;	
 
 	mw::Font loadFont(std::string file, unsigned int fontSize);
 	mw::Texture loadTexture(std::string file);
