@@ -96,7 +96,7 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame(gameData.width_, gameData.height_, true, "MWetris", gameData.icon_) {
+TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame(gameData.getWindowWidth(), gameData.getWindowHeight(), true, "MWetris", gameData.getIconPath()) {
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
 
@@ -104,6 +104,18 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 
 	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
 		tetrisGame_.update(deltaTime);
+	});
+
+	addWindowListener([&](gui::Frame& frame, const SDL_Event& sdlEvent) {
+		switch (sdlEvent.type) {
+			case SDL_WINDOWEVENT:
+				switch (sdlEvent.window.event) {
+					case SDL_WINDOWEVENT_RESIZED:
+						gameData.setWindowSize(sdlEvent.window.data1, sdlEvent.window.data2);
+						break;
+				}
+				break;
+		}
 	});
 
 	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
@@ -165,7 +177,7 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 	loadHighscore();
 }
 
-void TetrisWindow::updateDevices(Frame& frame, const SDL_Event& windowEvent) {
+void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent) {
 	for (DevicePtr& device : devices_) {
 		device->eventUpdate(windowEvent);
 	}

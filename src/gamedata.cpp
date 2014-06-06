@@ -14,6 +14,24 @@ namespace {
 	}
 
 	template <class Output>
+	Output extract(tinyxml2::XMLConstHandle handle) {
+		const tinyxml2::XMLElement* element = handle.ToElement();
+		if (element == nullptr) {
+			throw mw::Exception("Missing element!");
+		}
+		const char* str = element->GetText();
+
+		if (str == nullptr) {
+			throw mw::Exception("Missing text!");
+		}
+
+		std::stringstream stream(str);
+		Output output;
+		stream >> output;
+		return output;
+	}
+
+	template <class Output>
 	Output extract(tinyxml2::XMLHandle handle) {
 		tinyxml2::XMLElement* element = handle.ToElement();
 		if (element == nullptr) {
@@ -29,28 +47,63 @@ namespace {
 		Output output;
 		stream >> output;
 		return output;
-	}	
+	}
 
 	template <class Output>
 	void extract(Output& value, tinyxml2::XMLHandle handle) {
 		value = extract<Output>(handle);
 	}
 
+	template <class Input>
+	void insert(const Input& input, tinyxml2::XMLHandle handle) {
+		tinyxml2::XMLElement* element = handle.ToElement();
+		if (element == nullptr) {
+			throw mw::Exception("Missing element!");
+		}
+
+		std::stringstream stream;
+		stream << input;
+
+		element->SetText(stream.str().c_str());
+	}
+
 }
 
-GameData::GameData(std::string dataFile) {
-	// Load XML file.
-	tinyxml2::XMLDocument xmlDoc;
-	xmlDoc.LoadFile(dataFile.c_str());
-	if (xmlDoc.Error()) {
+GameData::GameData(std::string dataFile) : dataFile_(dataFile) {
+	xmlDoc_.LoadFile(dataFile.c_str());
+	if (xmlDoc_.Error()) {
 		// Failed!
-		xmlDoc.PrintError();
+		xmlDoc_.PrintError();
 	}
 	
-	tinyxml2::XMLHandle handleXml(xmlDoc.FirstChildElement("tetris"));
+	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris"));
 
 	// Load all data.
-	load(handleXml);
+	load(handlemXl);
+}
+
+void GameData::save() {
+	xmlDoc_.SaveFile(dataFile_.c_str());
+}
+
+void GameData::setWindowSize(int width, int height) {
+	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	::insert(width, handlemXl.FirstChildElement("width"));
+	::insert(height, handlemXl.FirstChildElement("height"));
+	save();
+}
+
+int GameData::getWindowWidth() const {
+	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handlemXl.FirstChildElement("width"));
+}
+int GameData::getWindowHeight() const {
+	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handlemXl.FirstChildElement("height"));
+}
+
+std::string GameData::getIconPath() const {
+	return icon_;
 }
 
 void GameData::load(tinyxml2::XMLHandle handle) {
@@ -84,14 +137,6 @@ void GameData::loadWindow(tinyxml2::XMLHandle handle) {
 	// <font>.
 	handle = handle.NextSiblingElement("font");
 	::extract(font_, handle);
-
-	// <width>.
-	handle = handle.NextSiblingElement("width");
-	::extract(width_, handle);
-	
-	// <height>.
-	handle = handle.NextSiblingElement("height");
-	::extract(height_, handle);
 
 	// <icon>.
 	handle = handle.NextSiblingElement("icon");

@@ -14,13 +14,18 @@
 class GameData {
 public:
 	GameData(std::string dataFile);
+
+	void save();
 	
 	inline mw::Font getDefaultFont(int size) {
 		return loadFont(font_, size);
-	}	
-		
-	// Window.
-	int width_, height_;
+	}
+
+	int getWindowWidth() const;
+	int getWindowHeight() const;
+	void setWindowSize(int width, int height);
+
+	std::string getIconPath() const;
 	
 	// Bar.
 	mw::Color barColor_;
@@ -56,10 +61,7 @@ public:
 	mw::Sprite spriteCross_;
 	mw::Sprite spriteZoom_;
 	mw::Sprite spriteZ_, spriteS_, spriteJ, spriteI_, spriteL, spriteT, spriteO;
-
-	// Icon path.
-	std::string icon_;
-
+	
 private:
 	void load(tinyxml2::XMLHandle handle);
 	void loadWindow(tinyxml2::XMLHandle handle);
@@ -72,7 +74,10 @@ private:
 	void extract(mw::Sound& sound, tinyxml2::XMLHandle handle);
 
 	// Font path.
-	std::string font_;	
+	std::string font_;
+
+	// Icon path.
+	std::string icon_;
 
 	mw::Font loadFont(std::string file, unsigned int fontSize);
 	mw::Texture loadTexture(std::string file);
@@ -81,6 +86,9 @@ private:
 	std::map<std::string, mw::Font> fonts_;
 	std::map<std::string, mw::Texture> textures_;
 	std::map<std::string, mw::Sound> sounds_;
+
+	tinyxml2::XMLDocument xmlDoc_;
+	std::string dataFile_;
 };
 
 #endif // ZOMBIEENGINE_H

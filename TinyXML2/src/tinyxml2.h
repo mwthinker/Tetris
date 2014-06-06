@@ -116,9 +116,12 @@ inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
 #define TIXML_SSCANF   sscanf
 #endif
 
-static const int TIXML2_MAJOR_VERSION = 1;
-static const int TIXML2_MINOR_VERSION = 0;
-static const int TIXML2_PATCH_VERSION = 11;
+/* Versioning, past 1.0.14:
+	http://semver.org/
+*/
+static const int TIXML2_MAJOR_VERSION = 2;
+static const int TIXML2_MINOR_VERSION = 1;
+static const int TIXML2_PATCH_VERSION = 0;
 
 namespace tinyxml2
 {
@@ -216,6 +219,10 @@ public:
         }
     }
 
+    void Clear() {
+        _size = 0;
+    }
+
     void Push( T t ) {
         EnsureCapacity( _size+1 );
         _mem[_size++] = t;
@@ -249,6 +256,11 @@ public:
     const T& operator[](int i) const	{
         TIXMLASSERT( i>= 0 && i < _size );
         return _mem[i];
+    }
+
+    const T& PeekTop() const                            {
+        TIXMLASSERT( _size > 0 );
+        return _mem[ _size - 1];
     }
 
     int Size() const					{
@@ -638,9 +650,7 @@ public:
     	Text:		the text string
     	@endverbatim
     */
-    const char* Value() const			{
-        return _value.GetStr();
-    }
+    const char* Value() const;
 
     /** Set the Value of an XML node.
     	@sa Value()
@@ -731,6 +741,10 @@ public:
 
     /**
     	Add a child node as the last (right) child.
+		If the child node is already part of the document,
+		it is moved from its old location to the new location.
+		Returns the addThis argument or 0 if the node does not
+		belong to the same document.
     */
     XMLNode* InsertEndChild( XMLNode* addThis );
 
@@ -739,10 +753,19 @@ public:
     }
     /**
     	Add a child node as the first (left) child.
+		If the child node is already part of the document,
+		it is moved from its old location to the new location.
+		Returns the addThis argument or 0 if the node does not
+		belong to the same document.
     */
     XMLNode* InsertFirstChild( XMLNode* addThis );
     /**
     	Add a node after the specified child node.
+		If the child node is already part of the document,
+		it is moved from its old location to the new location.
+		Returns the addThis argument or 0 if the afterThis node
+		is not a child of this node, or if the node does not
+		belong to the same document.
     */
     XMLNode* InsertAfterChild( XMLNode* afterThis, XMLNode* addThis );
 
@@ -1009,13 +1032,11 @@ class TINYXML2_LIB XMLAttribute
     friend class XMLElement;
 public:
     /// The name of the attribute.
-    const char* Name() const {
-        return _name.GetStr();
-    }
+    const char* Name() const;
+
     /// The value of the attribute.
-    const char* Value() const {
-        return _value.GetStr();
-    }
+    const char* Value() const;
+
     /// The next attribute in the list.
     const XMLAttribute* Next() const {
         return _next;
@@ -1303,6 +1324,11 @@ public:
         XMLAttribute* a = FindOrCreateAttribute( name );
         a->SetAttribute( value );
     }
+    /// Sets the named attribute to value.
+    void SetAttribute( const char* name, float value )		{
+        XMLAttribute* a = FindOrCreateAttribute( name );
+        a->SetAttribute( value );
+    }
 
     /**
     	Delete an attribute.
@@ -1345,6 +1371,52 @@ public:
     	GetText() will return "This is ".
     */
     const char* GetText() const;
+
+    /** Convenience function for easy access to the text inside an element. Although easy
+    	and concise, SetText() is limited compared to creating an XMLText child
+    	and mutating it directly.
+
+    	If the first child of 'this' is a XMLText, SetText() sets its value to
+		the given string, otherwise it will create a first child that is an XMLText.
+
+    	This is a convenient method for setting the text of simple contained text:
+    	@verbatim
+    	<foo>This is text</foo>
+    		fooElement->SetText( "Hullaballoo!" );
+     	<foo>Hullaballoo!</foo>
+		@endverbatim
+
+    	Note that this function can be misleading. If the element foo was created from
+    	this XML:
+    	@verbatim
+    		<foo><b>This is text</b></foo>
+    	@endverbatim
+
+    	then it will not change "This is text", but rather prefix it with a text element:
+    	@verbatim
+    		<foo>Hullaballoo!<b>This is text</b></foo>
+    	@endverbatim
+		
+		For this XML:
+    	@verbatim
+    		<foo />
+    	@endverbatim
+    	SetText() will generate
+    	@verbatim
+    		<foo>Hullaballoo!</foo>
+    	@endverbatim
+    */
+	void SetText( const char* inText );
+    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    void SetText( int value );
+    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    void SetText( unsigned value );  
+    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    void SetText( bool value );  
+    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    void SetText( double value );  
+    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    void SetText( float value );  
 
     /**
     	Convenience method to query the value of a child text node. This is probably best
@@ -1406,6 +1478,7 @@ private:
     //void LinkAttribute( XMLAttribute* attrib );
     char* ParseAttributes( char* p );
 
+    enum { BUF_SIZE = 200 };
     int _closingType;
     // The attribute list is ordered; there is no 'lastAttribute'
     // because the list needs to be scanned for dupes before adding
@@ -1884,14 +1957,14 @@ public:
     	with only required whitespace and newlines.
     */
     XMLPrinter( FILE* file=0, bool compact = false, int depth = 0 );
-    ~XMLPrinter()	{}
+    virtual ~XMLPrinter()	{}
 
     /** If streaming, write the BOM and declaration. */
     void PushHeader( bool writeBOM, bool writeDeclaration );
     /** If streaming, start writing an element.
         The element must be closed with CloseElement()
     */
-    void OpenElement( const char* name );
+    void OpenElement( const char* name, bool compactMode=false );
     /// If streaming, add an attribute to an open element.
     void PushAttribute( const char* name, const char* value );
     void PushAttribute( const char* name, int value );
@@ -1899,7 +1972,7 @@ public:
     void PushAttribute( const char* name, bool value );
     void PushAttribute( const char* name, double value );
     /// If streaming, close the Element.
-    void CloseElement();
+    virtual void CloseElement( bool compactMode=false );
 
     /// Add a text node.
     void PushText( const char* text, bool cdata=false );
@@ -1948,20 +2021,37 @@ public:
     int CStrSize() const {
         return _buffer.Size();
     }
+    /**
+    	If in print to memory mode, reset the buffer to the
+    	beginning.
+    */
+    void ClearBuffer() {
+        _buffer.Clear();
+        _buffer.Push(0);
+    }
 
-private:
-    void SealElement();
-    void PrintSpace( int depth );
-    void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
+protected:
+	virtual bool CompactMode( const XMLElement& )	{ return _compactMode; };
+
+	/** Prints out the space before an element. You may override to change
+	    the space and tabs used. A PrintSpace() override should call Print().
+	*/
+    virtual void PrintSpace( int depth );
     void Print( const char* format, ... );
 
+	void SealElement();
     bool _elementJustOpened;
+    DynArray< const char*, 10 > _stack;
+
+private:
+    void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
+
     bool _firstElement;
     FILE* _fp;
     int _depth;
     int _textDepth;
     bool _processEntities;
-    bool _compactMode;
+	bool _compactMode;
 
     enum {
         ENTITY_RANGE = 64,
@@ -1970,7 +2060,6 @@ private:
     bool _entityFlag[ENTITY_RANGE];
     bool _restrictedEntityFlag[ENTITY_RANGE];
 
-    DynArray< const char*, 10 > _stack;
     DynArray< char, 20 > _buffer;
 #ifdef _MSC_VER
     DynArray< char, 20 > _accumulator;

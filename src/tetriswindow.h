@@ -28,7 +28,7 @@ public:
 	~TetrisWindow();
 
 private:
-	void updateDevices(Frame& frame, const SDL_Event& windowEvent);
+	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
 	
 	void createLocalGame(int width, int height, int maxLevel);
 	void createServerGame(int port, int width, int height);
