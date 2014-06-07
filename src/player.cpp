@@ -137,7 +137,7 @@ BlockType Player::getCurrentBlock() const {
 }
 
 BlockType Player::getNextBlock() const {
-	return tetrisBoard_.getBlockType();
+	return tetrisBoard_.getNextBlockType();
 }
 
 bool Player::pollGameEvent(GameEvent& gameEvent) {
