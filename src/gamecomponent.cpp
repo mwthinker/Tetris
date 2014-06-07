@@ -1,6 +1,5 @@
 #include "gamecomponent.h"
 #include "tetrisgame.h"
-#include "gamefont.h"
 #include "graphicboard.h"
 #include "tetrisparameters.h"
 #include "gamedata.h"
@@ -57,7 +56,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 	glTranslatef(5, 5, 0);
 	for (auto& pair : graphic_) {
 		if (tetrisGame_.isPaused()) {
-			static mw::Text text("Paused", fontDefault30);
+			static mw::Text text("Paused", gameData_.getDefaultFont(30));
 			pair.second.setMiddleMessage(text);
 		}
 
@@ -83,7 +82,8 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 		Graphic& graphic = graphic_[player->getId()];
 		graphic = Graphic(player, showPoints, gameData_.spriteZ_,
 			gameData_.spriteS_, gameData_.spriteJ_, gameData_.spriteI_,
-			gameData_.spriteL_, gameData_.spriteT_, gameData_.spriteO_);
+			gameData_.spriteL_, gameData_.spriteT_, gameData_.spriteO_,
+			gameData_.getDefaultFont(30));
 		width += graphic.getWidth() + 5;
 		height = graphic.getHeight();
 	}
@@ -92,7 +92,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 }
 
 void GameComponent::countDown(int msCountDown) {
-	mw::Text text("", fontDefault30);
+	mw::Text text("", gameData_.getDefaultFont(30));
 	if (msCountDown > 0) {
 		std::stringstream stream;
 		stream << "Start in " << (int) (msCountDown / 1000) + 1;
@@ -103,13 +103,13 @@ void GameComponent::countDown(int msCountDown) {
 	}
 }
 
-GameComponent::Graphic::Graphic() {
-	name_ = mw::Text("", fontDefault30, 20);
+GameComponent::Graphic::Graphic() : info_(mw::Font()) {
+	name_ = mw::Text("", font_, 20);
 }
 
-GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO) : board_(player->getTetrisBoard()) {
+GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO, const mw::Font& font) : board_(player->getTetrisBoard()), info_(font), font_(font) {
 	update(player);
-	name_ = mw::Text(player->getName(), fontDefault30, 20);
+	name_ = mw::Text(player->getName(), font_, 20);
 	if (showPoints) {
 		info_.showPoints();
 	} else {
@@ -186,7 +186,7 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			if (tetrisGame_.getNbrOfPlayers() == 1) {
-				mw::Text text("Game Over", fontDefault30);
+				mw::Text text("Game Over", gameData_.getDefaultFont(30));
 				graphic_[player->getId()].setMiddleMessage(text);
 			} else {
 				std::stringstream stream;
@@ -201,11 +201,9 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 					stream << ":th place!";
 				}
 				--alivePlayers_;
-				mw::Text text(stream.str(), fontDefault30);
+				mw::Text text(stream.str(), gameData_.getDefaultFont(30));
 				graphic_[player->getId()].setMiddleMessage(text);
 			}
-			break;
-		default:
 			break;
 	}
 }
@@ -231,8 +229,6 @@ void GameComponent::soundEffects(GameEvent gameEvent) const {
 			sound = gameData_.soundTetris_;
 			break;
 		case GameEvent::GAME_OVER:
-			break;
-		default:
 			break;
 	}
 	sound.play();

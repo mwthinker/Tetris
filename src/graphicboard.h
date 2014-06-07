@@ -10,7 +10,7 @@
 
 class GraphicPlayerInfo {
 public:
-	GraphicPlayerInfo();
+	GraphicPlayerInfo(const mw::Font& font);
 
 	void update(int rowsCleared, int points, int level);
 
@@ -35,6 +35,7 @@ public:
 private:
 	mw::Text level_, points_, nbrOfClearedRows_;
 	bool showPoints_;
+	mw::Font font_;
 };
 
 class GraphicPreviewBlock {

@@ -1,5 +1,4 @@
 #include "highscore.h"
-#include "gamefont.h"
 
 #include <mw/text.h>
 
@@ -9,17 +8,17 @@
 #include <string>
 #include <sstream>
 
-Highscore::Highscore(int nbr, const mw::Color& color) : color_(color) {
+Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : color_(color), font_(font) {
 	for (int i = 0; i < nbr; ++i) {
-		mw::Text points("0", fontDefault30, 25);
-		mw::Text name("EMPTY", fontDefault30, 25);
-		mw::Text date("2013-01-01", fontDefault30, 25);
+		mw::Text points("0", font_, 25);
+		mw::Text name("EMPTY", font_, 25);
+		mw::Text date("2013-01-01", font_, 25);
 		ascList_.push_back(HighscoreElement(0, points, name, date));
 		std::stringstream stream;
 		stream << nbr - i << ":";
-		numbers_.push_back(mw::Text(stream.str(), fontDefault30, 25));
+		numbers_.push_back(mw::Text(stream.str(), font_, 25));
 	}
-	setPreferredSize(300, (float) nbr * (fontDefault30.getCharacterSize() + 2) + 28);
+	setPreferredSize(300, (float) nbr * (font_.getCharacterSize() + 2) + 28);
 }
 
 void Highscore::draw(Uint32 deltaTime) {
@@ -42,12 +41,12 @@ void Highscore::draw(Uint32 deltaTime) {
 		date.draw();
 		glPopMatrix();
 
-		glTranslated(0, fontDefault30.getCharacterSize() + 2, 0);
+		glTranslated(0, font_.getCharacterSize() + 2, 0);
 	}
 
-	static mw::Text pointsH("Points", fontDefault30, 28);
-	static mw::Text nameH("Name", fontDefault30, 28);
-	static mw::Text dataH("Date", fontDefault30, 28);
+	static mw::Text pointsH("Points", font_, 28);
+	static mw::Text nameH("Name", font_, 28);
+	static mw::Text dataH("Date", font_, 28);
 	glTranslated(50, 0, 0);
 	pointsH.draw();
 	glTranslated(150, 0, 0);
@@ -70,13 +69,13 @@ bool Highscore::isNewRecord(int record) const {
 }
 
 void Highscore::addNewRecord(std::string name, std::string date) {
-	mw::Text nameT(name, fontDefault30, 25);
-	mw::Text dateT(date, fontDefault30, 25);
+	mw::Text nameT(name, font_, 25);
+	mw::Text dateT(date, font_, 25);
 
 	std::stringstream stream;
 	stream << nextRecord_;
 
-	mw::Text points(stream.str(), fontDefault30, 25);
+	mw::Text points(stream.str(), font_, 25);
 	ascList_.push_front(HighscoreElement(nextRecord_, points, nameT, dateT));
 	sort();
 	ascList_.pop_front();

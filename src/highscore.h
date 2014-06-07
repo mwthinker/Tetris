@@ -13,7 +13,7 @@
 
 class Highscore : public gui::Component {
 public:
-	Highscore(int nbr, const mw::Color& color);
+	Highscore(int nbr, const mw::Color& color, const mw::Font& font);
 
 	void draw(Uint32 deltaTime) override;
 
@@ -45,6 +45,7 @@ private:
 	std::list<HighscoreElement> ascList_;
 	mw::Color color_;
 	int nextRecord_;
+	mw::Font font_;
 };
 
 typedef std::shared_ptr<Highscore> HighscorePtr;

@@ -28,6 +28,8 @@ public:
 	~TetrisWindow();
 
 private:
+	mw::Font getDefaultFont(int size);
+
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
 	
 	void createLocalGame(int width, int height, int maxLevel);

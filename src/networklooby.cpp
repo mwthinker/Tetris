@@ -1,8 +1,8 @@
 #include "networklooby.h"
-#include "gamefont.h"
 
 #include <mw/text.h>
 #include <mw/color.h>
+#include <mw/font.h>
 
 #include <list>
 #include <string>
@@ -11,8 +11,10 @@
 #include <functional>
 #include <algorithm>
 
-NetworkLooby::NetworkLooby() {
+NetworkLooby::NetworkLooby(const mw::Font& font) : font_(font) {
 	setPreferredSize(400, 400);
+	ready_ = mw::Text("Ready", font);
+	unready_ = mw::Text("Unready", font);
 }
 
 void NetworkLooby::draw(Uint32 deltaTime) {
@@ -22,15 +24,15 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 	gui::Dimension dim = getSize();
 	glTranslated(0, dim.height_, 0);
 
-	static mw::Text id("Id", fontDefault18);
+	static mw::Text id("Id", font_);
 	glTranslated(0, -id.getCharacterSize() - 2, 0);
 	glPushMatrix();
 	id.draw();
 	glTranslated(50, 0, 0);
-	static mw::Text nbr("Number Of Players", fontDefault18);
+	static mw::Text nbr("Number Of Players", font_);
 	nbr.draw();
 	glTranslated(200, 0, 0);
-	static mw::Text ready("Ready to Start?", fontDefault18);
+	static mw::Text ready("Ready to Start?", font_);
 	ready.draw();
 	glPopMatrix();
 	for (Connection& connection : ascList_) {
@@ -41,9 +43,9 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 		connection.numberOfPlayers_.draw();
 		glTranslated(200, 0, 0);
 		if (connection.boolReady_) {
-			Connection::ready.draw();
+			ready_.draw();
 		} else {
-			Connection::unready.draw();
+			unready_.draw();
 		}
 		glPopMatrix();
 	}
@@ -51,7 +53,7 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 }
 
 void NetworkLooby::addConnection(int id, int nbrOfPlayers, bool boolReady) {
-	ascList_.push_front(Connection(id, nbrOfPlayers, boolReady));
+	ascList_.push_front(Connection(id, nbrOfPlayers, boolReady, font_));
 }
 
 void NetworkLooby::removeConnection(int id) {
@@ -77,22 +79,19 @@ void NetworkLooby::clear() {
 	ascList_.clear();
 }
 
-mw::Text NetworkLooby::Connection::ready("Ready", fontDefault18);
-mw::Text NetworkLooby::Connection::unready("Unready", fontDefault18);
-
 NetworkLooby::Connection::Connection() {
 }
 
-NetworkLooby::Connection::Connection(int intId, int intNbrOfPlayers, bool boolReady) {
+NetworkLooby::Connection::Connection(int intId, int intNbrOfPlayers, bool boolReady, const mw::Font& font) {
 	intId_ = intId;
 	intNbrOfPlayers_ = intNbrOfPlayers;
 	std::stringstream stream;
 	stream << intId_;
-	id_ = mw::Text(stream.str(), fontDefault18);
+	id_ = mw::Text(stream.str(), font);
 	stream.str("");
-	numberOfPlayers_ = mw::Text(stream.str(), fontDefault18);
+	numberOfPlayers_ = mw::Text(stream.str(), font);
 	stream << intNbrOfPlayers;
-	numberOfPlayers_ = mw::Text(stream.str(), fontDefault18);
+	numberOfPlayers_ = mw::Text(stream.str(), font);
 	boolReady_ = boolReady;
 }
 

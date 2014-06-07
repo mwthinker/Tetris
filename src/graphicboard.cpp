@@ -1,5 +1,4 @@
 #include "graphicboard.h"
-#include "gamefont.h"
 #include "tetrisboard.h"
 
 #include <mw/sprite.h>
@@ -40,12 +39,13 @@ namespace {
 
 } // Anonymous namespace.
 
-GraphicPlayerInfo::GraphicPlayerInfo() {
+GraphicPlayerInfo::GraphicPlayerInfo(const mw::Font& font) {
 	// Define all text sizes and font usage.
-	level_ = mw::Text("", fontDefault30, 14);
-	points_ = mw::Text("", fontDefault30, 14);
-	nbrOfClearedRows_ = mw::Text("", fontDefault30, 14);
+	level_ = mw::Text("", font, 14);
+	points_ = mw::Text("", font, 14);
+	nbrOfClearedRows_ = mw::Text("", font, 14);
 	showPoints_ = true;
+	font_ = font;
 }
 
 void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {

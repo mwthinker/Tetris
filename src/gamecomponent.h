@@ -32,7 +32,8 @@ private:
 
 		Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, 
 			mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, 
-			mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO);
+			mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO,
+			const mw::Font& font);
 
 		void update(const PlayerPtr& player);
 
@@ -50,6 +51,7 @@ private:
 		GraphicPreviewBlock preview_;
 		mw::Text name_;
 		mw::Text middleMessage_;
+		mw::Font font_;
 	};
 
 	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override;

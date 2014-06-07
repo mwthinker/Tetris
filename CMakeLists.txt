@@ -27,8 +27,6 @@ set(SOURCES
 	src/gamecomponent.h
 	src/gamedata.cpp
 	src/gamedata.h
-	src/gamefont.cpp
-	src/gamefont.h
 	src/gamehandler.h
 	src/graphicboard.cpp
 	src/graphicboard.h
