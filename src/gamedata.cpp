@@ -159,11 +159,11 @@ void GameData::loadWindow(tinyxml2::XMLHandle handle) {
 	extract(spriteZoom_, handle.FirstChildElement("zoom"));
 	extract(spriteZ_, handle.FirstChildElement("squareZ"));
 	extract(spriteS_, handle.FirstChildElement("squareS"));
-	extract(spriteJ, handle.FirstChildElement("squareJ"));
+	extract(spriteJ_, handle.FirstChildElement("squareJ"));
 	extract(spriteI_, handle.FirstChildElement("squareI"));
-	extract(spriteL, handle.FirstChildElement("squareL"));
-	extract(spriteT, handle.FirstChildElement("squareT"));
-	extract(spriteO, handle.FirstChildElement("squareO"));
+	extract(spriteL_, handle.FirstChildElement("squareL"));
+	extract(spriteT_, handle.FirstChildElement("squareT"));
+	extract(spriteO_, handle.FirstChildElement("squareO"));
 }
 
 void GameData::loadGame(tinyxml2::XMLHandle handle) {
@@ -183,7 +183,33 @@ void GameData::loadHighscore(tinyxml2::XMLHandle handle) {
 }
 
 void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLHandle handle) {
+	tinyxml2::XMLElement* element = handle.ToElement();
+	if (element == nullptr) {
+		throw mw::Exception("Missing element!");
+	}
 
+	const char* str = element->GetText();
+
+	if (str == nullptr) {
+		throw mw::Exception("Missing text!");
+	}
+
+	float x = element->FloatAttribute("x");
+	float y = element->FloatAttribute("y");
+	float h = element->FloatAttribute("h");
+	float w = element->FloatAttribute("w");
+
+	mw::Texture texture = loadTexture(str);
+
+	if (h < 1) {
+		h = (float) texture.getHeight();
+	}
+
+	if (w < 1) {
+		w = (float) texture.getWidth();
+	}
+
+	sprite = mw::Sprite(texture, x, y, w, h);
 }
 
 void GameData::extract(mw::Sound& sound, tinyxml2::XMLHandle handle) {

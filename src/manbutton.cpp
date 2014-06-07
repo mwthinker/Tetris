@@ -2,7 +2,7 @@
 
 #include <mw/sprite.h>
 
-ManButton::ManButton(unsigned int max, const mw::Sprite man, const mw::Sprite cross) : max_(max) {
+ManButton::ManButton(unsigned int max, const mw::Sprite& man, const mw::Sprite& cross) : max_(max) {
 	man_ = man;
 	cross_ = cross;
 	
@@ -78,8 +78,6 @@ void ManButton::handleMouse(const SDL_Event& mouseEvent) {
 				default:
 					break;
 			}
-			break;
-		default:
 			break;
 	}
 }

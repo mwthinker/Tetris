@@ -1,6 +1,5 @@
 #include "tetriswindow.h"
 #include "tetrisparameters.h"
-#include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisgame.h"
 #include "joystick.h"
@@ -31,9 +30,9 @@
 
 namespace {
 
-	std::shared_ptr<gui::Panel> createBackgroundPanel() {
+	std::shared_ptr<gui::Panel> createBackgroundPanel(mw::Sprite background) {
 		std::shared_ptr<gui::Panel> panel = std::make_shared<gui::Panel>();
-		panel->setBackground(spriteBackground.getTexture());
+		panel->setBackground(background);
 		panel->setLayout(std::make_shared<gui::BorderLayout>());
 		return panel;
 	}
@@ -100,7 +99,7 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
 
-	game_ = std::make_shared<GameComponent>(tetrisGame_);
+	game_ = std::make_shared<GameComponent>(tetrisGame_, gameData_);
 
 	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
 		tetrisGame_.update(deltaTime);
@@ -140,21 +139,21 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));
 
 	// Create all frames.
-	getCurrentPanel()->setBackground(spriteBackground.getTexture());
+	getCurrentPanel()->setBackground(gameData_.spriteBackground_);
 	menuIndex_ = getCurrentPanelIndex();
-	playIndex_ = push_back(createBackgroundPanel());
-	highscoreIndex_ = push_back(createBackgroundPanel());
-	customIndex_ = push_back(createBackgroundPanel());
-	settingsIndex_ = push_back(createBackgroundPanel());
-	newHighscoreIndex_ = push_back(createBackgroundPanel());
-	networkIndex_ = push_back(createBackgroundPanel());
-	createClientIndex_ = push_back(createBackgroundPanel());
-	createServerIndex_ = push_back(createBackgroundPanel());
-	loobyClientIndex_ = push_back(createBackgroundPanel());
-	loobyServerIndex_ = push_back(createBackgroundPanel());
-	waitToConnectIndex_ = push_back(createBackgroundPanel());
-	networkPlayIndex_ = push_back(createBackgroundPanel());
-	aiIndex_ = push_back(createBackgroundPanel());
+	playIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	highscoreIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	customIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	settingsIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	newHighscoreIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	networkIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	createClientIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	createServerIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	loobyClientIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	loobyServerIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	waitToConnectIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	networkPlayIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
+	aiIndex_ = push_back(createBackgroundPanel(gameData_.spriteBackground_));
 
 	initMenuPanel();
 	initPlayPanel();
@@ -284,7 +283,7 @@ void TetrisWindow::initPlayPanel() {
 	});
 	p2->add(pauseButton_);
 
-	nbrHumans_ = std::make_shared<ManButton>(devices_.size(), spriteMan, spriteCross);
+	nbrHumans_ = std::make_shared<ManButton>(devices_.size(), gameData_.spriteHuman_, gameData_.spriteCross_);
 	nbrHumans_->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
 		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
@@ -292,7 +291,7 @@ void TetrisWindow::initPlayPanel() {
 		tetrisGame_.restartGame();
 	});
 	p1->add(nbrHumans_);
-	nbrAis_ = std::make_shared<ManButton>(4, spriteComputer, spriteCross);
+	nbrAis_ = std::make_shared<ManButton>(4, gameData_.spriteComputer_, gameData_.spriteCross_);
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
@@ -475,9 +474,9 @@ void TetrisWindow::initCreateServerPanel() {
 	p4->add(createLabel("Local players", fontDefault18));
 	centerPanel->add(p4);
 
-	nbrHumansServer_ = std::make_shared<ManButton>(devices_.size(), spriteMan, spriteCross);
+	nbrHumansServer_ = std::make_shared<ManButton>(devices_.size(), gameData_.spriteHuman_, gameData_.spriteCross_);
 	p4->add(nbrHumansServer_);
-	nbrAisServer_ = std::make_shared<ManButton>(activeAis_.size(), spriteComputer, spriteCross);
+	nbrAisServer_ = std::make_shared<ManButton>(activeAis_.size(), gameData_.spriteComputer_, gameData_.spriteCross_);
 	p4->add(nbrAisServer_);
 
 	createPlayersFields(namesServer_, playersServer_);
@@ -555,9 +554,9 @@ void TetrisWindow::initCreateClientPanel() {
 	p2->add(createLabel("Local players", fontDefault18));
 	centerPanel->add(p2);
 
-	nbrHumansClient_ = std::make_shared<ManButton>(devices_.size(), spriteMan, spriteCross);
+	nbrHumansClient_ = std::make_shared<ManButton>(devices_.size(), gameData_.spriteHuman_, gameData_.spriteCross_);
 	p2->add(nbrHumansClient_);
-	nbrAisClient_ = std::make_shared<ManButton>(activeAis_.size(), spriteComputer, spriteCross);
+	nbrAisClient_ = std::make_shared<ManButton>(activeAis_.size(), gameData_.spriteComputer_, gameData_.spriteCross_);
 	nbrAisClient_->addActionListener([&](gui::Component& c) {
 		nbrOfComputerPlayers_ = nbrAisServer_->getNbr();
 	});

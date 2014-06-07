@@ -47,12 +47,12 @@ public:
 	}
 
 	// Return the number of columns.
-	int getNbrOfColumns() const {
+	inline int getNbrOfColumns() const {
 		return nbrOfColumns_;
 	}
 
 	// Return true if the game is over else false.
-	bool isGameOver() const {
+	inline bool isGameOver() const {
 		return isGameOver_;
 	}
 

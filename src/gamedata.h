@@ -60,7 +60,7 @@ public:
 	mw::Sprite spriteHuman_;
 	mw::Sprite spriteCross_;
 	mw::Sprite spriteZoom_;
-	mw::Sprite spriteZ_, spriteS_, spriteJ, spriteI_, spriteL, spriteT, spriteO;
+	mw::Sprite spriteZ_, spriteS_, spriteJ_, spriteI_, spriteL_, spriteT_, spriteO_;
 	
 private:
 	void load(tinyxml2::XMLHandle handle);

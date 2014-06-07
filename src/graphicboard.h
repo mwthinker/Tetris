@@ -53,7 +53,29 @@ public:
 	// Returns the height the graphic is drawn in OpenGl.
 	float getHeight() const;
 
+	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_, empty_;
+
 private:
+	const mw::Sprite& getSprite(BlockType blockType) const {
+		switch (blockType) {
+			case BlockType::I:
+				return spriteI_;
+			case BlockType::J:
+				return spriteJ_;
+			case BlockType::L:
+				return spriteL_;
+			case BlockType::O:
+				return spriteO_;
+			case BlockType::S:
+				return spriteS_;
+			case BlockType::T:
+				return spriteT_;
+			case BlockType::Z:
+				return spriteZ_;
+		}
+		return empty_;
+	}
+
 	mw::Color frameColor_;
 	float pixlePerSquare_;
 
@@ -64,11 +86,11 @@ private:
 // Draws a tetris board and corresponding player info.
 class GraphicBoard {
 public:
-	GraphicBoard();
+	GraphicBoard();	
 
 	GraphicBoard(const TetrisBoard& tetrisBoard);
 		
-	void update(const RawTetrisBoard& newBoard);
+	void update();
 
 	// Draws the the board. Using opengl.
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
@@ -84,9 +106,31 @@ public:
 		return pixlePerSquare_;
 	}
 
+	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_, empty_;
+
 private:
 	void drawBoard(const RawTetrisBoard& tetrisBoard) const;
 	void drawBeginArea() const;
+
+	const mw::Sprite& getSprite(BlockType blockType) const {
+		switch (blockType) {
+			case BlockType::I:
+				return spriteI_;
+			case BlockType::J:
+				return spriteJ_;
+			case BlockType::L:
+				return spriteL_;
+			case BlockType::O:
+				return spriteO_;
+			case BlockType::S:
+				return spriteS_;
+			case BlockType::T:
+				return spriteT_;
+			case BlockType::Z:
+				return spriteZ_;
+		}
+		return empty_;
+	}
 	
 	mw::Color frameColor_;
 

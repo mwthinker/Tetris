@@ -5,6 +5,7 @@
 #include "graphicboard.h"
 #include "gamesound.h"
 #include "tetrisparameters.h"
+#include "gamedata.h"
 
 #include <gui/component.h>
 
@@ -26,7 +27,7 @@ namespace {
 
 }
 
-GameComponent::GameComponent(TetrisGame& tetrisGame) : tetrisGame_(tetrisGame), alivePlayers_(0) {
+GameComponent::GameComponent(TetrisGame& tetrisGame, GameData& gameData) : tetrisGame_(tetrisGame), gameData_(gameData), alivePlayers_(0) {
 	setGrabFocus(true);
 	tetrisGame_.setGameHandler(this);
 }
@@ -82,7 +83,9 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 
 	for (const PlayerPtr& player : players) {
 		Graphic& graphic = graphic_[player->getId()];
-		graphic = Graphic(player, showPoints);
+		graphic = Graphic(player, showPoints, gameData_.spriteZ_,
+			gameData_.spriteS_, gameData_.spriteJ_, gameData_.spriteI_,
+			gameData_.spriteL_, gameData_.spriteT_, gameData_.spriteO_);
 		width += graphic.getWidth() + 5;
 		height = graphic.getHeight();
 	}
@@ -106,7 +109,7 @@ GameComponent::Graphic::Graphic() {
 	name_ = mw::Text("", fontDefault30, 20);
 }
 
-GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints) : board_(player->getTetrisBoard()) {
+GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO) : board_(player->getTetrisBoard()) {
 	update(player);
 	name_ = mw::Text(player->getName(), fontDefault30, 20);
 	if (showPoints) {
@@ -114,12 +117,20 @@ GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints) : boar
 	} else {
 		info_.hidePoints();
 	}
+	// Sets the correct sprites.
+	preview_.spriteZ_ = board_.spriteZ_ = spriteI;
+	preview_.spriteS_ = board_.spriteS_ = spriteS;
+	preview_.spriteJ_ = board_.spriteJ_ = spriteJ;
+	preview_.spriteI_ = board_.spriteI_ = spriteI;
+	preview_.spriteL_ = board_.spriteL_ = spriteL;
+	preview_.spriteT_ = board_.spriteT_ = spriteT;
+	preview_.spriteO_ = board_.spriteO_ = spriteO;
 }
 
 void GameComponent::Graphic::update(const PlayerPtr& player) {
 	PlayerInfo& info = player->getPlayerInfo();
 	info_.update(info.nbrClearedRows_, info.points_, player->getLevel());
-	board_.update(player->getTetrisBoard());
+	board_.update();
 	preview_.update(player->getNextBlock(), board_.getPixelPerSquare());
 }
 

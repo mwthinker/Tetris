@@ -7,7 +7,7 @@
 
 class ManButton : public gui::Component {
 public:
-	ManButton(unsigned int max, const mw::Sprite man, const mw::Sprite cross);
+	ManButton(unsigned int max, const mw::Sprite& man, const mw::Sprite& cross);
 
 	unsigned int getNbr() const;
 	void setNbr(unsigned int nbr);

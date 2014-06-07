@@ -32,8 +32,6 @@ set(SOURCES
 	src/gamehandler.h
 	src/gamesound.cpp
 	src/gamesound.h
-	src/gamesprite.cpp
-	src/gamesprite.h
 	src/graphicboard.cpp
 	src/graphicboard.h
 	src/highscore.cpp

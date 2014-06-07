@@ -10,10 +10,11 @@
 #include <map>
 
 class TetrisGame;
+class GameData;
 
 class GameComponent : public gui::Component, public GameHandler {
 public:
-	GameComponent(TetrisGame& tetrisGame);
+	GameComponent(TetrisGame& tetrisGame, GameData& gameData);
 
 	inline ~GameComponent() {
 	}
@@ -29,7 +30,9 @@ private:
 	public:
 		Graphic();
 
-		Graphic(const PlayerPtr& player, bool showPoints);
+		Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, 
+			mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, 
+			mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO);
 
 		void update(const PlayerPtr& player);
 
@@ -56,6 +59,8 @@ private:
 	TetrisGame& tetrisGame_;
 	std::map<int, Graphic> graphic_;
 	int alivePlayers_;
+
+	GameData& gameData_;
 
 	// Fix timestep.
 	Uint32 timeStep_;

@@ -1,5 +1,4 @@
 #include "graphicboard.h"
-#include "gamesprite.h"
 #include "gamefont.h"
 #include "tetrisboard.h"
 
@@ -14,49 +13,6 @@
 namespace {
 
 	const mw::Color WHITE(1, 1, 1, 1);
-
-	// Only usefull for the texture in (textureSquares) in defined in gameSprite.h.
-	// Sdl flips all images uppside down.
-	inline void textureCoord(BlockType blockType, int row, int column) {
-		mw::Sprite sprite;
-		switch (blockType) {
-			case BlockType::I:
-				sprite = spriteI;
-				break;
-			case BlockType::J:
-				sprite = spriteJ;
-				break;
-			case BlockType::L:
-				sprite = spriteL;
-				break;
-			case BlockType::O:
-				sprite = spriteO;
-				break;
-			case BlockType::S:
-				sprite = spriteS;
-				break;
-			case BlockType::T:
-				sprite = spriteT;
-				break;
-			case BlockType::Z:
-				sprite = spriteZ;
-				break;
-			default:
-				// Draw nothing!
-				return;
-		}
-		float h = (float) sprite.getTexture().getHeight();
-		float w = (float) sprite.getTexture().getWidth();
-
-		glTexCoord2f(sprite.getX() / w, sprite.getY() / h);
-		glVertex2d(0 + column, 0 + row);
-		glTexCoord2f((sprite.getX() + sprite.getWidth()) / w, sprite.getY() / h);
-		glVertex2d(1 + column, 0 + row);
-		glTexCoord2f((sprite.getX() + sprite.getWidth()) / w, (sprite.getY() + sprite.getHeight()) / h);
-		glVertex2d(1 + column, 1 + row);
-		glTexCoord2f(sprite.getX() / w, (sprite.getY() + sprite.getHeight()) / h);
-		glVertex2d(0 + column, 1 + row);
-	}
 
 	void drawFrame(double x1, double y1, double x2, double y2, double width) {
 		glBegin(GL_QUADS);
@@ -80,23 +36,6 @@ namespace {
 		glVertex2d(x1 + width, y2);
 		glVertex2d(x1, y2);
 		glEnd();
-	}
-
-	void drawBlock(const Block& block, int maxRow) {
-		WHITE.glColor4d();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);		
-		glEnable(GL_TEXTURE_2D);
-		textureSquares.bind();
-		glBegin(GL_QUADS);
-		for (const Square& sq : block) {
-			if (sq.row_ < maxRow) {
-				textureCoord(block.blockType(), sq.row_, sq.column_);
-			}
-		}
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
 	}	
 
 } // Anonymous namespace.
@@ -122,7 +61,7 @@ void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
 }
 
 void GraphicPlayerInfo::draw() {
-	glPushMatrix();
+	glPushMatrix(); // 1
 	WHITE.glColor4d();
 	nbrOfClearedRows_.draw();
 	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
@@ -133,7 +72,7 @@ void GraphicPlayerInfo::draw() {
 
 	level_.draw();
 
-	glPopMatrix();
+	glPopMatrix(); // 1
 }
 
 float GraphicPlayerInfo::getWidth() const {
@@ -148,7 +87,7 @@ GraphicPreviewBlock::GraphicPreviewBlock() {
 }
 
 void GraphicPreviewBlock::draw() {
-	glPushMatrix();
+	glPushMatrix(); // 1
 
 	double x = 0, y = 0;
 	for (const Square& sq : block_) {
@@ -167,9 +106,17 @@ void GraphicPreviewBlock::draw() {
 	y /= block_.nbrOfSquares();
 
 	// Move center to origo.
-	glTranslated(-x - 0.5, -y - 0.5, 0); // -0.5 Due, mass center for a square is 0.5;
-	drawBlock(block_, 10000);
-	glPopMatrix();
+	glTranslated(-x, -y, 0);
+	
+	const mw::Sprite& sprite = getSprite(block_.blockType());
+	for (const Square& sq : block_) {
+		glPushMatrix();
+		glTranslated(sq.column_, sq.row_, 0);
+		sprite.draw();
+		glPopMatrix();
+	}
+	
+	glPopMatrix(); // 1
 }
 
 void GraphicPreviewBlock::update(const BlockType& blockType, float pixlePerSquare) {
@@ -195,11 +142,10 @@ GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(&tetri
 	frameColor_ = mw::Color(237 / 256.0, 78 / 256.0, 8 / 256.0); // Some type of orange.
 }
 
-void GraphicBoard::update(const RawTetrisBoard& newBoard) {
-	//tetrisBoard_ = newBoard;
+void GraphicBoard::update() {
 	height_ = 400;
-	pixlePerSquare_ = height_ / (newBoard.getNbrOfRows() + 2);
-	width_ = newBoard.getNbrOfColumns() * pixlePerSquare_;
+	pixlePerSquare_ = height_ / (tetrisBoard_->getNbrOfRows() + 2);
+	width_ = tetrisBoard_->getNbrOfColumns() * pixlePerSquare_;
 }
 
 void GraphicBoard::draw() {
@@ -215,7 +161,7 @@ float GraphicBoard::getHeight() const {
 }
 
 void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
-	glPushMatrix();
+	glPushMatrix();  // 1.
 	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
 
 	glEnable(GL_BLEND);
@@ -242,32 +188,46 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 			glVertex2d(0.1 + column, 0.9 + row);
 		}
 	}
-	glEnd();	
-	
-	drawBeginArea();
-	WHITE.glColor4d();	
 
-	// Draw squares.
-	glEnable(GL_TEXTURE_2D);
-	textureSquares.bind();
-	glBegin(GL_QUADS);
-	for (int row = 0; row < rows + 2; ++row) {
-		for (int column = 0; column < columns; ++column) {
-			BlockType type = tetrisBoard.getBlockType(row, column);
-			textureCoord(type, row, column);
-		}
-	}
-	glEnd();
+	glEnd();	
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
 	
-	drawBlock(tetrisBoard.getBlock(), tetrisBoard.getNbrOfRows() + 2);
+	drawBeginArea();
 
-	glPopMatrix();
+	glPushMatrix();  // 2.
+	glTranslated(0.5, 0.5, 0); // Sprite is [-0.5, 0.5] in y and x direction.
+
+	WHITE.glColor3d();
+	// Draw board.
+	for (int row = 0; row < rows + 2; ++row) {
+		for (int column = 0; column < columns; ++column) {
+			BlockType type = tetrisBoard.getBlockType(row, column);
+			const mw::Sprite& sprite = getSprite(type);
+			glPushMatrix(); // 3.
+			glTranslated(column, row, 0);
+			sprite.draw();
+			glPopMatrix(); // 3.
+		}
+	}
+	
+	// Draw block.
+	const mw::Sprite& sprite = getSprite(tetrisBoard.getBlockType());
+	for (const Square& sq : tetrisBoard.getBlock()) {
+		if (sq.row_ < tetrisBoard.getNbrOfRows() + 2) {
+			glPushMatrix();
+			glTranslated(sq.column_, sq.row_, 0);
+			sprite.draw();
+			glPopMatrix();
+		}
+	}
+
+	glPopMatrix();  // 2.
+	glPopMatrix();  // 1.
 }
 
 void GraphicBoard::drawBeginArea() const {
-	glPushMatrix();
+	glPushMatrix(); // 1.
 
 	int rows = tetrisBoard_->getNbrOfRows();
 	int columns = tetrisBoard_->getNbrOfColumns();
@@ -284,5 +244,5 @@ void GraphicBoard::drawBeginArea() const {
 	glVertex2d(0.0, 1.0);
 	glEnd();
 
-	glPopMatrix();
+	glPopMatrix(); // 1.
 }
