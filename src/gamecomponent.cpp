@@ -1,9 +1,7 @@
 #include "gamecomponent.h"
 #include "tetrisgame.h"
-#include "gamesound.h"
 #include "gamefont.h"
 #include "graphicboard.h"
-#include "gamesound.h"
 #include "tetrisparameters.h"
 #include "gamedata.h"
 
@@ -218,7 +216,7 @@ void GameComponent::soundEffects(GameEvent gameEvent) const {
 		case GameEvent::GRAVITY_MOVES_BLOCK:
 			break;
 		case GameEvent::BLOCK_COLLISION:
-			sound = soundBlockCollision;
+			sound = gameData_.soundBlockCollision_;
 			break;
 		case GameEvent::PLAYER_ROTATES_BLOCK:
 			break;
@@ -227,10 +225,10 @@ void GameComponent::soundEffects(GameEvent gameEvent) const {
 		case GameEvent::TWO_ROW_REMOVED:
 			// Fall through
 		case GameEvent::THREE_ROW_REMOVED:
-			sound = soundRowRemoved;
+			sound = gameData_.soundRowRemoved_;
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
-			sound = soundTetris;
+			sound = gameData_.soundTetris_;
 			break;
 		case GameEvent::GAME_OVER:
 			break;

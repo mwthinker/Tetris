@@ -30,8 +30,6 @@ set(SOURCES
 	src/gamefont.cpp
 	src/gamefont.h
 	src/gamehandler.h
-	src/gamesound.cpp
-	src/gamesound.h
 	src/graphicboard.cpp
 	src/graphicboard.h
 	src/highscore.cpp

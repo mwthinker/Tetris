@@ -986,8 +986,6 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 				}
 			}
 			break;
-		default:
-			break;
 	}
 
 	if (rows != 0) {

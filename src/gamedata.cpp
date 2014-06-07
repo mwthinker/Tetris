@@ -5,11 +5,57 @@
 #include <tinyxml2.h>
 
 #include <sstream>
+#include <algorithm>
 #include <iostream>
 
 namespace {
 
 	std::stringstream& operator>>(std::stringstream& stream, mw::Color& color) {
+		bool start = false;
+		bool end = false;
+		
+		std::string str;
+		std::string tmp;
+		while (stream >> tmp) {
+			if (tmp.size() > 0 && !start) {
+				if (tmp[0] == '(') {
+					start = true;
+					tmp[0] = ' ';
+				} else {
+					// Failed.
+					return stream;
+				}
+			}
+			if (tmp.size() > 0 && !end) {
+				for (char& c : tmp) {
+					if (c == ')') {
+						c = ' ';
+						end = true;
+						break;
+					}
+				}
+			}
+			str += tmp;
+			if (start && end) {
+				break;
+			}
+		}
+
+		if (!start || !end) {
+			// Failed.
+			return stream;
+		}
+
+		std::replace(str.begin(), str.end(), ',', ' ');
+		std::stringstream newStream_(str);
+		newStream_ >> color.red_;
+		newStream_ >> color.green_;
+		newStream_ >> color.blue_;
+		float alpha = 1;
+		if (newStream_ >> alpha) {
+			color.alpha_ = alpha;
+		}
+
 		return stream;
 	}
 
@@ -145,10 +191,10 @@ void GameData::loadWindow(tinyxml2::XMLHandle handle) {
 	// <sounds>.
 	handle = handle.NextSiblingElement("sounds");
 	extract(soundButtonPush_, handle.FirstChildElement("buttonPush"));
-	extract(soundBlockCollision, handle.FirstChildElement("blockCollision"));
-	extract(soundRowRemoved, handle.FirstChildElement("rowRemoved"));
-	extract(soundTetris, handle.FirstChildElement("tetris"));
-	extract(soundHighscore, handle.FirstChildElement("highscore"));
+	extract(soundBlockCollision_, handle.FirstChildElement("blockCollision"));
+	extract(soundRowRemoved_, handle.FirstChildElement("rowRemoved"));
+	extract(soundTetris_, handle.FirstChildElement("tetris"));
+	extract(soundHighscore_, handle.FirstChildElement("highscore"));
 
 	// <sprites>.
 	handle = handle.NextSiblingElement("sprites");
@@ -213,7 +259,16 @@ void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLHandle handle) {
 }
 
 void GameData::extract(mw::Sound& sound, tinyxml2::XMLHandle handle) {
+	tinyxml2::XMLElement* element = handle.ToElement();
+	if (element == nullptr) {
+		throw mw::Exception("Missing element!");
+	}
 
+	const char* str = element->GetText();
+
+	if (str != nullptr) {
+		sound = loadSound(str);
+	}
 }
 
 mw::Font GameData::loadFont(std::string file, unsigned int fontSize) {

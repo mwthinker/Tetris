@@ -45,10 +45,10 @@ public:
 
 	// Sounds.
 	mw::Sound soundButtonPush_;
-	mw::Sound soundBlockCollision;
-	mw::Sound soundRowRemoved;
-	mw::Sound soundTetris;
-	mw::Sound soundHighscore;
+	mw::Sound soundBlockCollision_;
+	mw::Sound soundRowRemoved_;
+	mw::Sound soundTetris_;
+	mw::Sound soundHighscore_;
 
 	// Game.
 	int maxNbrAis_;
