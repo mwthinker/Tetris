@@ -148,6 +148,34 @@ int GameData::getWindowHeight() const {
 	return ::extract<int>(handlemXl.FirstChildElement("height"));
 }
 
+void GameData::setWindowPosition(int x, int y) {
+	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	::insert(x, handlemXl.FirstChildElement("positionX"));
+	::insert(y, handlemXl.FirstChildElement("positionY"));
+	save();
+}
+
+int GameData::getWindowXPosition() const {
+	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handlemXl.FirstChildElement("positionX"));
+}
+
+int GameData::getWindowYPosition() const {
+	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handlemXl.FirstChildElement("positionY"));
+}
+
+void GameData::setWindowMaximized(bool maximized) {
+	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	::insert(maximized, handlemXl.FirstChildElement("maximized"));
+	save();
+}
+
+bool GameData::isWindowMaximized() const {
+	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<bool>(handlemXl.FirstChildElement("maximized"));
+}
+
 std::string GameData::getIconPath() const {
 	return icon_;
 }

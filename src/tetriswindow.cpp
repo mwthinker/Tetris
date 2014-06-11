@@ -95,9 +95,15 @@ namespace {
 }
 
 TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame(gameData.getWindowWidth(), gameData.getWindowHeight(), true, "MWetris", gameData.getIconPath()) {
+	SDL_SetWindowPosition(mw::Window::getSdlWindow(), gameData.getWindowXPosition(), gameData.getWindowYPosition());
+	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(), 400, 400);
+	if (gameData.isWindowMaximized()) {
+		SDL_MaximizeWindow(mw::Window::getSdlWindow());
+	}
+
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
-
+	
 	game_ = std::make_shared<GameComponent>(tetrisGame_, gameData_);
 
 	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
@@ -109,7 +115,24 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 			case SDL_WINDOWEVENT:
 				switch (sdlEvent.window.event) {
 					case SDL_WINDOWEVENT_RESIZED:
-						gameData.setWindowSize(sdlEvent.window.data1, sdlEvent.window.data2);
+						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
+							// The Window's is not maximized. Save size!
+							gameData.setWindowSize(sdlEvent.window.data1, sdlEvent.window.data2);							
+						}						
+						break;
+					case SDL_WINDOWEVENT_MOVED:
+						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
+							// The Window's is not maximized. Save position!
+							int x, y;
+							SDL_GetWindowPosition(mw::Window::getSdlWindow(), &x, &y);
+							gameData.setWindowPosition(x, y);
+						}
+						break;
+					case SDL_WINDOWEVENT_MAXIMIZED:
+						gameData.setWindowMaximized(true);
+						break;
+					case SDL_WINDOWEVENT_RESTORED:
+						gameData.setWindowMaximized(false);
 						break;
 				}
 				break;

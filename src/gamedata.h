@@ -24,6 +24,12 @@ public:
 	int getWindowWidth() const;
 	int getWindowHeight() const;
 	void setWindowSize(int width, int height);
+	void setWindowPosition(int x, int y);
+	int getWindowXPosition() const;
+	int getWindowYPosition() const;
+
+	void setWindowMaximized(bool maximized);
+	bool isWindowMaximized() const;
 
 	std::string getIconPath() const;
 	

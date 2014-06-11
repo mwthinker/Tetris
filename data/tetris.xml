@@ -17,10 +17,13 @@
             <backgroundColor>(0, 0, 0, 0)</backgroundColor>
             <borderColor>(0, 0, 0, 0)</borderColor>
         </button>
-        <fonts>fonts/Ubuntu-B.ttf</font>
-        <width>826</width>
-        <height>696</height>
-        <icon>tetris.bmp</icon>
+        <font>fonts/Ubuntu-B.ttf</font>
+        <width>450</width>
+        <height>400</height>
+        <positionX>796</positionX>
+        <positionY>333</positionY>
+        <maximized>0</maximized>
+        <icon>tetris.bmp</icon>        
         <sounds>
             <buttonPush/>
             <blockCollision>blockCollision.wav</blockCollision>
