@@ -34,52 +34,13 @@ namespace {
 		panel->setBackground(background);
 		panel->setLayout(std::make_shared<gui::BorderLayout>());
 		return panel;
-	}
-
-	std::shared_ptr<gui::Panel> createBar() {
-		std::shared_ptr<gui::Panel> bar = std::make_shared<gui::Panel>();
-		bar->setPreferredSize(35, 35);
-		bar->setBackgroundColor(mw::Color(.5, 0, 0, .30));
-		bar->setLayout(std::make_shared<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f));
-		return bar;
-	}
+	}	
 
 	std::shared_ptr<gui::Panel> createPanel(float preferredWidth = 100, float preferredHeight = 100) {
 		std::shared_ptr<gui::Panel> panel = std::make_shared<gui::Panel>();
 		panel->setBackgroundColor(mw::Color(1, 1, 1, 0));
 		panel->setPreferredSize(preferredWidth, preferredHeight);
 		return panel;
-	}
-
-	std::shared_ptr<gui::Label> createLabel(std::string text, mw::Font font) {
-		std::shared_ptr<gui::Label> label = std::make_shared<gui::Label>(text, font);
-		label->setTextColor(mw::Color(1, 1, 1));
-		label->setBackgroundColor(mw::Color(1, 1, 1, 0));
-		return label;
-	}
-
-	std::shared_ptr<gui::Button> createButton(std::string text, mw::Font font) {
-		std::shared_ptr<gui::Button> button = std::make_shared<gui::Button>(text, font);
-		button->setFocusColor(mw::Color(.8, .1, 0, .3));
-		button->setTextColor(mw::Color(1, 0.1, 0.1));
-		button->setHoverColor(mw::Color(.6, .1, .1));
-		button->setPushColor(mw::Color(.8, .0, 0, .7));
-		button->setBackgroundColor(mw::Color(0, 0, 0, 0));
-		button->setBorderColor(mw::Color(0, 0, 0, 0));
-		button->setAutoSizeToFitText(true);
-		return button;
-	}
-
-	void createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) {
-		for (unsigned int i = 0; i < players.size(); ++i) {
-			players[i] = createPanel(400, 35);
-			std::stringstream stream;
-			stream << "Human " << i + 1;
-			players[i]->add(createLabel(stream.str(), font));
-			names[i] = std::make_shared<gui::TextField>(stream.str(), font);
-			players[i]->add(names[i]);
-			players[i]->setVisible(false);
-		}
 	}
 
 	void showHideHumanFields(std::shared_ptr<ManButton> humans, std::array<std::shared_ptr<gui::Panel>, 4>& humanPanels) {
@@ -209,6 +170,45 @@ void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent
 }
 
 TetrisWindow::~TetrisWindow() {
+}
+
+std::shared_ptr<gui::Panel> TetrisWindow::createBar() const {
+	std::shared_ptr<gui::Panel> bar = std::make_shared<gui::Panel>();
+	bar->setPreferredSize(gameData_.barHeight_, gameData_.barHeight_);
+	bar->setBackgroundColor(gameData_.barColor_);
+	bar->setLayout(std::make_shared<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f));
+	return bar;
+}
+
+std::shared_ptr<gui::Label> TetrisWindow::createLabel(std::string text, mw::Font font) const {
+	std::shared_ptr<gui::Label> label = std::make_shared<gui::Label>(text, font);
+	label->setTextColor(gameData_.labelTextColor_);
+	label->setBackgroundColor(gameData_.labelBackgroundColor_);
+	return label;
+}
+
+void TetrisWindow::createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const {
+	for (unsigned int i = 0; i < players.size(); ++i) {
+		players[i] = createPanel(400, 35);
+		std::stringstream stream;
+		stream << "Human " << i + 1;
+		players[i]->add(createLabel(stream.str(), font));
+		names[i] = std::make_shared<gui::TextField>(stream.str(), font);
+		players[i]->add(names[i]);
+		players[i]->setVisible(false);
+	}
+}
+
+std::shared_ptr<gui::Button> TetrisWindow::createButton(std::string text, mw::Font font) const {
+	std::shared_ptr<gui::Button> button = std::make_shared<gui::Button>(text, font);
+	button->setFocusColor(gameData_.buttonFocusColor_);
+	button->setTextColor(gameData_.buttonTextColor_);
+	button->setHoverColor(gameData_.buttonHoverColor_);
+	button->setPushColor(gameData_.buttonPushColor_);
+	button->setBackgroundColor(gameData_.buttonBackgroundColor_);
+	button->setBorderColor(gameData_.buttonBorderColor_);
+	button->setAutoSizeToFitText(true);
+	return button;
 }
 
 void TetrisWindow::initMenuPanel() {

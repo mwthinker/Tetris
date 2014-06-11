@@ -8,6 +8,8 @@
 #include <gui/frame.h>
 #include <gui/textfield.h>
 #include <gui/button.h>
+#include <gui/panel.h>
+#include <gui/label.h>
 
 #include <array>
 #include <memory>
@@ -28,6 +30,11 @@ public:
 	~TetrisWindow();
 
 private:
+	std::shared_ptr<gui::Panel> createBar() const;
+	std::shared_ptr<gui::Label> createLabel(std::string text, mw::Font font) const;
+	void createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const;
+	std::shared_ptr<gui::Button> createButton(std::string text, mw::Font font) const;
+
 	mw::Font getDefaultFont(int size);
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);

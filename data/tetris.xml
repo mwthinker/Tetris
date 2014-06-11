@@ -7,7 +7,7 @@
         </bar>
         <label>
             <textColor>(1, 1, 1)</textColor>
-            <backgroundColor>(1, 1, 1)</backgroundColor>
+            <backgroundColor>(1, 1, 1, 0)</backgroundColor>
         </label>
         <button>
             <focusColor>(.8, .1, 0, .3)</focusColor>
@@ -23,12 +23,12 @@
         <positionX>796</positionX>
         <positionY>333</positionY>
         <maximized>0</maximized>
-        <icon>tetris.bmp</icon>        
+        <icon>images/icon.bmp</icon>
         <sounds>
             <buttonPush/>
-            <blockCollision>blockCollision.wav</blockCollision>
-            <rowRemoved>rowRemoved.wav</rowRemoved>
-            <tetris>tetris.wav</tetris>
+            <blockCollision>sounds/blockCollision.wav</blockCollision>
+            <rowRemoved>sounds/rowRemoved.wav</rowRemoved>
+            <tetris>sounds/tetris.wav</tetris>
             <highscore/>
         </sounds>
         <sprites>
