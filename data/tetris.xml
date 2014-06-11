@@ -17,7 +17,7 @@
             <backgroundColor>(0, 0, 0, 0)</backgroundColor>
             <borderColor>(0, 0, 0, 0)</borderColor>
         </button>
-        <fonts>font/Ubuntu-B.ttf</font>
+        <fonts>fonts/Ubuntu-B.ttf</font>
         <width>826</width>
         <height>696</height>
         <icon>tetris.bmp</icon>

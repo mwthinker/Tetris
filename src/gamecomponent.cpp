@@ -115,8 +115,8 @@ GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints, mw::Sp
 	} else {
 		info_.hidePoints();
 	}
-	// Sets the correct sprites.
-	preview_.spriteZ_ = board_.spriteZ_ = spriteI;
+	// Set the correct sprites.
+	preview_.spriteZ_ = board_.spriteZ_ = spriteZ;
 	preview_.spriteS_ = board_.spriteS_ = spriteS;
 	preview_.spriteJ_ = board_.spriteJ_ = spriteJ;
 	preview_.spriteI_ = board_.spriteI_ = spriteI;
