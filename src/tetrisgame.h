@@ -101,9 +101,8 @@ private:
 	// Should be sent when client is in looby.
 	void sendReady();
 
-	// Send the current input (input) and tetrisboard move (move) from player local player
-	// with id (id).
-	void sendInput(char playerId, Move move, BlockType next);
+	// Send the current move from the local player corresponding to the id provided.	
+	void sendMove(char playerId, Move move, BlockType next);
 
 	void receivInput(mw::Packet packet, char& playerId, Move& move, BlockType& next);
 

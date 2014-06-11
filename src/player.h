@@ -91,6 +91,7 @@ private:
 
 	double squaresPerLength_;
 
+	const bool remote_;
 	const bool ai_;
 	const int id_;
 	std::string name_;

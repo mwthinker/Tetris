@@ -15,7 +15,6 @@ TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, Blo
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
 	squaresToAdd_.clear();
-	nextBlockQueue_ = std::queue<BlockType>();
 	setCurrentBlock(current);
 	setNextBlockType(next);
 	clearBoard();
@@ -26,18 +25,13 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent, int row1, int row2, int row3
 	gameEvents_.push(gameEvent);
 	switch (gameEvent) {
 	case GameEvent::BLOCK_COLLISION:
-		setNextBlockType(nextBlockQueue_.front());
-		nextBlockQueue_.pop();
 		++nbrOfUpdates_;
 		break;
-    default:
-		// Do nothing!
-        break;
 	}
 }
 
-void TetrisBoard::add(BlockType next) {
-	nextBlockQueue_.push(next);
+void TetrisBoard::setNextBlockType(BlockType next) {
+	RawTetrisBoard::setNextBlockType(next);
 }
 
 void TetrisBoard::addRows(const std::vector<BlockType>& blockTypes) {

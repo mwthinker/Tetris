@@ -15,14 +15,14 @@ namespace {
 
 	// Returns a random block type, which is not empty.
 	BlockType generateBlockType() {
-		std::uniform_int_distribution<int> distribution(0, 6);
+		static std::uniform_int_distribution<int> distribution(0, 6);
 		static_assert((int) BlockType::EMPTY > 6, "BlockType::EMPTY should not be generated");
 		return static_cast<BlockType>(distribution(generator));
 	}
 
 }
 
-Player::Player(int id, int width, int height, bool remote, bool ai) : tetrisBoard_(height, width, BlockType::I, BlockType::I), ai_(ai), id_(id) {
+Player::Player(int id, int width, int height, bool remote, bool ai) : tetrisBoard_(height, width, BlockType::I, BlockType::I), ai_(ai), id_(id), remote_(remote) {
 	if (!remote) {
 		update(generateBlockType(), generateBlockType());
 	}
@@ -31,18 +31,23 @@ Player::Player(int id, int width, int height, bool remote, bool ai) : tetrisBoar
 
 void Player::restart() {
 	moves_ = std::queue<Move>();
+	gameEvents_ = std::queue<GameEvent>();
 	update(generateBlockType(), generateBlockType());
 }
 
 bool Player::updateBoard(Move& move, BlockType& next) {
-	Move polledMove;
-	bool polled = pollMove(polledMove);
+	bool polled = pollMove(move);
 	if (polled) {
-		BlockType blockType = generateBlockType();
-		next = blockType;
-		tetrisBoard_.add(blockType);
-		move = polledMove;
-		update(move);
+		tetrisBoard_.update(move);
+		GameEvent gameEvent;
+		while (tetrisBoard_.pollGameEvent(gameEvent)) {
+			gameEvents_.push(gameEvent);
+			if (!remote_ && gameEvent == GameEvent::BLOCK_COLLISION) {
+				// Generate a new block for a local player.
+				tetrisBoard_.setNextBlockType(generateBlockType());
+			}
+		}
+		next = tetrisBoard_.getNextBlockType();
 		updateAi();
 	}
 	return polled;
@@ -58,7 +63,7 @@ void Player::update(BlockType current, BlockType next) {
 }
 
 void Player::update(Move move, BlockType next) {
-	tetrisBoard_.add(next);
+	tetrisBoard_.setNextBlockType(next);	
 	tetrisBoard_.update(move);
 }
 
@@ -141,5 +146,11 @@ BlockType Player::getNextBlock() const {
 }
 
 bool Player::pollGameEvent(GameEvent& gameEvent) {
-	return tetrisBoard_.pollGameEvent(gameEvent);
+	if (gameEvents_.empty()) {
+		return false;
+	}
+
+	gameEvent = gameEvents_.front();
+	gameEvents_.pop();
+	return true;
 }

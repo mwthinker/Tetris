@@ -15,8 +15,8 @@ public:
 	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
 	void restart(BlockType current, BlockType next);
 
-	// Add next block.
-	void add(BlockType next);
+	// Set next block.
+	void setNextBlockType(BlockType next);
 
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
@@ -33,7 +33,6 @@ private:
 	std::vector<BlockType> addExternalRows() override;
 
 	std::vector<BlockType> squaresToAdd_;
-	std::queue<BlockType> nextBlockQueue_;
 	std::queue<GameEvent> gameEvents_;
 	
 	int nbrOfUpdates_;

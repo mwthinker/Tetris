@@ -29,7 +29,7 @@ namespace {
 	// Defines the packet content.
 	// Value of the first byte.
 	enum class PacketType : char {
-		INPUT,       // Tetrisboard updates.
+		MOVE,       // Tetrisboard updates.
 		STARTGAME,   // The server starts the game. All user starts the game.
 		READY,       // The client is ready/unready to start.
 		SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
@@ -254,13 +254,13 @@ void TetrisGame::update(Uint32 deltaTime) {
 						}
 					}
 
-					// Update the board for the local users.
+					// Update the board for the local users and sent updates to remote players.
 					for (PlayerPtr& player : *localUser_) {
 						Move move;
 						BlockType next;
 						// Update the local player tetris board and send the input to all remote players.
 						while (player->updateBoard(move, next)) {
-							sendInput(player->getId(), move, next);
+							sendMove(player->getId(), move, next);
 						}
 					}
 				}
@@ -449,7 +449,7 @@ void TetrisGame::disconnectToServer(int clientId) {
 void TetrisGame::receiveData(const mw::Packet& data, int id) {
 	PacketType type = static_cast<PacketType>(data[0]);
 	switch (type) {
-		case PacketType::INPUT:
+		case PacketType::MOVE:
 		{
 			// Game not started?
 			if (!start_) {
@@ -753,13 +753,13 @@ void TetrisGame::sendReady() {
 	network_->pushToSendBuffer(data, mw::Network::RELIABLE);
 }
 
-// char type = INPUT
+// char type = MOVE
 // char playerId
 // char move
 // char nextBlockType, before move has taken effect
-void TetrisGame::sendInput(char playerId, Move move, BlockType next) {
+void TetrisGame::sendMove(char playerId, Move move, BlockType next) {
 	mw::Packet data;
-	data << PacketType::INPUT;
+	data << PacketType::MOVE;
 	data << playerId;
 	data << move;
 	data << next;
