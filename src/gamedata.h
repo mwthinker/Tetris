@@ -13,6 +13,8 @@
 
 class GameData {
 public:
+	class Highscore;
+
 	GameData(std::string dataFile);
 
 	void save();
@@ -30,6 +32,9 @@ public:
 
 	void setWindowMaximized(bool maximized);
 	bool isWindowMaximized() const;
+
+	std::vector<Highscore> getHighscoreVector() const;
+	void setHighscoreVector(const std::vector<Highscore>& v);
 
 	std::string getIconPath() const;
 	
@@ -67,6 +72,19 @@ public:
 	mw::Sprite spriteCross_;
 	mw::Sprite spriteZoom_;
 	mw::Sprite spriteZ_, spriteS_, spriteJ_, spriteI_, spriteL_, spriteT_, spriteO_;
+
+	class Highscore {
+	public:
+		Highscore() {
+		}
+
+		Highscore(std::string name, int points, std::string date) : name_(name), points_(points), date_(date) {
+		}
+
+		std::string date_;
+		int points_;
+		std::string name_;
+	};
 	
 private:
 	void load(tinyxml2::XMLHandle handle);
@@ -74,7 +92,6 @@ private:
 	void loadGame(tinyxml2::XMLHandle handle);
 	void loadNetwork(tinyxml2::XMLHandle handle);
 	void loadPlayers(tinyxml2::XMLHandle handle);
-	void loadHighscore(tinyxml2::XMLHandle handle);
 
 	void extract(mw::Sprite& sprite, tinyxml2::XMLHandle handle);
 	void extract(mw::Sound& sound, tinyxml2::XMLHandle handle);

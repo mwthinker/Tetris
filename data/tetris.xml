@@ -87,56 +87,57 @@
             </player>
         </ais>
     </players>
-    <highscore max="10">
-        <item number="1">
+    <highscore>
+        <highscore>
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="2">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="3">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="4">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="5">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="6">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="7">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="8">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="9">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
-        <item number="10">
+        <item>
             <name/>
             <date/>
-            <point/>
+            <points/>
         </item>
     </highscore>
 </tetris>

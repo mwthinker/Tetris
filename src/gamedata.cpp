@@ -122,10 +122,10 @@ GameData::GameData(std::string dataFile) : dataFile_(dataFile) {
 		xmlDoc_.PrintError();
 	}
 	
-	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris"));
+	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris"));
 
 	// Load all data.
-	load(handlemXl);
+	load(handleXml);
 }
 
 void GameData::save() {
@@ -133,47 +133,88 @@ void GameData::save() {
 }
 
 void GameData::setWindowSize(int width, int height) {
-	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	::insert(width, handlemXl.FirstChildElement("width"));
-	::insert(height, handlemXl.FirstChildElement("height"));
+	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	::insert(width, handleXml.FirstChildElement("width"));
+	::insert(height, handleXml.FirstChildElement("height"));
 	save();
 }
 
 int GameData::getWindowWidth() const {
-	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
 	return ::extract<int>(handlemXl.FirstChildElement("width"));
 }
 int GameData::getWindowHeight() const {
-	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handlemXl.FirstChildElement("height"));
+	const tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handleXml.FirstChildElement("height"));
 }
 
 void GameData::setWindowPosition(int x, int y) {
-	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	::insert(x, handlemXl.FirstChildElement("positionX"));
-	::insert(y, handlemXl.FirstChildElement("positionY"));
+	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	::insert(x, handleXml.FirstChildElement("positionX"));
+	::insert(y, handleXml.FirstChildElement("positionY"));
 	save();
 }
 
 int GameData::getWindowXPosition() const {
-	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handlemXl.FirstChildElement("positionX"));
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handleXml.FirstChildElement("positionX"));
 }
 
 int GameData::getWindowYPosition() const {
-	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handlemXl.FirstChildElement("positionY"));
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<int>(handleXml.FirstChildElement("positionY"));
 }
 
 void GameData::setWindowMaximized(bool maximized) {
-	tinyxml2::XMLHandle handlemXl = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	::insert(maximized, handlemXl.FirstChildElement("maximized"));
+	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	::insert(maximized, handleXml.FirstChildElement("maximized"));
 	save();
 }
 
 bool GameData::isWindowMaximized() const {
-	const tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<bool>(handlemXl.FirstChildElement("maximized"));
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
+	return ::extract<bool>(handleXml.FirstChildElement("maximized"));
+}
+
+std::vector<GameData::Highscore> GameData::getHighscoreVector() const {
+	std::vector<GameData::Highscore> v;
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("highscore")).FirstChildElement("item");
+	while (handleXml.ToElement() != nullptr) {		
+		std::string name = ::extract<std::string>(handleXml.FirstChildElement("name"));
+		std::string date = ::extract<std::string>(handleXml.FirstChildElement("date"));
+		int points = ::extract<int>(handleXml.FirstChildElement("points"));
+		v.push_back(Highscore(name, points, date));
+		handleXml = handleXml.NextSibling();
+	}
+	return v;
+}
+
+void GameData::setHighscoreVector(const std::vector<GameData::Highscore>& v) {
+	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("highscore"));
+	tinyxml2::XMLNode* node = handleXml.ToNode();
+	if (node != nullptr) {
+		node->DeleteChildren();
+		tinyxml2::XMLNode* element = nullptr;
+		for (const GameData::Highscore& highscore : v) {
+			if (nullptr == element) {
+				// Only first time.
+				element = xmlDoc_.NewElement("item");
+				node->InsertFirstChild(element);
+			} else {
+				element = node->InsertAfterChild(element, xmlDoc_.NewElement("item"));
+			}			
+			tinyxml2::XMLElement* name = xmlDoc_.NewElement("name");
+			name->SetText(highscore.name_.c_str());
+			tinyxml2::XMLElement* points = xmlDoc_.NewElement("points");
+			points->SetText(highscore.points_);
+			tinyxml2::XMLElement* date = xmlDoc_.NewElement("date");
+			points->SetText(highscore.date_.c_str());
+
+			element->InsertFirstChild(name);
+			element->InsertAfterChild(name, points);
+			element->InsertAfterChild(points, date);
+		}
+	}
 }
 
 std::string GameData::getIconPath() const {
@@ -185,7 +226,6 @@ void GameData::load(tinyxml2::XMLHandle handle) {
 	loadGame(handle.FirstChildElement("game"));
 	loadNetwork(handle.FirstChildElement("network"));
 	loadPlayers(handle.FirstChildElement("players"));
-	loadHighscore(handle.FirstChildElement("highscore"));
 }
 
 void GameData::loadWindow(tinyxml2::XMLHandle handle) {
@@ -249,10 +289,6 @@ void GameData::loadNetwork(tinyxml2::XMLHandle handle) {
 }
 
 void GameData::loadPlayers(tinyxml2::XMLHandle handle) {
-
-}
-
-void GameData::loadHighscore(tinyxml2::XMLHandle handle) {
 
 }
 
