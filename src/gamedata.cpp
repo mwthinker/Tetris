@@ -10,6 +10,14 @@
 
 namespace {
 
+	// Override the stream operator for a color defined as a string "(r,g,b)".
+	// Any space character will be ignored but r, g, b represent a float value 
+	// and must be seperated by "," and the whole string surrounded by "(" and ")".
+	// Example of correct usaged: 
+	// stringstream stream;
+	// stream << "( 1.0, 0.1,2);
+	// Color color;
+	// stream >> color;	
 	std::stringstream& operator>>(std::stringstream& stream, mw::Color& color) {
 		bool start = false;
 		bool end = false;
@@ -23,6 +31,7 @@ namespace {
 					tmp[0] = ' ';
 				} else {
 					// Failed.
+					stream.setstate(std::ios::failbit);
 					return stream;
 				}
 			}
@@ -43,6 +52,7 @@ namespace {
 
 		if (!start || !end) {
 			// Failed.
+			stream.setstate(std::ios::failbit);
 			return stream;
 		}
 
@@ -74,6 +84,9 @@ namespace {
 		std::stringstream stream(str);
 		Output output;
 		stream >> output;
+		if (stream.fail()) {
+			throw mw::Exception("Stream failed!");
+		}
 		return output;
 	}
 
@@ -92,6 +105,9 @@ namespace {
 		std::stringstream stream(str);
 		Output output;
 		stream >> output;
+		if (stream.fail()) {
+			throw mw::Exception("Stream failed!");
+		}
 		return output;
 	}
 
@@ -109,6 +125,9 @@ namespace {
 
 		std::stringstream stream;
 		stream << input;
+		if (stream.fail()) {
+			throw mw::Exception("Stream failed!");
+		}
 
 		element->SetText(stream.str().c_str());
 	}

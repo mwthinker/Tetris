@@ -19,7 +19,7 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 
 void Highscore::draw(Uint32 deltaTime) {
 	glColor3d(1, 1, 1);
-	glPushMatrix();
+	glPushMatrix();  // 1.
 
 	int index = 0;
 	for (auto it = ascList_.begin(); it != ascList_.end(); ++it) {
@@ -27,7 +27,8 @@ void Highscore::draw(Uint32 deltaTime) {
 		mw::Text& points = highscore.points_;
 		mw::Text& name = highscore.name_;
 		mw::Text& date = highscore.date_;
-		glPushMatrix();
+		
+		glPushMatrix(); // 2.
 		numbers_[index++].draw();
 		glTranslated(50, 0, 0);
 		points.draw();
@@ -35,7 +36,7 @@ void Highscore::draw(Uint32 deltaTime) {
 		name.draw();
 		glTranslated(170, 0, 0);
 		date.draw();
-		glPopMatrix();
+		glPopMatrix(); // 2.
 
 		glTranslated(0, font_.getCharacterSize() + 2, 0);
 	}
@@ -50,7 +51,7 @@ void Highscore::draw(Uint32 deltaTime) {
 	glTranslated(170, 0, 0);
 	dataH.draw();
 
-	glPopMatrix();
+	glPopMatrix();  // 1.
 }
 
 bool Highscore::isNewRecord(int record) const {
