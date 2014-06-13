@@ -10,10 +10,6 @@
 
 Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : color_(color), font_(font) {
 	for (int i = 0; i < nbr; ++i) {
-		mw::Text points("0", font_, 25);
-		mw::Text name("EMPTY", font_, 25);
-		mw::Text date("2013-01-01", font_, 25);
-		ascList_.push_back(HighscoreElement(0, points, name, date));
 		std::stringstream stream;
 		stream << nbr - i << ":";
 		numbers_.push_back(mw::Text(stream.str(), font_, 25));
@@ -78,7 +74,9 @@ void Highscore::addNewRecord(std::string name, std::string date) {
 	mw::Text points(stream.str(), font_, 25);
 	ascList_.push_front(HighscoreElement(nextRecord_, points, nameT, dateT));
 	sort();
-	ascList_.pop_front();
+	if (numbers_.size() < ascList_.size()) {
+		ascList_.pop_front();
+	}
 }
 
 void Highscore::setNextRecord(int record) {
@@ -110,4 +108,3 @@ void Highscore::sort() {
 		return false;
 	});
 }
-

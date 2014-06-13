@@ -178,7 +178,7 @@ bool GameData::isWindowMaximized() const {
 
 std::vector<GameData::Highscore> GameData::getHighscoreVector() const {
 	std::vector<GameData::Highscore> v;
-	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("highscore")).FirstChildElement("item");
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("highscore").FirstChildElement("item");
 	while (handleXml.ToElement() != nullptr) {		
 		std::string name = ::extract<std::string>(handleXml.FirstChildElement("name"));
 		std::string date = ::extract<std::string>(handleXml.FirstChildElement("date"));
@@ -190,7 +190,7 @@ std::vector<GameData::Highscore> GameData::getHighscoreVector() const {
 }
 
 void GameData::setHighscoreVector(const std::vector<GameData::Highscore>& v) {
-	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("highscore"));
+	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("highscore");
 	tinyxml2::XMLNode* node = handleXml.ToNode();
 	if (node != nullptr) {
 		node->DeleteChildren();
@@ -203,18 +203,22 @@ void GameData::setHighscoreVector(const std::vector<GameData::Highscore>& v) {
 			} else {
 				element = node->InsertAfterChild(element, xmlDoc_.NewElement("item"));
 			}			
-			tinyxml2::XMLElement* name = xmlDoc_.NewElement("name");
+			
+			auto name = xmlDoc_.NewElement("name");
 			name->SetText(highscore.name_.c_str());
-			tinyxml2::XMLElement* points = xmlDoc_.NewElement("points");
+			
+			auto points = xmlDoc_.NewElement("points");
 			points->SetText(highscore.points_);
-			tinyxml2::XMLElement* date = xmlDoc_.NewElement("date");
-			points->SetText(highscore.date_.c_str());
+			
+			auto date = xmlDoc_.NewElement("date");
+			date->SetText(highscore.date_.c_str());
 
 			element->InsertFirstChild(name);
 			element->InsertAfterChild(name, points);
 			element->InsertAfterChild(points, date);
 		}
 	}
+	save();
 }
 
 std::string GameData::getIconPath() const {

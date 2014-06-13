@@ -391,6 +391,7 @@ void TetrisWindow::initNewHighscorePanel() {
 			std::strftime(mbstr, 30, "%Y-%m-%d", std::localtime(&t));
 			highscore_->addNewRecord(name, mbstr);
 			setCurrentPanel(menuIndex_);
+			saveHighscore();
 		}
 	});
 	panel->add(textField_);
@@ -791,45 +792,19 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 }
 
 void TetrisWindow::loadHighscore() {
-	std::ifstream file("highscore");
-	if (file.is_open()) {
-		while (file.good()) {
-			std::string line;
-			std::getline(file, line);
-			if (line.size() < 6) {
-				break;
-			}
-
-			// Line should look like.
-			// line = "'Marcus' 2013-05-19 2340".
-			unsigned pos1 = line.find('\'');
-			unsigned pos2 = line.find('\'', pos1 + 1);
-			std::string name = line.substr(pos1 + 1, pos2 - pos1 - 1); // name = "Marcus".
-
-			line = line.substr(pos2 + 1); // line = " 2013-05-19 2340".
-			std::stringstream strStream(line);
-			std::string date;
-			int record;
-			strStream >> date >> record; // date = "2013-05-19". record = 2340.
-
-			highscore_->setNextRecord(record);
-			highscore_->addNewRecord(name, date);
-		}
-		file.close();
+	std::vector<GameData::Highscore> v = gameData_.getHighscoreVector();
+	for (const auto& item : v) {
+		highscore_->setNextRecord(item.points_);
+		highscore_->addNewRecord(item.name_, item.date_);
 	}
 }
 
 void TetrisWindow::saveHighscore() {
-	std::string line;
-	std::ofstream file("highscore");
-	if (file.is_open() && file.good()) {
-		// Line should look like.
-		// line = "'Marcus' 2013-05-19 2340".
-		highscore_->iterateRecords([&](int points, std::string name, std::string date) {
-			file << "'" << name << "' " << date << " " << points << "\n";
-		});
-	}
-	file.close();
+	std::vector<GameData::Highscore> v;
+	highscore_->iterateRecords([&](int points, std::string name, std::string date) {
+		v.push_back(GameData::Highscore(name, points, date));
+	});
+	gameData_.setHighscoreVector(v);
 }
 
 void TetrisWindow::loadAllSettings() {

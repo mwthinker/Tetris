@@ -88,56 +88,55 @@
         </ais>
     </players>
     <highscore>
-        <highscore>
         <item>
-            <name/>
-            <date/>
-            <points/>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
-        <item>
-            <name/>
-            <date/>
-            <points/>
+		<item>
+            <name>EMPTY</name>
+            <date>2014-01-01</date>
+            <points>0</points>
         </item>
     </highscore>
 </tetris>
