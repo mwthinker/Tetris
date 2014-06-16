@@ -71,6 +71,8 @@ add_subdirectory(TinyXML2)
 add_subdirectory(MwEnet)
 add_subdirectory(SdlGui)
 
+add_subdirectory(Calculator)
+
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
 include_directories(

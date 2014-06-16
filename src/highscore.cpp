@@ -19,7 +19,7 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 
 void Highscore::draw(Uint32 deltaTime) {
 	glColor3d(1, 1, 1);
-	glPushMatrix();  // 1.
+	glPushMatrix(); // 1.
 
 	int index = 0;
 	for (auto it = ascList_.begin(); it != ascList_.end(); ++it) {
