@@ -5,6 +5,10 @@ set(SOURCES
 	src/main.cpp
 	src/calc/calculator.cpp
 	src/calc/calculator.h
+	src/calc/cache.cpp
+	src/calc/cache.h
+	src/calc/symbol.cpp
+	src/calc/symbol.h
 )
 
 add_executable(Calculator ${SOURCES})

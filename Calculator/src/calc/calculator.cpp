@@ -5,44 +5,7 @@
 #include <cmath>
 #include <cassert>
 
-namespace calc {
-
-	Calculator::Operator Calculator::Operator::create(char token, char predence, bool leftAssociative, char index) {
-		Operator o;
-		o.type_ = Type::OPERATOR;
-		o.token_ = token;
-		o.predence_ = predence;
-		o.leftAssociative_ = leftAssociative;
-		o.index_ = index;
-		return o;
-	}
-
-	Calculator::Paranthes Calculator::Paranthes::create(bool left) {
-		Paranthes p;
-		p.type_ = Type::PARANTHES;
-		p.left_ = left;
-		return p;
-	}
-
-	Calculator::Float Calculator::Float::create(float value) {
-		Float f;
-		f.type_ = Type::FLOAT;
-		f.value_ = value;
-		return f;
-	}
-
-	Calculator::Function Calculator::Function::create(char index) {
-		Function f;
-		f.type_ = Type::FUNCTION;
-		f.index_ = index;
-		return f;
-	}
-
-	Calculator::Comma Calculator::Comma::create() {
-		Comma c;
-		c.type_ = Type::COMMA;
-		return c;
-	}
+namespace calc {	
 
 	Calculator::Calculator() {
 		initDefaultOperators();
@@ -81,9 +44,14 @@ namespace calc {
 		symbols_[")"] = symbol;
 	}
 
-	float Calculator::excecute(std::string infixNotation) {
+	Cache Calculator::preCalculate(std::string infixNotation) {
 		std::list<Symbol> infix = getSymbols(infixNotation);
-		std::vector<Symbol> prefix = shuntingYardAlgorithm(infix);
+		Cache cache(shuntingYardAlgorithm(infix));
+		return cache;
+	}
+
+	float Calculator::excecute(Cache cache) {
+		std::vector<Symbol>& prefix = cache.symbols_;
 		int size = prefix.size();
 		for (int index = 0; index < size; ++index) {
 			Symbol& symbol = prefix[index];
@@ -118,22 +86,31 @@ namespace calc {
 
 		if (size > 0) {
 			return prefix[size - 1].float_.value_;
-		}
-		else return 0;
+		} else return 0;
 	}
 
-	void Calculator::add(std::string variable, float value) {
+	float Calculator::excecute(std::string infixNotation) {
+		Cache cache = preCalculate(infixNotation);		
+		return excecute(cache);
+	}
+
+	void Calculator::addVariable(std::string name, float value) {
 		// Function name not used?
-		if (symbols_.end() == symbols_.find(variable)) {
-			Float f = Float::create(value);
+		if (symbols_.end() == symbols_.find(name)) {
+			Variable v = Variable::create(variableValues_.size());
+			variableValues_.push_back(value);
 			Symbol symbol;
-			symbol.float_ = f;
-			symbols_[variable] = symbol;
+			symbol.variable_ = v;
+			symbols_[name] = symbol;
 		}
+	}
+
+	void Calculator::updateVariable(std::string name, float value) {
+		variableValues_[symbols_[name].variable_.index_] = value;
 	}
 
 	// Returns a list of all symbols.
-	std::list<Calculator::Symbol> Calculator::getSymbols(std::string infixNotation) {
+	std::list<Symbol> Calculator::getSymbols(std::string infixNotation) {
 		std::string text;
 		for (char key : infixNotation) {
 			std::string word;
@@ -193,8 +170,8 @@ namespace calc {
 		}
 	}
 
-	std::vector<Calculator::Symbol> Calculator::shuntingYardAlgorithm(const std::list<Symbol>& infix) {
-		std::stack<Calculator::Symbol> operatorStack;
+	std::vector<Symbol> Calculator::shuntingYardAlgorithm(const std::list<Symbol>& infix) {
+		std::stack<Symbol> operatorStack;
 		std::vector<Symbol> output;
 		for (const Symbol& symbol : infix) {
 			switch (symbol.type_) {
