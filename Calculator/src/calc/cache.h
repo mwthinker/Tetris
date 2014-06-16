@@ -4,7 +4,6 @@
 #include "symbol.h"
 
 #include <vector>
-#include <map>
 
 namespace calc {	
 

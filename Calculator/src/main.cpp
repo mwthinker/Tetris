@@ -15,10 +15,10 @@ using namespace calc;
 
 int main() {
 	Calculator calculator;	
-	std::string inFix = "3 + 4 * 2 / ( 1 -5) ^2^3";
+	std::string inFix = "PI*3 + 4 * 2 / ( 1 -5) ^2^3";
 	//std::string inFix = "3 + 4*2";
 	std::cout << inFix << "\n";
-
+	calculator.addVariable("PI", 3.14f);
 	std::cout << calculator.excecute(inFix) << "\n";
 	/*
 	std::string formatted = calculator.formattedText(inFix);

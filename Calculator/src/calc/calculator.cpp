@@ -52,24 +52,31 @@ namespace calc {
 
 	float Calculator::excecute(Cache cache) {
 		std::vector<Symbol>& prefix = cache.symbols_;
-		int size = prefix.size();
+		int size = prefix.size();		
 		for (int index = 0; index < size; ++index) {
 			Symbol& symbol = prefix[index];
+			ExcecuteFunction* f = nullptr;
 			switch (symbol.type_) {
 				case Type::FUNCTION:
-					break;
+					f = &functions_[symbol.function_.index_];
+					// Fall through!
 				case Type::OPERATOR:
 				{
-					ExcecuteFunction& f = functions_[symbol.operator_.index_];
-					int nbr = f.parameters_;
+					// Is a function and not a operator!
+					if (f == nullptr) {
+						f = &functions_[symbol.operator_.index_];
+					}
+					int nbr = f->parameters_;
 
 					// Symbols not already used?
 					for (int j = index - 1; j >= 0 && nbr > 0; --j) {
-						Type type = prefix[index].type_;
 						if (prefix[j].type_ == Type::FLOAT) {
 							// Set the parameter value.
-							float b = prefix[j].float_.value_;
-							f.param_[--nbr] = prefix[j].float_.value_;
+							f->param_[--nbr] = prefix[j].float_.value_;
+							prefix[j].type_ = Type::NOTHING;
+						} else if (prefix[j].type_ == Type::VARIABLE) {
+							// Set the parameter value.
+							f->param_[--nbr] = variableValues_[prefix[j].variable_.index_];
 							prefix[j].type_ = Type::NOTHING;
 						}
 					}
@@ -77,7 +84,7 @@ namespace calc {
 						// Error.
 						return 0;
 					}
-					float value = f.excecute();
+					float value = f->excecute();
 					symbol.float_ = Float::create(value);
 				}
 					break;
@@ -175,6 +182,8 @@ namespace calc {
 		std::vector<Symbol> output;
 		for (const Symbol& symbol : infix) {
 			switch (symbol.type_) {
+				case Type::VARIABLE:
+					// Fall through!
 				case Type::FLOAT:
 					output.push_back(symbol);
 					break;
