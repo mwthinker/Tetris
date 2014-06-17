@@ -12,15 +12,15 @@ Last played game can be resumed at the same point when the window was closed.
 
 Add animation effects to game.
 
-Use external TinyXMl library to load xml files.
+Done! Use external TinyXMl library to load xml files.
 
-Save/load highscore records to/from a xml file.
+Done! Save/load highscore records to/from a xml file.
 
-Save/load game settings, graphic and logic settings to/from xml file.
+Done! Save/load game settings, graphic and logic settings to/from xml file.
 
-Sound, image and data should be defined in a xml file to increase game customization.
+Done! Sound, image and data should be defined in a xml file to increase game customization.
 
-The AI parameters be defined in xml file.
+Done! The AI parameters be defined in xml file.
 
-The "value" function for the AI should be defined outside the c++ code.
-Therefore a simple calculator must be defined to support loading custom math formula.
+Done! The "value" function for the AI should be defined outside the c++ code.
+	  Therefore a simple calculator must be defined to support loading custom math formula.
