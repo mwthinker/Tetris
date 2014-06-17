@@ -195,6 +195,18 @@ bool GameData::isWindowMaximized() const {
 	return ::extract<bool>(handleXml.FirstChildElement("maximized"));
 }
 
+std::vector<Ai> GameData::getAis() const {
+	std::vector<Ai> v;
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("ais").FirstChildElement("player");
+	while (handleXml.ToElement() != nullptr) {
+		std::string name = ::extract<std::string>(handleXml.FirstChildElement("name"));
+		std::string valueFunction = ::extract<std::string>(handleXml.FirstChildElement("valueFunction"));
+		v.push_back(Ai(name, valueFunction));
+		handleXml = handleXml.NextSibling();
+	}
+	return v;
+}
+
 std::vector<GameData::Highscore> GameData::getHighscoreVector() const {
 	std::vector<GameData::Highscore> v;
 	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("highscore").FirstChildElement("item");

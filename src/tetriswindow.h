@@ -47,9 +47,6 @@ private:
 
 	void loadHighscore();
 	void saveHighscore();
-	
-	void loadAllSettings();
-	void saveAllSettings();
 
 	TetrisGame tetrisGame_;
 

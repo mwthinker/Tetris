@@ -8,6 +8,7 @@
 Computer::Computer() : Device(true) {
 	nbrOfUpdates_ = -1;
 	activeThread_ = false;
+	initCalculator(ai_);
 }
 
 Computer::Computer(const Ai& ai) : Device(true) {
@@ -15,6 +16,7 @@ Computer::Computer(const Ai& ai) : Device(true) {
 	ai_ = ai;
 	activeThread_ = false;
 	playerName_ = ai.getName();
+	initCalculator(ai_);
 }
 
 Input Computer::currentInput() {
@@ -62,7 +64,7 @@ void Computer::update(const TetrisBoard& board) {
 	}
 }
 
-float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) const {
+float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) {
 	int lowestRow = board.getNbrOfRows() + 4;
 	float meanHeight = 0;
 	int nbrOfSquares = 0;
@@ -107,7 +109,27 @@ float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) 
 	}
 	blockMeanHeight /= 4;
 
-	return ai_.calculateValue(rowRoughness, columnRoughness, (float) edges, meanHeight, blockMeanHeight, (float) board.getNbrOfRows(), (float) board.getNbrOfColumns());
+	calculator_.updateVariable("rowRoughness", rowRoughness);
+	calculator_.updateVariable("columnRoughness", columnRoughness);
+	calculator_.updateVariable("edges", (float) edges);
+	calculator_.updateVariable("meanHeight", meanHeight);
+	calculator_.updateVariable("blockMeanHeight", blockMeanHeight);
+	calculator_.updateVariable("rows", (float) board.getNbrOfRows());
+	calculator_.updateVariable("columns", (float) board.getNbrOfColumns());
+
+	return calculator_.excecute(cache_);
+}
+
+void Computer::initCalculator(const Ai& ai) {
+	calculator_.addVariable("rowRoughness", 0);
+	calculator_.addVariable("columnRoughness", 0);
+	calculator_.addVariable("edges", 0);
+	calculator_.addVariable("meanHeight", 0);
+	calculator_.addVariable("blockMeanHeight", 0);
+	calculator_.addVariable("rows", 0);
+	calculator_.addVariable("columns", 0);
+
+	cache_ = calculator_.preCalculate(ai.getValueFunction());
 }
 
 // Calculate and return the best input to achieve the current state.

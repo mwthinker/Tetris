@@ -1,6 +1,8 @@
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
 
+#include "ai.h"
+
 #include <mw/sound.h>
 #include <mw/sprite.h>
 #include <mw/font.h>
@@ -32,6 +34,8 @@ public:
 
 	void setWindowMaximized(bool maximized);
 	bool isWindowMaximized() const;
+
+	std::vector<Ai> getAis() const;
 
 	std::vector<Highscore> getHighscoreVector() const;
 	void setHighscoreVector(const std::vector<Highscore>& v);

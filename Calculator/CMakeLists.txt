@@ -2,7 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(Calculator)
 
 set(SOURCES
-	src/main.cpp
 	src/calc/calculator.cpp
 	src/calc/calculator.h
 	src/calc/cache.cpp
@@ -11,4 +10,4 @@ set(SOURCES
 	src/calc/symbol.h
 )
 
-add_executable(Calculator ${SOURCES})
+ADD_LIBRARY(Calculator ${SOURCES})

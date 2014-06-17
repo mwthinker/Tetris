@@ -73,17 +73,17 @@
             </player>
         </humans>
         <ais>
-            <player number="1">
-                <name>Default</name>
-                <valueFunction number="2">-5*rowRoughness -10*columnRoughness + 0*edges + 10*meanHeight -1*blockMeanHeight + 0*nbrOfRows + 0*nbrOfColumns</valueFunction>
+            <player>
+                <name>Default2</name>
+                <valueFunction>0-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight</valueFunction>
             </player>
-            <player number="2">
+            <player>
                 <name>Defensive</name>
-                <valueFunction number="2">-5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight + 0*nbrOfRows + 0*nbrOfColumns</valueFunction>
+                <valueFunction>0-5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
             </player>
-            <player number="3">
+            <player>
                 <name>Worthless</name>
-                <valueFunction number="2">-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight + 0*nbrOfRows + 0*nbrOfColumns</valueFunction>
+                <valueFunction>0-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
             </player>
         </ais>
     </players>

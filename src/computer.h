@@ -6,6 +6,8 @@
 #include "rawtetrisboard.h"
 #include "ai.h"
 
+#include <calc/calculator.h>
+
 #include <vector>
 #include <string>
 #include <future>
@@ -41,7 +43,9 @@ private:
 		int rotations_;
 	};
 
-	float calculateValue(const RawTetrisBoard& board, const Block&) const;
+	void initCalculator(const Ai& ai);
+
+	float calculateValue(const RawTetrisBoard& board, const Block&);
 
 	// Calculate and return the best input to achieve the current state.
 	Input calculateInput(State state) const;
@@ -62,6 +66,8 @@ private:
 	bool activeThread_;
 	std::future<State> handle_;
 	std::string playerName_;
+	calc::Calculator calculator_;
+	calc::Cache cache_;
 };
 
 #endif // CUMPUTER_H

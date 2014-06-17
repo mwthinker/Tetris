@@ -24,7 +24,6 @@
 
 #include <ctime>
 #include <iostream>
-#include <fstream>
 #include <sstream>
 
 namespace {
@@ -155,8 +154,9 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 
 	setCurrentPanel(menuIndex_);
 
-	loadAllSettings();
 	loadHighscore();
+
+	ais_ = gameData_.getAis();
 }
 
 mw::Font TetrisWindow::getDefaultFont(int size) {
@@ -805,42 +805,4 @@ void TetrisWindow::saveHighscore() {
 		v.push_back(GameData::Highscore(name, points, date));
 	});
 	gameData_.setHighscoreVector(v);
-}
-
-void TetrisWindow::loadAllSettings() {
-	// Load all ais.
-	{
-		std::ifstream file("ais/ais");
-		if (file.is_open()) {
-			ais_.clear();
-			ais_.push_back(Ai());
-			std::string filename;
-			while (std::getline(file, filename)) {
-				Ai ai;
-				if (loadAi(ai, "ais/", filename)) {
-					ais_.push_back(ai);
-				}
-			}
-		}
-	}
-	// Load all ais that is set to be active.
-	{
-		std::ifstream file("settings");
-		if (file.is_open()) {
-			for (Ai& ai : activeAis_) {
-				std::string filename;
-				std::getline(file, filename);
-				loadAi(ai, "ais/", filename);
-			}
-		}
-	}
-}
-
-void TetrisWindow::saveAllSettings() {
-	std::ofstream file("settings");
-	if (file.is_open() && file.good()) {
-		for (const Ai& ai : activeAis_) {
-			file << ai.getName() << "\n";
-		}
-	}
 }

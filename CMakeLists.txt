@@ -16,7 +16,6 @@ endif (MSVC)
 set(SOURCES
 	src/actionhandler.cpp
 	src/actionhandler.h
-	src/ai.cpp
 	src/ai.h
 	src/block.cpp
 	src/block.h
@@ -87,6 +86,7 @@ include_directories(
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
 	TinyXML2/src
+	Calculator/src
 )
 
 add_executable(MWetris ${SOURCES})
@@ -97,6 +97,7 @@ if (MSVC)
 endif (MSVC)
 
 target_link_libraries(MWetris
+	Calculator
 	TinyXML2
 	MwEnet
 	Enet
