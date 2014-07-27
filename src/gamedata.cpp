@@ -137,6 +137,17 @@ namespace {
 		element->SetText(stream.str().c_str());
 	}
 
+	template <class Output>
+	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input) {
+		std::stringstream stream(input);
+		std::string tag;
+		tinyxml2::XMLConstHandle handleXml(xmlDoc);
+		while (stream >> tag) {
+			handleXml = handleXml.FirstChildElement(tag.c_str());
+		}
+		return extract<Output>(handleXml);
+	}
+
 }
 
 GameData::GameData(std::string dataFile) : dataFile_(dataFile) {
@@ -164,12 +175,10 @@ void GameData::setWindowSize(int width, int height) {
 }
 
 int GameData::getWindowWidth() const {
-	tinyxml2::XMLConstHandle handlemXl = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handlemXl.FirstChildElement("width"));
+	return ::getValueFromTag<int>(xmlDoc_, "tetris window width");
 }
 int GameData::getWindowHeight() const {
-	const tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handleXml.FirstChildElement("height"));
+	return ::getValueFromTag<int>(xmlDoc_, "tetris window height");
 }
 
 void GameData::setWindowPosition(int x, int y) {
@@ -180,13 +189,11 @@ void GameData::setWindowPosition(int x, int y) {
 }
 
 int GameData::getWindowXPosition() const {
-	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handleXml.FirstChildElement("positionX"));
+	return ::getValueFromTag<int>(xmlDoc_, "tetris window positionX");
 }
 
 int GameData::getWindowYPosition() const {
-	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<int>(handleXml.FirstChildElement("positionY"));
+	return ::getValueFromTag<int>(xmlDoc_, "tetris window positionY");
 }
 
 void GameData::setWindowMaximized(bool maximized) {
@@ -196,8 +203,7 @@ void GameData::setWindowMaximized(bool maximized) {
 }
 
 bool GameData::isWindowMaximized() const {
-	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris")).FirstChildElement("window");
-	return ::extract<bool>(handleXml.FirstChildElement("maximized"));
+	return ::getValueFromTag<bool>(xmlDoc_, "tetris window maximized");
 }
 
 std::vector<Ai> GameData::getAis() const {
@@ -238,7 +244,7 @@ void GameData::setHighscoreVector(const std::vector<GameData::Highscore>& v) {
 				node->InsertFirstChild(element);
 			} else {
 				element = node->InsertAfterChild(element, xmlDoc_.NewElement("item"));
-			}			
+			}
 			
 			auto name = xmlDoc_.NewElement("name");
 			name->SetText(highscore.name_.c_str());
@@ -298,26 +304,26 @@ void GameData::loadWindow(tinyxml2::XMLConstHandle handle) {
 
 	// <sounds>.
 	handle = handle.NextSiblingElement("sounds");
-	extract(soundButtonPush_, handle.FirstChildElement("buttonPush"));
-	extract(soundBlockCollision_, handle.FirstChildElement("blockCollision"));
-	extract(soundRowRemoved_, handle.FirstChildElement("rowRemoved"));
-	extract(soundTetris_, handle.FirstChildElement("tetris"));
-	extract(soundHighscore_, handle.FirstChildElement("highscore"));
+	soundButtonPush_ = extractSound(handle.FirstChildElement("buttonPush"));
+	soundBlockCollision_ = extractSound(handle.FirstChildElement("blockCollision"));
+	soundRowRemoved_ = extractSound(handle.FirstChildElement("rowRemoved"));
+	soundTetris_ = extractSound(handle.FirstChildElement("tetris"));
+	soundHighscore_ = extractSound(handle.FirstChildElement("highscore"));
 
 	// <sprites>.
 	handle = handle.NextSiblingElement("sprites");
-	extract(spriteBackground_, handle.FirstChildElement("background"));
-	extract(spriteComputer_, handle.FirstChildElement("computer"));
-	extract(spriteHuman_, handle.FirstChildElement("human"));
-	extract(spriteCross_, handle.FirstChildElement("cross"));
-	extract(spriteZoom_, handle.FirstChildElement("zoom"));
-	extract(spriteZ_, handle.FirstChildElement("squareZ"));
-	extract(spriteS_, handle.FirstChildElement("squareS"));
-	extract(spriteJ_, handle.FirstChildElement("squareJ"));
-	extract(spriteI_, handle.FirstChildElement("squareI"));
-	extract(spriteL_, handle.FirstChildElement("squareL"));
-	extract(spriteT_, handle.FirstChildElement("squareT"));
-	extract(spriteO_, handle.FirstChildElement("squareO"));
+	spriteBackground_ = extractSprite(handle.FirstChildElement("background"));
+	spriteComputer_ = extractSprite(handle.FirstChildElement("computer"));
+	spriteHuman_ = extractSprite(handle.FirstChildElement("human"));
+	spriteCross_ = extractSprite(handle.FirstChildElement("cross"));
+	spriteZoom_ = extractSprite(handle.FirstChildElement("zoom"));
+	spriteZ_ = extractSprite(handle.FirstChildElement("squareZ"));
+	spriteS_ = extractSprite(handle.FirstChildElement("squareS"));
+	spriteJ_ = extractSprite(handle.FirstChildElement("squareJ"));
+	spriteI_ = extractSprite(handle.FirstChildElement("squareI"));
+	spriteL_ = extractSprite(handle.FirstChildElement("squareL"));
+	spriteT_ = extractSprite(handle.FirstChildElement("squareT"));
+	spriteO_ = extractSprite(handle.FirstChildElement("squareO"));
 }
 
 void GameData::loadGame(tinyxml2::XMLConstHandle handle) const {
@@ -332,7 +338,7 @@ void GameData::loadPlayers(tinyxml2::XMLConstHandle handle) const {
 
 }
 
-void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLConstHandle handle) const {
+mw::Sprite GameData::extractSprite(tinyxml2::XMLConstHandle handle) const {
 	const tinyxml2::XMLElement* element = handle.ToElement();
 	if (element == nullptr) {
 		throw mw::Exception("Missing element!");
@@ -359,10 +365,10 @@ void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLConstHandle handle) cons
 		w = (float) texture.getWidth();
 	}
 
-	sprite = mw::Sprite(texture, x, y, w, h);
+	return mw::Sprite(texture, x, y, w, h);
 }
 
-void GameData::extract(mw::Sound& sound, tinyxml2::XMLConstHandle handle) const {
+mw::Sound GameData::extractSound(tinyxml2::XMLConstHandle handle) const {
 	const tinyxml2::XMLElement* element = handle.ToElement();
 	if (element == nullptr) {
 		throw mw::Exception("Missing element!");
@@ -371,8 +377,9 @@ void GameData::extract(mw::Sound& sound, tinyxml2::XMLConstHandle handle) const 
 	const char* str = element->GetText();
 
 	if (str != nullptr) {
-		sound = loadSound(str);
+		return loadSound(str);
 	}
+	return mw::Sound();
 }
 
 mw::Font GameData::loadFont(std::string file, unsigned int fontSize)  const {

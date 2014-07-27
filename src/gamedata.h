@@ -12,12 +12,14 @@
 
 #include <map>
 #include <string>
+#include <sstream>
+#include <cassert>
 
 class GameData {
 public:
 	class Highscore;
 
-	GameData(std::string dataFile);
+	GameData(std::string dataFile);	
 
 	void save();
 	
@@ -97,8 +99,8 @@ private:
 	void loadNetwork(tinyxml2::XMLConstHandle handle) const;
 	void loadPlayers(tinyxml2::XMLConstHandle handle) const;
 
-	void extract(mw::Sprite& sprite, tinyxml2::XMLConstHandle handle) const;
-	void extract(mw::Sound& sound, tinyxml2::XMLConstHandle handle) const;
+	mw::Sprite extractSprite(tinyxml2::XMLConstHandle handle) const;
+	mw::Sound extractSound(tinyxml2::XMLConstHandle handle) const;
 
 	// Font path.
 	std::string font_;
