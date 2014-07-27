@@ -116,6 +116,11 @@ namespace {
 		value = extract<Output>(handle);
 	}
 
+	template <class Output>
+	void extract(Output& value, tinyxml2::XMLConstHandle handle) {
+		value = extract<Output>(handle);
+	}
+
 	template <class Input>
 	void insert(const Input& input, tinyxml2::XMLHandle handle) {
 		tinyxml2::XMLElement* element = handle.ToElement();
@@ -141,7 +146,7 @@ GameData::GameData(std::string dataFile) : dataFile_(dataFile) {
 		xmlDoc_.PrintError();
 	}
 	
-	tinyxml2::XMLHandle handleXml = tinyxml2::XMLHandle(xmlDoc_.FirstChildElement("tetris"));
+	tinyxml2::XMLConstHandle handleXml = tinyxml2::XMLConstHandle(xmlDoc_.FirstChildElement("tetris"));
 
 	// Load all data.
 	load(handleXml);
@@ -256,14 +261,14 @@ std::string GameData::getIconPath() const {
 	return icon_;
 }
 
-void GameData::load(tinyxml2::XMLHandle handle) {
+void GameData::load(tinyxml2::XMLConstHandle handle) {
 	loadWindow(handle.FirstChildElement("window"));
 	loadGame(handle.FirstChildElement("game"));
 	loadNetwork(handle.FirstChildElement("network"));
 	loadPlayers(handle.FirstChildElement("players"));
 }
 
-void GameData::loadWindow(tinyxml2::XMLHandle handle) {
+void GameData::loadWindow(tinyxml2::XMLConstHandle handle) {
 	// <bar>.
 	handle = handle.FirstChildElement("bar");
 	::extract(barHeight_, handle.FirstChildElement("height"));
@@ -315,20 +320,20 @@ void GameData::loadWindow(tinyxml2::XMLHandle handle) {
 	extract(spriteO_, handle.FirstChildElement("squareO"));
 }
 
-void GameData::loadGame(tinyxml2::XMLHandle handle) {
+void GameData::loadGame(tinyxml2::XMLConstHandle handle) const {
 
 }
 
-void GameData::loadNetwork(tinyxml2::XMLHandle handle) {
+void GameData::loadNetwork(tinyxml2::XMLConstHandle handle) const {
 
 }
 
-void GameData::loadPlayers(tinyxml2::XMLHandle handle) {
+void GameData::loadPlayers(tinyxml2::XMLConstHandle handle) const {
 
 }
 
-void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLHandle handle) {
-	tinyxml2::XMLElement* element = handle.ToElement();
+void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLConstHandle handle) const {
+	const tinyxml2::XMLElement* element = handle.ToElement();
 	if (element == nullptr) {
 		throw mw::Exception("Missing element!");
 	}
@@ -357,8 +362,8 @@ void GameData::extract(mw::Sprite& sprite, tinyxml2::XMLHandle handle) {
 	sprite = mw::Sprite(texture, x, y, w, h);
 }
 
-void GameData::extract(mw::Sound& sound, tinyxml2::XMLHandle handle) {
-	tinyxml2::XMLElement* element = handle.ToElement();
+void GameData::extract(mw::Sound& sound, tinyxml2::XMLConstHandle handle) const {
+	const tinyxml2::XMLElement* element = handle.ToElement();
 	if (element == nullptr) {
 		throw mw::Exception("Missing element!");
 	}
@@ -370,7 +375,7 @@ void GameData::extract(mw::Sound& sound, tinyxml2::XMLHandle handle) {
 	}
 }
 
-mw::Font GameData::loadFont(std::string file, unsigned int fontSize) {
+mw::Font GameData::loadFont(std::string file, unsigned int fontSize)  const {
 	unsigned int size = fonts_.size();
 	std::string key = file;
 	key += fontSize;
@@ -384,7 +389,7 @@ mw::Font GameData::loadFont(std::string file, unsigned int fontSize) {
 	return font;
 }
 
-mw::Texture GameData::loadTexture(std::string file) {
+mw::Texture GameData::loadTexture(std::string file) const {
 	unsigned int size = textures_.size();
 	mw::Texture& texture = textures_[file];
 	
@@ -401,7 +406,7 @@ mw::Texture GameData::loadTexture(std::string file) {
 	return texture;
 }
 
-mw::Sound GameData::loadSound(std::string file) {
+mw::Sound GameData::loadSound(std::string file) const {
 	unsigned int size = sounds_.size();
 	mw::Sound& sound = sounds_[file];
 	

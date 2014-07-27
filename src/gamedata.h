@@ -91,14 +91,14 @@ public:
 	};
 	
 private:
-	void load(tinyxml2::XMLHandle handle);
-	void loadWindow(tinyxml2::XMLHandle handle);
-	void loadGame(tinyxml2::XMLHandle handle);
-	void loadNetwork(tinyxml2::XMLHandle handle);
-	void loadPlayers(tinyxml2::XMLHandle handle);
+	void load(tinyxml2::XMLConstHandle handle);
+	void loadWindow(tinyxml2::XMLConstHandle handle);
+	void loadGame(tinyxml2::XMLConstHandle handle) const;
+	void loadNetwork(tinyxml2::XMLConstHandle handle) const;
+	void loadPlayers(tinyxml2::XMLConstHandle handle) const;
 
-	void extract(mw::Sprite& sprite, tinyxml2::XMLHandle handle);
-	void extract(mw::Sound& sound, tinyxml2::XMLHandle handle);
+	void extract(mw::Sprite& sprite, tinyxml2::XMLConstHandle handle) const;
+	void extract(mw::Sound& sound, tinyxml2::XMLConstHandle handle) const;
 
 	// Font path.
 	std::string font_;
@@ -106,13 +106,13 @@ private:
 	// Icon path.
 	std::string icon_;
 
-	mw::Font loadFont(std::string file, unsigned int fontSize);
-	mw::Texture loadTexture(std::string file);
-	mw::Sound loadSound(std::string file);
+	mw::Font loadFont(std::string file, unsigned int fontSize) const;
+	mw::Texture loadTexture(std::string file) const;
+	mw::Sound loadSound(std::string file) const;
 	
-	std::map<std::string, mw::Font> fonts_;
-	std::map<std::string, mw::Texture> textures_;
-	std::map<std::string, mw::Sound> sounds_;
+	mutable std::map<std::string, mw::Font> fonts_;
+	mutable std::map<std::string, mw::Texture> textures_;
+	mutable std::map<std::string, mw::Sound> sounds_;
 
 	tinyxml2::XMLDocument xmlDoc_;
 	std::string dataFile_;
