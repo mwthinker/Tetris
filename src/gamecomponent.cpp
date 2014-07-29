@@ -35,8 +35,8 @@ void GameComponent::draw(Uint32 deltaTime) {
 	float width = 5;
 	float height = 5;
 	for (const auto& pair : graphic_) {
-		width += (float) pair.second.getWidth() + 5;
-		height = 5 + (float) pair.second.getHeight() + 5;
+		width += pair.second.getWidth() + 5;
+		height = 5 + pair.second.getHeight() + 5;
 	}
 
 	// Centers the game and holds the correct proportions.
@@ -61,7 +61,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		}
 
 		pair.second.draw();
-		glTranslatef((float) pair.second.getWidth() + 5, 0, 0);
+		glTranslatef(pair.second.getWidth() + 5, 0, 0);
 	}
 
 	glPopMatrix();
@@ -70,8 +70,8 @@ void GameComponent::draw(Uint32 deltaTime) {
 void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 	graphic_.clear();
 
-	double width = 5;
-	double height = 0;
+	float width = 5;
+	float height = 0;
 
 	bool showPoints = false;
 	if (players.size() == 1) {
@@ -88,7 +88,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 		height = graphic.getHeight();
 	}
 	alivePlayers_ = players.size();
-	setPreferredSize((float) width, (float) height);
+	setPreferredSize(width, height);
 }
 
 void GameComponent::countDown(int msCountDown) {
@@ -145,8 +145,8 @@ void GameComponent::Graphic::draw() {
 
 	glTranslated(5, 5, 0);
 	board_.draw();
-	mw::Color color(237 / 256.0, 78 / 256.0, 8 / 256.0);
-	color.glColor3d();
+	mw::Color color(237 / 256.f, 78 / 256.f, 8 / 256.f);
+	color.glColor3f();
 	drawLineBorder(board_);
 
 	glPushMatrix();
@@ -155,7 +155,7 @@ void GameComponent::Graphic::draw() {
 	name_.draw();
 	glTranslated(0, -5 - preview_.getHeight(), 0);
 	preview_.draw();
-	color.glColor3d();
+	color.glColor3f();
 	drawLineBorder(preview_);
 	glPopMatrix();
 

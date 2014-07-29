@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <cassert>
+#include <vector>
 
 class GameData {
 public:

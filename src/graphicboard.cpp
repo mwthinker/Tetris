@@ -5,8 +5,8 @@
 #include <mw/font.h>
 #include <mw/text.h>
 #include <mw/color.h>
+#include <mw/opengl.h>
 
-#include <SDL_opengl.h>
 #include <sstream>
 
 namespace {
@@ -62,7 +62,7 @@ void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
 
 void GraphicPlayerInfo::draw() {
 	glPushMatrix(); // 1
-	WHITE.glColor4d();
+	WHITE.glColor4f();
 	nbrOfClearedRows_.draw();
 	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
 	if (showPoints_) {
@@ -198,7 +198,7 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	glPushMatrix();  // 2.
 	glTranslated(0.5, 0.5, 0); // Sprite is [-0.5, 0.5] in y and x direction.
 
-	WHITE.glColor3d();
+	WHITE.glColor3f();
 	// Draw board.
 	for (int row = 0; row < rows + 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
