@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tetris>
     <window>
+		<border>0</border>
         <bar>
             <height>35</height>
-            <color>(.5, 0, 0, .30)</color>
+            <color>(.5 0 0 .30)</color>
         </bar>
         <label>
-            <textColor>(1, 1, 1)</textColor>
-            <backgroundColor>(1, 1, 1, 0)</backgroundColor>
+            <textColor>(1 1 1)</textColor>
+            <backgroundColor>(1 1 1 0)</backgroundColor>
         </label>
         <button>
-            <focusColor>(.8, .1, 0, .3)</focusColor>
-            <textColor>(1, 0.1, 0.1)</textColor>
-            <hoverColor>(.6, .1, .1)</hoverColor>
-            <pushColor>(.8, .0, 0, .7)</pushColor>
-            <backgroundColor>(0, 0, 0, 0)</backgroundColor>
-            <borderColor>(0, 0, 0, 0)</borderColor>
+            <focusColor>(.8 .1 0 .3)</focusColor>
+            <textColor>(1 0.1 0.1)</textColor>
+            <hoverColor>(.6 .1 .1)</hoverColor>
+            <pushColor>(.8 .0 0 .7)</pushColor>
+            <backgroundColor>(0 0 0 0)</backgroundColor>
+            <borderColor>(0 0 0 0)</borderColor>
         </button>
         <font>fonts/Ubuntu-B.ttf</font>
         <width>450</width>

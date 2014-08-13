@@ -28,6 +28,7 @@ public:
 		return loadFont(font_, size);
 	}
 
+	bool getWindowBorder() const;
 	int getWindowWidth() const;
 	int getWindowHeight() const;
 	void setWindowSize(int width, int height);

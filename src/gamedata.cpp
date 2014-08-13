@@ -10,65 +10,7 @@
 
 namespace {
 
-	// Override the stream operator for a color defined as a string "(r,g,b)".
-	// Any space character will be ignored but r, g, b represent a float value 
-	// and must be seperated by "," and the whole string surrounded by "(" and ")".
-	// Example of correct usaged: 
-	// stringstream stream;
-	// stream << "( 1.0, 0.1,2);
-	// Color color;
-	// stream >> color;	
-	std::stringstream& operator>>(std::stringstream& stream, mw::Color& color) {
-		bool start = false;
-		bool end = false;
-		
-		std::string str;
-		std::string tmp;
-		while (stream >> tmp) {
-			if (tmp.size() > 0 && !start) {
-				if (tmp[0] == '(') {
-					start = true;
-					tmp[0] = ' ';
-				} else {
-					// Failed.
-					stream.setstate(std::ios::failbit);
-					return stream;
-				}
-			}
-			if (tmp.size() > 0 && !end) {
-				for (char& c : tmp) {
-					if (c == ')') {
-						c = ' ';
-						end = true;
-						break;
-					}
-				}
-			}
-			str += tmp;
-			if (start && end) {
-				break;
-			}
-		}
-
-		if (!start || !end) {
-			// Failed.
-			stream.setstate(std::ios::failbit);
-			return stream;
-		}
-
-		std::replace(str.begin(), str.end(), ',', ' ');
-		std::stringstream newStream_(str);
-		newStream_ >> color.red_;
-		newStream_ >> color.green_;
-		newStream_ >> color.blue_;
-		float alpha = 1;
-		if (newStream_ >> alpha) {
-			color.alpha_ = alpha;
-		}
-
-		return stream;
-	}
-
+	// Generic template function to extract value from xml tag.
 	template <class Output>
 	Output extract(tinyxml2::XMLConstHandle handle) {
 		const tinyxml2::XMLElement* element = handle.ToElement();
@@ -90,9 +32,11 @@ namespace {
 		return output;
 	}
 
-	template <class Output>
-	Output extract(tinyxml2::XMLHandle handle) {
-		tinyxml2::XMLElement* element = handle.ToElement();
+	// Template specialization. Color must be defined as "(0.1 0.2 0.3)" or "(0.1 0.2 0.3 0.4)"
+	// red = 0.1, green = 0.2, blue = 0.3, alpha = 0.4
+	template <>
+	mw::Color extract(tinyxml2::XMLConstHandle handle) {
+		const tinyxml2::XMLElement* element = handle.ToElement();
 		if (element == nullptr) {
 			throw mw::Exception("Missing element!");
 		}
@@ -103,40 +47,46 @@ namespace {
 		}
 
 		std::stringstream stream(str);
-		Output output;
-		stream >> output;
-		if (stream.fail()) {
-			throw mw::Exception("Stream failed!");
+		char chr = 0;;
+		mw::Color color;
+		stream >> chr;
+		if (chr != '(') {
+			throw mw::Exception("Missing '('!");
 		}
-		return output;
+		if (!(stream >> color.red_)) {
+			throw mw::Exception("Red value invalid");
+		}
+		if (!(stream >> color.green_)) {
+			throw mw::Exception("Green value invalid");
+		}
+		if (!(stream >> color.blue_)) {
+			throw mw::Exception("Blue value invalid");
+		}
+		// Assume that everything is correct.
+		stream >> color.alpha_;
+		return color;
 	}
 
-	template <class Output>
-	void extract(Output& value, tinyxml2::XMLHandle handle) {
-		value = extract<Output>(handle);
-	}
-
-	template <class Output>
-	void extract(Output& value, tinyxml2::XMLConstHandle handle) {
-		value = extract<Output>(handle);
-	}
-
-	template <class Input>
-	void insert(const Input& input, tinyxml2::XMLHandle handle) {
-		tinyxml2::XMLElement* element = handle.ToElement();
+	// Specialization for string type. In order to insure that the whole text is 
+	// returned as a string.
+	template <>
+	std::string extract(tinyxml2::XMLConstHandle handle) {
+		const tinyxml2::XMLElement* element = handle.ToElement();
 		if (element == nullptr) {
 			throw mw::Exception("Missing element!");
 		}
+		const char* str = element->GetText();
 
-		std::stringstream stream;
-		stream << input;
-		if (stream.fail()) {
-			throw mw::Exception("Stream failed!");
+		if (str == nullptr) {
+			throw mw::Exception("Missing text!");
 		}
 
-		element->SetText(stream.str().c_str());
+		return std::string(str);
 	}
 
+	// Returns the value defined in the input string. 
+	// E.g. input = "zombieGame interface font", returns the 
+	// value defined in the tag inside <zombieGame><interface><font>value</font></interface></zombieGame>
 	template <class Output>
 	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input) {
 		std::stringstream stream(input);
@@ -146,6 +96,23 @@ namespace {
 			handleXml = handleXml.FirstChildElement(tag.c_str());
 		}
 		return extract<Output>(handleXml);
+	}	
+
+	// Saves the value in the tag defined by handle.
+	template <class Value>
+	void insert(const Value& value, tinyxml2::XMLHandle handle) {
+		tinyxml2::XMLElement* element = handle.ToElement();
+		if (element == nullptr) {
+			throw mw::Exception("Missing element!");
+		}
+
+		std::stringstream stream;
+		stream << value;
+		if (stream.fail()) {
+			throw mw::Exception("Stream failed!");
+		}
+
+		element->SetText(stream.str().c_str());
 	}
 
 }
@@ -174,9 +141,14 @@ void GameData::setWindowSize(int width, int height) {
 	save();
 }
 
+bool GameData::getWindowBorder() const {
+	return ::getValueFromTag<bool>(xmlDoc_, "tetris window border");
+}
+
 int GameData::getWindowWidth() const {
 	return ::getValueFromTag<int>(xmlDoc_, "tetris window width");
 }
+
 int GameData::getWindowHeight() const {
 	return ::getValueFromTag<int>(xmlDoc_, "tetris window height");
 }
@@ -277,30 +249,30 @@ void GameData::load(tinyxml2::XMLConstHandle handle) {
 void GameData::loadWindow(tinyxml2::XMLConstHandle handle) {
 	// <bar>.
 	handle = handle.FirstChildElement("bar");
-	::extract(barHeight_, handle.FirstChildElement("height"));
-	::extract(barColor_, handle.FirstChildElement("color"));
+	barHeight_ = ::extract<float>(handle.FirstChildElement("height"));
+	barColor_ = ::extract<mw::Color>(handle.FirstChildElement("color"));
 	
 	// <label>.
 	handle = handle.NextSiblingElement("label");
-	::extract(labelTextColor_, handle.FirstChildElement("textColor"));
-	::extract(labelBackgroundColor_, handle.FirstChildElement("backgroundColor"));
+	labelTextColor_ = ::extract<mw::Color>(handle.FirstChildElement("textColor"));
+	labelBackgroundColor_ = ::extract<mw::Color>(handle.FirstChildElement("backgroundColor"));
 	
 	// <button>.
 	handle = handle.NextSiblingElement("button");
-	::extract(buttonFocusColor_, handle.FirstChildElement("focusColor"));
-	::extract(buttonTextColor_, handle.FirstChildElement("textColor"));
-	::extract(buttonHoverColor_, handle.FirstChildElement("hoverColor"));
-	::extract(buttonPushColor_, handle.FirstChildElement("pushColor"));
-	::extract(buttonBackgroundColor_, handle.FirstChildElement("backgroundColor"));
-	::extract(buttonBorderColor_, handle.FirstChildElement("borderColor"));
+	buttonFocusColor_ = ::extract<mw::Color>(handle.FirstChildElement("focusColor"));
+	buttonTextColor_ = ::extract<mw::Color>(handle.FirstChildElement("textColor"));
+	buttonHoverColor_ = ::extract<mw::Color>(handle.FirstChildElement("hoverColor"));
+	buttonPushColor_ = ::extract<mw::Color>(handle.FirstChildElement("pushColor"));
+	buttonBackgroundColor_ = ::extract<mw::Color>(handle.FirstChildElement("backgroundColor"));
+	buttonBorderColor_ = ::extract<mw::Color>(handle.FirstChildElement("borderColor"));
 
 	// <font>.
 	handle = handle.NextSiblingElement("font");
-	::extract(font_, handle);
+	font_ = ::extract<std::string>(handle);
 
 	// <icon>.
 	handle = handle.NextSiblingElement("icon");
-	::extract(icon_, handle);
+	icon_ = ::extract<std::string>(handle);
 
 	// <sounds>.
 	handle = handle.NextSiblingElement("sounds");
