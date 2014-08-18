@@ -61,6 +61,9 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());
 	}
 
+	windowFollowMouse_ = false;
+	followMouseX_ = 0;
+	followMouseY_ = 0;
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
 	
@@ -69,15 +72,50 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
 		tetrisGame_.update(deltaTime);
 	});
+	
+	addSdlEventListener([&](gui::Frame& f, const SDL_Event& e) {
+		// Makes the window follow the mouse when the left mouse moutton is pushed.
+		switch (e.type) {
+			case SDL_MOUSEMOTION:
+				if (e.motion.windowID == SDL_GetWindowID(getSdlWindow())) {
+					if (windowFollowMouse_) {
+						auto w = TetrisWindow::getSdlWindow();
+						int x, y;
+						SDL_GetWindowPosition(w, &x, &y);
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						SDL_SetWindowPosition(w, x + mouseX - followMouseX_, y + mouseY - followMouseY_);
+					}
+				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if (e.button.windowID == SDL_GetWindowID(getSdlWindow())) {
+					if (e.button.button == SDL_BUTTON_LEFT) {
+						windowFollowMouse_ = true;
+						SDL_GetMouseState(&followMouseX_, &followMouseY_);
+						if (e.button.clicks == 2) {
+							TetrisWindow::setFullScreen(!TetrisWindow::isFullScreen());
+							windowFollowMouse_ = false;
+						}
+					}
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if (e.button.windowID == SDL_GetWindowID(getSdlWindow())) {
+					windowFollowMouse_ = false;
+				}
+				break;
+		}
+	});
 
-	addWindowListener([&](gui::Frame& frame, const SDL_Event& sdlEvent) {
-		switch (sdlEvent.type) {
+	addWindowListener([&](gui::Frame& frame, const SDL_Event& e) {
+		switch (e.type) {
 			case SDL_WINDOWEVENT:
-				switch (sdlEvent.window.event) {
+				switch (e.window.event) {
 					case SDL_WINDOWEVENT_RESIZED:
 						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
 							// The Window's is not maximized. Save size!
-							gameData.setWindowSize(sdlEvent.window.data1, sdlEvent.window.data2);							
+							gameData.setWindowSize(e.window.data1, e.window.data2);							
 						}						
 						break;
 					case SDL_WINDOWEVENT_MOVED:

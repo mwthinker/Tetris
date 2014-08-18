@@ -139,6 +139,8 @@ private:
 		aiIndex_;
 
 	GameData& gameData_;
+	bool windowFollowMouse_;
+	int followMouseX_, followMouseY_;
 };
 
 #endif // TETRISWINDOW_H
