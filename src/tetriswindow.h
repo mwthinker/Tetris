@@ -121,6 +121,8 @@ private:
 	void initClientLoobyPanel();
 	void initWaitToConnectPanel();
 	void initNewHighScorePanel();
+	
+	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
 
 	// Panel indexes.
 	int menuIndex_,
@@ -141,6 +143,9 @@ private:
 	GameData& gameData_;
 	bool windowFollowMouse_;
 	int followMouseX_, followMouseY_;
+
+	int lastX_, lastY_;
+	int lastWidth_, lastHeight_;
 };
 
 #endif // TETRISWINDOW_H

@@ -61,6 +61,11 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());
 	}
 
+	lastX_ = gameData_.getWindowXPosition();
+	lastY_ = gameData_.getWindowYPosition();
+	lastWidth_ = gameData_.getWindowWidth();
+	lastHeight_ = gameData_.getWindowHeight();
+
 	windowFollowMouse_ = false;
 	followMouseX_ = 0;
 	followMouseY_ = 0;
@@ -73,69 +78,8 @@ TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame
 		tetrisGame_.update(deltaTime);
 	});
 	
-	addSdlEventListener([&](gui::Frame& f, const SDL_Event& e) {
-		// Makes the window follow the mouse when the left mouse moutton is pushed.
-		switch (e.type) {
-			case SDL_MOUSEMOTION:
-				if (e.motion.windowID == SDL_GetWindowID(getSdlWindow())) {
-					if (windowFollowMouse_) {
-						auto w = TetrisWindow::getSdlWindow();
-						int x, y;
-						SDL_GetWindowPosition(w, &x, &y);
-						int mouseX, mouseY;
-						SDL_GetMouseState(&mouseX, &mouseY);
-						SDL_SetWindowPosition(w, x + mouseX - followMouseX_, y + mouseY - followMouseY_);
-					}
-				}
-				break;
-			case SDL_MOUSEBUTTONDOWN:
-				if (e.button.windowID == SDL_GetWindowID(getSdlWindow())) {
-					if (e.button.button == SDL_BUTTON_LEFT) {
-						windowFollowMouse_ = true;
-						SDL_GetMouseState(&followMouseX_, &followMouseY_);
-						if (e.button.clicks == 2) {
-							TetrisWindow::setFullScreen(!TetrisWindow::isFullScreen());
-							windowFollowMouse_ = false;
-						}
-					}
-				}
-				break;
-			case SDL_MOUSEBUTTONUP:
-				if (e.button.windowID == SDL_GetWindowID(getSdlWindow())) {
-					windowFollowMouse_ = false;
-				}
-				break;
-		}
-	});
-
-	addWindowListener([&](gui::Frame& frame, const SDL_Event& e) {
-		switch (e.type) {
-			case SDL_WINDOWEVENT:
-				switch (e.window.event) {
-					case SDL_WINDOWEVENT_RESIZED:
-						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
-							// The Window's is not maximized. Save size!
-							gameData.setWindowSize(e.window.data1, e.window.data2);							
-						}						
-						break;
-					case SDL_WINDOWEVENT_MOVED:
-						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
-							// The Window's is not maximized. Save position!
-							int x, y;
-							SDL_GetWindowPosition(mw::Window::getSdlWindow(), &x, &y);
-							gameData.setWindowPosition(x, y);
-						}
-						break;
-					case SDL_WINDOWEVENT_MAXIMIZED:
-						gameData.setWindowMaximized(true);
-						break;
-					case SDL_WINDOWEVENT_RESTORED:
-						gameData.setWindowMaximized(false);
-						break;
-				}
-				break;
-		}
-	});
+	// Saves the last window position. And makes the window movable by holding down left mousebutton.
+	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));	
 
 	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
 		handleConnectionEvent(nEvent);
@@ -208,6 +152,8 @@ void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent
 }
 
 TetrisWindow::~TetrisWindow() {
+	gameData_.setWindowPosition(lastX_, lastY_);
+	gameData_.setWindowSize(lastWidth_, lastHeight_);
 }
 
 std::shared_ptr<gui::Panel> TetrisWindow::createBar() const {
@@ -843,4 +789,74 @@ void TetrisWindow::saveHighscore() {
 		v.push_back(GameData::Highscore(name, points, date));
 	});
 	gameData_.setHighscoreVector(v);
+}
+
+void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
+	switch (e.type) {
+		case SDL_WINDOWEVENT:
+			switch (e.window.event) {
+				case SDL_WINDOWEVENT_RESIZED:
+					if (e.window.windowID == SDL_GetWindowID(getSdlWindow())) {
+						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
+							// The Window's is not maximized. Save size!
+							lastWidth_ = e.window.data1;
+							lastHeight_ = e.window.data2;
+						}
+					}
+					break;
+				case SDL_WINDOWEVENT_MOVED:
+					if (e.window.windowID == SDL_GetWindowID(getSdlWindow())) {
+						if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
+							// The Window's is not maximized. Save position!
+							int x, y;
+							SDL_GetWindowPosition(mw::Window::getSdlWindow(), &x, &y);
+							lastX_ = x;
+							lastY_ = y;
+						}
+					}
+					break;
+				case SDL_WINDOWEVENT_MAXIMIZED:
+					if (e.window.windowID == SDL_GetWindowID(getSdlWindow())) {
+						gameData_.setWindowMaximized(true);
+					}
+					break;
+				case SDL_WINDOWEVENT_RESTORED:
+					if (e.window.windowID == SDL_GetWindowID(getSdlWindow())) {
+						gameData_.setWindowMaximized(false);
+					}
+					break;
+			}
+			break;
+		case SDL_MOUSEMOTION:
+			if (e.motion.windowID == SDL_GetWindowID(getSdlWindow())) {
+				if (windowFollowMouse_) {
+					auto w = TetrisWindow::getSdlWindow();
+					int x, y;
+					SDL_GetWindowPosition(w, &x, &y);
+					int mouseX, mouseY;
+					SDL_GetMouseState(&mouseX, &mouseY);
+					SDL_SetWindowPosition(w, x + mouseX - followMouseX_, y + mouseY - followMouseY_);
+					lastX_ = x;
+					lastY_ = y;
+				}
+			}
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if (e.button.windowID == SDL_GetWindowID(getSdlWindow())) {
+				if (e.button.button == SDL_BUTTON_LEFT) {
+					windowFollowMouse_ = true;
+					SDL_GetMouseState(&followMouseX_, &followMouseY_);
+					if (e.button.clicks == 2) {
+						TetrisWindow::setFullScreen(!TetrisWindow::isFullScreen());
+						windowFollowMouse_ = false;
+					}
+				}
+			}
+			break;
+		case SDL_MOUSEBUTTONUP:
+			if (e.button.windowID == SDL_GetWindowID(getSdlWindow())) {
+				windowFollowMouse_ = false;
+			}
+			break;
+	}
 }
