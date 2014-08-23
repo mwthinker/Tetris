@@ -54,8 +54,7 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame(gameData.getWindowWidth(), gameData.getWindowHeight(), true, "MWetris", gameData.getIconPath(), !gameData.getWindowBorder()) {
-	SDL_SetWindowPosition(mw::Window::getSdlWindow(), gameData.getWindowXPosition(), gameData.getWindowYPosition());
+TetrisWindow::TetrisWindow(GameData& gameData) : gameData_(gameData), gui::Frame(gameData.getWindowXPosition(), gameData.getWindowYPosition(), gameData.getWindowWidth(), gameData.getWindowHeight(), true, "MWetris", gameData.getIconPath(), !gameData.getWindowBorder()) {
 	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(), 400, 400);
 	if (gameData.isWindowMaximized()) {
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());
