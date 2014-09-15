@@ -66,7 +66,7 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-add_subdirectory(TinyXML2)
+add_subdirectory(DataEntry)
 add_subdirectory(MwEnet)
 add_subdirectory(SdlGui)
 
@@ -85,7 +85,8 @@ include_directories(
 	SdlGui/src
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
-	TinyXML2/src
+	DataEntry/src
+	DataEntry/TinyXML2/src
 	Calculator/src
 )
 
@@ -97,8 +98,9 @@ if (MSVC)
 endif (MSVC)
 
 target_link_libraries(MWetris
-	Calculator
+	Calculator	
 	TinyXML2
+	DataEntry
 	MwEnet
 	Enet
 	MwLibrary2

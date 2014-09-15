@@ -1,3 +1,0 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-PROJECT(TinyXML2)
-ADD_LIBRARY(TinyXML2  src/tinyxml2.cpp src/tinyxml2.h)

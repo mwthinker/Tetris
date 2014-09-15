@@ -5,6 +5,7 @@
 
 #include <mw/text.h>
 #include <mw/color.h>
+#include <mw/sprite.h>
 
 #include <string>
 

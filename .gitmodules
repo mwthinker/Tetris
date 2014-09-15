@@ -7,3 +7,6 @@
 [submodule "SdlGui"]
 	path = SdlGui
 	url = https://github.com/mwthinker/SdlGui.git
+[submodule "DataEntry"]
+	path = DataEntry
+	url = https://github.com/mwthinker/DataEntry.git
