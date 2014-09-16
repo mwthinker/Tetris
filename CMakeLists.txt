@@ -23,9 +23,7 @@ set(SOURCES
 	src/computer.h
 	src/device.h
 	src/gamecomponent.cpp
-	src/gamecomponent.h
-	src/gamedata.cpp
-	src/gamedata.h
+	src/gamecomponent.h	
 	src/gamehandler.h
 	src/graphicboard.cpp
 	src/graphicboard.h
@@ -51,6 +49,8 @@ set(SOURCES
 	src/square.h
 	src/tetrisboard.cpp
 	src/tetrisboard.h
+	src/tetrisentry.cpp
+	src/tetrisentry.h
 	src/tetrisgame.cpp
 	src/tetrisgame.h
 	src/tetrisparameters.h

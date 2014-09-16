@@ -3,6 +3,7 @@
 
 #include "graphicboard.h"
 #include "gamehandler.h"
+#include "tetrisentry.h"
 
 #include <gui/component.h>
 
@@ -14,7 +15,7 @@ class GameData;
 
 class GameComponent : public gui::Component, public GameHandler {
 public:
-	GameComponent(TetrisGame& tetrisGame, GameData& gameData);
+	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
 
 	inline ~GameComponent() {
 	}
@@ -62,7 +63,12 @@ private:
 	std::map<int, Graphic> graphic_;
 	int alivePlayers_;
 
-	GameData& gameData_;
+	TetrisEntry tetrisEntry_;
+	mw::Sprite spriteZ_, spriteS_, spriteJ_, spriteI_, spriteL_, spriteT_, spriteO_;
+
+	mw::Sound soundBlockCollision_;
+	mw::Sound soundRowRemoved_;
+	mw::Sound soundTetris_;
 
 	// Fix timestep.
 	Uint32 timeStep_;

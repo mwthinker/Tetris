@@ -1,122 +1,180 @@
-#include "gamedata.h"
+#include "tetrisentry.h"
 
+#include <mw/color.h>
 #include <mw/exception.h>
 
-#include <tinyxml2.h>
+#include <xml/dataentry.h>
 
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 
-namespace {
+// Template specialization. Color must be defined as "(0.1 0.2 0.3)" or "(0.1 0.2 0.3 0.4)"
+// red = 0.1, green = 0.2, blue = 0.3, alpha = 0.4
+template <>
+mw::Color xml::extract(tinyxml2::XMLHandle handle) {
+	const tinyxml2::XMLElement* element = handle.ToElement();
+	if (element == nullptr) {
+		throw mw::Exception("Missing element!");
+	}
+	const char* str = element->GetText();
 
-	// Generic template function to extract value from xml tag.
-	template <class Output>
-	Output extract(tinyxml2::XMLConstHandle handle) {
-		const tinyxml2::XMLElement* element = handle.ToElement();
-		if (element == nullptr) {
-			throw mw::Exception("Missing element!");
-		}
-		const char* str = element->GetText();
-
-		if (str == nullptr) {
-			throw mw::Exception("Missing text!");
-		}
-
-		std::stringstream stream(str);
-		Output output;
-		stream >> output;
-		if (stream.fail()) {
-			throw mw::Exception("Stream failed!");
-		}
-		return output;
+	if (str == nullptr) {
+		throw mw::Exception("Missing text!");
 	}
 
-	// Template specialization. Color must be defined as "(0.1 0.2 0.3)" or "(0.1 0.2 0.3 0.4)"
-	// red = 0.1, green = 0.2, blue = 0.3, alpha = 0.4
-	template <>
-	mw::Color extract(tinyxml2::XMLConstHandle handle) {
-		const tinyxml2::XMLElement* element = handle.ToElement();
-		if (element == nullptr) {
-			throw mw::Exception("Missing element!");
-		}
-		const char* str = element->GetText();
-
-		if (str == nullptr) {
-			throw mw::Exception("Missing text!");
-		}
-
-		std::stringstream stream(str);
-		char chr = 0;;
-		mw::Color color;
-		stream >> chr;
-		if (chr != '(') {
-			throw mw::Exception("Missing '('!");
-		}
-		if (!(stream >> color.red_)) {
-			throw mw::Exception("Red value invalid");
-		}
-		if (!(stream >> color.green_)) {
-			throw mw::Exception("Green value invalid");
-		}
-		if (!(stream >> color.blue_)) {
-			throw mw::Exception("Blue value invalid");
-		}
-		// Assume that everything is correct.
-		stream >> color.alpha_;
-		return color;
+	std::stringstream stream(str);
+	char chr = 0;;
+	mw::Color color;
+	stream >> chr;
+	if (chr != '(') {
+		throw mw::Exception("Missing '('!");
 	}
-
-	// Specialization for string type. In order to insure that the whole text is 
-	// returned as a string.
-	template <>
-	std::string extract(tinyxml2::XMLConstHandle handle) {
-		const tinyxml2::XMLElement* element = handle.ToElement();
-		if (element == nullptr) {
-			throw mw::Exception("Missing element!");
-		}
-		const char* str = element->GetText();
-
-		if (str == nullptr) {
-			throw mw::Exception("Missing text!");
-		}
-
-		return std::string(str);
+	if (!(stream >> color.red_)) {
+		throw mw::Exception("Red value invalid");
 	}
-
-	// Returns the value defined in the input string. 
-	// E.g. input = "zombieGame interface font", returns the 
-	// value defined in the tag inside <zombieGame><interface><font>value</font></interface></zombieGame>
-	template <class Output>
-	Output getValueFromTag(const tinyxml2::XMLDocument& xmlDoc, std::string input) {
-		std::stringstream stream(input);
-		std::string tag;
-		tinyxml2::XMLConstHandle handleXml(xmlDoc);
-		while (stream >> tag) {
-			handleXml = handleXml.FirstChildElement(tag.c_str());
-		}
-		return extract<Output>(handleXml);
-	}	
-
-	// Saves the value in the tag defined by handle.
-	template <class Value>
-	void insert(const Value& value, tinyxml2::XMLHandle handle) {
-		tinyxml2::XMLElement* element = handle.ToElement();
-		if (element == nullptr) {
-			throw mw::Exception("Missing element!");
-		}
-
-		std::stringstream stream;
-		stream << value;
-		if (stream.fail()) {
-			throw mw::Exception("Stream failed!");
-		}
-
-		element->SetText(stream.str().c_str());
+	if (!(stream >> color.green_)) {
+		throw mw::Exception("Green value invalid");
 	}
-
+	if (!(stream >> color.blue_)) {
+		throw mw::Exception("Blue value invalid");
+	}
+	// Assume that everything is correct.
+	stream >> color.alpha_;
+	return color;
 }
 
+TetrisEntry::TetrisEntry(std::string fileName) : xml::DataEntry(fileName), data_(std::make_shared<Data>()) {
+}
+
+TetrisEntry TetrisEntry::getEntry(std::string tagNames) const {
+	return TetrisEntry(*this, xml::DataEntry::getEntry(tagNames));
+}
+
+TetrisEntry TetrisEntry::getChildEntry(std::string tagName) const {
+	return TetrisEntry(*this, xml::DataEntry::getChildEntry(tagName));
+}
+
+TetrisEntry TetrisEntry::getSibling(std::string siblingName) const {
+	return TetrisEntry(*this, DataEntry::getSibling(siblingName));
+}
+
+TetrisEntry::TetrisEntry(const TetrisEntry& g, xml::DataEntry e) : xml::DataEntry(e) {
+	data_ = g.data_;
+}
+
+mw::Font TetrisEntry::getFont(int size) const {
+	return data_->loadFont(getString(), size);
+}
+
+mw::Sound TetrisEntry::getSound() const {
+	return data_->extractSound(*this);
+}
+
+mw::Music TetrisEntry::getMusic() const {
+	return data_->extractMusic(*this);
+}
+
+mw::Sprite TetrisEntry::getSprite() const {
+	return data_->extractSprite(*this);
+}
+
+mw::Texture TetrisEntry::getTexture() const {
+	return data_->loadTexture(getString());
+}
+
+mw::Color TetrisEntry::getColor() const {
+	return get<mw::Color>();
+}
+
+Ai TetrisEntry::getAi() const {
+	Ai ai(getChildEntry("name").getString(), getChildEntry("valueFunction").getString());
+	return ai;
+}
+
+mw::Sprite TetrisEntry::Data::extractSprite(TetrisEntry entry) const {
+	float x = entry.getFloatAttribute("x");
+	float y = entry.getFloatAttribute("y");
+	float h = entry.getFloatAttribute("h");
+	float w = entry.getFloatAttribute("w");
+
+	mw::Texture texture = loadTexture(entry.getString());
+
+	if (h < 1) {
+		h = (float) texture.getHeight();
+	}
+
+	if (w < 1) {
+		w = (float) texture.getWidth();
+	}
+
+	return mw::Sprite(texture, x, y, w, h);
+}
+
+mw::Sound TetrisEntry::Data::extractSound(TetrisEntry entry) const {
+	return loadSound(entry.getString());
+}
+
+mw::Music TetrisEntry::Data::extractMusic(TetrisEntry entry) const {
+	return loadMusic(entry.getString());
+}
+
+mw::Font TetrisEntry::Data::loadFont(std::string file, unsigned int fontSize) const {
+	unsigned int size = fonts_.size();
+	std::string key = file;
+	key += fontSize;
+	mw::Font& font = fonts_[key];
+
+	// Font not found?
+	if (fonts_.size() > size) {
+		font = mw::Font(file, fontSize);
+	}
+
+	return font;
+}
+
+mw::Texture TetrisEntry::Data::loadTexture(std::string file) const {
+	unsigned int size = textures_.size();
+	mw::Texture& texture = textures_[file];
+
+	// Image not found?
+	if (textures_.size() > size) {
+		texture = mw::Texture(file);
+
+		// Image not valid?
+		if (!texture.isValid()) {
+			std::cerr << std::endl << file << " failed to load!";
+		}
+	}
+
+	return texture;
+}
+
+mw::Sound TetrisEntry::Data::loadSound(std::string file) const {
+	unsigned int size = sounds_.size();
+	mw::Sound& sound = sounds_[file];
+
+	// Sound not found?
+	if (sounds_.size() > size) {
+		sound = mw::Sound(file);
+	}
+
+	return sound;
+}
+
+mw::Music TetrisEntry::Data::loadMusic(std::string file) const {
+	unsigned int size = musics_.size();
+	mw::Music& music = musics_[file];
+
+	// Music not found?
+	if (musics_.size() > size) {
+		music = mw::Music(file);
+	}
+
+	return music;
+}
+/*
 GameData::GameData(std::string dataFile) : dataFile_(dataFile) {
 	xmlDoc_.LoadFile(dataFile.c_str());
 	if (xmlDoc_.Error()) {
@@ -396,3 +454,4 @@ mw::Sound GameData::loadSound(std::string file) const {
 
 	return sound;
 }
+*/

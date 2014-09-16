@@ -4,6 +4,7 @@
 #include "device.h"
 #include "ai.h"
 #include "tetrisgame.h"
+#include "tetrisentry.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
@@ -26,7 +27,7 @@ class GameData;
 
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow(GameData& gameData);
+	TetrisWindow(TetrisEntry tetrisEntry);
 	~TetrisWindow();
 
 private:
@@ -140,7 +141,7 @@ private:
 		networkPlayIndex_,
 		aiIndex_;
 
-	GameData& gameData_;
+	TetrisEntry tetrisEntry_;
 	bool windowFollowMouse_;
 	int followMouseX_, followMouseY_;
 

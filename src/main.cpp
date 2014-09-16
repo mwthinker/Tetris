@@ -1,10 +1,10 @@
 #include "tetriswindow.h"
-#include "gamedata.h"
+#include "tetrisentry.h"
 
 int main (int argc, char** argv) {	
-	GameData gameData("tetris.xml");
+	TetrisEntry tetrisEntry("tetris.xml");
 
-	TetrisWindow game(gameData);
+	TetrisWindow game(tetrisEntry.getChildEntry("tetris"));
 	mw::Window::startLoop();
 	
     return 0;

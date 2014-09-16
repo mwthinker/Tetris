@@ -2,7 +2,7 @@
 #include "tetrisgame.h"
 #include "graphicboard.h"
 #include "tetrisparameters.h"
-#include "gamedata.h"
+#include "tetrisentry.h"
 
 #include <gui/component.h>
 
@@ -24,9 +24,21 @@ namespace {
 
 }
 
-GameComponent::GameComponent(TetrisGame& tetrisGame, GameData& gameData) : tetrisGame_(tetrisGame), gameData_(gameData), alivePlayers_(0) {
+GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry) : tetrisGame_(tetrisGame), tetrisEntry_(tetrisEntry), alivePlayers_(0) {
 	setGrabFocus(true);
 	tetrisGame_.setGameHandler(this);
+
+	soundBlockCollision_ = tetrisEntry_.getEntry("window sounds blockCollision").getSound();
+	soundRowRemoved_ = tetrisEntry_.getEntry("window sounds rowRemoved").getSound();
+	soundTetris_ = tetrisEntry_.getEntry("window sounds tetris").getSound();
+
+	spriteZ_ = tetrisEntry_.getEntry("window sprites squareZ").getSprite();
+	spriteS_ = tetrisEntry_.getEntry("window sprites squareS").getSprite();
+	spriteJ_ = tetrisEntry_.getEntry("window sprites squareJ").getSprite();
+	spriteI_ = tetrisEntry_.getEntry("window sprites squareI").getSprite();
+	spriteL_ = tetrisEntry_.getEntry("window sprites squareL").getSprite();
+	spriteT_ = tetrisEntry_.getEntry("window sprites squareT").getSprite();
+	spriteO_ = tetrisEntry_.getEntry("window sprites squareO").getSprite();
 }
 
 void GameComponent::draw(Uint32 deltaTime) {
@@ -56,7 +68,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 	glTranslatef(5, 5, 0);
 	for (auto& pair : graphic_) {
 		if (tetrisGame_.isPaused()) {
-			static mw::Text text("Paused", gameData_.getDefaultFont(30));
+			static mw::Text text("Paused", tetrisEntry_.getEntry("window font").getFont(30));
 			pair.second.setMiddleMessage(text);
 		}
 
@@ -80,10 +92,10 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 
 	for (const PlayerPtr& player : players) {
 		Graphic& graphic = graphic_[player->getId()];
-		graphic = Graphic(player, showPoints, gameData_.spriteZ_,
-			gameData_.spriteS_, gameData_.spriteJ_, gameData_.spriteI_,
-			gameData_.spriteL_, gameData_.spriteT_, gameData_.spriteO_,
-			gameData_.getDefaultFont(30));
+		graphic = Graphic(player, showPoints, spriteZ_, 
+			spriteS_, spriteJ_, spriteI_, 
+			spriteL_, spriteT_, spriteO_,
+			tetrisEntry_.getEntry("window font").getFont(30));
 		width += graphic.getWidth() + 5;
 		height = graphic.getHeight();
 	}
@@ -92,7 +104,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 }
 
 void GameComponent::countDown(int msCountDown) {
-	mw::Text text("", gameData_.getDefaultFont(30));
+	mw::Text text("", tetrisEntry_.getEntry("window font").getFont(30));
 	if (msCountDown > 0) {
 		std::stringstream stream;
 		stream << "Start in " << (int) (msCountDown / 1000) + 1;
@@ -186,7 +198,7 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			if (tetrisGame_.getNbrOfPlayers() == 1) {
-				mw::Text text("Game Over", gameData_.getDefaultFont(30));
+				mw::Text text("Game Over", tetrisEntry_.getEntry("window font").getFont(30));
 				graphic_[player->getId()].setMiddleMessage(text);
 			} else {
 				std::stringstream stream;
@@ -201,7 +213,7 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 					stream << ":th place!";
 				}
 				--alivePlayers_;
-				mw::Text text(stream.str(), gameData_.getDefaultFont(30));
+				mw::Text text(stream.str(), tetrisEntry_.getEntry("window font").getFont(30));
 				graphic_[player->getId()].setMiddleMessage(text);
 			}
 			break;
@@ -214,7 +226,7 @@ void GameComponent::soundEffects(GameEvent gameEvent) const {
 		case GameEvent::GRAVITY_MOVES_BLOCK:
 			break;
 		case GameEvent::BLOCK_COLLISION:
-			sound = gameData_.soundBlockCollision_;
+			sound = soundBlockCollision_;
 			break;
 		case GameEvent::PLAYER_ROTATES_BLOCK:
 			break;
@@ -223,10 +235,10 @@ void GameComponent::soundEffects(GameEvent gameEvent) const {
 		case GameEvent::TWO_ROW_REMOVED:
 			// Fall through
 		case GameEvent::THREE_ROW_REMOVED:
-			sound = gameData_.soundRowRemoved_;
+			sound = soundRowRemoved_;
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
-			sound = gameData_.soundTetris_;
+			sound = soundTetris_;
 			break;
 		case GameEvent::GAME_OVER:
 			break;
