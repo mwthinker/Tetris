@@ -12,10 +12,6 @@
 #include <xml/dataentry.h>
 
 #include <map>
-#include <string>
-#include <sstream>
-#include <cassert>
-#include <vector>
 
 class TetrisEntry : public xml::DataEntry {
 public:

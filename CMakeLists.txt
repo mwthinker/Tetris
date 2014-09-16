@@ -12,6 +12,10 @@ else (MSVC)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 endif (MSVC)
 
+# Only use OpenGL ES 2.
+set(OpenGLES2_REMOVE_OPTION 1)
+add_definitions(-DMW_OPENGLES2)
+
 # Source files.
 set(SOURCES
 	src/actionhandler.cpp
@@ -60,7 +64,6 @@ set(SOURCES
 )
 # End of source files.
 
-find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
@@ -79,7 +82,6 @@ include_directories(
 	${SDL2_TTF_INCLUDE_DIRS}
 	${SDL2_MIXER_INCLUDE_DIRS} 
 	${SDL2_IMAGE_INCLUDE_DIRS}
-	${OpenGL_INCLUDE_DIR}
 	MwEnet/src
 	MwEnet/Enet/src
 	SdlGui/src
@@ -111,5 +113,4 @@ target_link_libraries(MWetris
 	${SDL2_TTF_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 	${SDL2_IMAGE_LIBRARIES}
-	${OPENGL_LIBRARIES}
 )

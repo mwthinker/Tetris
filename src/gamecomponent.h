@@ -38,11 +38,11 @@ private:
 
 		void update(const PlayerPtr& player);
 
-		inline float getWidth() const;
+		float getWidth() const;
 
-		inline float getHeight() const;
+		float getHeight() const;
 
-		inline void draw();
+		void draw(gui::WindowMatrixPtr wp);
 
 		void setMiddleMessage(const mw::Text& text);		
 

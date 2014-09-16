@@ -18,40 +18,39 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 }
 
 void Highscore::draw(Uint32 deltaTime) {
-	glColor3d(1, 1, 1);
-	glPushMatrix(); // 1.
+	auto wp = getWindowMatrixPtr();
+	auto old = wp->getModel();
+	wp->setColor(1, 1, 1);
 
 	int index = 0;
 	for (auto it = ascList_.begin(); it != ascList_.end(); ++it) {
 		HighscoreElement& highscore = *it;
 		mw::Text& points = highscore.points_;
 		mw::Text& name = highscore.name_;
-		mw::Text& date = highscore.date_;
+		mw::Text& date = highscore.date_;		
 		
-		glPushMatrix(); // 2.
+		wp->setModel(old * mw::getTranslateMatrix(5, 5));
 		numbers_[index++].draw();
-		glTranslated(50, 0, 0);
+		wp->setModel(old * mw::getTranslateMatrix(50, 0));
 		points.draw();
-		glTranslated(150, 0, 0);
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix(150, 0));
 		name.draw();
-		glTranslated(170, 0, 0);
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix(170, 0));
 		date.draw();
-		glPopMatrix(); // 2.
 
-		glTranslated(0, font_.getCharacterSize() + 2, 0);
+		wp->setModel(old * mw::getTranslateMatrix((float) font_.getCharacterSize() + 2, 0));
 	}
 
 	static mw::Text pointsH("Points", font_, 28);
 	static mw::Text nameH("Name", font_, 28);
 	static mw::Text dataH("Date", font_, 28);
-	glTranslated(50, 0, 0);
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix(50, 0));
 	pointsH.draw();
-	glTranslated(150, 0, 0);
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix(150, 0));
 	nameH.draw();
-	glTranslated(170, 0, 0);
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix(150, 0));
 	dataH.draw();
-
-	glPopMatrix();  // 1.
+	wp->setModel(old);
 }
 
 bool Highscore::isNewRecord(int record) const {

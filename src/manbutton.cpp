@@ -28,7 +28,10 @@ void ManButton::setNbr(unsigned int nbr) {
 }
 
 void ManButton::draw(Uint32 deltaTime) {
-	glPushMatrix();
+	auto wp = getWindowMatrixPtr();
+	wp->useShader();
+	auto old = wp->getModel();	
+	
 	gui::Dimension dim = getSize();
 	if (nbr_ == 0) {
 		drawPlayer(man_);
@@ -36,23 +39,26 @@ void ManButton::draw(Uint32 deltaTime) {
 	} else {
 		for (unsigned int i = 0; i < nbr_; ++i) {
 			drawPlayer(man_);
-			glTranslated(dim.height_, 0, 0);
+			wp->setModel(old * mw::getTranslateMatrix(dim.height_, 0));
 		}
 	}
-	glPopMatrix();
+	wp->setModel(old);
 }
 
 void ManButton::drawPlayer(mw::Sprite& sprite) {
-	glPushMatrix();
+	auto wp = getWindowMatrixPtr();
+	wp->useShader();
+	auto old = wp->getModel();
+
 	gui::Dimension dim = getSize();
-	glTranslated(dim.height_ / 2.0, dim.height_ / 2.0, 0);
+	wp->setModel(old * mw::getTranslateMatrix(dim.height_ / 2.f, dim.height_ / 2.f));
 	if (mouseInside_) {
-		glScaled(1.2,1.2,1);
+		wp->setModel(wp->getModel() * mw::getScaleMatrix(1.2f, 1.2f));
 	}
-	glScaled(dim.height_, dim.height_, 1);
-	glColor3d(1,1,1);
+	wp->setModel(wp->getModel() * mw::getScaleMatrix(dim.height_, dim.height_));
+	wp->setColor(1, 1, 1);
 	sprite.draw();
-	glPopMatrix();
+	wp->setModel(old);
 }
 
 void ManButton::handleMouse(const SDL_Event& mouseEvent) {

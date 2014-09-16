@@ -7,6 +7,8 @@
 #include <mw/color.h>
 #include <mw/sprite.h>
 
+#include <gui/windowmatrix.h>
+
 #include <string>
 
 class GraphicPlayerInfo {
@@ -17,7 +19,7 @@ public:
 
 	// Draws the player info. Using opengl.
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
-	void draw();
+	void draw(gui::WindowMatrixPtr wp);
 
 	// Returns the width the graphic is drawn in OpenGl.
 	float getWidth() const;
@@ -45,7 +47,7 @@ public:
 
 	// Draws the player info. Using opengl.
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
-	void draw();
+	void draw(gui::WindowMatrixPtr wp);
 
 	void update(const BlockType& blockType, float pixlePerSquare);
 
@@ -96,7 +98,7 @@ public:
 
 	// Draws the the board. Using opengl.
 	// The game is drawn in (x,y) = ([0, getWidth()], [0, getHeight()]).
-	void draw();
+	void draw(gui::WindowMatrixPtr wp);
 
 	// Returns the width the graphic is drawn in OpenGl.
 	float getWidth() const;
@@ -111,8 +113,8 @@ public:
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_, empty_;
 
 private:
-	void drawBoard(const RawTetrisBoard& tetrisBoard) const;
-	void drawBeginArea() const;
+	void drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetrisBoard) const;
+	void drawBeginArea(gui::WindowMatrixPtr wp) const;
 
 	const mw::Sprite& getSprite(BlockType blockType) const {
 		switch (blockType) {

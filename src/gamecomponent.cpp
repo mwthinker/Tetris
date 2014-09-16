@@ -14,12 +14,14 @@ namespace {
 
 	template <class A>
 	void drawLineBorder(const A& a) {
+		/*
 		glBegin(GL_LINE_LOOP);
 		glVertex2d(0, 0);
 		glVertex2d(a.getWidth(), 0);
 		glVertex2d(a.getWidth(), a.getHeight());
 		glVertex2d(0, a.getHeight());
 		glEnd();
+		*/
 	}
 
 }
@@ -42,7 +44,10 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry) : 
 }
 
 void GameComponent::draw(Uint32 deltaTime) {
-	glPushMatrix();
+	auto wp = getWindowMatrixPtr();
+	wp->useShader();
+	auto old = wp->getModel();
+
 	gui::Dimension dim = getSize();
 	float width = 5;
 	float height = 5;
@@ -53,30 +58,28 @@ void GameComponent::draw(Uint32 deltaTime) {
 
 	// Centers the game and holds the correct proportions.
 	// The sides is transparent.
+	mw::Matrix44 model = old;
 	if (width / dim.width_ > height / dim.height_) {
 		// Blank sides, up and down.
 		float scale = dim.width_ / width;
-		glTranslatef(0, (dim.height_ - scale * height) * 0.5f, 0);
-		glScalef(scale, scale, 1);
+		model = model * mw::getTranslateMatrix(5, (dim.height_ - scale * height) * 0.5f + 5) * mw::getScaleMatrix(scale, scale);
 	} else {
 		// Blank sides, left and right.
 		float scale = dim.height_ / height;
-		glTranslated((dim.width_ - scale * width) * 0.5f, 0, 0);
-		glScalef(scale, scale, 1);
+		model = model * mw::getTranslateMatrix(5 + (dim.width_ - scale * width) * 0.5f, 5) * mw::getScaleMatrix(scale, scale);
 	}
-
-	glTranslatef(5, 5, 0);
+	wp->setModel(model);
 	for (auto& pair : graphic_) {
 		if (tetrisGame_.isPaused()) {
 			static mw::Text text("Paused", tetrisEntry_.getEntry("window font").getFont(30));
 			pair.second.setMiddleMessage(text);
 		}
 
-		pair.second.draw();
-		glTranslatef(pair.second.getWidth() + 5, 0, 0);
+		pair.second.draw(wp);
+		model = model *  mw::getTranslateMatrix(pair.second.getWidth() + 5, 0);
+		wp->setModel(model);
 	}
-
-	glPopMatrix();
+	wp->setModel(old);
 }
 
 void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
@@ -152,39 +155,35 @@ float GameComponent::Graphic::getHeight() const {
 	return 5 + board_.getHeight() + 5;
 }
 
-void GameComponent::Graphic::draw() {
-	glPushMatrix();
-
-	glTranslated(5, 5, 0);
-	board_.draw();
+void GameComponent::Graphic::draw(gui::WindowMatrixPtr wp) {
+	wp->useShader();
+	auto old = wp->getModel();
+	wp->setModel(old * mw::getTranslateMatrix(5, 5));
+	board_.draw(wp);
 	mw::Color color(237 / 256.f, 78 / 256.f, 8 / 256.f);
-	color.glColor3f();
+	wp->setColor(color);
 	drawLineBorder(board_);
-
-	glPushMatrix();
-	glTranslated(board_.getWidth() + 5, board_.getHeight() - name_.getHeight(), 0);
-	glColor3d(1, 1, 1);
+	auto old2 = wp->getModel();
+	wp->setModel(old2 * mw::getTranslateMatrix(board_.getWidth() + 5, board_.getHeight() - name_.getHeight()));
+	wp->setColor(1, 1, 1);
 	name_.draw();
-	glTranslated(0, -5 - preview_.getHeight(), 0);
-	preview_.draw();
-	color.glColor3f();
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix(0, -5 - preview_.getHeight()));
+	preview_.draw(wp);
+	wp->setColor(color);
 	drawLineBorder(preview_);
-	glPopMatrix();
+	wp->setModel(old2);
 
-	glPushMatrix();
-	glTranslated(board_.getWidth() + 10, 10, 0);
-	info_.draw();
-	glPopMatrix();
+	old2 = wp->getModel();
+	wp->setModel(old2 * mw::getTranslateMatrix(board_.getWidth() + 10, 10));
+	info_.draw(wp);
+	wp->setModel(old2);
 
-	glPushMatrix();
-	glTranslated(board_.getWidth() * 0.5 - middleMessage_.getWidth() * 0.5,
-		board_.getHeight() * 0.5 - middleMessage_.getHeight() * 0.5, 0);
+	old2 = wp->getModel();
+	wp->setModel(old2 * mw::getTranslateMatrix(board_.getWidth() * 0.5f - middleMessage_.getWidth() * 0.5f,
+		board_.getHeight() * 0.5f - middleMessage_.getHeight() * 0.5f));
 	middleMessage_.draw();
-	glPopMatrix();
-
-	glPopMatrix();
-
-	glColor3d(1, 1, 1);
+	wp->setModel(old);
+	wp->setColor(1, 1, 1);
 	drawLineBorder(*this);
 }
 

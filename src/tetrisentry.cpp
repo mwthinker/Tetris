@@ -1,10 +1,5 @@
 #include "tetrisentry.h"
 
-#include <mw/color.h>
-#include <mw/exception.h>
-
-#include <xml/dataentry.h>
-
 #include <sstream>
 #include <algorithm>
 #include <iostream>
@@ -16,12 +11,12 @@ template <>
 mw::Color xml::extract(tinyxml2::XMLHandle handle) {
 	const tinyxml2::XMLElement* element = handle.ToElement();
 	if (element == nullptr) {
-		throw mw::Exception("Missing element!");
+		throw std::runtime_error("Missing element!");
 	}
 	const char* str = element->GetText();
 
 	if (str == nullptr) {
-		throw mw::Exception("Missing text!");
+		throw std::runtime_error("Missing text!");
 	}
 
 	std::stringstream stream(str);
@@ -29,16 +24,16 @@ mw::Color xml::extract(tinyxml2::XMLHandle handle) {
 	mw::Color color;
 	stream >> chr;
 	if (chr != '(') {
-		throw mw::Exception("Missing '('!");
+		throw std::runtime_error("Missing '('!");
 	}
 	if (!(stream >> color.red_)) {
-		throw mw::Exception("Red value invalid");
+		throw std::runtime_error("Red value invalid");
 	}
 	if (!(stream >> color.green_)) {
-		throw mw::Exception("Green value invalid");
+		throw std::runtime_error("Green value invalid");
 	}
 	if (!(stream >> color.blue_)) {
-		throw mw::Exception("Blue value invalid");
+		throw std::runtime_error("Blue value invalid");
 	}
 	// Assume that everything is correct.
 	stream >> color.alpha_;

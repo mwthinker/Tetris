@@ -14,6 +14,7 @@ namespace {
 	const mw::Color WHITE(1, 1, 1, 1);
 
 	void drawFrame(double x1, double y1, double x2, double y2, double width) {
+		/*
 		glBegin(GL_QUADS);
 		glVertex2d(x1, y1);
 		glVertex2d(x2, y1);
@@ -35,7 +36,8 @@ namespace {
 		glVertex2d(x1 + width, y2);
 		glVertex2d(x1, y2);
 		glEnd();
-	}	
+		*/
+	}
 
 } // Anonymous namespace.
 
@@ -60,19 +62,21 @@ void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
 	level_.setText(stream.str());
 }
 
-void GraphicPlayerInfo::draw() {
-	glPushMatrix(); // 1
-	WHITE.glColor4f();
+void GraphicPlayerInfo::draw(gui::WindowMatrixPtr wp) {
+	wp->useShader();
+	auto old = wp->getModel();
+	wp->setModel(old * mw::getTranslateMatrix(5, 5));
+	wp->setColor(WHITE);
 	nbrOfClearedRows_.draw();
-	glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix(0, nbrOfClearedRows_.getCharacterSize() + 2));
 	if (showPoints_) {
 		points_.draw();
-		glTranslated(0, nbrOfClearedRows_.getCharacterSize() + 2, 0);
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix(0, nbrOfClearedRows_.getCharacterSize() + 2));
 	}
 
 	level_.draw();
 
-	glPopMatrix(); // 1
+	wp->setModel(old);
 }
 
 float GraphicPlayerInfo::getWidth() const {
@@ -86,37 +90,29 @@ float GraphicPlayerInfo::getHeight() const {
 GraphicPreviewBlock::GraphicPreviewBlock() {
 }
 
-void GraphicPreviewBlock::draw() {
-	glPushMatrix(); // 1
+void GraphicPreviewBlock::draw(gui::WindowMatrixPtr wp) {
+	auto old = wp->getModel();
 
-	double x = 0, y = 0;
+	float x = 0, y = 0;
 	for (const Square& sq : block_) {
 		x += sq.column_;
 		y += sq.row_;
 	}
 
-	// Center the blocks.
-	glTranslated(width_ * 0.5, height_ * 0.5, 0);
-
-	// Block scale.
-	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
-
-	// Calculate center of mass
 	x /= block_.nbrOfSquares();
 	y /= block_.nbrOfSquares();
 
-	// Move center to origo.
-	glTranslated(-x, -y, 0);
-	
+	// Center the blocks and scale the blocks.
+	// Calculate center of mass.
+	// Move center to origo. -x -y	
 	const mw::Sprite& sprite = getSprite(block_.blockType());
-	for (const Square& sq : block_) {
-		glPushMatrix();
-		glTranslated(sq.column_, sq.row_, 0);
+	auto matrix = old * mw::getTranslateMatrix(width_ * 0.5f, height_ * 0.5f) * mw::getScaleMatrix(pixlePerSquare_, pixlePerSquare_) * mw::getTranslateMatrix(-x, -y);
+	for (const Square& sq : block_) {		
+		wp->setModel(matrix * mw::getTranslateMatrix((float) sq.column_, (float) sq.row_));
 		sprite.draw();
-		glPopMatrix();
 	}
 	
-	glPopMatrix(); // 1
+	wp->setModel(old);
 }
 
 void GraphicPreviewBlock::update(const BlockType& blockType, float pixlePerSquare) {
@@ -148,8 +144,8 @@ void GraphicBoard::update() {
 	width_ = tetrisBoard_->getNbrOfColumns() * pixlePerSquare_;
 }
 
-void GraphicBoard::draw() {
-	drawBoard(*tetrisBoard_);
+void GraphicBoard::draw(gui::WindowMatrixPtr wp) {
+	drawBoard(wp, *tetrisBoard_);
 }
 
 float GraphicBoard::getWidth() const {
@@ -160,54 +156,63 @@ float GraphicBoard::getHeight() const {
 	return height_;
 }
 
-void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
-	glPushMatrix();  // 1.
-	glScaled(pixlePerSquare_, pixlePerSquare_, 1.0);
+void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetrisBoard) const {
+	auto old = wp->getModel();
+	wp->setModel(old * mw::getScaleMatrix(pixlePerSquare_, pixlePerSquare_));
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+	mw::glEnable(GL_BLEND);
+	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	int rows = tetrisBoard.getNbrOfRows();
 	int columns = tetrisBoard.getNbrOfColumns();
 
-	glBegin(GL_QUADS);
 	// Draws the outer square.
 	const float red = 0.8f, green = 0.2f, blue = 0.3f;
-	glColor4d(red * 0.8, green * 0.8, blue * 0.8, 0.6);
-	glVertex2d(0, 0);
-	glVertex2d(columns, 0);
-	glVertex2d(columns, rows);
-	glVertex2d(0, rows);
-
+	GLfloat aVertices[] = {
+		0, 0,
+		(float) columns, 0,
+		0, (float) rows,
+		(float) columns, (float) rows
+	};
+	wp->setColor(red * 0.8f, green * 0.8f, blue * 0.8f, 0.6f);
+	wp->setVertexPosition(2, aVertices);
+	wp->setTexture(false);
+	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	/*
+	GLfloat aVertices2[100*6 * 100*6];
 	// Draws the inner square.
-	glColor4d(red * 0.1, green * 0.1, blue * 0.1, 0.1);
+	wp->setColor(red * 0.1f, green * 0.1f, blue * 0.1f, 0.1f);
+	int index = 0;
 	for (int row = 0; row < rows; ++row) {
 		for (int column = 0; column < columns; ++column) {
-			glVertex2d(0.1 + column, 0.1 + row);
-			glVertex2d(0.9 + column, 0.1 + row);
-			glVertex2d(0.9 + column, 0.9 + row);
-			glVertex2d(0.1 + column, 0.9 + row);
+			aVertices2[index + 0] = 0.1f + column; aVertices2[index +  1] = 0.1f + row;
+			aVertices2[index + 2] = 0.9f + column; aVertices2[index +  3] = 0.1f + row;
+			aVertices2[index + 3] = 0.1f + column; aVertices2[index +  4] = 0.9f + row;
+			
+			aVertices2[index + 5] = 0.1f + column; aVertices2[index +  6] = 0.9f + row;
+			aVertices2[index + 7] = 0.9f + column; aVertices2[index +  8] = 0.1f + row;
+			aVertices2[index + 9] = 0.9f + column; aVertices2[index + 10] = 0.9f + row;
 		}
 	}
-
-	glEnd();	
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
 	
-	drawBeginArea();
+	wp->setVertexPosition(2, aVertices2);
+	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 6 * rows * columns);
+	*/
+	mw::glDisable(GL_TEXTURE_2D);
+	mw::glDisable(GL_BLEND);
+	
+	drawBeginArea(wp);
 
-	glPushMatrix();  // 2.
-	glTranslated(0.5, 0.5, 0); // Sprite is [-0.5, 0.5] in y and x direction.
+	wp->setColor(WHITE);
+	// Sprite is [-0.5, 0.5] in y and x direction.
+	auto old2 = wp->getModel() * mw::getTranslateMatrix(0.5f, 0.5f);
 
-	WHITE.glColor3f();
 	// Draw board.
 	for (int row = 0; row < rows + 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
 			BlockType type = tetrisBoard.getBlockType(row, column);
 			const mw::Sprite& sprite = getSprite(type);
-			glPushMatrix(); // 3.
-			glTranslated(column, row, 0);
+			wp->setModel(old2 * mw::getTranslateMatrix((float) column, (float) row));
 			sprite.draw();
-			glPopMatrix(); // 3.
 		}
 	}
 	
@@ -215,34 +220,33 @@ void GraphicBoard::drawBoard(const RawTetrisBoard& tetrisBoard) const {
 	const mw::Sprite& sprite = getSprite(tetrisBoard.getBlockType());
 	for (const Square& sq : tetrisBoard.getBlock()) {
 		if (sq.row_ < tetrisBoard.getNbrOfRows() + 2) {
-			glPushMatrix();
-			glTranslated(sq.column_, sq.row_, 0);
+			wp->setModel(old2 * mw::getTranslateMatrix((float) sq.column_, (float) sq.row_));
 			sprite.draw();
-			glPopMatrix();
 		}
 	}
 
-	glPopMatrix();  // 2.
-	glPopMatrix();  // 1.
+	wp->setModel(old);
 }
 
-void GraphicBoard::drawBeginArea() const {
-	glPushMatrix(); // 1.
+void GraphicBoard::drawBeginArea(gui::WindowMatrixPtr wp) const {
+	auto old = wp->getModel();
 
 	int rows = tetrisBoard_->getNbrOfRows();
 	int columns = tetrisBoard_->getNbrOfColumns();
-	glTranslated(0, rows, 0);
-	glScaled(columns, 2, 0);
-	
-	// Draws the outer square
-	double red = 0.8, green = 0.2, blue = 0.3;
-	glColor4d(red*0.8, green*0.8, blue*0.8, 0.5);
-	glBegin(GL_QUADS);
-	glVertex2d(0.0, 0.0);
-	glVertex2d(1.0, 0.0);
-	glVertex2d(1.0, 1.0);
-	glVertex2d(0.0, 1.0);
-	glEnd();
 
-	glPopMatrix(); // 1.
+	wp->setModel(old *  mw::getTranslateMatrix(0, (float) rows) * mw::getScaleMatrix((float) columns, 2));
+	float red = 0.8f, green = 0.2f, blue = 0.3f;
+	wp->setColor(red*0.8f, green*0.8f, blue*0.8f, 0.5f);
+	// Draws the outer square.
+
+	GLfloat aVertices[] = {
+		0, 0,
+		1, 0,
+		0, 1,
+		1, 1
+	};
+	wp->setVertexPosition(2, aVertices);
+	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	wp->setModel(old);
 }
