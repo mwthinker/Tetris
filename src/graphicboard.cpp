@@ -65,13 +65,13 @@ void GraphicPlayerInfo::update(int rowsCleared, int points, int level) {
 void GraphicPlayerInfo::draw(gui::WindowMatrixPtr wp) {
 	wp->useShader();
 	auto old = wp->getModel();
-	wp->setModel(old * mw::getTranslateMatrix(5, 5));
+	wp->setModel(old * mw::getTranslateMatrix44(5, 5));
 	wp->setColor(WHITE);
 	nbrOfClearedRows_.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix(0, nbrOfClearedRows_.getCharacterSize() + 2));
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(0, nbrOfClearedRows_.getCharacterSize() + 2));
 	if (showPoints_) {
 		points_.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix(0, nbrOfClearedRows_.getCharacterSize() + 2));
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(0, nbrOfClearedRows_.getCharacterSize() + 2));
 	}
 
 	level_.draw();
@@ -106,9 +106,9 @@ void GraphicPreviewBlock::draw(gui::WindowMatrixPtr wp) {
 	// Calculate center of mass.
 	// Move center to origo. -x -y	
 	const mw::Sprite& sprite = getSprite(block_.blockType());
-	auto matrix = old * mw::getTranslateMatrix(width_ * 0.5f, height_ * 0.5f) * mw::getScaleMatrix(pixlePerSquare_, pixlePerSquare_) * mw::getTranslateMatrix(-x, -y);
+	auto matrix = old * mw::getTranslateMatrix44(width_ * 0.5f, height_ * 0.5f) * mw::getScaleMatrix44(pixlePerSquare_, pixlePerSquare_) * mw::getTranslateMatrix44(-x, -y);
 	for (const Square& sq : block_) {		
-		wp->setModel(matrix * mw::getTranslateMatrix((float) sq.column_, (float) sq.row_));
+		wp->setModel(matrix * mw::getTranslateMatrix44((float) sq.column_, (float) sq.row_));
 		sprite.draw();
 	}
 	
@@ -158,7 +158,7 @@ float GraphicBoard::getHeight() const {
 
 void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetrisBoard) const {
 	auto old = wp->getModel();
-	wp->setModel(old * mw::getScaleMatrix(pixlePerSquare_, pixlePerSquare_));
+	wp->setModel(old * mw::getScaleMatrix44(pixlePerSquare_, pixlePerSquare_));
 
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -204,14 +204,14 @@ void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetr
 
 	wp->setColor(WHITE);
 	// Sprite is [-0.5, 0.5] in y and x direction.
-	auto old2 = wp->getModel() * mw::getTranslateMatrix(0.5f, 0.5f);
+	auto old2 = wp->getModel() * mw::getTranslateMatrix44(0.5f, 0.5f);
 
 	// Draw board.
 	for (int row = 0; row < rows + 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
 			BlockType type = tetrisBoard.getBlockType(row, column);
 			const mw::Sprite& sprite = getSprite(type);
-			wp->setModel(old2 * mw::getTranslateMatrix((float) column, (float) row));
+			wp->setModel(old2 * mw::getTranslateMatrix44((float) column, (float) row));
 			sprite.draw();
 		}
 	}
@@ -220,7 +220,7 @@ void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetr
 	const mw::Sprite& sprite = getSprite(tetrisBoard.getBlockType());
 	for (const Square& sq : tetrisBoard.getBlock()) {
 		if (sq.row_ < tetrisBoard.getNbrOfRows() + 2) {
-			wp->setModel(old2 * mw::getTranslateMatrix((float) sq.column_, (float) sq.row_));
+			wp->setModel(old2 * mw::getTranslateMatrix44((float) sq.column_, (float) sq.row_));
 			sprite.draw();
 		}
 	}
@@ -234,7 +234,7 @@ void GraphicBoard::drawBeginArea(gui::WindowMatrixPtr wp) const {
 	int rows = tetrisBoard_->getNbrOfRows();
 	int columns = tetrisBoard_->getNbrOfColumns();
 
-	wp->setModel(old *  mw::getTranslateMatrix(0, (float) rows) * mw::getScaleMatrix((float) columns, 2));
+	wp->setModel(old *  mw::getTranslateMatrix44(0, (float) rows) * mw::getScaleMatrix44((float) columns, 2));
 	float red = 0.8f, green = 0.2f, blue = 0.3f;
 	wp->setColor(red*0.8f, green*0.8f, blue*0.8f, 0.5f);
 	// Draws the outer square.

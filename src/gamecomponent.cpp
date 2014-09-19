@@ -62,11 +62,11 @@ void GameComponent::draw(Uint32 deltaTime) {
 	if (width / dim.width_ > height / dim.height_) {
 		// Blank sides, up and down.
 		float scale = dim.width_ / width;
-		model = model * mw::getTranslateMatrix(5, (dim.height_ - scale * height) * 0.5f + 5) * mw::getScaleMatrix(scale, scale);
+		model = model * mw::getTranslateMatrix44(5, (dim.height_ - scale * height) * 0.5f + 5) * mw::getScaleMatrix44(scale, scale);
 	} else {
 		// Blank sides, left and right.
 		float scale = dim.height_ / height;
-		model = model * mw::getTranslateMatrix(5 + (dim.width_ - scale * width) * 0.5f, 5) * mw::getScaleMatrix(scale, scale);
+		model = model * mw::getTranslateMatrix44(5 + (dim.width_ - scale * width) * 0.5f, 5) * mw::getScaleMatrix44(scale, scale);
 	}
 	wp->setModel(model);
 	for (auto& pair : graphic_) {
@@ -76,7 +76,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		}
 
 		pair.second.draw(wp);
-		model = model *  mw::getTranslateMatrix(pair.second.getWidth() + 5, 0);
+		model = model *  mw::getTranslateMatrix44(pair.second.getWidth() + 5, 0);
 		wp->setModel(model);
 	}
 	wp->setModel(old);
@@ -158,28 +158,28 @@ float GameComponent::Graphic::getHeight() const {
 void GameComponent::Graphic::draw(gui::WindowMatrixPtr wp) {
 	wp->useShader();
 	auto old = wp->getModel();
-	wp->setModel(old * mw::getTranslateMatrix(5, 5));
+	wp->setModel(old * mw::getTranslateMatrix44(5, 5));
 	board_.draw(wp);
 	mw::Color color(237 / 256.f, 78 / 256.f, 8 / 256.f);
 	wp->setColor(color);
 	drawLineBorder(board_);
 	auto old2 = wp->getModel();
-	wp->setModel(old2 * mw::getTranslateMatrix(board_.getWidth() + 5, board_.getHeight() - name_.getHeight()));
+	wp->setModel(old2 * mw::getTranslateMatrix44(board_.getWidth() + 5, board_.getHeight() - name_.getHeight()));
 	wp->setColor(1, 1, 1);
 	name_.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix(0, -5 - preview_.getHeight()));
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(0, -5 - preview_.getHeight()));
 	preview_.draw(wp);
 	wp->setColor(color);
 	drawLineBorder(preview_);
 	wp->setModel(old2);
 
 	old2 = wp->getModel();
-	wp->setModel(old2 * mw::getTranslateMatrix(board_.getWidth() + 10, 10));
+	wp->setModel(old2 * mw::getTranslateMatrix44(board_.getWidth() + 10, 10));
 	info_.draw(wp);
 	wp->setModel(old2);
 
 	old2 = wp->getModel();
-	wp->setModel(old2 * mw::getTranslateMatrix(board_.getWidth() * 0.5f - middleMessage_.getWidth() * 0.5f,
+	wp->setModel(old2 * mw::getTranslateMatrix44(board_.getWidth() * 0.5f - middleMessage_.getWidth() * 0.5f,
 		board_.getHeight() * 0.5f - middleMessage_.getHeight() * 0.5f));
 	middleMessage_.draw();
 	wp->setModel(old);

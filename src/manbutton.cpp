@@ -39,7 +39,7 @@ void ManButton::draw(Uint32 deltaTime) {
 	} else {
 		for (unsigned int i = 0; i < nbr_; ++i) {
 			drawPlayer(man_);
-			wp->setModel(old * mw::getTranslateMatrix(dim.height_, 0));
+			wp->setModel(old * mw::getTranslateMatrix44(dim.height_, 0));
 		}
 	}
 	wp->setModel(old);
@@ -51,11 +51,11 @@ void ManButton::drawPlayer(mw::Sprite& sprite) {
 	auto old = wp->getModel();
 
 	gui::Dimension dim = getSize();
-	wp->setModel(old * mw::getTranslateMatrix(dim.height_ / 2.f, dim.height_ / 2.f));
+	wp->setModel(old * mw::getTranslateMatrix44(dim.height_ / 2.f, dim.height_ / 2.f));
 	if (mouseInside_) {
-		wp->setModel(wp->getModel() * mw::getScaleMatrix(1.2f, 1.2f));
+		wp->setModel(wp->getModel() * mw::getScaleMatrix44(1.2f, 1.2f));
 	}
-	wp->setModel(wp->getModel() * mw::getScaleMatrix(dim.height_, dim.height_));
+	wp->setModel(wp->getModel() * mw::getScaleMatrix44(dim.height_, dim.height_));
 	wp->setColor(1, 1, 1);
 	sprite.draw();
 	wp->setModel(old);
@@ -80,8 +80,6 @@ void ManButton::handleMouse(const SDL_Event& mouseEvent) {
 					nbr_ = (nbr_ + max_) % (max_ + 1);
 					setNbr(nbr_);
 					doAction();
-					break;
-				default:
 					break;
 			}
 			break;

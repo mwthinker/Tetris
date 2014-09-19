@@ -29,26 +29,26 @@ void Highscore::draw(Uint32 deltaTime) {
 		mw::Text& name = highscore.name_;
 		mw::Text& date = highscore.date_;		
 		
-		wp->setModel(old * mw::getTranslateMatrix(5, 5));
+		wp->setModel(old * mw::getTranslateMatrix44(5, 5));
 		numbers_[index++].draw();
-		wp->setModel(old * mw::getTranslateMatrix(50, 0));
+		wp->setModel(old * mw::getTranslateMatrix44(50, 0));
 		points.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix(150, 0));
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
 		name.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix(170, 0));
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(170, 0));
 		date.draw();
 
-		wp->setModel(old * mw::getTranslateMatrix((float) font_.getCharacterSize() + 2, 0));
+		wp->setModel(old * mw::getTranslateMatrix44((float) font_.getCharacterSize() + 2, 0));
 	}
 
 	static mw::Text pointsH("Points", font_, 28);
 	static mw::Text nameH("Name", font_, 28);
 	static mw::Text dataH("Date", font_, 28);
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix(50, 0));
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(50, 0));
 	pointsH.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix(150, 0));
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
 	nameH.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix(150, 0));
+	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
 	dataH.draw();
 	wp->setModel(old);
 }
