@@ -6,6 +6,7 @@
 #include <mw/text.h>
 #include <mw/color.h>
 #include <mw/sprite.h>
+#include <mw/vertexbufferobject.h>
 
 #include <gui/windowmatrix.h>
 
@@ -140,6 +141,8 @@ private:
 
 	float pixlePerSquare_;
 	float height_, width_;
+	
+	mw::VertexBufferObject vbo_;
 	
 	const TetrisBoard* tetrisBoard_;
 };

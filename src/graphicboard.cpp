@@ -8,6 +8,7 @@
 #include <mw/opengl.h>
 
 #include <sstream>
+#include <vector>
 
 namespace {
 
@@ -136,6 +137,26 @@ GraphicBoard::GraphicBoard() : tetrisBoard_(nullptr) {
 GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(&tetrisBoard) {
 	height_ = 800; // Default height for the board.
 	frameColor_ = mw::Color(237 / 256.0, 78 / 256.0, 8 / 256.0); // Some type of orange.
+
+	int rows = tetrisBoard_->getNbrOfRows();
+	int columns = tetrisBoard_->getNbrOfColumns();
+
+	if (vbo_.getSize() == 0) {
+		std::vector<GLfloat> data;
+		for (int row = 0; row < rows; ++row) {
+			for (int column = 0; column < columns; ++column) {
+				// First triangle.
+				data.emplace_back(0.1f + column); data.emplace_back(0.1f + row);
+				data.emplace_back(0.9f + column); data.emplace_back(0.1f + row);
+				data.emplace_back(0.1f + column); data.emplace_back(0.9f + row);
+				// Second triangle.
+				data.emplace_back(0.1f + column); data.emplace_back(0.9f + row);
+				data.emplace_back(0.9f + column); data.emplace_back(0.1f + row);
+				data.emplace_back(0.9f + column); data.emplace_back(0.9f + row);
+			}
+		}
+		vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
+	}
 }
 
 void GraphicBoard::update() {
@@ -177,27 +198,14 @@ void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetr
 	wp->setVertexPosition(2, aVertices);
 	wp->setTexture(false);
 	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	/*
-	GLfloat aVertices2[100*6 * 100*6];
+	
 	// Draws the inner square.
 	wp->setColor(red * 0.1f, green * 0.1f, blue * 0.1f, 0.1f);
-	int index = 0;
-	for (int row = 0; row < rows; ++row) {
-		for (int column = 0; column < columns; ++column) {
-			aVertices2[index + 0] = 0.1f + column; aVertices2[index +  1] = 0.1f + row;
-			aVertices2[index + 2] = 0.9f + column; aVertices2[index +  3] = 0.1f + row;
-			aVertices2[index + 3] = 0.1f + column; aVertices2[index +  4] = 0.9f + row;
-			
-			aVertices2[index + 5] = 0.1f + column; aVertices2[index +  6] = 0.9f + row;
-			aVertices2[index + 7] = 0.9f + column; aVertices2[index +  8] = 0.1f + row;
-			aVertices2[index + 9] = 0.9f + column; aVertices2[index + 10] = 0.9f + row;
-		}
-	}
+	vbo_.bindBuffer();
+	wp->setVertexPosition(2, 0);
+	wp->glDrawArrays(GL_TRIANGLES, 0, 6 * rows * columns);
+	vbo_.unbindBuffer();
 	
-	wp->setVertexPosition(2, aVertices2);
-	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 6 * rows * columns);
-	*/
-	mw::glDisable(GL_TEXTURE_2D);
 	mw::glDisable(GL_BLEND);
 	
 	drawBeginArea(wp);
