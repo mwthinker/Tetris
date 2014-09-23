@@ -9,6 +9,7 @@
 #include <queue>
 #include <map>
 #include <sstream>
+#include <cassert>
 
 namespace {
 
@@ -93,14 +94,17 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 		showPoints = true;
 	}
 
-	for (const PlayerPtr& player : players) {
-		Graphic& graphic = graphic_[player->getId()];
-		graphic = Graphic(player, showPoints, spriteZ_, 
-			spriteS_, spriteJ_, spriteI_, 
+	graphic_.clear();
+
+	for (const PlayerPtr& player : players) {		
+		auto& pair = graphic_.emplace(player->getId(), Graphic(player, showPoints, spriteZ_,
+			spriteS_, spriteJ_, spriteI_,
 			spriteL_, spriteT_, spriteO_,
-			tetrisEntry_.getEntry("window font").getFont(30));
-		width += graphic.getWidth() + 5;
-		height = graphic.getHeight();
+			tetrisEntry_.getEntry("window font").getFont(30)));
+		assert(pair.second);
+			
+		width += pair.first->second.getWidth() + 5;
+		height = pair.first->second.getHeight();
 	}
 	alivePlayers_ = players.size();
 	setPreferredSize(width, height);
@@ -116,10 +120,6 @@ void GameComponent::countDown(int msCountDown) {
 	for (auto& pair : graphic_) {
 		pair.second.setMiddleMessage(text);
 	}
-}
-
-GameComponent::Graphic::Graphic() : info_(mw::Font()) {
-	name_ = mw::Text("", font_, 20);
 }
 
 GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO, const mw::Font& font) : board_(player->getTetrisBoard()), info_(font), font_(font) {
@@ -192,13 +192,14 @@ void GameComponent::Graphic::setMiddleMessage(const mw::Text& text) {
 }
 
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
-	graphic_[player->getId()].update(player);
+	auto it = graphic_.find(player->getId());
+	assert(it != graphic_.end());
 	soundEffects(gameEvent);
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			if (tetrisGame_.getNbrOfPlayers() == 1) {
 				mw::Text text("Game Over", tetrisEntry_.getEntry("window font").getFont(30));
-				graphic_[player->getId()].setMiddleMessage(text);
+				it->second.setMiddleMessage(text);
 			} else {
 				std::stringstream stream;
 				stream << alivePlayers_;
@@ -213,7 +214,7 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 				}
 				--alivePlayers_;
 				mw::Text text(stream.str(), tetrisEntry_.getEntry("window font").getFont(30));
-				graphic_[player->getId()].setMiddleMessage(text);
+				it->second.setMiddleMessage(text);
 			}
 			break;
 	}

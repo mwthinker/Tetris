@@ -33,7 +33,7 @@ enum class Move : char {
 // Represents a tetris board.
 class RawTetrisBoard {
 public:
-    RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
+	RawTetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next);
 	
 	inline virtual ~RawTetrisBoard() {
 	}
@@ -42,13 +42,13 @@ public:
     void update(Move move);
     
 	// Return the number of rows.
-	inline int getNbrOfRows() const {
-		return nbrOfRows_;
+	inline int getNbrRows() const {
+		return nbrRows_;
 	}
 
 	// Return the number of columns.
-	inline int getNbrOfColumns() const {
-		return nbrOfColumns_;
+	inline int getNbrColumns() const {
+		return nbrColumns_;
 	}
 
 	// Return true if the game is over else false.
@@ -77,8 +77,8 @@ public:
 
 	// Return the blocktype for a given position.
 	inline BlockType getBlockType(int row, int column) const {
-		if (row >= 0 && row < nbrOfRows_+4 && column >= 0 && column < nbrOfColumns_) {
-			return gameboard_[row * nbrOfColumns_ + column];
+		if (row >= 0 && row < nbrRows_ + 4 && column >= 0 && column < nbrColumns_) {
+			return gameboard_[row * nbrColumns_ + column];
 		}
 		return BlockType::WALL;
 	}
@@ -99,7 +99,7 @@ protected:
 	void setCurrentBlock(BlockType current);
 
 	inline BlockType& blockType(int row, int column) {
-		return gameboard_[row * nbrOfColumns_ + column];
+		return gameboard_[row * nbrColumns_ + column];
 	}
 
 	Block createBlock(BlockType blockType) const;
@@ -119,11 +119,11 @@ private:
     int removeFilledRows(const Block& block);
     void moveRowsOneStepDown(int rowToRemove);
     
-	bool isGameOver_;					// True when game is over, else false.
+	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	BlockType next_;					// Next block for the player to control.
 	Block current_;						// The current block for the player to control.
-	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
-	int nbrOfRows_, nbrOfColumns_;		// The size of the gameboard.
+	int nbrRows_, nbrColumns_;			// The size of the gameboard.
+	bool isGameOver_;					// True when game is over, else false.
 };
 
 #endif // RAWTETRISBOARD_H

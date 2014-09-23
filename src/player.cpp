@@ -72,7 +72,7 @@ void Player::update(const std::vector<BlockType>& blockTypes) {
 }
 
 std::vector<BlockType> Player::generateRow() const {
-	const unsigned int size = tetrisBoard_.getNbrOfColumns();
+	const unsigned int size = tetrisBoard_.getNbrColumns();
 	std::vector<bool> row(size);
 	std::uniform_int_distribution<int> distribution(0, size - 1);
 

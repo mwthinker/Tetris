@@ -4,15 +4,14 @@
 
 #include <vector>
 
-RawTetrisBoard::RawTetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next) {
-	nbrOfRows_ = nbrOfRows;
-	nbrOfColumns_ = nbrOfColumns;
-	isGameOver_ = false;
-
+RawTetrisBoard::RawTetrisBoard(int nbrRows, int nbrColumns,
+	BlockType current, BlockType next) :
+	gameboard_((nbrRows + 4) * (nbrColumns), BlockType::EMPTY),
+	next_(next),
+	nbrRows_(nbrRows), nbrColumns_(nbrColumns),
+	isGameOver_(false) {
+	
 	current_ = createBlock(current);
-	next_ = next;
-
-	gameboard_ = std::vector<BlockType>((nbrOfRows + 4) * (nbrOfColumns), BlockType::EMPTY);
 }
 
 void RawTetrisBoard::update(Move move) {
@@ -148,7 +147,7 @@ void RawTetrisBoard::addBlockToBoard(const Block& block) {
 }
 
 Block RawTetrisBoard::createBlock(BlockType blockType) const {
-	return Block(blockType, nbrOfRows_, nbrOfColumns_ / 2 - 1);
+	return Block(blockType, nbrRows_, nbrColumns_ / 2 - 1);
 }
 
 bool RawTetrisBoard::collision(const Block& block) const {
@@ -165,7 +164,7 @@ bool RawTetrisBoard::collision(const Block& block) const {
 }
 
 void RawTetrisBoard::clearBoard() {
-	gameboard_ = std::vector<BlockType>((nbrOfRows_ + 4) * (nbrOfColumns_), BlockType::EMPTY);
+	gameboard_ = std::vector<BlockType>((nbrRows_ + 4) * (nbrColumns_), BlockType::EMPTY);
 	isGameOver_ = false;
 }
 
@@ -177,8 +176,8 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
 		if (row >= 0) {
-			int index = row * nbrOfColumns_;
-			for (int column = 0; column < nbrOfColumns_; ++column) {
+			int index = row * nbrColumns_;
+			for (int column = 0; column < nbrColumns_; ++column) {
 				if (gameboard_[index + column] == BlockType::EMPTY) {
 					filled = false;
 				}
@@ -198,13 +197,13 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 }
 
 void RawTetrisBoard::moveRowsOneStepDown(int rowToRemove) {
-	int indexStartOfRow = rowToRemove * nbrOfColumns_;
+	int indexStartOfRow = rowToRemove * nbrColumns_;
 	// Copy all rows abowe the row to be removed.
-	std::vector<BlockType> upperBoard(gameboard_.begin() + indexStartOfRow + nbrOfColumns_, gameboard_.end());
+	std::vector<BlockType> upperBoard(gameboard_.begin() + indexStartOfRow + nbrColumns_, gameboard_.end());
 	// Erase the row to be removed and all rows abowe.
 	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.end());
 	// Insert the rows that were abowe the row to be removed.
 	gameboard_.insert(gameboard_.end(), upperBoard.begin(), upperBoard.end());
 	// Add a empty row at the top in order of replacing the row that were removed.
-	gameboard_.resize(gameboard_.size() + nbrOfColumns_, BlockType::EMPTY);
+	gameboard_.resize(gameboard_.size() + nbrColumns_, BlockType::EMPTY);
 }

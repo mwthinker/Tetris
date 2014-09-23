@@ -16,10 +16,7 @@ class GameData;
 class GameComponent : public gui::Component, public GameHandler {
 public:
 	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
-
-	inline ~GameComponent() {
-	}
-
+	
 	void draw(Uint32 deltaTime) override;
 
 	void initGame(const std::vector<PlayerPtr>& players) override;
@@ -29,8 +26,6 @@ public:
 private:
 	class Graphic {
 	public:
-		Graphic();
-
 		Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, 
 			mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, 
 			mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO,

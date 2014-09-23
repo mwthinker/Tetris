@@ -6,8 +6,8 @@
 #include <vector>
 #include <queue>
 
-TetrisBoard::TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next)
-	: RawTetrisBoard(nbrOfRows, nbrOfColumns, current, next) {
+TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next)
+	: RawTetrisBoard(nbrRows, nbrColumns, current, next) {
 	nbrOfUpdates_ = 0;
 	setCurrentBlock(current);
 	setNextBlockType(next);

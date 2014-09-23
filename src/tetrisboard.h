@@ -10,7 +10,7 @@
 // Represents a tetris board.
 class TetrisBoard : public RawTetrisBoard {
 public:
-    TetrisBoard(int nbrOfRows, int nbrOfColumns, BlockType current, BlockType next);
+    TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next);
 
 	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
 	void restart(BlockType current, BlockType next);

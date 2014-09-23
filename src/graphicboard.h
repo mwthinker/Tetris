@@ -91,8 +91,6 @@ private:
 // Draws a tetris board and corresponding player info.
 class GraphicBoard {
 public:
-	GraphicBoard();	
-
 	GraphicBoard(const TetrisBoard& tetrisBoard);
 		
 	void update();
@@ -144,7 +142,7 @@ private:
 	
 	mw::VertexBufferObject vbo_;
 	
-	const TetrisBoard* tetrisBoard_;
+	const TetrisBoard& tetrisBoard_;
 };
 
 #endif // GRAPHICBOARD_H
