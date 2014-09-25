@@ -7,6 +7,9 @@
 
 #include <gui/component.h>
 
+#include <mw/vertexbufferobject.h>
+#include <mw/shader.h>
+
 #include <queue>
 #include <map>
 
@@ -26,10 +29,16 @@ public:
 private:
 	class Graphic {
 	public:
+		Graphic();
+
+		Graphic(int nbrPlayers, int nbrColumns, int nbrRows);
+
+		/*
 		Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, 
 			mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, 
 			mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO,
 			const mw::Font& font);
+			*/
 
 		void update(const PlayerPtr& player);
 
@@ -37,17 +46,19 @@ private:
 
 		float getHeight() const;
 
-		void draw(gui::WindowMatrixPtr wp);
+		void draw(mw::Shader& shader);
 
 		void setMiddleMessage(const mw::Text& text);		
 
 	private:
-		GraphicBoard board_;
-		GraphicPlayerInfo info_;
-		GraphicPreviewBlock preview_;
+		//GraphicBoard board_;
+		//GraphicPlayerInfo info_;
+		//GraphicPreviewBlock preview_;
 		mw::Text name_;
 		mw::Text middleMessage_;
 		mw::Font font_;
+		mw::VertexBufferObject vbo_;
+		int vertercies_;
 	};
 
 	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override;
@@ -55,7 +66,6 @@ private:
 	void soundEffects(GameEvent gameEvent) const;
 
 	TetrisGame& tetrisGame_;
-	std::map<int, Graphic> graphic_;
 	int alivePlayers_;
 
 	TetrisEntry tetrisEntry_;
@@ -64,6 +74,9 @@ private:
 	mw::Sound soundBlockCollision_;
 	mw::Sound soundRowRemoved_;
 	mw::Sound soundTetris_;
+
+	mw::Shader boardShader_;
+	Graphic graphic_;
 
 	// Fix timestep.
 	Uint32 timeStep_;

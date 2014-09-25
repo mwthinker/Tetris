@@ -29,16 +29,16 @@ void Highscore::draw(Uint32 deltaTime) {
 		mw::Text& name = highscore.name_;
 		mw::Text& date = highscore.date_;		
 		
-		wp->setModel(old * mw::getTranslateMatrix44(5, 5));
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(5, 5));
 		numbers_[index++].draw();
-		wp->setModel(old * mw::getTranslateMatrix44(50, 0));
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(50, 0));
 		points.draw();
 		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
 		name.draw();
 		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(170, 0));
 		date.draw();
 
-		wp->setModel(old * mw::getTranslateMatrix44((float) font_.getCharacterSize() + 2, 0));
+		wp->setModel(wp->getModel() * mw::getTranslateMatrix44((float) font_.getCharacterSize() + 2, 0));
 	}
 
 	static mw::Text pointsH("Points", font_, 28);

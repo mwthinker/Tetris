@@ -5,7 +5,7 @@ int main (int argc, char** argv) {
 	TetrisEntry tetrisEntry("tetris.xml");
 
 	TetrisWindow game(tetrisEntry.getChildEntry("tetris"));
-	mw::Window::startLoop();
+	game.startLoop();
 	
     return 0;
 }
