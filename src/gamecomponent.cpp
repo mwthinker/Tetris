@@ -197,32 +197,53 @@ GameComponent::Graphic::Graphic() {
 
 }
 
-GameComponent::Graphic::Graphic(int nbrPlayers, int nbrColumns, int nbrRows) {
+GameComponent::Graphic::Graphic(int nbrPlayers, int columns, int rows) {
 	std::vector<GLfloat> data;
 	mw::Color color1, color2, color3;
-	color2 = mw::Color(1, 0, 0);
+	const float red = 0.8f, green = 0.2f, blue = 0.3f;
+	color1 = mw::Color(red * 0.8f, green * 0.2f, blue * 0.3f, 0.6f);
+	color2 = mw::Color(red * 0.1f, green * 0.1f, blue * 0.1f, 0.1f);
+	color3 = mw::Color(red*0.8f, green*0.8f, blue*0.8f, 0.5f);
 
-	float blockWidth = 10;
+	float squareSize = 10;
 	float boardOffset = 5;
 	vertercies_ = 0;
+
+	float lowX_ = 2 * squareSize;
+	float lowY_ = 2 * squareSize;
 	
 	// Add board backgrounds.
 	for (int i = 0; i < nbrPlayers; ++i) {
+		// Draw the outer square.
+		float x = lowX_ + squareSize * i * (columns + 10);
+		float y = lowY_;
 		addSquare(data, 
-			blockWidth * i * (nbrColumns + 10), 2 * blockWidth,
-			blockWidth * nbrColumns, blockWidth * nbrRows,
+			x, y,
+			squareSize * columns, squareSize * (rows + 2),
 			color1);
 		vertercies_ += 6;
 
-		for (int row = 0; row < nbrRows; ++row) {
-			for (int column = 0; column < nbrColumns; ++column) {
+		// Draw the inner squares.
+		for (int row = 0; row < rows + 2; ++row) {
+			for (int column = 0; column < columns; ++column) {
+				x = lowX_ + squareSize * column + squareSize * 20 * i + squareSize * 0.1f;
+				y = lowY_ + squareSize * row + squareSize * 0.1f;
 				addSquare(data,
-					boardOffset + blockWidth * (column + 0.1f), boardOffset + blockWidth * 0.8f * (row + 0.1f),
-					blockWidth*0.8f, blockWidth*0.8f,
+					x, y,
+					squareSize * 0.8f, squareSize * 0.8f,
 					color2);
 				vertercies_ += 6;
 			}
-		}		
+		}
+
+		// Draw the block start area.
+		x = lowX_ + squareSize * 20 * i;
+		y = lowY_ + squareSize * rows;
+		addSquare(data,
+			x, y,
+			squareSize * columns, squareSize * 2,
+			color3);
+		vertercies_ += 6;
 	}
 	
 	vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
