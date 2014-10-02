@@ -38,14 +38,56 @@
             <human x="129" y="1" w="62" h="62">images/tetris.png</human>
             <cross x="65" y="1" w="62" h="62">images/tetris.png</cross>
             <zoom x="193" y="1" w="62" h="62">images/tetris.png</zoom>
-            <squareZ x="1" y="65" w="62" h="62">images/tetris.png</squareZ>
-            <squareS x="65" y="65" w="62" h="62">images/tetris.png</squareS>
-            <squareJ x="129" y="65" w="62" h="62">images/tetris.png</squareJ>
-            <squareI x="193" y="65" w="62" h="62">images/tetris.png</squareI>
-            <squareL x="257" y="65" w="62" h="62">images/tetris.png</squareL>
-            <squareT x="321" y="65" w="62" h="62">images/tetris.png</squareT>
-            <squareO x="385" y="65" w="62" h="62">images/tetris.png</squareO>
         </sprites>
+		<tetrisBoard>
+			<texture>images/tetris.png</texture>
+			<squareZ>
+				<x>1</x>
+				<y>65</y>
+				<w>62</w>
+				<h>62</h>
+			</squareZ>
+			<squareS>
+				<x>129</x>
+				<y>1</y>
+				<w>62</w>
+				<h>62</h>
+			</squareS>
+			<squareJ>
+				<x>129</x>
+				<y>65</y>
+				<w>62</w>
+				<h>62</h>
+			</squareJ>
+			<squareI>
+				<x>193</x>
+				<y>65</y>
+				<w>62</w>
+				<h>62</h>
+			</squareI>
+			<squareL>
+				<x>257</x>
+				<y>65</y>
+				<w>62</w>
+				<h>62</h>
+			</squareL>
+			<squareT>
+				<x>321</x>
+				<y>65</y>
+				<w>62</w>
+				<h>62</h>
+			</squareT>
+			<squareO>
+				<x>385</x>
+				<y>65</y>
+				<w>62</w>
+				<h>62</h>
+			</squareO>
+			<startAreaColor>(0.64 0.16 0.24 0.5)</startAreaColor>
+			<outerSquareColor>(0.64 0.04 0.09 0.6)</outerSquareColor>
+			<innerSquareColor>(0.08 0.02 0.03 0.1)</innerSquareColor>
+			<playerAreaColor>(0.4 0.1 0.15 0.5)</playerAreaColor>
+		</tetrisBoard>
     </window>
     <game>
         <maxNbrAis>4</maxNbrAis>

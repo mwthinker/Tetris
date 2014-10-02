@@ -143,13 +143,13 @@ GraphicBoard::GraphicBoard(const TetrisBoard& tetrisBoard) : tetrisBoard_(tetris
 		for (int row = 0; row < rows; ++row) {
 			for (int column = 0; column < columns; ++column) {
 				// First triangle.
-				data.emplace_back(0.1f + column); data.emplace_back(0.1f + row);
-				data.emplace_back(0.9f + column); data.emplace_back(0.1f + row);
-				data.emplace_back(0.1f + column); data.emplace_back(0.9f + row);
+				data.push_back(0.1f + column); data.push_back(0.1f + row);
+				data.push_back(0.9f + column); data.push_back(0.1f + row);
+				data.push_back(0.1f + column); data.push_back(0.9f + row);
 				// Second triangle.
-				data.emplace_back(0.1f + column); data.emplace_back(0.9f + row);
-				data.emplace_back(0.9f + column); data.emplace_back(0.1f + row);
-				data.emplace_back(0.9f + column); data.emplace_back(0.9f + row);
+				data.push_back(0.1f + column); data.push_back(0.9f + row);
+				data.push_back(0.9f + column); data.push_back(0.1f + row);
+				data.push_back(0.9f + column); data.push_back(0.9f + row);
 			}
 		}
 		vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
@@ -182,30 +182,8 @@ void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetr
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	int rows = tetrisBoard.getNbrRows();
 	int columns = tetrisBoard.getNbrColumns();
-
-	// Draws the outer square.
-	const float red = 0.8f, green = 0.2f, blue = 0.3f;
-	GLfloat aVertices[] = {
-		0, 0,
-		(float) columns, 0,
-		0, (float) rows,
-		(float) columns, (float) rows
-	};
-	wp->setColor(red * 0.8f, green * 0.8f, blue * 0.8f, 0.6f);
-	wp->setVertexPosition(2, aVertices);
-	wp->setTexture(false);
-	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	
-	// Draws the inner square.
-	wp->setColor(red * 0.1f, green * 0.1f, blue * 0.1f, 0.1f);
-	vbo_.bindBuffer();
-	wp->setVertexPosition(2, 0);
-	wp->glDrawArrays(GL_TRIANGLES, 0, 6 * rows * columns);
-	vbo_.unbindBuffer();
 	
 	mw::glDisable(GL_BLEND);
-	
-	drawBeginArea(wp);
 
 	wp->setColor(WHITE);
 	// Sprite is [-0.5, 0.5] in y and x direction.
@@ -229,29 +207,6 @@ void GraphicBoard::drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetr
 			sprite.draw();
 		}
 	}
-
-	wp->setModel(old);
-}
-
-void GraphicBoard::drawBeginArea(gui::WindowMatrixPtr wp) const {
-	auto old = wp->getModel();
-
-	int rows = tetrisBoard_.getNbrRows();
-	int columns = tetrisBoard_.getNbrColumns();
-
-	wp->setModel(old *  mw::getTranslateMatrix44(0, (float) rows) * mw::getScaleMatrix44((float) columns, 2));
-	float red = 0.8f, green = 0.2f, blue = 0.3f;
-	wp->setColor(red*0.8f, green*0.8f, blue*0.8f, 0.5f);
-	// Draws the outer square.
-
-	GLfloat aVertices[] = {
-		0, 0,
-		1, 0,
-		0, 1,
-		1, 1
-	};
-	wp->setVertexPosition(2, aVertices);
-	wp->glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	wp->setModel(old);
 }

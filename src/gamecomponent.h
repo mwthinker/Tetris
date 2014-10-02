@@ -31,34 +31,35 @@ private:
 	public:
 		Graphic();
 
-		Graphic(int nbrPlayers, int nbrColumns, int nbrRows);
-
-		/*
-		Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ, 
-			mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI, 
-			mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO,
-			const mw::Font& font);
-			*/
+		Graphic(TetrisEntry boardEntry, int nbrPlayers, int nbrColumns, int nbrRows);
 
 		void update(const PlayerPtr& player);
 
-		float getWidth() const;
+		inline float getWidth() const {
+			return width_;
+		}
 
-		float getHeight() const;
+		inline float getHeight() const {
+			return height_;
+		}
 
 		void draw(mw::Shader& shader);
 
 		void setMiddleMessage(const mw::Text& text);		
 
 	private:
-		//GraphicBoard board_;
-		//GraphicPlayerInfo info_;
-		//GraphicPreviewBlock preview_;
+		void fillBoard(std::vector<GLfloat>& data, int player);
+		std::vector<int> indexes_;
+
+		float squareSize_;
+		
 		mw::Text name_;
 		mw::Text middleMessage_;
 		mw::Font font_;
 		mw::VertexBufferObject vbo_;
 		int vertercies_;
+		float width_, height_;
+		mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 	};
 
 	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override;
@@ -69,7 +70,6 @@ private:
 	int alivePlayers_;
 
 	TetrisEntry tetrisEntry_;
-	mw::Sprite spriteZ_, spriteS_, spriteJ_, spriteI_, spriteL_, spriteT_, spriteO_;
 
 	mw::Sound soundBlockCollision_;
 	mw::Sound soundRowRemoved_;

@@ -35,17 +35,11 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry) : 
 	soundBlockCollision_ = tetrisEntry_.getEntry("window sounds blockCollision").getSound();
 	soundRowRemoved_ = tetrisEntry_.getEntry("window sounds rowRemoved").getSound();
 	soundTetris_ = tetrisEntry_.getEntry("window sounds tetris").getSound();
-
-	spriteZ_ = tetrisEntry_.getEntry("window sprites squareZ").getSprite();
-	spriteS_ = tetrisEntry_.getEntry("window sprites squareS").getSprite();
-	spriteJ_ = tetrisEntry_.getEntry("window sprites squareJ").getSprite();
-	spriteI_ = tetrisEntry_.getEntry("window sprites squareI").getSprite();
-	spriteL_ = tetrisEntry_.getEntry("window sprites squareL").getSprite();
-	spriteT_ = tetrisEntry_.getEntry("window sprites squareT").getSprite();
-	spriteO_ = tetrisEntry_.getEntry("window sprites squareO").getSprite();
 	
 	// Must bind attributes before linking.
 	boardShader_.bindAttribute("aPos");
+	boardShader_.bindAttribute("aTex");
+	boardShader_.bindAttribute("aIsTex");
 	boardShader_.bindAttribute("aColor");
 	boardShader_.loadAndLinkFromFile("board.ver.glsl", "board.fra.glsl");
 }
@@ -53,8 +47,8 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry) : 
 void GameComponent::draw(Uint32 deltaTime) {
 	gui::Dimension dim = getSize();
 
-	float width = 400;
-	float height = 400;
+	float width = graphic_.getWidth();
+	float height = graphic_.getHeight();
 
 	// Centers the game and holds the correct proportions.
 	// The sides is transparent.
@@ -97,34 +91,19 @@ void GameComponent::draw(Uint32 deltaTime) {
 }
 
 void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
-	float width = 5;
-	float height = 0;
-
 	bool showPoints = false;
 	if (players.size() == 1) {
 		showPoints = true;
 	}
 
 	if (players.size() > 0) {
-		graphic_ = Graphic(players.size(), players[0]->getTetrisBoard().getNbrColumns(), players[0]->getTetrisBoard().getNbrRows());
+		graphic_ = Graphic(tetrisEntry_.getEntry("window tetrisBoard"), players.size(), players[0]->getTetrisBoard().getNbrColumns(), players[0]->getTetrisBoard().getNbrRows());
 	} else {
 		graphic_ = Graphic();
 	}
-
-	for (const PlayerPtr& player : players) {
-		/*
-		auto& pair = graphic_.emplace(player->getId(), Graphic(player, showPoints, spriteZ_,
-			spriteS_, spriteJ_, spriteI_,
-			spriteL_, spriteT_, spriteO_,
-			tetrisEntry_.getEntry("window font").getFont(30)));
-		assert(pair.second);
-			
-		width += pair.first->second.getWidth() + 5;
-		height = pair.first->second.getHeight();
-		*/
-	}
+	
 	alivePlayers_ = players.size();
-	setPreferredSize(width, height);
+	setPreferredSize(graphic_.getWidth(), graphic_.getHeight());
 }
 
 void GameComponent::countDown(int msCountDown) {
@@ -134,40 +113,43 @@ void GameComponent::countDown(int msCountDown) {
 		stream << "Start in " << (int) (msCountDown / 1000) + 1;
 		text.setText(stream.str());
 	}
-	//for (auto& pair : graphic_) {
-		//pair.second.setMiddleMessage(text);
-	//}
 }
 
 namespace {
 
-	inline void addPosition(std::vector<GLfloat>& data, float x, float y) {
+	inline void addVertex(std::vector<GLfloat>& data,
+		float x, float y, 
+		float xTex, float yTex,
+		bool isTex,
+		mw::Color color) {
 		data.push_back(x);
 		data.push_back(y);
-	}
 
-	inline void addColor(std::vector<GLfloat>& data, mw::Color color) {
+		data.push_back(xTex);
+		data.push_back(yTex);
+
+		data.push_back(isTex);
+
 		data.push_back(color.red_);
 		data.push_back(color.green_);
 		data.push_back(color.blue_);
 		data.push_back(color.alpha_);
-	}
+	}	
 
 	// Add a triangle, GL_TRIANGLES, i.e. 3 vertices.
 	inline void addTriangle(std::vector<GLfloat>& data,
 		float x1, float y1,
 		float x2, float y2,
 		float x3, float y3,
+		float xTex1, float yTex1,
+		float xTex2, float yTex2,
+		float xTex3, float yTex3,
+		bool isTex,
 		mw::Color color) {
 
-		addPosition(data, x1, y1);
-		addColor(data, color);
-		
-		addPosition(data, x2, y2);
-		addColor(data, color);
-
-		addPosition(data, x3, y3);
-		addColor(data, color);
+		addVertex(data, x1, y1, xTex1, yTex1, isTex, color);
+		addVertex(data, x2, y2, xTex1, yTex1, isTex, color);
+		addVertex(data, x3, y3, xTex1, yTex1, isTex, color);
 	}
 
 	// Add two triangles, GL_TRIANGLES, i.e. 6 vertices.
@@ -181,6 +163,10 @@ namespace {
 			x, y,
 			x + w, y,
 			x, y + h,
+			0, 0,
+			0, 0,
+			0, 0,
+			false,
 			color);
 		//                _
 		// Right triangle  |
@@ -188,7 +174,47 @@ namespace {
 			x, y + h,
 			x + w, y,
 			x + w, y + h,
+			0, 0,
+			0, 0,
+			0, 0,
+			false,
 			color);
+	}
+
+	inline void addSquare(std::vector<GLfloat>& data,
+		float x, float y,
+		float w, float h,		
+		mw::Sprite& sprite) {
+
+		// Left triangle |_
+		addTriangle(data,
+			x, y,
+			x + w, y,
+			x, y + h,
+			sprite.getX(), sprite.getY(),
+			sprite.getX() + sprite.getWidth(), sprite.getY(),
+			sprite.getX(), sprite.getY() + sprite.getHeight(),
+			true,
+			mw::Color(1, 1, 1));
+		//                _
+		// Right triangle  |
+		addTriangle(data,
+			x, y + h,
+			x + w, y,
+			x + w, y + h,
+			sprite.getX(), sprite.getY() + sprite.getHeight(),
+			sprite.getX() + sprite.getWidth(), sprite.getY(),
+			sprite.getX() + sprite.getWidth(), sprite.getY() + sprite.getHeight(),
+			true,
+			mw::Color(1, 1, 1));
+	}
+
+	mw::Sprite getBoardSprite(mw::Texture texture, TetrisEntry spriteEntry) {
+		float x = spriteEntry.getChildEntry("x").getFloat();
+		float y= spriteEntry.getChildEntry("y").getFloat();
+		float w = spriteEntry.getChildEntry("w").getFloat();
+		float h = spriteEntry.getChildEntry("h").getFloat();
+		return mw::Sprite(texture, x, y, w, h);
 	}
 
 }
@@ -197,26 +223,50 @@ GameComponent::Graphic::Graphic() {
 
 }
 
-GameComponent::Graphic::Graphic(int nbrPlayers, int columns, int rows) {
+void GameComponent::Graphic::fillBoard(std::vector<GLfloat>& data, int player) {
+
+}
+
+GameComponent::Graphic::Graphic(TetrisEntry boardEntry, int nbrPlayers, int columns, int rows) {
 	std::vector<GLfloat> data;
-	mw::Color color1, color2, color3;
-	const float red = 0.8f, green = 0.2f, blue = 0.3f;
-	color1 = mw::Color(red * 0.8f, green * 0.2f, blue * 0.3f, 0.6f);
-	color2 = mw::Color(red * 0.1f, green * 0.1f, blue * 0.1f, 0.1f);
-	color3 = mw::Color(red*0.8f, green*0.8f, blue*0.8f, 0.5f);
+	mw::Color color1 = boardEntry.getChildEntry("outerSquareColor").getColor();
+	mw::Color color2 = boardEntry.getChildEntry("innerSquareColor").getColor();
+	mw::Color color3 = boardEntry.getChildEntry("startAreaColor").getColor();
+	mw::Color color4 = boardEntry.getChildEntry("playerAreaColor").getColor();
 
-	float squareSize = 10;
-	float boardOffset = 5;
+	mw::Texture texture = boardEntry.getChildEntry("texture").getTexture();
+	spriteZ_ = getBoardSprite(texture, boardEntry.getChildEntry("squareZ"));
+	spriteS_ = getBoardSprite(texture, boardEntry.getChildEntry("squareS"));
+	spriteJ_ = getBoardSprite(texture, boardEntry.getChildEntry("squareJ"));
+	spriteI_ = getBoardSprite(texture, boardEntry.getChildEntry("squareI"));
+	spriteL_ = getBoardSprite(texture, boardEntry.getChildEntry("squareL"));
+	spriteT_ = getBoardSprite(texture, boardEntry.getChildEntry("squareT"));
+	spriteO_ = getBoardSprite(texture, boardEntry.getChildEntry("squareO"));
+
+	const float lowX = 20;
+	const float lowY = 20;
+
+	const float squareSize = 10;
+	const float sizeBetweenPlayers = 10;
+	const float sizeBoard = squareSize * columns;
+	const float sizeInfo = 100;
+	const float sizePlayer = lowX + sizeBoard + sizeInfo;
 	vertercies_ = 0;
-
-	float lowX_ = 2 * squareSize;
-	float lowY_ = 2 * squareSize;
 	
 	// Add board backgrounds.
 	for (int i = 0; i < nbrPlayers; ++i) {
+		// Draw the player area.
+		float x = (sizeBoard + sizeBetweenPlayers) * i;
+		float y = lowY * 0.5f;
+		addSquare(data,
+			x, y,
+			sizeBoard + sizeInfo + 2 * lowX, squareSize * (rows + 2) + lowY,
+			color4);
+		vertercies_ += 6;
+
 		// Draw the outer square.
-		float x = lowX_ + squareSize * i * (columns + 10);
-		float y = lowY_;
+		x = lowX + i * (squareSize * columns + sizeInfo + sizeBetweenPlayers);
+		y = lowY;
 		addSquare(data, 
 			x, y,
 			squareSize * columns, squareSize * (rows + 2),
@@ -226,8 +276,8 @@ GameComponent::Graphic::Graphic(int nbrPlayers, int columns, int rows) {
 		// Draw the inner squares.
 		for (int row = 0; row < rows + 2; ++row) {
 			for (int column = 0; column < columns; ++column) {
-				x = lowX_ + squareSize * column + squareSize * 20 * i + squareSize * 0.1f;
-				y = lowY_ + squareSize * row + squareSize * 0.1f;
+				x = lowX + squareSize * column + (squareSize * columns + sizeInfo) * i + squareSize * 0.1f;
+				y = lowY + squareSize * row + squareSize * 0.1f;
 				addSquare(data,
 					x, y,
 					squareSize * 0.8f, squareSize * 0.8f,
@@ -237,8 +287,8 @@ GameComponent::Graphic::Graphic(int nbrPlayers, int columns, int rows) {
 		}
 
 		// Draw the block start area.
-		x = lowX_ + squareSize * 20 * i;
-		y = lowY_ + squareSize * rows;
+		x = lowX + (sizeBoard + sizeInfo + sizeBetweenPlayers) * i;
+		y = lowY + squareSize * rows;
 		addSquare(data,
 			x, y,
 			squareSize * columns, squareSize * 2,
@@ -246,50 +296,13 @@ GameComponent::Graphic::Graphic(int nbrPlayers, int columns, int rows) {
 		vertercies_ += 6;
 	}
 	
-	vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
-}
+	width_ = squareSize * columns * nbrPlayers + (sizeBoard + sizeBetweenPlayers) * (nbrPlayers - 1) + lowX * 2;
+	height_ = squareSize * (rows + 2) + lowY * 2;
 
-/*
-GameComponent::Graphic::Graphic(const PlayerPtr& player, bool showPoints, mw::Sprite spriteZ,
-	mw::Sprite spriteS, mw::Sprite spriteJ, mw::Sprite spriteI,
-	mw::Sprite spriteL, mw::Sprite spriteT, mw::Sprite spriteO,
-	const mw::Font& font) : board_(player->getTetrisBoard()), font_(font) { // info_(font),
-	
-	update(player);
-	name_ = mw::Text(player->getName(), font_, 20);
-	
-	if (showPoints) {
-		info_.showPoints();
-	} else {
-		info_.hidePoints();
-	}
-	
-	// Set the correct sprites.
-	preview_.spriteZ_ = board_.spriteZ_ = spriteZ;
-	preview_.spriteS_ = board_.spriteS_ = spriteS;
-	preview_.spriteJ_ = board_.spriteJ_ = spriteJ;
-	preview_.spriteI_ = board_.spriteI_ = spriteI;
-	preview_.spriteL_ = board_.spriteL_ = spriteL;
-	preview_.spriteT_ = board_.spriteT_ = spriteT;
-	preview_.spriteO_ = board_.spriteO_ = spriteO;	
+	vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_DYNAMIC_DRAW);
 }
-*/
 
 void GameComponent::Graphic::update(const PlayerPtr& player) {
-	//PlayerInfo& info = player->getPlayerInfo();
-	//info_.update(info.nbrClearedRows_, info.points_, player->getLevel());
-	//board_.update();
-	//preview_.update(player->getNextBlock(), board_.getPixelPerSquare());
-}
-
-float GameComponent::Graphic::getWidth() const {
-	//return 5 + board_.getWidth() + 5 + preview_.getWidth() + 5;
-	return 300;
-}
-
-float GameComponent::Graphic::getHeight() const {
-	//return 5 + board_.getHeight() + 5;
-	return 300;
 }
 
 void GameComponent::Graphic::draw(mw::Shader& shader) {
@@ -297,10 +310,16 @@ void GameComponent::Graphic::draw(mw::Shader& shader) {
 		vbo_.bindBuffer();
 
 		mw::glEnableVertexAttribArray(shader.getAttributeLocation("aPos"));
-		mw::glVertexAttribPointer(shader.getAttributeLocation("aPos"), 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (GLvoid*) 0);
+		mw::glVertexAttribPointer(shader.getAttributeLocation("aPos"), 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) 0);
+		
+		mw::glEnableVertexAttribArray(shader.getAttributeLocation("aTex"));
+		mw::glVertexAttribPointer(shader.getAttributeLocation("aTex"), 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
+		
+		mw::glEnableVertexAttribArray(shader.getAttributeLocation("aIsTex"));
+		mw::glVertexAttribPointer(shader.getAttributeLocation("aIsTex"), 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
 
 		mw::glEnableVertexAttribArray(shader.getAttributeLocation("aColor"));
-		mw::glVertexAttribPointer(shader.getAttributeLocation("aColor"), 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (GLvoid*) (sizeof(GLfloat) * 2));
+		mw::glVertexAttribPointer(shader.getAttributeLocation("aColor"), 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
 
 		mw::glDrawArrays(GL_TRIANGLES, 0, vertercies_);
 
@@ -314,8 +333,6 @@ void GameComponent::Graphic::setMiddleMessage(const mw::Text& text) {
 }
 
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
-	//auto it = graphic_.find(player->getId());
-	//assert(it != graphic_.end());
 	soundEffects(gameEvent);
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:

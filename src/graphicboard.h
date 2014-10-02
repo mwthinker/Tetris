@@ -113,7 +113,6 @@ public:
 
 private:
 	void drawBoard(gui::WindowMatrixPtr wp, const RawTetrisBoard& tetrisBoard) const;
-	void drawBeginArea(gui::WindowMatrixPtr wp) const;
 
 	const mw::Sprite& getSprite(BlockType blockType) const {
 		switch (blockType) {
