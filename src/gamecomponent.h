@@ -31,7 +31,7 @@ private:
 	public:
 		Graphic();
 
-		Graphic(TetrisEntry boardEntry, int nbrPlayers, int nbrColumns, int nbrRows);
+		Graphic(TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard);
 
 		void update(const PlayerPtr& player);
 
@@ -49,6 +49,10 @@ private:
 
 	private:
 		void fillBoard(std::vector<GLfloat>& data, int player);
+		
+		mw::Sprite getSprite(BlockType blockType) const;
+
+
 		std::vector<int> indexes_;
 
 		float squareSize_;
@@ -59,7 +63,11 @@ private:
 		mw::VertexBufferObject vbo_;
 		int vertercies_;
 		float width_, height_;
-		mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
+		mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;		
+
+		int indexBoard_;
+		int indexCurrentBlock_;
+		int indexNextBlock;
 	};
 
 	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override;
