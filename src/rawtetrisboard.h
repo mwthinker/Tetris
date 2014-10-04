@@ -42,12 +42,12 @@ public:
     void update(Move move);
     
 	// Return the number of rows.
-	inline int getNbrRows() const {
+	inline int getRows() const {
 		return nbrRows_;
 	}
 
 	// Return the number of columns.
-	inline int getNbrColumns() const {
+	inline int getColumns() const {
 		return nbrColumns_;
 	}
 

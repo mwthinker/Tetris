@@ -33,7 +33,7 @@ private:
 
 		Graphic(TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard);
 
-		void update(const PlayerPtr& player);
+		void update(const PlayerPtr& player, mw::Shader& shader);
 
 		inline float getWidth() const {
 			return width_;
@@ -48,22 +48,30 @@ private:
 		void setMiddleMessage(const mw::Text& text);		
 
 	private:
+		void updateDynamicData(const RawTetrisBoard& tetrisBoard);
+		void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
+		void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
+
 		void fillBoard(std::vector<GLfloat>& data, int player);
 		
 		mw::Sprite getSprite(BlockType blockType) const;
 
-
 		std::vector<int> indexes_;
 
 		float squareSize_;
+		float sizeBoard_;
 		
 		mw::Text name_;
 		mw::Text middleMessage_;
 		mw::Font font_;
-		mw::VertexBufferObject vbo_;
+		mw::VertexBufferObject staticVbo_, vbo_;
 		int vertercies_;
+		int dynamicVertercies_;
+
 		float width_, height_;
 		mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;		
+		std::vector<GLfloat> dynamicData_;
+		//gui::Point 
 
 		int indexBoard_;
 		int indexCurrentBlock_;

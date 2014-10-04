@@ -975,8 +975,8 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 				}
 			} else { // Singleplayer.
 				// And is the correct settings?				
-				if (player.getTetrisBoard().getNbrRows() == TETRIS_HEIGHT
-					&& player.getTetrisBoard().getNbrColumns() == TETRIS_WIDTH
+				if (player.getTetrisBoard().getRows() == TETRIS_HEIGHT
+					&& player.getTetrisBoard().getColumns() == TETRIS_WIDTH
 					&& maxLevel_ == TETRIS_MAX_LEVEL) {
 
 					// Is local and a human player?

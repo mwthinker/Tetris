@@ -65,14 +65,14 @@ void Computer::update(const TetrisBoard& board) {
 }
 
 float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) {
-	int lowestRow = board.getNbrRows() + 4;
+	int lowestRow = board.getRows() + 4;
 	float meanHeight = 0;
 	int nbrOfSquares = 0;
 
 	float rowRoughness = 0;
 	for (int row = 0; row < lowestRow; ++row) {
 		bool lastHole = false;
-		for (int column = 0; column < board.getNbrColumns(); ++column) {
+		for (int column = 0; column < board.getColumns(); ++column) {
 			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
 			if (lastHole != hole) {
 				rowRoughness += 1;
@@ -88,7 +88,7 @@ float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) 
 	meanHeight /= nbrOfSquares;
 
 	float columnRoughness = 0;
-	for (int column = 0; column < board.getNbrColumns(); ++column) {
+	for (int column = 0; column < board.getColumns(); ++column) {
 		bool lastHole = false;
 		for (int row = 0; row < lowestRow; ++row) {
 			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
@@ -114,8 +114,8 @@ float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) 
 	calculator_.updateVariable("edges", (float) edges);
 	calculator_.updateVariable("meanHeight", meanHeight);
 	calculator_.updateVariable("blockMeanHeight", blockMeanHeight);
-	calculator_.updateVariable("rows", (float) board.getNbrRows());
-	calculator_.updateVariable("columns", (float) board.getNbrColumns());
+	calculator_.updateVariable("rows", (float) board.getRows());
+	calculator_.updateVariable("columns", (float) board.getColumns());
 
 	return calculator_.excecute(cache_);
 }
