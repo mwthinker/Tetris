@@ -51,8 +51,6 @@ private:
 		void updateDynamicData(const RawTetrisBoard& tetrisBoard);
 		void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
 		void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
-
-		void fillBoard(std::vector<GLfloat>& data, int player);
 		
 		mw::Sprite getSprite(BlockType blockType) const;
 

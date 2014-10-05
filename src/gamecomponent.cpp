@@ -135,8 +135,8 @@ namespace {
 		mw::Color color) {
 
 		addVertex(data, index, x1, y1, xTex1, yTex1, isTex, color);
-		addVertex(data, index, x2, y2, xTex1, yTex1, isTex, color);
-		addVertex(data, index, x3, y3, xTex1, yTex1, isTex, color);
+		addVertex(data, index, x2, y2, xTex2, yTex2, isTex, color);
+		addVertex(data, index, x3, y3, xTex3, yTex3, isTex, color);
 	}
 
 	// Add two triangles, GL_TRIANGLES, i.e. 6 vertices.
@@ -200,7 +200,7 @@ namespace {
 
 	mw::Sprite getBoardSprite(mw::Texture texture, TetrisEntry spriteEntry) {
 		float x = spriteEntry.getChildEntry("x").getFloat();
-		float y= spriteEntry.getChildEntry("y").getFloat();
+		float y = spriteEntry.getChildEntry("y").getFloat();
 		float w = spriteEntry.getChildEntry("w").getFloat();
 		float h = spriteEntry.getChildEntry("h").getFloat();
 		return mw::Sprite(texture, x, y, w, h);
@@ -236,11 +236,6 @@ namespace {
 }
 
 GameComponent::Graphic::Graphic() {
-
-}
-
-void GameComponent::Graphic::fillBoard(std::vector<GLfloat>& data, int player) {
-
 }
 
 void GameComponent::Graphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows) {
@@ -253,7 +248,8 @@ void GameComponent::Graphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color
 	vertercies_ = 0;
 	int index = -1;
 
-	std::vector<GLfloat> data(9 * 6 * (2 + (rows+2)*columns + 2));
+	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 4) [squares]. 
+	std::vector<GLfloat> data(sizeof(GLfloat) *  9 * 6 * ((rows + 2)*columns + 4));
 	// Draw the player area.
 	float x = (sizeBoard_ + sizeBetweenPlayers) * 0;
 	float y = lowY * 0.5f;
@@ -349,16 +345,18 @@ void GameComponent::Graphic::updateDynamicData(const RawTetrisBoard& tetrisBoard
 	Block block = tetrisBoard.getBlock();
 	mw::Sprite sprite = getSprite(block.blockType());
 	for (const Square& sq : block) {
-		addSquare(dynamicData_, index,
-			x + sq.column_ * squareSize_, y + sq.row_ * squareSize_,
-			squareSize_, squareSize_,
-			sprite);
-		dynamicVertercies_ += 6;
+		if (sq.row_ < rows + 2) {
+			addSquare(dynamicData_, index,
+				x + sq.column_ * squareSize_, y + sq.row_ * squareSize_,
+				squareSize_, squareSize_,
+				sprite);
+			dynamicVertercies_ += 6;
+		}
 	}
 
 	// Draw the preview block.
 	x = lowX + sizeBoard_ + 5 + squareSize_ * 2.5f;
-	y = lowY + squareSize_ * tetrisBoard.getRows() - (squareSize_ * 2.5f + 5);
+	y = lowY + squareSize_ * rows - (squareSize_ * 2.5f + 5);
 	block = Block(tetrisBoard.getNextBlockType(), 0, 0);
 	gui::Point center = calculateCenter(block);
 	sprite = getSprite(block.blockType());
@@ -372,8 +370,8 @@ void GameComponent::Graphic::updateDynamicData(const RawTetrisBoard& tetrisBoard
 }
 
 GameComponent::Graphic::Graphic(TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) : 
-	// 9 [bytes/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares]. 
-	dynamicData_(9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 8)) {
+	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares]. 
+	dynamicData_(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 8)) {
 	
 	mw::Color color1 = boardEntry.getChildEntry("outerSquareColor").getColor();
 	mw::Color color2 = boardEntry.getChildEntry("innerSquareColor").getColor();
@@ -398,8 +396,8 @@ GameComponent::Graphic::Graphic(TetrisEntry boardEntry, const RawTetrisBoard& te
 
 void GameComponent::Graphic::update(const PlayerPtr& player, mw::Shader& shader) {
 	updateDynamicData(player->getTetrisBoard());
-	vbo_.bindBuffer();	
-	mw::glBufferSubData(vbo_.getTarget(), 0, dynamicVertercies_ * 9, dynamicData_.data());
+	vbo_.bindBuffer();
+	mw::glBufferSubData(vbo_.getTarget(), 0, sizeof(GLfloat) * dynamicVertercies_ * 9, dynamicData_.data());
 	vbo_.unbindBuffer();
 }
 
@@ -445,6 +443,7 @@ mw::Sprite GameComponent::Graphic::getSprite(BlockType blockType) const {
 		case BlockType::Z:
 			return spriteZ_;
 	}
+	assert(0); // Should not be here.
 	return mw::Sprite();
 }
 
