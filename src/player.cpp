@@ -1,5 +1,5 @@
 #include "player.h"
-#include "graphicboard.h"
+#include "gamegraphic.h"
 #include "tetrisboard.h"
 
 #include <string>
@@ -16,7 +16,7 @@ namespace {
 	// Returns a random block type, which is not empty.
 	BlockType generateBlockType() {
 		static std::uniform_int_distribution<int> distribution(0, 6);
-		static_assert((int) BlockType::EMPTY > 6, "BlockType::EMPTY should not be generated");
+		static_assert((int) BlockType::EMPTY > 6 && (int) BlockType::WALL > 6, "BlockType::EMPTY should not be generated");
 		return static_cast<BlockType>(distribution(generator));
 	}
 

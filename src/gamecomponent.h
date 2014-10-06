@@ -1,7 +1,7 @@
 #ifndef GAMECOMPONENT_H
 #define GAMECOMPONENT_H
 
-#include "graphicboard.h"
+#include "gamegraphic.h"
 #include "gamehandler.h"
 #include "tetrisentry.h"
 
@@ -27,58 +27,13 @@ public:
 	void countDown(int msCountDown) override;
 
 private:
-	class Graphic {
-	public:
-		Graphic();
-
-		Graphic(TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard);
-
-		void update(const PlayerPtr& player, mw::Shader& shader);
-
-		inline float getWidth() const {
-			return width_;
-		}
-
-		inline float getHeight() const {
-			return height_;
-		}
-
-		void draw(mw::Shader& shader);
-
-		void setMiddleMessage(const mw::Text& text);		
-
-	private:
-		void updateDynamicData(const RawTetrisBoard& tetrisBoard);
-		void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
-		void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
-		
-		mw::Sprite getSprite(BlockType blockType) const;
-
-		std::vector<int> indexes_;
-
-		float squareSize_;
-		float sizeBoard_;
-		
-		mw::Text name_;
-		mw::Text middleMessage_;
-		mw::Font font_;
-		mw::VertexBufferObject staticVbo_, vbo_;
-		int vertercies_;
-		int dynamicVertercies_;
-
-		float width_, height_;
-		mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;		
-		std::vector<GLfloat> dynamicData_;
-		//gui::Point 
-
-		int indexBoard_;
-		int indexCurrentBlock_;
-		int indexNextBlock;
-	};
-
 	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override;
 
 	void soundEffects(GameEvent gameEvent) const;
+
+	// @gui::Component
+	// Called when the component is resized.
+	void validate() override;
 
 	TetrisGame& tetrisGame_;
 	int alivePlayers_;
@@ -90,11 +45,13 @@ private:
 	mw::Sound soundTetris_;
 
 	mw::Shader boardShader_;
-	Graphic graphic_;
+	GameGraphic graphic_;
 
 	// Fix timestep.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
+
+	bool updateMatrix_;
 };
 
 #endif // GAMECOMPONENT_H

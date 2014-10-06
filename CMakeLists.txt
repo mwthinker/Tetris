@@ -29,8 +29,8 @@ set(SOURCES
 	src/gamecomponent.cpp
 	src/gamecomponent.h	
 	src/gamehandler.h
-	src/graphicboard.cpp
-	src/graphicboard.h
+	src/gamegraphic.cpp
+	src/gamegraphic.h
 	src/highscore.cpp
 	src/highscore.h
 	src/joystick.cpp
