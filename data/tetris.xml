@@ -40,6 +40,8 @@
             <zoom x="193" y="1" w="62" h="62">images/tetris.png</zoom>
         </sprites>
 		<tetrisBoard>
+			<font>fonts/Ubuntu-B.ttf</font>
+			<squareSize>10</squareSize>
 			<texture>images/tetris.png</texture>
 			<squareZ>
 				<x>1</x>

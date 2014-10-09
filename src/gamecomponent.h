@@ -35,6 +35,7 @@ private:
 	// Called when the component is resized.
 	void validate() override;
 
+	std::map<int, GameGraphic> graphicPlayers_;
 	TetrisGame& tetrisGame_;
 	int alivePlayers_;
 
@@ -44,14 +45,15 @@ private:
 	mw::Sound soundRowRemoved_;
 	mw::Sound soundTetris_;
 
-	mw::Shader boardShader_;
-	GameGraphic graphic_;
+	mw::Shader boardShader_;	
 
 	// Fix timestep.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
 
 	bool updateMatrix_;
+	int uMatIndex_;
+	mw::Matrix44 matrix_;
 };
 
 #endif // GAMECOMPONENT_H

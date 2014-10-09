@@ -29,6 +29,8 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	boardShader_.bindAttribute("aIsTex");
 	boardShader_.bindAttribute("aColor");
 	boardShader_.loadAndLinkFromFile("board.ver.glsl", "board.fra.glsl");
+	
+	uMatIndex_ = boardShader_.getUniformLocation("uMat");
 }
 
 void GameComponent::validate() {
@@ -40,10 +42,16 @@ void GameComponent::draw(Uint32 deltaTime) {
 	boardShader_.glUseProgram();
 
 	if (updateMatrix_) {
-		gui::Dimension dim = getSize();
+		if (uMatIndex_ == -1) {
+			uMatIndex_ = boardShader_.getUniformLocation("uMat");
+		}
 
-		float width = graphic_.getWidth();
-		float height = graphic_.getHeight();
+		gui::Dimension dim = getSize();
+		gui::Dimension prefDim = getPreferredSize();
+
+
+		float width = prefDim.width_;
+		float height = prefDim.height_;
 
 		// Centers the game and holds the correct proportions.
 		// The sides is transparent.
@@ -51,39 +59,38 @@ void GameComponent::draw(Uint32 deltaTime) {
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
 			float scale = dim.width_ / width;
-			model = mw::getTranslateMatrix44(5, (dim.height_ - scale * height) * 0.5f + 5)
+			model = mw::getTranslateMatrix44(2, (dim.height_ - scale * height) * 0.5f + 2)
 				* mw::getScaleMatrix44(scale, scale);
 		} else {
 			// Blank sides, left and right.
 			float scale = dim.height_ / height;
-			model = mw::getTranslateMatrix44(5 + (dim.width_ - scale * width) * 0.5f, 5)
+			model = mw::getTranslateMatrix44(2 + (dim.width_ - scale * width) * 0.5f, 2)
 				* mw::getScaleMatrix44(scale, scale);
-		}
-		
-		mw::glUniformMatrix4fv(boardShader_.getUniformLocation("uMat"), 1, false, (wp->getProjection() * wp->getModel() * model).data());
+		}		
+
+		mw::glUniformMatrix4fv(uMatIndex_, 1, false, (wp->getProjection() * wp->getModel() * model).data());
 	}
 	
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mw::glActiveTexture(GL_TEXTURE1);
 
-	graphic_.draw(boardShader_);
-
-	mw::glActiveTexture(GL_TEXTURE0);
-	mw::glDisable(GL_BLEND);
-
-	/*
-	for (auto& pair : graphic_) {
+	//graphic_.draw(boardShader_);
+	for (auto& pair : graphicPlayers_) {
 		if (tetrisGame_.isPaused()) {
 			static mw::Text text("Paused", tetrisEntry_.getEntry("window font").getFont(30));
 			pair.second.setMiddleMessage(text);
 		}
 
-		pair.second.draw(wp);
-		model = model *  mw::getTranslateMatrix44(pair.second.getWidth() + 5, 0);
-		wp->setModel(model);
+		pair.second.draw(boardShader_);
+		//pair.second.draw(wp);
+		//model = model *  mw::getTranslateMatrix44(pair.second.getWidth() + 5, 0);
+		//wp->setModel(model);
 	}
-	*/
+
+	mw::glActiveTexture(GL_TEXTURE0);
+	mw::glDisable(GL_BLEND);
+
 	wp->useShader();
 	mw::checkGlError();
 }
@@ -94,14 +101,18 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 		showPoints = true;
 	}
 
-	if (players.size() > 0) {
-		graphic_ = GameGraphic(tetrisEntry_.getEntry("window tetrisBoard"), players[0]->getTetrisBoard());
-	} else {
-		graphic_ = GameGraphic();
+	graphicPlayers_.clear();
+
+	float width = 0;
+	float height = 0;
+	for (const auto& player : players) {
+		graphicPlayers_[player->getId()] = GameGraphic(width, 0, tetrisEntry_.getEntry("window tetrisBoard"), player->getTetrisBoard());
+		width += graphicPlayers_[player->getId()].getWidth();
+		height = graphicPlayers_[player->getId()].getHeight();
 	}
 	
 	alivePlayers_ = players.size();
-	setPreferredSize(graphic_.getWidth(), graphic_.getHeight());
+	setPreferredSize(width, height);
 }
 
 void GameComponent::countDown(int msCountDown) {
@@ -114,7 +125,9 @@ void GameComponent::countDown(int msCountDown) {
 }
 
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
-	graphic_.update(player);
+	GameGraphic& graphic = graphicPlayers_[player->getId()];
+
+	graphic.update(player);
 	soundEffects(gameEvent);
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
