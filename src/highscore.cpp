@@ -19,38 +19,39 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 
 void Highscore::draw(Uint32 deltaTime) {
 	auto wp = getWindowMatrixPtr();
-	auto old = wp->getModel();
+	wp->useShader();
+	mw::Matrix44 model = getModelMatrix();
+	wp->setModel(model);
 	wp->setColor(1, 1, 1);
+	gui::Dimension size = getSize();
 
 	int index = 0;
-	for (auto it = ascList_.begin(); it != ascList_.end(); ++it) {
-		HighscoreElement& highscore = *it;
+	float x = 0;
+	float y = size.height_ - (float) (ascList_.size() + 1) * (5 + font_.getCharacterSize() + 2);
+	for (auto& highscore : ascList_) {
 		mw::Text& points = highscore.points_;
 		mw::Text& name = highscore.name_;
-		mw::Text& date = highscore.date_;		
+		mw::Text& date = highscore.date_;
 		
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(5, 5));
-		numbers_[index++].draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(50, 0));
-		points.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
-		name.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(170, 0));
-		date.draw();
-
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44((float) font_.getCharacterSize() + 2, 0));
+		x = 5;
+		y += 5;
+		numbers_[index++].draw(x, y);
+		x += 50;
+		points.draw(x, y);
+		x += 150;
+		name.draw(x, y);
+		x += 170;
+		date.draw(x, y);
+		y += font_.getCharacterSize() + 2;
 	}
 
 	static mw::Text pointsH("Points", font_, 28);
 	static mw::Text nameH("Name", font_, 28);
 	static mw::Text dataH("Date", font_, 28);
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(50, 0));
-	pointsH.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
-	nameH.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(150, 0));
-	dataH.draw();
-	wp->setModel(old);
+	x = 5;
+	pointsH.draw(x + 50, y);
+	nameH.draw(x + 50 + 150, y);
+	dataH.draw(x + 50 + 150 + 150, y);
 }
 
 bool Highscore::isNewRecord(int record) const {
