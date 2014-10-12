@@ -18,16 +18,17 @@ NetworkLooby::NetworkLooby(const mw::Font& font) : font_(font) {
 }
 
 void NetworkLooby::draw(Uint32 deltaTime) {
-	auto wp = getWindowMatrixPtr();
-	wp->useShader();
-	mw::Matrix44 model = wp->getProjection() * getModelMatrix();
+	useGlShader();
+	mw::Matrix44 model = getModelMatrix();
+	//setGlModelMatrix(model);
 
 	gui::Dimension dim = getSize();
 	
 	static mw::Text id("Id", font_);
-	
+
 	mw::translate2D(model, 0, dim.height_ - id.getCharacterSize() - 2);
-	wp->setModel(model);
+	setGlModelMatrix(model);
+	/*
 	auto old2 = wp->getModel();
 	id.draw();
 	//wp->setModel(old * mw::getTranslateMatrix44(50, 0));
@@ -48,6 +49,7 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 			unready_.draw(50 + 200, 0);
 		}
 	}
+	*/
 }
 
 void NetworkLooby::addConnection(int id, int nbrOfPlayers, bool boolReady) {

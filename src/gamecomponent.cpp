@@ -38,8 +38,8 @@ void GameComponent::validate() {
 }
 
 void GameComponent::draw(Uint32 deltaTime) {
-	auto wp = getWindowMatrixPtr();
-	wp->setModel(getModelMatrix());
+	setGlModelMatrix(getModelMatrix());
+
 	boardShader_.glUseProgram();	
 
 	if (updateMatrix_) {
@@ -69,7 +69,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 				* mw::getScaleMatrix44(scale, scale);
 		}
 
-		mw::glUniformMatrix4fv(uMatIndex_, 1, false, (wp->getProjection() * wp->getModel() * model).data());
+		mw::glUniformMatrix4fv(uMatIndex_, 1, false, (getProjectionMatrix() * getModelMatrix() * model).data());
 	}
 	
 	mw::glEnable(GL_BLEND);
@@ -91,7 +91,6 @@ void GameComponent::draw(Uint32 deltaTime) {
 	mw::glActiveTexture(GL_TEXTURE0);
 	mw::glDisable(GL_BLEND);
 
-	wp->useShader();
 	mw::checkGlError();
 }
 

@@ -18,11 +18,11 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 }
 
 void Highscore::draw(Uint32 deltaTime) {
-	auto wp = getWindowMatrixPtr();
-	wp->useShader();
+	useGlShader();
 	mw::Matrix44 model = getModelMatrix();
-	wp->setModel(model);
-	wp->setColor(1, 1, 1);
+	setGlModelMatrix(model);
+	setGlColor(1, 1, 1);
+
 	gui::Dimension size = getSize();
 
 	int index = 0;

@@ -23,7 +23,7 @@ protected:
 	void mouseMotionLeave() override;
 
 private:
-	void drawPlayer(mw::Sprite& sprite);
+	void drawPlayer(mw::Matrix44 model, mw::Sprite& sprite);
 	unsigned int nbr_;
 
 	mw::Sprite man_, cross_;

@@ -28,37 +28,31 @@ void ManButton::setNbr(unsigned int nbr) {
 }
 
 void ManButton::draw(Uint32 deltaTime) {
-	auto wp = getWindowMatrixPtr();
-	wp->useShader();
-	wp->setModel(getModelMatrix());
-	auto old = wp->getModel();	
+	useGlShader();
+	mw::Matrix44 model = getModelMatrix();
+	setGlColor(1, 1, 1);
 	
 	gui::Dimension dim = getSize();
 	if (nbr_ == 0) {
-		drawPlayer(man_);
-		drawPlayer(cross_);
+		drawPlayer(model, man_);
+		drawPlayer(model, cross_);
 	} else {
 		for (unsigned int i = 0; i < nbr_; ++i) {
-			drawPlayer(man_);
-			wp->setModel(old * mw::getTranslateMatrix44(dim.height_, 0));
+			drawPlayer(model, man_);
+			mw::translate2D(model, dim.height_, 0);
 		}
 	}
-	wp->setModel(old);
 }
 
-void ManButton::drawPlayer(mw::Sprite& sprite) {
-	auto wp = getWindowMatrixPtr();
-	auto old = wp->getModel();
-
+void ManButton::drawPlayer(mw::Matrix44 model, mw::Sprite& sprite) {
 	gui::Dimension dim = getSize();
-	wp->setModel(old * mw::getTranslateMatrix44(dim.height_ / 2.f, dim.height_ / 2.f));
+	mw::translate2D(model, dim.height_ / 2.f, dim.height_ / 2.f);
 	if (mouseInside_) {
-		wp->setModel(wp->getModel() * mw::getScaleMatrix44(1.2f, 1.2f));
+		mw::scale2D(model, 1.2f, 1.2f);
 	}
-	wp->setModel(wp->getModel() * mw::getScaleMatrix44(dim.height_, dim.height_));
-	wp->setColor(1, 1, 1);
+	setGlModelMatrix(model * mw::getScaleMatrix44(dim.height_, dim.height_));
+	
 	sprite.draw();
-	wp->setModel(old);
 }
 
 void ManButton::handleMouse(const SDL_Event& mouseEvent) {
