@@ -30,6 +30,7 @@ void ManButton::setNbr(unsigned int nbr) {
 void ManButton::draw(Uint32 deltaTime) {
 	auto wp = getWindowMatrixPtr();
 	wp->useShader();
+	wp->setModel(getModelMatrix());
 	auto old = wp->getModel();	
 	
 	gui::Dimension dim = getSize();
@@ -47,7 +48,6 @@ void ManButton::draw(Uint32 deltaTime) {
 
 void ManButton::drawPlayer(mw::Sprite& sprite) {
 	auto wp = getWindowMatrixPtr();
-	wp->useShader();
 	auto old = wp->getModel();
 
 	gui::Dimension dim = getSize();

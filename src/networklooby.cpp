@@ -20,34 +20,34 @@ NetworkLooby::NetworkLooby(const mw::Font& font) : font_(font) {
 void NetworkLooby::draw(Uint32 deltaTime) {
 	auto wp = getWindowMatrixPtr();
 	wp->useShader();
-	auto old = wp->getModel();
+	mw::Matrix44 model = wp->getProjection() * getModelMatrix();
 
 	gui::Dimension dim = getSize();
 	
 	static mw::Text id("Id", font_);
-	wp->setModel(old * mw::getTranslateMatrix44(0, dim.height_) * mw::getTranslateMatrix44(0, -id.getCharacterSize() - 2));
+	
+	mw::translate2D(model, 0, dim.height_ - id.getCharacterSize() - 2);
+	wp->setModel(model);
 	auto old2 = wp->getModel();
 	id.draw();
-	wp->setModel(old * mw::getTranslateMatrix44(50, 0));
+	//wp->setModel(old * mw::getTranslateMatrix44(50, 0));
 	static mw::Text nbr("Number Of Players", font_);
-	nbr.draw();
-	wp->setModel(wp->getModel() * mw::getTranslateMatrix44(200, 0));
+	nbr.draw(50, 0);
+	//wp->setModel(wp->getModel() * mw::getTranslateMatrix44(200, 0));
 	static mw::Text ready("Ready to Start?", font_);
-	ready.draw();
-	old2 = old2 * mw::getTranslateMatrix44(0, -(id.getCharacterSize() + 4));
+	ready.draw(250, 0);
+	mw::translate2D(old2, 0, -(id.getCharacterSize() + 4));
 	for (Connection& connection : ascList_) {
-		wp->setModel(old2);
+		model = old2;
+		wp->setModel(model);
 		connection.id_.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(50, 0));
-		connection.numberOfPlayers_.draw();
-		wp->setModel(wp->getModel() * mw::getTranslateMatrix44(200, 0));
+		connection.numberOfPlayers_.draw(50, 0);
 		if (connection.boolReady_) {
-			ready_.draw();
+			ready_.draw(50 + 200, 0);
 		} else {
-			unready_.draw();
+			unready_.draw(50 + 200, 0);
 		}
 	}
-	wp->setModel(old);
 }
 
 void NetworkLooby::addConnection(int id, int nbrOfPlayers, bool boolReady) {

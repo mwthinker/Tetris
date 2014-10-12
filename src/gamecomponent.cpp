@@ -39,7 +39,8 @@ void GameComponent::validate() {
 
 void GameComponent::draw(Uint32 deltaTime) {
 	auto wp = getWindowMatrixPtr();
-	boardShader_.glUseProgram();
+	wp->setModel(getModelMatrix());
+	boardShader_.glUseProgram();	
 
 	if (updateMatrix_) {
 		if (uMatIndex_ == -1) {
@@ -66,7 +67,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 			float scale = dim.height_ / height;
 			model = mw::getTranslateMatrix44(2 + (dim.width_ - scale * width) * 0.5f, 2)
 				* mw::getScaleMatrix44(scale, scale);
-		}		
+		}
 
 		mw::glUniformMatrix4fv(uMatIndex_, 1, false, (wp->getProjection() * wp->getModel() * model).data());
 	}
@@ -74,8 +75,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mw::glActiveTexture(GL_TEXTURE1);
-
-	//graphic_.draw(boardShader_);
+		
 	for (auto& pair : graphicPlayers_) {
 		if (tetrisGame_.isPaused()) {
 			static mw::Text text("Paused", tetrisEntry_.getEntry("window font").getFont(30));
