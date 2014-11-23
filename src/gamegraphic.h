@@ -9,9 +9,8 @@
 #include <mw/text.h>
 #include <mw/color.h>
 #include <mw/sprite.h>
+#include <mw/shader.h>
 #include <mw/vertexbufferobject.h>
-
-#include <gui/windowmatrix.h>
 
 #include <string>
 #include <array>

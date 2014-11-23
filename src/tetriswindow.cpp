@@ -55,18 +55,18 @@ namespace {
 }
 
 TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry), 
-	gui::Frame(tetrisEntry.getEntry("window positionX").getInt(),
-		tetrisEntry.getEntry("window positionY").getInt(),
-		tetrisEntry.getEntry("window width").getInt(),
-		tetrisEntry.getEntry("window height").getInt(),
+	gui::Frame(tetrisEntry.getDeepChildEntry("window positionX").getInt(),
+	tetrisEntry.getDeepChildEntry("window positionY").getInt(),
+	tetrisEntry.getDeepChildEntry("window width").getInt(),
+	tetrisEntry.getDeepChildEntry("window height").getInt(),
 		true,
 		"MWetris",
-		tetrisEntry.getEntry("window icon").getString(),
-		!tetrisEntry.getEntry("window border").getBool()) {
+		tetrisEntry.getDeepChildEntry("window icon").getString(),
+		!tetrisEntry.getDeepChildEntry("window border").getBool()) {
 	
 	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(), 480, 480);
 
-	if (tetrisEntry.getEntry("window maximized").getBool()) {
+	if (tetrisEntry.getDeepChildEntry("window maximized").getBool()) {
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());
 	}
 
@@ -110,7 +110,7 @@ TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry),
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));
 
 	// Create all frames.
-	auto background = tetrisEntry_.getEntry("window sprites background").getSprite();
+	auto background = tetrisEntry_.getDeepChildEntry("window sprites background").getSprite();
 	getCurrentPanel()->setBackground(background);
 	menuIndex_ = getCurrentPanelIndex();
 	playIndex_ = push_back(createBackgroundPanel(background));
@@ -146,7 +146,7 @@ TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry),
 
 	loadHighscore();
 
-	auto aiEntry = tetrisEntry_.getEntry("players ais player");
+	auto aiEntry = tetrisEntry_.getDeepChildEntry("players ais player");
 	ais_.clear();
 	while (aiEntry.hasData()) {
 		ais_.push_back(aiEntry.getAi());
@@ -155,7 +155,7 @@ TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry),
 }
 
 mw::Font TetrisWindow::getDefaultFont(int size) {
-	return tetrisEntry_.getEntry("window font").getFont(size);
+	return tetrisEntry_.getDeepChildEntry("window font").getFont(size);
 }
 
 void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent) {
@@ -165,25 +165,25 @@ void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent
 }
 
 TetrisWindow::~TetrisWindow() {
-	tetrisEntry_.getEntry("window positionX").setInt(lastX_);
-	tetrisEntry_.getEntry("window positionY").setInt(lastY_);
-	tetrisEntry_.getEntry("window width").setInt(lastWidth_);
-	tetrisEntry_.getEntry("window height").setInt(lastHeight_);
+	tetrisEntry_.getDeepChildEntry("window positionX").setInt(lastX_);
+	tetrisEntry_.getDeepChildEntry("window positionY").setInt(lastY_);
+	tetrisEntry_.getDeepChildEntry("window width").setInt(lastWidth_);
+	tetrisEntry_.getDeepChildEntry("window height").setInt(lastHeight_);
 	tetrisEntry_.save();
 }
 
 std::shared_ptr<gui::Panel> TetrisWindow::createBar() const {
 	std::shared_ptr<gui::Panel> bar = std::make_shared<gui::Panel>();
-	bar->setPreferredSize(tetrisEntry_.getEntry("window bar height").getFloat(), tetrisEntry_.getEntry("window bar height").getFloat());
-	bar->setBackgroundColor(tetrisEntry_.getEntry("window bar color").getColor());
+	bar->setPreferredSize(tetrisEntry_.getDeepChildEntry("window bar height").getFloat(), tetrisEntry_.getDeepChildEntry("window bar height").getFloat());
+	bar->setBackgroundColor(tetrisEntry_.getDeepChildEntry("window bar color").getColor());
 	bar->setLayout(std::make_shared<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f));
 	return bar;
 }
 
 std::shared_ptr<gui::Label> TetrisWindow::createLabel(std::string text, mw::Font font) const {
 	std::shared_ptr<gui::Label> label = std::make_shared<gui::Label>(text, font);
-	label->setTextColor(tetrisEntry_.getEntry("window label textColor").getColor());
-	label->setBackgroundColor(tetrisEntry_.getEntry("window label backgroundColor").getColor());
+	label->setTextColor(tetrisEntry_.getDeepChildEntry("window label textColor").getColor());
+	label->setBackgroundColor(tetrisEntry_.getDeepChildEntry("window label backgroundColor").getColor());
 	return label;
 }
 
@@ -201,12 +201,12 @@ void TetrisWindow::createPlayersFields(const mw::Font& font, std::array<std::sha
 
 std::shared_ptr<gui::Button> TetrisWindow::createButton(std::string text, mw::Font font) const {
 	std::shared_ptr<gui::Button> button = std::make_shared<gui::Button>(text, font);
-	button->setFocusColor(tetrisEntry_.getEntry("window button focusColor").getColor());
-	button->setTextColor(tetrisEntry_.getEntry("window button textColor").getColor());
-	button->setHoverColor(tetrisEntry_.getEntry("window button hoverColor").getColor());
-	button->setPushColor(tetrisEntry_.getEntry("window button pushColor").getColor());
-	button->setBackgroundColor(tetrisEntry_.getEntry("window button backgroundColor").getColor());
-	button->setBorderColor(tetrisEntry_.getEntry("window button borderColor").getColor());
+	button->setFocusColor(tetrisEntry_.getDeepChildEntry("window button focusColor").getColor());
+	button->setTextColor(tetrisEntry_.getDeepChildEntry("window button textColor").getColor());
+	button->setHoverColor(tetrisEntry_.getDeepChildEntry("window button hoverColor").getColor());
+	button->setPushColor(tetrisEntry_.getDeepChildEntry("window button pushColor").getColor());
+	button->setBackgroundColor(tetrisEntry_.getDeepChildEntry("window button backgroundColor").getColor());
+	button->setBorderColor(tetrisEntry_.getDeepChildEntry("window button borderColor").getColor());
 	button->setAutoSizeToFitText(true);
 	return button;
 }
@@ -309,7 +309,7 @@ void TetrisWindow::initPlayPanel() {
 	});
 	p2->add(pauseButton_);
 
-	nbrHumans_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getEntry("window sprites human").getSprite(), tetrisEntry_.getEntry("window sprites cross").getSprite());
+	nbrHumans_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
 		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
@@ -317,7 +317,7 @@ void TetrisWindow::initPlayPanel() {
 		tetrisGame_.restartGame();
 	});
 	p1->add(nbrHumans_);
-	nbrAis_ = std::make_shared<ManButton>(4, tetrisEntry_.getEntry("window sprites computer").getSprite(), tetrisEntry_.getEntry("window sprites cross").getSprite());
+	nbrAis_ = std::make_shared<ManButton>(4, tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
@@ -501,9 +501,9 @@ void TetrisWindow::initCreateServerPanel() {
 	p4->add(createLabel("Local players", getDefaultFont(18)));
 	centerPanel->add(p4);
 
-	nbrHumansServer_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getEntry("window sprites human").getSprite(), tetrisEntry_.getEntry("window sprites cross").getSprite());
+	nbrHumansServer_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	p4->add(nbrHumansServer_);
-	nbrAisServer_ = std::make_shared<ManButton>(activeAis_.size(), tetrisEntry_.getEntry("window sprites computer").getSprite(), tetrisEntry_.getEntry("window sprites cross").getSprite());
+	nbrAisServer_ = std::make_shared<ManButton>(activeAis_.size(), tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	p4->add(nbrAisServer_);
 
 	createPlayersFields(getDefaultFont(18), namesServer_, playersServer_);
@@ -581,9 +581,9 @@ void TetrisWindow::initCreateClientPanel() {
 	p2->add(createLabel("Local players", getDefaultFont(18)));
 	centerPanel->add(p2);
 
-	nbrHumansClient_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getEntry("window sprites human").getSprite(), tetrisEntry_.getEntry("window sprites cross").getSprite());
+	nbrHumansClient_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	p2->add(nbrHumansClient_);
-	nbrAisClient_ = std::make_shared<ManButton>(activeAis_.size(), tetrisEntry_.getEntry("window sprites computer").getSprite(), tetrisEntry_.getEntry("window sprites cross").getSprite());
+	nbrAisClient_ = std::make_shared<ManButton>(activeAis_.size(), tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrAisClient_->addActionListener([&](gui::Component& c) {
 		nbrOfComputerPlayers_ = nbrAisServer_->getNbr();
 	});
@@ -792,7 +792,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 }
 
 void TetrisWindow::loadHighscore() {
-	auto entry = tetrisEntry_.getEntry("highscore item");
+	auto entry = tetrisEntry_.getDeepChildEntry("highscore item");
 	while (entry.hasData()) {
 		highscore_->setNextRecord(entry.getChildEntry("points").getInt());
 		highscore_->addNewRecord(entry.getChildEntry("name").getString(), entry.getChildEntry("date").getString());
@@ -801,7 +801,7 @@ void TetrisWindow::loadHighscore() {
 }
 
 void TetrisWindow::saveHighscore() {
-	auto entry = tetrisEntry_.getEntry("highscore item");
+	auto entry = tetrisEntry_.getDeepChildEntry("highscore item");
 	highscore_->iterateRecords([&](int points, std::string name, std::string date) {
 		entry.getChildEntry("name").setString(name);
 		entry.getChildEntry("points").setInt(points);
@@ -837,12 +837,12 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 					break;
 				case SDL_WINDOWEVENT_MAXIMIZED:
 					if (e.window.windowID == SDL_GetWindowID(getSdlWindow())) {
-						tetrisEntry_.getEntry("window maximized").setBool(true);
+						tetrisEntry_.getDeepChildEntry("window maximized").setBool(true);
 					}
 					break;
 				case SDL_WINDOWEVENT_RESTORED:
 					if (e.window.windowID == SDL_GetWindowID(getSdlWindow())) {
-						tetrisEntry_.getEntry("window maximized").setBool(false);
+						tetrisEntry_.getDeepChildEntry("window maximized").setBool(false);
 					}
 					break;
 			}

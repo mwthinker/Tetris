@@ -17,7 +17,7 @@ class TetrisEntry : public xml::DataEntry {
 public:
 	TetrisEntry(std::string fileName);
 
-	TetrisEntry getEntry(std::string tagNames) const;
+	TetrisEntry getDeepChildEntry(std::string tagNames) const;
 
 	TetrisEntry getChildEntry(std::string tagName) const;
 
@@ -51,7 +51,7 @@ private:
 		mutable std::map<std::string, mw::Music> musics_;
 	};
 
-	TetrisEntry(const TetrisEntry& g, xml::DataEntry e);	
+	TetrisEntry(const TetrisEntry& g, xml::DataEntry e);
 
 	std::shared_ptr<Data> data_;
 };

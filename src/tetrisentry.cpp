@@ -43,8 +43,8 @@ mw::Color xml::extract(tinyxml2::XMLHandle handle) {
 TetrisEntry::TetrisEntry(std::string fileName) : xml::DataEntry(fileName), data_(std::make_shared<Data>()) {
 }
 
-TetrisEntry TetrisEntry::getEntry(std::string tagNames) const {
-	return TetrisEntry(*this, xml::DataEntry::getEntry(tagNames));
+TetrisEntry TetrisEntry::getDeepChildEntry(std::string tagNames) const {
+	return TetrisEntry(*this, xml::DataEntry::getDeepChildEntry(tagNames));
 }
 
 TetrisEntry TetrisEntry::getChildEntry(std::string tagName) const {

@@ -28,7 +28,7 @@ void ManButton::setNbr(unsigned int nbr) {
 }
 
 void ManButton::draw(Uint32 deltaTime) {
-	useGlShader();
+	glUseProgram();
 	mw::Matrix44 model = getModelMatrix();
 	setGlColor(1, 1, 1);
 	
@@ -50,7 +50,7 @@ void ManButton::drawPlayer(mw::Matrix44 model, mw::Sprite& sprite) {
 	if (mouseInside_) {
 		mw::scale2D(model, 1.2f, 1.2f);
 	}
-	setGlModelMatrix(model * mw::getScaleMatrix44(dim.height_, dim.height_));
+	setGlModelMatrixU(model * mw::getScaleMatrix44(dim.height_, dim.height_));
 	
 	sprite.draw();
 }

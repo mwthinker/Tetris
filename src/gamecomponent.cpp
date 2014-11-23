@@ -19,9 +19,9 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	setGrabFocus(true);
 	tetrisGame_.setGameHandler(this);
 
-	soundBlockCollision_ = tetrisEntry_.getEntry("window sounds blockCollision").getSound();
-	soundRowRemoved_ = tetrisEntry_.getEntry("window sounds rowRemoved").getSound();
-	soundTetris_ = tetrisEntry_.getEntry("window sounds tetris").getSound();
+	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
+	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
+	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
 	
 	// Must bind attributes before linking.
 	boardShader_.bindAttribute("aPos");
@@ -38,7 +38,7 @@ void GameComponent::validate() {
 }
 
 void GameComponent::draw(Uint32 deltaTime) {
-	setGlModelMatrix(getModelMatrix());
+	setGlModelMatrixU(getModelMatrix());
 
 	boardShader_.glUseProgram();	
 
@@ -78,7 +78,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		
 	for (auto& pair : graphicPlayers_) {
 		if (tetrisGame_.isPaused()) {
-			static mw::Text text("Paused", tetrisEntry_.getEntry("window font").getFont(30));
+			static mw::Text text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
 			pair.second.setMiddleMessage(text);
 		}
 
@@ -105,7 +105,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 	float width = 0;
 	float height = 0;
 	for (const auto& player : players) {
-		graphicPlayers_[player->getId()] = GameGraphic(width, 0, tetrisEntry_.getEntry("window tetrisBoard"), player->getTetrisBoard());
+		graphicPlayers_[player->getId()] = GameGraphic(width, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"), player->getTetrisBoard());
 		width += graphicPlayers_[player->getId()].getWidth();
 		height = graphicPlayers_[player->getId()].getHeight();
 	}
@@ -115,7 +115,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 }
 
 void GameComponent::countDown(int msCountDown) {
-	mw::Text text("", tetrisEntry_.getEntry("window font").getFont(30));
+	mw::Text text("", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
 	if (msCountDown > 0) {
 		std::stringstream stream;
 		stream << "Start in " << (int) (msCountDown / 1000) + 1;
@@ -131,7 +131,7 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			if (tetrisGame_.getNbrOfPlayers() == 1) {
-				mw::Text text("Game Over", tetrisEntry_.getEntry("window font").getFont(30));
+				mw::Text text("Game Over", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
 				//it->second.setMiddleMessage(text);
 			} else {
 				std::stringstream stream;

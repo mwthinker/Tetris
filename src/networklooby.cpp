@@ -18,7 +18,7 @@ NetworkLooby::NetworkLooby(const mw::Font& font) : font_(font) {
 }
 
 void NetworkLooby::draw(Uint32 deltaTime) {
-	useGlShader();
+	glUseProgram();
 	mw::Matrix44 model = getModelMatrix();
 	//setGlModelMatrix(model);
 
@@ -27,7 +27,7 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 	static mw::Text id("Id", font_);
 
 	mw::translate2D(model, 0, dim.height_ - id.getCharacterSize() - 2);
-	setGlModelMatrix(model);
+	setGlModelMatrixU(model);
 	/*
 	auto old2 = wp->getModel();
 	id.draw();

@@ -18,9 +18,9 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 }
 
 void Highscore::draw(Uint32 deltaTime) {
-	useGlShader();
+	glUseProgram();
 	mw::Matrix44 model = getModelMatrix();
-	setGlModelMatrix(model);
+	setGlModelMatrixU(model);
 	setGlColor(1, 1, 1);
 
 	gui::Dimension size = getSize();
