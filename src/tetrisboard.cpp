@@ -8,6 +8,7 @@
 
 TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next)
 	: RawTetrisBoard(nbrRows, nbrColumns, current, next) {
+	
 	nbrOfUpdates_ = 0;
 	setCurrentBlock(current);
 	setNextBlockType(next);

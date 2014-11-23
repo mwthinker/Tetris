@@ -65,7 +65,7 @@ void Computer::update(const TetrisBoard& board) {
 }
 
 float Computer::calculateValue(const RawTetrisBoard& board, const Block& block) {
-	int lowestRow = board.getRows() + 4;
+	int lowestRow = board.getRows();
 	float meanHeight = 0;
 	int nbrOfSquares = 0;
 

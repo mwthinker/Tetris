@@ -77,7 +77,7 @@ public:
 
 	// Return the blocktype for a given position.
 	inline BlockType getBlockType(int row, int column) const {
-		if (row >= 0 && row < nbrRows_ + 4 && column >= 0 && column < nbrColumns_) {
+		if (row >= 0 && row < nbrRows_ && column >= 0 && column < nbrColumns_) {
 			return gameboard_[row * nbrColumns_ + column];
 		}
 		return BlockType::WALL;

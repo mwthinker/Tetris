@@ -312,7 +312,7 @@ void TetrisWindow::initPlayPanel() {
 	nbrHumans_ = std::make_shared<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 24, 20);
 		tetrisGame_.startGame();
 		tetrisGame_.restartGame();
 	});
@@ -321,7 +321,7 @@ void TetrisWindow::initPlayPanel() {
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 20, 20);
+		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 24, 20);
 		tetrisGame_.startGame();
 		tetrisGame_.restartGame();
 	});
@@ -418,7 +418,7 @@ void TetrisWindow::initCustomPlayPanel() {
 	customWidthField_ = std::make_shared<gui::TextField>("10", getDefaultFont(18));
 	p1->add(customWidthField_);
 	p1->add(createLabel("Height", getDefaultFont(18)));
-	customHeightField_ = std::make_shared<gui::TextField>("20", getDefaultFont(18));
+	customHeightField_ = std::make_shared<gui::TextField>("24", getDefaultFont(18));
 	p1->add(customHeightField_);
 
 	auto p2 = createPanel(100, 100);
@@ -426,7 +426,7 @@ void TetrisWindow::initCustomPlayPanel() {
 	customMinLevel_ = std::make_shared<gui::TextField>("1", getDefaultFont(18));
 	p2->add(customMinLevel_);
 	p2->add(createLabel("Max Level", getDefaultFont(18)));
-	customMaxLevel_ = std::make_shared<gui::TextField>("20", getDefaultFont(18));
+	customMaxLevel_ = std::make_shared<gui::TextField>("24", getDefaultFont(18));
 	p2->add(customMaxLevel_);
 
 	auto centerPanel = createPanel();
@@ -478,7 +478,7 @@ void TetrisWindow::initCreateServerPanel() {
 	serverWidthField_ = std::make_shared<gui::TextField>("10", getDefaultFont(18));
 	p1->add(serverWidthField_);
 	p1->add(createLabel("Height", getDefaultFont(18)));
-	serverHeightField_ = std::make_shared<gui::TextField>("20", getDefaultFont(18));
+	serverHeightField_ = std::make_shared<gui::TextField>("24", getDefaultFont(18));
 	p1->add(serverHeightField_);
 	centerPanel->add(p1);
 

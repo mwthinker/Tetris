@@ -180,14 +180,14 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	vertercies_ = 0;
 	int index = -1;
 
-	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 4) [squares]. 
-	std::vector<GLfloat> data(sizeof(GLfloat) * 9 * 6 * ((rows + 2)*columns + 4));
+	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * ((rows -2) * columns + 4) [squares]. 
+	std::vector<GLfloat> data(sizeof(GLfloat) * 9 * 6 * ((rows - 2)*columns + 4)); // Hide the highest 2.
 	// Draw the player area.
 	float x = lowX_ + (sizeBoard_ + sizeBetweenPlayers) * 0;
 	float y = lowY_ * 0.5f;
 	addSquare(data.data() , index,
 		x, y,
-		sizeBoard_ + sizeInfo + 2 * lowX_, squareSize_ * (rows + 2) + lowY_,
+		sizeBoard_ + sizeInfo + 2 * lowX_, squareSize_ * (rows - 2) + lowY_,
 		c4);
 	vertercies_ += 6;
 
@@ -196,14 +196,14 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	y = lowY_;
 	addSquare(data.data(), index,
 		x, y,
-		squareSize_ * columns, squareSize_ * (rows + 2),
+		squareSize_ * columns, squareSize_ * (rows - 2),
 		c1);
 	vertercies_ += 6;
 
 	indexBoard_ = data.size();
 
 	// Draw the inner squares.
-	for (int row = 0; row < rows + 2; ++row) {
+	for (int row = 0; row < rows - 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
 			x = lowX_ + squareSize_ * column + (squareSize_ * columns + sizeInfo) * 0 + squareSize_ * 0.1f;
 			y = lowY_ + squareSize_ * row + squareSize_ * 0.1f;
@@ -217,7 +217,7 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 
 	// Draw the block start area.
 	x = lowX_;
-	y = lowY_ + squareSize_ * rows;
+	y = lowY_ + squareSize_ * (rows - 4);
 	addSquare(data.data(), index,
 		x, y,
 		squareSize_ * columns, squareSize_ * 2,
@@ -226,7 +226,7 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 
 	// Draw the preview block area.
 	x = lowX_ + sizeBoard_ + 5;
-	y = lowY_ + squareSize_ * rows - (squareSize_ * 5 + 5);
+	y = lowY_ + squareSize_ * (rows - 4) - (squareSize_ * 5 + 5);
 	addSquare(data.data(), index,
 		x, y,
 		squareSize_ * 5, squareSize_ * 5,
@@ -234,7 +234,7 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	vertercies_ += 6;
 
 	width_ = squareSize_ * columns + sizeBoard_;
-	height_ = squareSize_ * (rows + 2) + lowY_ * 2;
+	height_ = squareSize_ * (rows - 2) + lowY_ * 2;
 
 	staticVbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
 }
@@ -252,7 +252,7 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 	int index = -1;
 
 	// Draw the board.
-	for (int row = 0; row < rows + 2; ++row) {
+	for (int row = 0; row < rows - 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
 			BlockType type = tetrisBoard.getBlockType(row, column);
 			if (type != BlockType::EMPTY && type != BlockType::WALL) {
@@ -274,7 +274,7 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 	Block block = tetrisBoard.getBlock();
 	mw::Sprite sprite = getSprite(block.blockType());
 	for (const Square& sq : block) {
-		if (sq.row_ < rows + 2) {
+		if (sq.row_ < rows - 2) {
 			addSquare(dynamicData_.data(), index,
 				x + sq.column_ * squareSize_, y + sq.row_ * squareSize_,
 				squareSize_, squareSize_,
@@ -285,7 +285,7 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 
 	// Draw the preview block.
 	x = lowX_ + sizeBoard_ + 5 + squareSize_ * 2.5f;
-	y = lowY_ + squareSize_ * rows - (squareSize_ * 2.5f + 5);
+	y = lowY_ + squareSize_ * (rows - 4) - (squareSize_ * 2.5f + 5);
 	block = Block(tetrisBoard.getNextBlockType(), 0, 0);
 	gui::Point center = calculateCenter(block);
 	sprite = getSprite(block.blockType());

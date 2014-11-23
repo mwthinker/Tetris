@@ -6,7 +6,7 @@
 
 RawTetrisBoard::RawTetrisBoard(int nbrRows, int nbrColumns,
 	BlockType current, BlockType next) :
-	gameboard_((nbrRows + 4) * (nbrColumns), BlockType::EMPTY),
+	gameboard_(nbrRows * nbrColumns, BlockType::EMPTY),
 	next_(next),
 	nbrRows_(nbrRows), nbrColumns_(nbrColumns),
 	isGameOver_(false) {
@@ -147,7 +147,7 @@ void RawTetrisBoard::addBlockToBoard(const Block& block) {
 }
 
 Block RawTetrisBoard::createBlock(BlockType blockType) const {
-	return Block(blockType, nbrRows_, nbrColumns_ / 2 - 1);
+	return Block(blockType, nbrRows_- 4, nbrColumns_ / 2 - 1); // 4 rows are the starting area.
 }
 
 bool RawTetrisBoard::collision(const Block& block) const {
@@ -164,7 +164,7 @@ bool RawTetrisBoard::collision(const Block& block) const {
 }
 
 void RawTetrisBoard::clearBoard() {
-	gameboard_ = std::vector<BlockType>((nbrRows_ + 4) * (nbrColumns_), BlockType::EMPTY);
+	gameboard_.assign(gameboard_.size(), BlockType::EMPTY);
 	isGameOver_ = false;
 }
 
