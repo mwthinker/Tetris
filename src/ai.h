@@ -6,7 +6,7 @@
 class Ai {
 public:
 	inline Ai() : name_("DefaultAi") {
-		valueFunction_ = "0 - 5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight";
+		valueFunction_ = "~5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight";
 	}
 
 	inline Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {

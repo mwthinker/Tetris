@@ -120,15 +120,15 @@
         <ais>
             <player>
                 <name>Default2</name>
-                <valueFunction>0-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight</valueFunction>
+                <valueFunction>~5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight</valueFunction>
             </player>
             <player>
                 <name>Defensive</name>
-                <valueFunction>0-5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
+                <valueFunction>~5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
             </player>
             <player>
                 <name>Worthless</name>
-                <valueFunction>0-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
+                <valueFunction>~10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
             </player>
         </ais>
     </players>

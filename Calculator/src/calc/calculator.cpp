@@ -5,13 +5,18 @@
 #include <cmath>
 #include <cassert>
 
-namespace calc {	
+namespace calc {
 
 	Calculator::Calculator() {
 		initDefaultOperators();
 	}
 
 	void Calculator::initDefaultOperators() {
+		// Unary minus sign operator.
+		addOperator('~', 5, false, 1, [](float a, float b) {
+			return -a;
+		});
+
 		addOperator('+', 2, true, 2, [](float a, float b) {
 			return a + b;
 		});
@@ -52,7 +57,7 @@ namespace calc {
 
 	float Calculator::excecute(Cache cache) {
 		std::vector<Symbol>& prefix = cache.symbols_;
-		int size = prefix.size();		
+		int size = prefix.size();
 		for (int index = 0; index < size; ++index) {
 			Symbol& symbol = prefix[index];
 			ExcecuteFunction* f = nullptr;
@@ -86,8 +91,8 @@ namespace calc {
 					}
 					float value = f->excecute();
 					symbol.float_ = Float::create(value);
-				}
 					break;
+				}
 			}
 		}
 
@@ -97,7 +102,7 @@ namespace calc {
 	}
 
 	float Calculator::excecute(std::string infixNotation) {
-		Cache cache = preCalculate(infixNotation);		
+		Cache cache = preCalculate(infixNotation);
 		return excecute(cache);
 	}
 
@@ -139,6 +144,7 @@ namespace calc {
 			} else {
 				float value;
 				std::stringstream floatStream(word);
+
 				if (floatStream >> value) { // Is a number?
 					Symbol symbol;
 					symbol.float_ = Float::create(value);
@@ -149,6 +155,7 @@ namespace calc {
 				}
 			}
 		}
+
 		return infix;
 	}
 
@@ -156,6 +163,7 @@ namespace calc {
 	void Calculator::addOperator(char token, char predence, bool leftAssociative, char parameters, const std::function<float(float, float)>& function) {
 		std::stringstream stream;
 		stream << token;
+
 		// Function name not used?
 		if (symbols_.end() == symbols_.find(stream.str())) {
 			Operator op = Operator::create(token, predence, leftAssociative, functions_.size());

@@ -25,11 +25,11 @@ namespace calc {
 		void addOperator(char token, char predence, bool leftAssociative, char parameters, const std::function<float(float, float)>& function);
 
 		void addFunction(std::string name, char parameters, std::function<float(float, float)>& function);
-		
+
 		void addVariable(std::string name, float value);
 
 		void updateVariable(std::string name, float value);
-	
+
 	private:
 		// Returns a list of all symbols.
 		std::list<Symbol> getSymbols(std::string infixNotation);
@@ -45,16 +45,16 @@ namespace calc {
 			float excecute();
 
 			char parameters_;
-			
+
 			float param_[2];
 		private:
-			std::function<float(float, float)> function_;			
+			std::function<float(float, float)> function_;
 		};
 
 		std::map<std::string, Symbol> symbols_;
 		std::vector<ExcecuteFunction> functions_;
 		std::vector<float> variableValues_;
-	};	
+	};
 
 } // Namespace calc;
 
