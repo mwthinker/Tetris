@@ -22,15 +22,8 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
 	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
-	
-	// Must bind attributes before linking.
-	boardShader_.bindAttribute("aPos");
-	boardShader_.bindAttribute("aTex");
-	boardShader_.bindAttribute("aIsTex");
-	boardShader_.bindAttribute("aColor");
-	boardShader_.loadAndLinkFromFile("board.ver.glsl", "board.fra.glsl");
-	
-	uMatIndex_ = boardShader_.getUniformLocation("uMat");
+		
+	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
 }
 
 void GameComponent::validate() {
@@ -43,13 +36,8 @@ void GameComponent::draw(Uint32 deltaTime) {
 	boardShader_.glUseProgram();	
 
 	if (updateMatrix_) {
-		if (uMatIndex_ == -1) {
-			uMatIndex_ = boardShader_.getUniformLocation("uMat");
-		}
-
 		gui::Dimension dim = getSize();
 		gui::Dimension prefDim = getPreferredSize();
-
 
 		float width = prefDim.width_;
 		float height = prefDim.height_;
@@ -69,7 +57,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 				* mw::getScaleMatrix44(scale, scale);
 		}
 
-		mw::glUniformMatrix4fv(uMatIndex_, 1, false, (getProjectionMatrix() * getModelMatrix() * model).data());
+		boardShader_.setGlMatrixU(getProjectionMatrix() * getModelMatrix() * model);
 	}
 	
 	mw::glEnable(GL_BLEND);

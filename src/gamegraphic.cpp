@@ -138,12 +138,7 @@ GameGraphic::GameGraphic() {
 GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) :
 	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares]. 
 	dynamicData_(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 8)),
-	aPosIndex_(-1),
-	aTexIndex_(-1),
-	aIsTexIndex_(-1),
-	aColorIndex_(-1),
-	lowX_(x), 
-	lowY_(y) {
+	lowX_(x), lowY_(y) {
 
 	mw::Color color1 = boardEntry.getChildEntry("outerSquareColor").getColor();
 	mw::Color color2 = boardEntry.getChildEntry("innerSquareColor").getColor();
@@ -291,7 +286,7 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 	sprite = getSprite(block.blockType());
 	for (const Square& sq : block) {
 		addSquare(dynamicData_.data(), index,
-			x + (center.x_ - sq.column_ - 0.5f) * squareSize_, y + (center.y_ - sq.row_ - 0.5f) * squareSize_,
+			x + (-center.x_ + sq.column_ - 0.5f) * squareSize_, y + (-center.y_ + sq.row_ - 0.5f) * squareSize_,
 			squareSize_, squareSize_,
 			sprite);
 		dynamicVertercies_ += 6;
@@ -307,16 +302,8 @@ void GameGraphic::update(const PlayerPtr& player) {
 	vbo_.unbindBuffer();
 }
 
-void GameGraphic::draw(mw::Shader& shader) {
+void GameGraphic::draw(const BoardShader& shader) {
 	if (staticVbo_.getSize() > 0) {
-		if (aPosIndex_ == -1) {
-			// Only called once!
-			aPosIndex_ = shader.getAttributeLocation("aPos");
-			aTexIndex_ = shader.getAttributeLocation("aTex");;
-			aIsTexIndex_ = shader.getAttributeLocation("aIsTex");;
-			aColorIndex_ = shader.getAttributeLocation("aColor");;
-		}
-
 		staticVbo_.bindBuffer();
 		setVertexAttribPointer(shader);
 
@@ -339,11 +326,11 @@ void GameGraphic::draw(mw::Shader& shader) {
 
 		// Draw the texts.
 		mw::glActiveTexture(GL_TEXTURE0);
-		drawText(lowX_ + sizeBoard_ + 10, lowY_ + 100, name_);
-		drawText(lowX_ + sizeBoard_ + 10, lowY_ + 200, level_.getTexture());
-		drawText(lowX_ + sizeBoard_ + 10, lowY_ + 150, points_.getTexture());
-		drawText(1, 1, name_);
-		drawText(1, 1, name_);
+		drawText(lowX_ + sizeBoard_ + 10, lowY_ + 100, name_, shader);
+		drawText(lowX_ + sizeBoard_ + 10, lowY_ + 200, level_.getTexture(), shader);
+		drawText(lowX_ + sizeBoard_ + 10, lowY_ + 150, points_.getTexture(), shader);
+		drawText(1, 1, name_, shader);
+		drawText(1, 1, name_, shader);
 
 		mw::checkGlError();
 	}
@@ -386,7 +373,7 @@ void GameGraphic::update(int rowsCleared, int points, int level) {
 	level_.setText(stream.str());
 }
 
-void GameGraphic::drawText(float x, float y, const mw::Texture& texture) {
+void GameGraphic::drawText(float x, float y, const mw::Texture& texture, const BoardShader& shader) {
 	if (texture.isValid()) {
 		texture.bindTexture();
 
@@ -397,18 +384,11 @@ void GameGraphic::drawText(float x, float y, const mw::Texture& texture) {
 			x, y,
 			(float) texture.getWidth(), (float) texture.getHeight(),
 			mw::Sprite(texture));
-
-		mw::glEnableVertexAttribArray(aPosIndex_);
-		mw::glVertexAttribPointer(aPosIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, data.data());
-
-		mw::glEnableVertexAttribArray(aTexIndex_);
-		mw::glVertexAttribPointer(aTexIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, data.data() + 2);
-
-		mw::glEnableVertexAttribArray(aIsTexIndex_);
-		mw::glVertexAttribPointer(aIsTexIndex_, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, data.data() + 4);
-
-		mw::glEnableVertexAttribArray(aColorIndex_);
-		mw::glVertexAttribPointer(aColorIndex_, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, data.data() + 5);
+		
+		shader.setGlVerA(sizeof(GLfloat) * 9, data.data());
+		shader.setGlTexA(sizeof(GLfloat) * 9, data.data() + 2);
+		shader.setGlIsTexA(sizeof(GLfloat) * 9, data.data() + 4);
+		shader.setGlColorA(sizeof(GLfloat) * 9, data.data() + 5);
 		
 		// Upload the attributes and draw the sprite.
 		mw::glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
@@ -417,18 +397,11 @@ void GameGraphic::drawText(float x, float y, const mw::Texture& texture) {
 	}
 }
 
-void GameGraphic::setVertexAttribPointer(const mw::Shader& shader) {
-	mw::glEnableVertexAttribArray(aPosIndex_);
-	mw::glVertexAttribPointer(aPosIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) 0);
-
-	mw::glEnableVertexAttribArray(aTexIndex_);
-	mw::glVertexAttribPointer(aTexIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
-
-	mw::glEnableVertexAttribArray(aIsTexIndex_);
-	mw::glVertexAttribPointer(aIsTexIndex_, 1, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
-
-	mw::glEnableVertexAttribArray(aColorIndex_);
-	mw::glVertexAttribPointer(aColorIndex_, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
+void GameGraphic::setVertexAttribPointer(const BoardShader& shader) {
+	shader.setGlVerA(sizeof(GLfloat) * 9, (GLvoid*) 0);
+	shader.setGlTexA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
+	shader.setGlIsTexA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
+	shader.setGlColorA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
 }
 
 void GameGraphic::setName(const mw::Texture& texture) {

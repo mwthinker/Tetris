@@ -4,6 +4,7 @@
 #include "tetrisboard.h"
 #include "player.h"
 #include "tetrisentry.h"
+#include "boardshader.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -31,7 +32,7 @@ public:
 		return height_;
 	}
 
-	void draw(mw::Shader& shader);
+	void draw(const BoardShader& shader);
 
 	void setMiddleMessage(const mw::Text& text);	
 
@@ -47,8 +48,8 @@ public:
 
 private:
 	void update(int rowsCleared, int points, int level);
-	void setVertexAttribPointer(const mw::Shader& shader);
-	void drawText(float x, float y, const mw::Texture& texture);
+	void setVertexAttribPointer(const BoardShader& shader);
+	void drawText(float x, float y, const mw::Texture& texture, const BoardShader& shader);
 	void updateDynamicData(const RawTetrisBoard& tetrisBoard);
 	void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
 	void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
@@ -78,11 +79,6 @@ private:
 
 	mw::Text level_, points_, nbrOfClearedRows_;
 	bool showPoints_;
-
-	int aPosIndex_;
-	int aTexIndex_;
-	int aIsTexIndex_;
-	int aColorIndex_;
 };
 
 #endif // GRAPHICBOARD_H

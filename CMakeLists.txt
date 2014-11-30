@@ -23,6 +23,8 @@ set(SOURCES
 	src/ai.h
 	src/block.cpp
 	src/block.h
+	src/boardshader.cpp
+	src/boardshader.h
 	src/computer.cpp
 	src/computer.h
 	src/device.h

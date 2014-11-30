@@ -4,6 +4,7 @@
 #include "gamegraphic.h"
 #include "gamehandler.h"
 #include "tetrisentry.h"
+#include "boardshader.h"
 
 #include <gui/component.h>
 
@@ -45,14 +46,13 @@ private:
 	mw::Sound soundRowRemoved_;
 	mw::Sound soundTetris_;
 
-	mw::Shader boardShader_;	
+	BoardShader boardShader_;	
 
 	// Fix timestep.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
 
 	bool updateMatrix_;
-	int uMatIndex_;
 	mw::Matrix44 matrix_;
 };
 
