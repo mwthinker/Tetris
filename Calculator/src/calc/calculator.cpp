@@ -4,10 +4,11 @@
 #include <stack>
 #include <cmath>
 #include <cassert>
+#include <algorithm>
 
 namespace calc {
 
-	Calculator::Calculator() {
+	Calculator::Calculator() : error_(false) {
 		initDefaultOperators();
 	}
 
@@ -50,12 +51,20 @@ namespace calc {
 	}
 
 	Cache Calculator::preCalculate(std::string infixNotation) {
+		error_ = false; // Reset error;
 		std::list<Symbol> infix = getSymbols(infixNotation);
+		if (error_) {
+			return Cache();
+		}
 		Cache cache(shuntingYardAlgorithm(infix));
+		if (error_) {
+			return Cache();
+		}
 		return cache;
 	}
 
 	float Calculator::excecute(Cache cache) {
+		error_ = false; // Reset error;
 		std::vector<Symbol>& prefix = cache.symbols_;
 		int size = prefix.size();
 		for (int index = 0; index < size; ++index) {
@@ -67,8 +76,8 @@ namespace calc {
 					// Fall through!
 				case Type::OPERATOR:
 				{
-					// Is a function and not a operator!
 					if (f == nullptr) {
+						// Is an operator, not a function!
 						f = &functions_[symbol.operator_.index_];
 					}
 					int nbr = f->parameters_;
@@ -86,13 +95,30 @@ namespace calc {
 						}
 					}
 					if (nbr > 0) {
-						// Error.
+						error_ = true;
+						auto it = std::find_if(symbols_.begin(), symbols_.end(), [&](const std::pair<std::string, Symbol>& pair) {
+							if (symbol.type_ == Type::FUNCTION) {
+								return pair.second.function_.index_ == symbol.function_.index_;
+							} else { // Is a operator!
+								return pair.second.operator_.token_ == symbol.operator_.index_;
+							}
+						});
+						if (it != symbols_.end()) {
+							errorMessage_ = "\nFunction/operator ";
+							errorMessage_ += it->first;
+							errorMessage_ += " missing enough parameters.";
+						} else {
+							errorMessage_ = "\nUnrecognized symbol in cachce.";
+						}
 						return 0;
 					}
 					float value = f->excecute();
 					symbol.float_ = Float::create(value);
 					break;
 				}
+				default:
+					// Continue the iteration!
+					break;
 			}
 		}
 
@@ -124,6 +150,7 @@ namespace calc {
 	// Returns a list of all symbols.
 	std::list<Symbol> Calculator::getSymbols(std::string infixNotation) {
 		std::string text;
+		// Add space between all "symbols" 
 		for (char key : infixNotation) {
 			std::string word;
 			word += key;
@@ -150,8 +177,10 @@ namespace calc {
 					symbol.float_ = Float::create(value);
 					infix.push_back(symbol);
 				} else {
-					assert(0);
-					break;
+					error_ = true;
+					errorMessage_ = "\nUnrecognized symbol: ";
+					errorMessage_ += word;
+					return std::list<Symbol>();
 				}
 			}
 		}
@@ -183,6 +212,14 @@ namespace calc {
 			symbols_[name] = symbol;
 			functions_.push_back(ExcecuteFunction(parameters, function));
 		}
+	}
+
+	bool Calculator::hasError() const {
+		return error_;
+	}
+
+	std::string Calculator::getErrorMessage() const {
+		return errorMessage_;
 	}
 
 	std::vector<Symbol> Calculator::shuntingYardAlgorithm(const std::list<Symbol>& infix) {
@@ -223,11 +260,11 @@ namespace calc {
 					// Is left paranthes?
 					if (symbol.paranthes_.left_) {
 						operatorStack.push(symbol);
-					} else {
-						// Is right paranthes.
-
+					} else { // Is right paranthes.
 						if (operatorStack.size() < 1) {
-							assert(0);
+							error_ = true;
+							errorMessage_ = "\nMissing right parameter '(' in expression.";
+							return std::vector<Symbol>();
 						}
 						bool foundLeftParanthes = false;
 
@@ -251,9 +288,9 @@ namespace calc {
 						}
 
 						if (!foundLeftParanthes) {
-							// Error, mismatch of parantheses.
-							assert(0);
-							break;
+							error_ = true;
+							errorMessage_ = "\nError, mismatch of parantheses in expression";
+							return std::vector<Symbol>();
 						}
 					}
 					break;
@@ -264,9 +301,9 @@ namespace calc {
 			while (operatorStack.size() > 0) {
 				Symbol top = operatorStack.top();
 				if (top.type_ == Type::PARANTHES) {
-					// Error, mismatch of parantheses.
-					assert(0);
-					break;
+					error_ = true;
+					errorMessage_ = "\nError, mismatch of parantheses in expression";
+					return std::vector<Symbol>();
 				}
 				operatorStack.pop();
 				output.push_back(top);

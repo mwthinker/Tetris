@@ -30,6 +30,10 @@ namespace calc {
 
 		void updateVariable(std::string name, float value);
 
+		bool hasError() const;
+
+		std::string getErrorMessage() const;
+
 	private:
 		// Returns a list of all symbols.
 		std::list<Symbol> getSymbols(std::string infixNotation);
@@ -54,6 +58,9 @@ namespace calc {
 		std::map<std::string, Symbol> symbols_;
 		std::vector<ExcecuteFunction> functions_;
 		std::vector<float> variableValues_;
+
+		bool error_;
+		std::string errorMessage_;
 	};
 
 } // Namespace calc;
