@@ -47,22 +47,35 @@ void GameComponent::draw(Uint32 deltaTime) {
 		mw::Matrix44 model = getModelMatrix();
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
-			float scale = dim.width_ / width;
-			mw::translate2D(model, 2, (dim.height_ - scale * height) * 0.5f + 2);
-			mw::scale2D(model, scale, scale);
+			scale_ = dim.width_ / width;
+			dx_ = 2;
+			dy_ = (dim.height_ - scale_ * height) * 0.5f + 2;
 		} else {
 			// Blank sides, left and right.
-			float scale = dim.height_ / height;
-			mw::translate2D(model, 2 + (dim.width_ - scale * width) * 0.5f, 2);
-			mw::scale2D(model, scale, scale);
+			scale_ = dim.height_ / height;
+			dx_ = 2 + (dim.width_ - scale_ * width) * 0.5f;
+			dy_ = 2;
 		}
+		mw::translate2D(model, dx_, dy_);
+		mw::scale2D(model, scale_, scale_);
+
 		boardShader_.setGlMatrixU(getProjectionMatrix() * model);
+
+		fontSize_ = scale_ * 16.f;
+		if (font_.getCharacterSize() != fontSize_) {
+			font_ = tetrisEntry_.getDeepChildEntry("window font").getFont((int) fontSize_);
+			// Update the font!
+			for (auto& pair : graphicPlayers_) {
+				pair.second.update(fontSize_, font_);
+			}
+		}
 	}
 	
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mw::glActiveTexture(GL_TEXTURE1);
-		
+	
+	// Draw boards.
 	for (auto& pair : graphicPlayers_) {
 		if (tetrisGame_.isPaused()) {
 			static mw::Text text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
@@ -70,6 +83,15 @@ void GameComponent::draw(Uint32 deltaTime) {
 		}
 
 		pair.second.draw(boardShader_);
+	}
+	// Draw texts.
+	glUseProgram();
+	float x = 0;
+	int i = 0;
+	float boardWidth = getSize().width_ / graphicPlayers_.size();
+	for (auto& pair : graphicPlayers_) {
+		pair.second.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
+		++i;
 	}
 
 	mw::glActiveTexture(GL_TEXTURE0);
@@ -92,7 +114,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 		graphicPlayers_[player->getId()] = GameGraphic(width, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"), player->getTetrisBoard());
 		width += graphicPlayers_[player->getId()].getWidth();
 		height = graphicPlayers_[player->getId()].getHeight();
-		//graphicPlayers_[player->getId()].setName(player->getName());
+		graphicPlayers_[player->getId()].setName(player->getName());
 	}
 	
 	alivePlayers_ = players.size();

@@ -36,6 +36,11 @@ private:
 	// Called when the component is resized.
 	void validate() override;
 
+	mw::Font font_;
+	float fontSize_;
+	float dx_, dy_;
+	float scale_;
+
 	std::map<int, GameGraphic> graphicPlayers_;
 	TetrisGame& tetrisGame_;
 	int alivePlayers_;

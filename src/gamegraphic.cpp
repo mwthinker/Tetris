@@ -388,13 +388,28 @@ void GameGraphic::draw(const BoardShader& shader) {
 
 		// Draw the texts.
 		mw::glActiveTexture(GL_TEXTURE0);
-		drawText(lowX_ + sizeBoard_ + 5, lowY_ + 100, points_, shader);
-		drawText(lowX_ + sizeBoard_ + 5, lowY_ + 200, name_, shader);
-		drawText(lowX_ + sizeBoard_ + 5, lowY_ + 150, level_, shader);
-		drawText(lowX_ + sizeBoard_ + 5, lowY_ + 50, nbrOfClearedRows_, shader);
+		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 100, points_, shader);
+		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 200, name_, shader);
+		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 150, level_, shader);
+		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 50, nbrOfClearedRows_, shader);
 
 		mw::checkGlError();
 	}
+}
+
+void GameGraphic::drawText(float x, float y, float width, float height, float scale) {
+	float boardWidth = 100 * scale;
+	name_.draw(x + boardWidth, height - y - name_.getHeight());
+	points_.draw(x + boardWidth, y + 50 * scale);
+	level_.draw(x + boardWidth, y + 100 * scale);
+	nbrOfClearedRows_.draw(x + boardWidth, y + 10 * scale);
+}
+
+void GameGraphic::update(float size, const mw::Font& font) {
+	points_ = mw::Text(points_.getText(), font, size);
+	name_ = mw::Text(name_.getText(), font, size);
+	level_ = mw::Text(level_.getText(), font, size);
+	nbrOfClearedRows_ = mw::Text(nbrOfClearedRows_.getText(), font, size);
 }
 
 mw::Sprite GameGraphic::getSprite(BlockType blockType) const {
@@ -466,6 +481,6 @@ void GameGraphic::setVertexAttribPointer(const BoardShader& shader) {
 	shader.setGlColorA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
 }
 
-void GameGraphic::setName(const mw::Text& text) {
-	name_ = text;
+void GameGraphic::setName(std::string name) {
+	name_.setText(name);
 }

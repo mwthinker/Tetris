@@ -33,8 +33,11 @@ public:
 	}
 
 	void draw(const BoardShader& shader);
+	void drawText(float x, float y, float width, float height, float scale);
 
-	void setMiddleMessage(const mw::Text& text);	
+	void update(float size, const mw::Font& font);
+
+	void setMiddleMessage(const mw::Text& text);
 
 	inline void showPoints() {
 		showPoints_ = true;
@@ -44,7 +47,7 @@ public:
 		showPoints_ = false;
 	}
 
-	void setName(const mw::Text& text);
+	void setName(std::string name);
 
 private:
 	void update(int rowsCleared, int points, int level);
