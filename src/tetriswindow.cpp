@@ -64,7 +64,9 @@ TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry),
 		tetrisEntry.getDeepChildEntry("window icon").getString(),
 		!tetrisEntry.getDeepChildEntry("window border").getBool()) {
 	
-	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(), 480, 480);
+	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(), 
+		tetrisEntry.getDeepChildEntry("window minWidth").getInt(),
+		tetrisEntry.getDeepChildEntry("window minHeight").getInt());
 
 	if (tetrisEntry.getDeepChildEntry("window maximized").getBool()) {
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());

@@ -24,6 +24,8 @@
         <positionX>796</positionX>
         <positionY>333</positionY>
         <maximized>0</maximized>
+		<minWidth>480</minWidth>
+        <minHeight>480</minHeight>
         <icon>images/icon.bmp</icon>
         <sounds>
             <buttonPush/>

@@ -44,12 +44,12 @@ public:
 		showPoints_ = false;
 	}
 
-	void setName(const mw::Texture& texture);
+	void setName(const mw::Text& text);
 
 private:
 	void update(int rowsCleared, int points, int level);
 	void setVertexAttribPointer(const BoardShader& shader);
-	void drawText(float x, float y, const mw::Texture& texture, const BoardShader& shader);
+	void drawText(float x, float y, const mw::Text& text, const BoardShader& shader);
 	void updateDynamicData(const RawTetrisBoard& tetrisBoard);
 	void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
 	void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
@@ -61,7 +61,6 @@ private:
 	float squareSize_;
 	float sizeBoard_;
 
-	mw::Texture name_;
 	mw::Text middleMessage_;
 	mw::Font font_;
 	mw::VertexBufferObject staticVbo_, vbo_;
@@ -77,7 +76,7 @@ private:
 	int indexCurrentBlock_;
 	int indexNextBlock;
 
-	mw::Text level_, points_, nbrOfClearedRows_;
+	mw::Text level_, points_, nbrOfClearedRows_, name_;
 	bool showPoints_;
 };
 

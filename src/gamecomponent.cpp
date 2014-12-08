@@ -44,20 +44,19 @@ void GameComponent::draw(Uint32 deltaTime) {
 
 		// Centers the game and holds the correct proportions.
 		// The sides is transparent.
-		mw::Matrix44 model;
+		mw::Matrix44 model = getModelMatrix();
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
 			float scale = dim.width_ / width;
-			model = mw::getTranslateMatrix44(2, (dim.height_ - scale * height) * 0.5f + 2)
-				* mw::getScaleMatrix44(scale, scale);
+			mw::translate2D(model, 2, (dim.height_ - scale * height) * 0.5f + 2);
+			mw::scale2D(model, scale, scale);
 		} else {
 			// Blank sides, left and right.
 			float scale = dim.height_ / height;
-			model = mw::getTranslateMatrix44(2 + (dim.width_ - scale * width) * 0.5f, 2)
-				* mw::getScaleMatrix44(scale, scale);
+			mw::translate2D(model, 2 + (dim.width_ - scale * width) * 0.5f, 2);
+			mw::scale2D(model, scale, scale);
 		}
-
-		boardShader_.setGlMatrixU(getProjectionMatrix() * getModelMatrix() * model);
+		boardShader_.setGlMatrixU(getProjectionMatrix() * model);
 	}
 	
 	mw::glEnable(GL_BLEND);
@@ -71,9 +70,6 @@ void GameComponent::draw(Uint32 deltaTime) {
 		}
 
 		pair.second.draw(boardShader_);
-		//pair.second.draw(wp);
-		//model = model *  mw::getTranslateMatrix44(pair.second.getWidth() + 5, 0);
-		//wp->setModel(model);
 	}
 
 	mw::glActiveTexture(GL_TEXTURE0);
@@ -96,6 +92,7 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 		graphicPlayers_[player->getId()] = GameGraphic(width, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"), player->getTetrisBoard());
 		width += graphicPlayers_[player->getId()].getWidth();
 		height = graphicPlayers_[player->getId()].getHeight();
+		//graphicPlayers_[player->getId()].setName(player->getName());
 	}
 	
 	alivePlayers_ = players.size();
