@@ -217,6 +217,7 @@ GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetr
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
+	borderSize_ = 20;
 
 	// Define all text sizes and font usage.
 	level_ = mw::Text("Level ", font_, 16);
@@ -240,8 +241,8 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * ((rows -2) * columns + 4) [squares]. 
 	std::vector<GLfloat> data(sizeof(GLfloat) * 9 * 6 * ((rows - 2)*columns + 4)); // Hide the highest 2.
 	// Draw the player area.
-	float x = lowX_ + (sizeBoard_ + sizeBetweenPlayers) * 0;
-	float y = lowY_ * 0.5f;
+	float x = lowX_ + borderSize_;
+	float y = lowY_ * 0.5f + borderSize_;
 	addSquare(data.data() , index,
 		x, y,
 		sizeBoard_ + sizeInfo + 2 * lowX_, squareSize_ * (rows - 2) + lowY_,
@@ -249,8 +250,8 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	vertercies_ += 6;
 
 	// Draw the outer square.
-	x = lowX_ + 0 * (squareSize_ * columns + sizeInfo + sizeBetweenPlayers);
-	y = lowY_;
+	x = lowX_ + borderSize_;
+	y = lowY_ + borderSize_;
 	addSquare(data.data(), index,
 		x, y,
 		squareSize_ * columns, squareSize_ * (rows - 2),
@@ -262,8 +263,8 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	// Draw the inner squares.
 	for (int row = 0; row < rows - 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
-			x = lowX_ + squareSize_ * column + (squareSize_ * columns + sizeInfo) * 0 + squareSize_ * 0.1f;
-			y = lowY_ + squareSize_ * row + squareSize_ * 0.1f;
+			x = lowX_ + borderSize_ + squareSize_ * column + (squareSize_ * columns + sizeInfo) * 0 + squareSize_ * 0.1f;
+			y = lowY_ + borderSize_ + squareSize_ * row + squareSize_ * 0.1f;
 			addSquare(data.data(), index,
 				x, y,
 				squareSize_ * 0.8f, squareSize_ * 0.8f,
@@ -273,8 +274,8 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	}
 
 	// Draw the block start area.
-	x = lowX_;
-	y = lowY_ + squareSize_ * (rows - 4);
+	x = lowX_ + borderSize_;
+	y = lowY_ + borderSize_ + squareSize_ * (rows - 4);
 	addSquare(data.data(), index,
 		x, y,
 		squareSize_ * columns, squareSize_ * 2,
@@ -282,8 +283,8 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 	vertercies_ += 6;
 
 	// Draw the preview block area.
-	x = lowX_ + sizeBoard_ + 5;
-	y = lowY_ + squareSize_ * (rows - 4) - (squareSize_ * 5 + 5);
+	x = lowX_ + borderSize_ + sizeBoard_ + 5;
+	y = lowY_ + borderSize_ + squareSize_ * (rows - 4) - (squareSize_ * 5 + 5);
 	addSquare(data.data(), index,
 		x, y,
 		squareSize_ * 5, squareSize_ * 5,
@@ -313,8 +314,8 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 		for (int column = 0; column < columns; ++column) {
 			BlockType type = tetrisBoard.getBlockType(row, column);
 			if (type != BlockType::EMPTY && type != BlockType::WALL) {
-				float x = lowX_ + squareSize_ * column;
-				float y = lowY_ + squareSize_ * row;
+				float x = lowX_ + borderSize_ + squareSize_ * column;
+				float y = lowY_ + borderSize_ + squareSize_ * row;
 				mw::Sprite sprite = getSprite(type);
 				addSquare(dynamicData_.data(), index,
 					x, y,
@@ -326,8 +327,8 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 	}
 
 	// Draw the current block.
-	float x = lowX_;
-	float y = lowY_;
+	float x = lowX_ + borderSize_;
+	float y = lowY_ + borderSize_;
 	Block block = tetrisBoard.getBlock();
 	mw::Sprite sprite = getSprite(block.blockType());
 	for (const Square& sq : block) {
@@ -341,8 +342,8 @@ void GameGraphic::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
 	}
 
 	// Draw the preview block.
-	x = lowX_ + sizeBoard_ + 5 + squareSize_ * 2.5f;
-	y = lowY_ + squareSize_ * (rows - 4) - (squareSize_ * 2.5f + 5);
+	x = lowX_ + borderSize_ + sizeBoard_ + 5 + squareSize_ * 2.5f;
+	y = lowY_ + borderSize_ + squareSize_ * (rows - 4) - (squareSize_ * 2.5f + 5);
 	block = Block(tetrisBoard.getNextBlockType(), 0, 0);
 	gui::Point center = calculateCenter(block);
 	sprite = getSprite(block.blockType());

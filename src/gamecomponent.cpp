@@ -48,13 +48,13 @@ void GameComponent::draw(Uint32 deltaTime) {
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
 			scale_ = dim.width_ / width;
-			dx_ = 2;
-			dy_ = (dim.height_ - scale_ * height) * 0.5f + 2;
+			dx_ = 0;
+			dy_ = (dim.height_ - scale_ * height) * 0.5f;
 		} else {
 			// Blank sides, left and right.
 			scale_ = dim.height_ / height;
-			dx_ = 2 + (dim.width_ - scale_ * width) * 0.5f;
-			dy_ = 2;
+			dx_ = (dim.width_ - scale_ * width) * 0.5f;
+			dy_ = 0;
 		}
 		mw::translate2D(model, dx_, dy_);
 		mw::scale2D(model, scale_, scale_);

@@ -72,6 +72,7 @@ private:
 
 	float lowX_, lowY_;
 	float width_, height_;
+	float borderSize_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 	std::vector<GLfloat> dynamicData_;
 
