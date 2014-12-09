@@ -82,7 +82,7 @@ namespace {
 	inline void addSquare(GLfloat* data, int& index,
 		float x, float y,
 		float w, float h,
-		mw::Sprite& sprite) {
+		mw::Sprite& sprite, mw::Color color = mw::Color(1,1,1)) {
 		int textureW = sprite.getTexture().getWidth();
 		int textureH = sprite.getTexture().getHeight();
 
@@ -95,7 +95,7 @@ namespace {
 			(sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH,
 			sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
 			true,
-			mw::Color(1, 1, 1));
+			color);
 		//                _
 		// Right triangle  |
 		addTriangle(data, index,
@@ -106,67 +106,7 @@ namespace {
 			(sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH,
 			(sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
 			true,
-			mw::Color(1, 1, 1));
-	}
-
-	inline void addSquare(GLfloat* data, int& index,
-		float x, float y,
-		const mw::Texture& texture) {
-
-		float w = (float) texture.getWidth();
-		float h = (float) texture.getHeight();
-
-		// Left triangle |_
-		addTriangle(data, index,
-			x, y,
-			x + w, y,
-			x, y + h,
-			0, 0,
-			1, 0,
-			0, 1,
-			true,
-			mw::Color(1, 1, 1));
-		//                _
-		// Right triangle  |
-		addTriangle(data, index,
-			x, y + h,
-			x + w, y,
-			x + w, y + h,
-			0, 1,
-			1, 0,
-			1, 1,
-			true,
-			mw::Color(1, 1, 1));
-	}
-
-	inline void addSquare(GLfloat* data, int& index,
-		float x, float y,
-		const mw::Text& text) {
-
-		float w = text.getWidth();
-		float h = text.getHeight();
-
-		// Left triangle |_
-		addTriangle(data, index,
-			x, y,
-			x + w, y,
-			x, y + h,
-			0, 0,
-			1, 0,
-			0, 1,
-			true,
-			mw::Color(1, 1, 1));
-		//                _
-		// Right triangle  |
-		addTriangle(data, index,
-			x, y + h,
-			x + w, y,
-			x + w, y + h,
-			0, 1,
-			1, 0,
-			1, 1,
-			true,
-			mw::Color(1, 1, 1));
+			color);
 	}
 
 	mw::Sprite getBoardSprite(mw::Texture texture, TetrisEntry spriteEntry) {
@@ -204,6 +144,7 @@ GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetr
 	mw::Color color2 = boardEntry.getChildEntry("innerSquareColor").getColor();
 	mw::Color color3 = boardEntry.getChildEntry("startAreaColor").getColor();
 	mw::Color color4 = boardEntry.getChildEntry("playerAreaColor").getColor();
+	borderColor_ = boardEntry.getChildEntry("borderColor").getColor();
 
 	mw::Texture texture = boardEntry.getChildEntry("texture").getTexture();
 	spriteZ_ = getBoardSprite(texture, boardEntry.getChildEntry("squareZ"));
@@ -214,10 +155,17 @@ GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetr
 	spriteT_ = getBoardSprite(texture, boardEntry.getChildEntry("squareT"));
 	spriteO_ = getBoardSprite(texture, boardEntry.getChildEntry("squareO"));
 
+	borderHorizontal_ = getBoardSprite(texture, boardEntry.getChildEntry("borderHorizontal"));
+	borderVertical_ = getBoardSprite(texture, boardEntry.getChildEntry("borderVertical"));
+	borderLeftUp_ = getBoardSprite(texture, boardEntry.getChildEntry("borderLeftUp"));
+	borderRightUp_ = getBoardSprite(texture, boardEntry.getChildEntry("borderRightUp"));
+	borderDownLeft_ = getBoardSprite(texture, boardEntry.getChildEntry("borderDownLeft"));
+	borderDownRight_ = getBoardSprite(texture, boardEntry.getChildEntry("borderDownRight"));
+
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
-	borderSize_ = 20;
+	borderSize_ = boardEntry.getChildEntry("borderSize").getFloat();
 
 	// Define all text sizes and font usage.
 	level_ = mw::Text("Level ", font_, 16);
@@ -232,11 +180,13 @@ GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetr
 }
 
 void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows) {
-	const float sizeBetweenPlayers = 10;
 	const float sizeInfo = 100;
 	const float sizePlayer = lowX_ + sizeBoard_ + sizeInfo;
 	vertercies_ = 0;
 	int index = -1;
+
+	width_ = squareSize_ * columns + sizeBoard_ + borderSize_ * 2;
+	height_ = squareSize_ * (rows - 2) + lowY_ * 2 + +borderSize_ * 2;
 
 	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * ((rows -2) * columns + 4) [squares]. 
 	std::vector<GLfloat> data(sizeof(GLfloat) * 9 * 6 * ((rows - 2)*columns + 4)); // Hide the highest 2.
@@ -291,8 +241,86 @@ void GameGraphic::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Co
 		c3);
 	vertercies_ += 6;
 
-	width_ = squareSize_ * columns + sizeBoard_;
-	height_ = squareSize_ * (rows - 2) + lowY_ * 2;
+	// Add border.
+	// Left-up corner.
+	x = lowX_;
+	y = lowY_ + height_ - borderSize_;
+	addSquare(data.data(), index,
+		x, y,
+		borderSize_, borderSize_,
+		borderLeftUp_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Right-up corner.
+	x = lowX_ + width_ - borderSize_;
+	y = lowY_ + height_ - borderSize_;
+	addSquare(data.data(), index,
+		x, y,
+		borderSize_, borderSize_,
+		borderRightUp_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Left-down corner.
+	x = lowX_;
+	y = lowY_;
+	addSquare(data.data(), index,
+		x, y,
+		borderSize_, borderSize_,
+		borderDownLeft_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Right-down corner.
+	x = lowX_ + width_ - borderSize_;
+	y = lowY_;
+	addSquare(data.data(), index,
+		x, y,
+		borderSize_, borderSize_,
+		borderDownRight_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Up.
+	x = lowX_ + borderSize_;
+	y = lowY_ + height_ - borderSize_;
+	addSquare(data.data(), index,
+		x, y,
+		width_ - 2 * borderSize_, borderSize_,
+		borderHorizontal_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Down.
+	x = lowX_ + borderSize_;
+	y = lowY_;
+	addSquare(data.data(), index,
+		x, y,
+		width_ - 2 * borderSize_, borderSize_,
+		borderHorizontal_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Left.
+	x = lowX_;
+	y = lowY_ + borderSize_;
+	addSquare(data.data(), index,
+		x, y,
+		borderSize_, height_ - 2 * borderSize_,
+		borderVertical_,
+		borderColor_);
+	vertercies_ += 6;
+
+	// Right.
+	x = lowX_ + width_ - borderSize_;
+	y = lowY_ + borderSize_;
+	addSquare(data.data(), index,
+		x, y,
+		borderSize_, height_ - 2 * borderSize_,
+		borderVertical_,
+		borderColor_);
+	vertercies_ += 6;
 
 	staticVbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
 }
@@ -367,6 +395,7 @@ void GameGraphic::update(const PlayerPtr& player) {
 
 void GameGraphic::draw(const BoardShader& shader) {
 	if (staticVbo_.getSize() > 0) {
+		spriteI_.bindTexture(); // All sprites uses the same texture.
 		staticVbo_.bindBuffer();
 		setVertexAttribPointer(shader);
 
@@ -378,21 +407,12 @@ void GameGraphic::draw(const BoardShader& shader) {
 		// Draw the dynamic part.
 		if (vbo_.getSize() > 0) {
 			vbo_.bindBuffer();
-			spriteI_.bindTexture(); // All sprites uses the same texture.
 			setVertexAttribPointer(shader);
 
 			mw::glDrawArrays(GL_TRIANGLES, 0, dynamicVertercies_);
 
 			vbo_.unbindBuffer();
 		}
-		mw::checkGlError();
-
-		// Draw the texts.
-		mw::glActiveTexture(GL_TEXTURE0);
-		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 100, points_, shader);
-		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 200, name_, shader);
-		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 150, level_, shader);
-		//drawText(lowX_ + sizeBoard_ + 5, lowY_ + 50, nbrOfClearedRows_, shader);
 
 		mw::checkGlError();
 	}
@@ -400,10 +420,10 @@ void GameGraphic::draw(const BoardShader& shader) {
 
 void GameGraphic::drawText(float x, float y, float width, float height, float scale) {
 	float boardWidth = 100 * scale;
-	name_.draw(x + boardWidth, height - y - name_.getHeight());
-	points_.draw(x + boardWidth, y + 50 * scale);
-	level_.draw(x + boardWidth, y + 100 * scale);
-	nbrOfClearedRows_.draw(x + boardWidth, y + 10 * scale);
+	name_.draw(x + boardWidth + borderSize_ * scale, height - y - name_.getHeight() - borderSize_ * scale);
+	points_.draw(x + boardWidth + borderSize_ * scale, y + 50 * scale + borderSize_ * scale);
+	level_.draw(x + boardWidth + borderSize_ * scale, y + 100 * scale + borderSize_ * scale);
+	nbrOfClearedRows_.draw(x + boardWidth + borderSize_ * scale, y + 10 * scale + borderSize_ * scale);
 }
 
 void GameGraphic::update(float size, const mw::Font& font) {
@@ -449,30 +469,6 @@ void GameGraphic::update(int rowsCleared, int points, int level) {
 	stream.str("");
 	stream << "Level " << level;
 	level_.setText(stream.str());
-}
-
-void GameGraphic::drawText(float x, float y, const mw::Text& text, const BoardShader& shader) {
-	const mw::Texture& texture = text.getTexture();
-	if (texture.isValid()) {
-		texture.bindTexture();
-
-		// 9 [floats/vertices] * 6 [vertices].
-		std::array<GLfloat, 9 * 6> data;
-		int index = -1;
-		addSquare(data.data(), index,
-			x, y,
-			text);
-		
-		shader.setGlVerA(sizeof(GLfloat) * 9, data.data());
-		shader.setGlTexA(sizeof(GLfloat) * 9, data.data() + 2);
-		shader.setGlIsTexA(sizeof(GLfloat) * 9, data.data() + 4);
-		shader.setGlColorA(sizeof(GLfloat) * 9, data.data() + 5);
-		
-		// Upload the attributes and draw the sprite.
-		mw::glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
-
-		mw::checkGlError();
-	}
 }
 
 void GameGraphic::setVertexAttribPointer(const BoardShader& shader) {

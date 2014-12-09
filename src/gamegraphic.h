@@ -52,7 +52,6 @@ public:
 private:
 	void update(int rowsCleared, int points, int level);
 	void setVertexAttribPointer(const BoardShader& shader);
-	void drawText(float x, float y, const mw::Text& text, const BoardShader& shader);
 	void updateDynamicData(const RawTetrisBoard& tetrisBoard);
 	void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
 	void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
@@ -73,7 +72,10 @@ private:
 	float lowX_, lowY_;
 	float width_, height_;
 	float borderSize_;
+	mw::Color borderColor_;
+
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
+	mw::Sprite borderHorizontal_, borderVertical_, borderLeftUp_, borderRightUp_, borderDownLeft_, borderDownRight_;
 	std::vector<GLfloat> dynamicData_;
 
 	int indexBoard_;

@@ -85,6 +85,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		pair.second.draw(boardShader_);
 	}
 	// Draw texts.
+	mw::glActiveTexture(GL_TEXTURE0);
 	glUseProgram();
 	float x = 0;
 	int i = 0;
@@ -93,8 +94,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		pair.second.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
 		++i;
 	}
-
-	mw::glActiveTexture(GL_TEXTURE0);
+	
 	mw::glDisable(GL_BLEND);
 
 	mw::checkGlError();
