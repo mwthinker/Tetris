@@ -30,7 +30,6 @@ public:
 
 	void update(const TetrisBoard& board) override;
 
-private:
 	struct State {
 		State() : down_(0), left_(0), rotations_(0) {
 		}
@@ -43,20 +42,11 @@ private:
 		int rotations_;
 	};
 
+private:
 	void initCalculator(const Ai& ai);
-
-	float calculateValue(const RawTetrisBoard& board, const Block&);
 
 	// Calculate and return the best input to achieve the current state.
 	Input calculateInput(State state) const;
-
-	// Find the best state for the block to move.
-	State calculateBestState(RawTetrisBoard board, int depth);
-
-	// Calculates and returns all posible states from the point of view from the block provided.
-	// The algortihm rotates and goes left or rigth with the block which then fall to the ground.
-	// I.e. The possible state.
-	std::vector<State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block) const;
 
 	int nbrOfUpdates_;
 	Input input_;
