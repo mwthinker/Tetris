@@ -27,7 +27,7 @@ class GameData;
 
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow(TetrisEntry tetrisEntry);
+	TetrisWindow(TetrisEntry tetrisEntry, int frame);
 	~TetrisWindow();
 
 private:

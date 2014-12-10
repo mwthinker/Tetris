@@ -1,10 +1,20 @@
 #include "tetriswindow.h"
 #include "tetrisentry.h"
 
+#include <sstream>
+
 int main (int argc, char** argv) {	
 	TetrisEntry tetrisEntry("tetris.xml");
 
-	TetrisWindow game(tetrisEntry.getChildEntry("tetris"));
+	int menuIndex = 0;
+
+	if (argc >= 2) {
+		std::stringstream stream;
+		stream << *(argv + 1);
+		stream >> menuIndex;
+	}
+
+	TetrisWindow game(tetrisEntry.getChildEntry("tetris"), menuIndex);
 	game.startLoop();
 	
     return 0;

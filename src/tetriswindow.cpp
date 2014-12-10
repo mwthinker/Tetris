@@ -54,17 +54,17 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry), 
-	gui::Frame(tetrisEntry.getDeepChildEntry("window positionX").getInt(),
-	tetrisEntry.getDeepChildEntry("window positionY").getInt(),
-	tetrisEntry.getDeepChildEntry("window width").getInt(),
-	tetrisEntry.getDeepChildEntry("window height").getInt(),
-		true,
-		"MWetris",
-		tetrisEntry.getDeepChildEntry("window icon").getString(),
-		!tetrisEntry.getDeepChildEntry("window border").getBool()) {
-	
-	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(), 
+TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry, int frame) : tetrisEntry_(tetrisEntry),
+gui::Frame(tetrisEntry.getDeepChildEntry("window positionX").getInt(),
+tetrisEntry.getDeepChildEntry("window positionY").getInt(),
+tetrisEntry.getDeepChildEntry("window width").getInt(),
+tetrisEntry.getDeepChildEntry("window height").getInt(),
+true,
+"MWetris",
+tetrisEntry.getDeepChildEntry("window icon").getString(),
+!tetrisEntry.getDeepChildEntry("window border").getBool()) {
+
+	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(),
 		tetrisEntry.getDeepChildEntry("window minWidth").getInt(),
 		tetrisEntry.getDeepChildEntry("window minHeight").getInt());
 
@@ -80,15 +80,15 @@ TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry),
 	followMouseY_ = 0;
 	nbrOfHumanPlayers_ = 1;
 	nbrOfComputerPlayers_ = 0;
-	
+
 	game_ = std::make_shared<GameComponent>(tetrisGame_, tetrisEntry);
 
 	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
 		tetrisGame_.update(deltaTime);
 	});
-	
+
 	// Saves the last window position. And makes the window movable by holding down left mousebutton.
-	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));	
+	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));
 
 	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
 		handleConnectionEvent(nEvent);
@@ -140,11 +140,14 @@ TetrisWindow::TetrisWindow(TetrisEntry tetrisEntry) : tetrisEntry_(tetrisEntry),
 	initServerLoobyPanel();
 	initClientLoobyPanel();
 	initWaitToConnectPanel();
-
-	// Init local game settings.
-	createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
-
-	setCurrentPanel(menuIndex_);
+		
+	if (frame >= 0 && frame < aiIndex_) {
+		if (frame == playIndex_) {
+			// Init local game settings.
+			createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
+		}
+		setCurrentPanel(frame);
+	}
 
 	loadHighscore();
 
