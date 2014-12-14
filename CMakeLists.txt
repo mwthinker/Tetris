@@ -28,6 +28,8 @@ set(SOURCES
 	src/computer.cpp
 	src/computer.h
 	src/device.h
+	src/dynamicgraphicboard.cpp
+	src/dynamicgraphicboard.h
 	src/gamecomponent.cpp
 	src/gamecomponent.h	
 	src/gamehandler.h
@@ -53,6 +55,8 @@ set(SOURCES
 	src/rawtetrisboard.h
 	src/remoteplayer.h
 	src/square.h
+	src/staticgraphicboard.cpp
+	src/staticgraphicboard.h
 	src/tetrisboard.cpp
 	src/tetrisboard.h
 	src/tetrisentry.cpp

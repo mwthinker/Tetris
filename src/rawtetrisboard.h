@@ -87,6 +87,22 @@ public:
 	// Otherwise it return false.
 	bool collision(const Block& block) const;
 
+	inline char getRemovedRow1() const {
+		return row1_;
+	}
+
+	inline char getRemovedRow2() const {
+		return row2_;
+	}
+
+	inline char getRemovedRow3() const {
+		return row3_;
+	}
+
+	inline char getRemovedRow4() const {
+		return row4_;
+	}
+
 protected:
 	// Set all squares on the board to empty.
 	// Game over is set to false.
@@ -124,6 +140,7 @@ private:
 	Block current_;						// The current block for the player to control.
 	int nbrRows_, nbrColumns_;			// The size of the gameboard.
 	bool isGameOver_;					// True when game is over, else false.
+	char row1_, row2_, row3_, row4_;	// The last rows that was removed.
 };
 
 #endif // RAWTETRISBOARD_H

@@ -61,7 +61,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 
 		boardShader_.setGlMatrixU(getProjectionMatrix() * model);
 
-		fontSize_ = scale_ * 16.f;
+		fontSize_ = scale_ * 12.f;
 		if (font_.getCharacterSize() != fontSize_) {
 			font_ = tetrisEntry_.getDeepChildEntry("window font").getFont((int) fontSize_);
 			// Update the font!
@@ -82,7 +82,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 			pair.second.setMiddleMessage(text);
 		}
 
-		pair.second.draw(boardShader_);
+		pair.second.draw(deltaTime/1000.f, boardShader_);
 	}
 	// Draw texts.
 	mw::glActiveTexture(GL_TEXTURE0);
@@ -156,6 +156,12 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 				//mw::Text text(stream.str(), tetrisEntry_.getEntry("window font").getFont(30));
 				//it->second.setMiddleMessage(text);
 			}
+			break;
+		case GameEvent::FOUR_ROW_REMOVED:
+		{
+			int a = 0;
+			
+		}
 			break;
 	}
 }

@@ -171,7 +171,7 @@ void RawTetrisBoard::clearBoard() {
 int RawTetrisBoard::removeFilledRows(const Block& block) {
 	int row = block.getLowestRow();
 
-	int nbr = 0;
+	int nbr = 0; // Number of rows filled.
 	const int nbrOfSquares = current_.nbrOfSquares();
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
@@ -187,6 +187,21 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 		}
 		if (filled) {
 			moveRowsOneStepDown(row);
+			// Which row was filled?
+			switch (nbr) {
+				case 0:
+					row1_ = row + nbr;
+					break;
+				case 1:
+					row2_ = row + nbr;;
+					break;
+				case 2:
+					row3_ = row + nbr;;
+					break;
+				case 3:
+					row4_ = row + nbr;;
+					break;
+			}
 			++nbr;
 		} else {
 			++row;
@@ -202,8 +217,8 @@ void RawTetrisBoard::moveRowsOneStepDown(int rowToRemove) {
 	std::vector<BlockType> upperBoard(gameboard_.begin() + indexStartOfRow + nbrColumns_, gameboard_.end());
 	// Erase the row to be removed and all rows abowe.
 	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.end());
-	// Insert the rows that were abowe the row to be removed.
+	// Insert the rows that were abowe the row that was removed.
 	gameboard_.insert(gameboard_.end(), upperBoard.begin(), upperBoard.end());
-	// Add a empty row at the top in order of replacing the row that were removed.
+	// Add an empty row at the top in order of replacing the row that were removed.
 	gameboard_.resize(gameboard_.size() + nbrColumns_, BlockType::EMPTY);
 }
