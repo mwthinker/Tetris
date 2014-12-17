@@ -10,3 +10,6 @@
 [submodule "DataEntry"]
 	path = DataEntry
 	url = https://github.com/mwthinker/DataEntry.git
+[submodule "Calculator"]
+	path = Calculator
+	url = https://github.com/mwthinker/Calculator.git
