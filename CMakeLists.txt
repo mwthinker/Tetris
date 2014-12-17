@@ -78,7 +78,6 @@ find_package(SDL2_ttf REQUIRED)
 add_subdirectory(DataEntry)
 add_subdirectory(MwEnet)
 add_subdirectory(SdlGui)
-
 add_subdirectory(Calculator)
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.

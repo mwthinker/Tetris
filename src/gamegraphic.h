@@ -50,54 +50,24 @@ public:
 	void setName(std::string name);
 
 	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
-		linesRemovedTimeLeft_ = downTime;
-		removedRow1_ = row1;
-		removedRow2_ = row2;
-		removedRow3_ = row3;
-		removedRow4_ = row4;
-		//dynamicVertercies_ - 4;
 	}
 
 private:
 	void update(int rowsCleared, int points, int level);
-	void setVertexAttribPointer(const BoardShader& shader);
-	void updateDynamicData(const RawTetrisBoard& tetrisBoard);
-	void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
-	void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
-
-	void updateBoard(int &index, const RawTetrisBoard& tetrisBoard);
-	void updateCurrentBlock(int &index, const RawTetrisBoard& tetrisBoard);
-	void updatePreviewBlock(int &index, const RawTetrisBoard& tetrisBoard);
 	
-	void updateBoardLinesRemoved(float ratio);
-
-	mw::Sprite getSprite(BlockType blockType) const;
 	float squareSize_;
 	float sizeBoard_;
 
 	mw::Text middleMessage_;
 	mw::Font font_;
-	mw::VertexBufferObject staticVbo_, vbo_;	
 
 	float lowX_, lowY_;
 	float width_, height_;
-	float borderSize_;
-	mw::Color borderColor_;
-
-	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
-	mw::Sprite borderHorizontal_, borderVertical_, borderLeftUp_, borderRightUp_, borderDownLeft_, borderDownRight_;
-	std::vector<GLfloat> dynamicData_;
-
-	int indexDynamicBoard_;
-	int dynamicVertercies_;
 
 	mw::Text level_, points_, nbrOfClearedRows_, name_;
 	bool showPoints_;
 
 	int rows_, columns_;
-
-	float linesRemovedTimeLeft_;
-	int removedRow1_, removedRow2_, removedRow3_, removedRow4_;
 };
 
 #endif // GRAPHICBOARD_H
