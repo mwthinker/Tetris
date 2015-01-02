@@ -30,7 +30,7 @@ void ManButton::setNbr(unsigned int nbr) {
 void ManButton::draw(Uint32 deltaTime) {
 	glUseProgram();
 	mw::Matrix44 model = getModelMatrix();
-	setGlColor(1, 1, 1);
+	setGlColorU(1, 1, 1);
 	
 	gui::Dimension dim = getSize();
 	if (nbr_ == 0) {
