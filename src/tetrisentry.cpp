@@ -75,10 +75,6 @@ mw::Sprite TetrisEntry::getSprite() const {
 	return data_->extractSprite(*this);
 }
 
-mw::Texture TetrisEntry::getTexture() const {
-	return data_->loadTexture(getString());
-}
-
 mw::Color TetrisEntry::getColor() const {
 	return get<mw::Color>();
 }
@@ -89,22 +85,7 @@ Ai TetrisEntry::getAi() const {
 }
 
 mw::Sprite TetrisEntry::Data::extractSprite(TetrisEntry entry) const {
-	float x = entry.getFloatAttribute("x");
-	float y = entry.getFloatAttribute("y");
-	float h = entry.getFloatAttribute("h");
-	float w = entry.getFloatAttribute("w");
-
-	mw::Texture texture = loadTexture(entry.getString());
-
-	if (h < 1) {
-		h = (float) texture.getHeight();
-	}
-
-	if (w < 1) {
-		w = (float) texture.getWidth();
-	}
-
-	return mw::Sprite(texture, x, y, w, h);
+	return textureAtlas_.add(entry.getString(), 4);
 }
 
 mw::Sound TetrisEntry::Data::extractSound(TetrisEntry entry) const {
@@ -127,23 +108,6 @@ mw::Font TetrisEntry::Data::loadFont(std::string file, unsigned int fontSize) co
 	}
 
 	return font;
-}
-
-mw::Texture TetrisEntry::Data::loadTexture(std::string file) const {
-	unsigned int size = textures_.size();
-	mw::Texture& texture = textures_[file];
-
-	// Image not found?
-	if (textures_.size() > size) {
-		texture = mw::Texture(file);
-
-		// Image not valid?
-		if (!texture.isValid()) {
-			std::cerr << std::endl << file << " failed to load!";
-		}
-	}
-
-	return texture;
 }
 
 mw::Sound TetrisEntry::Data::loadSound(std::string file) const {

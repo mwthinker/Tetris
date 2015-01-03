@@ -8,6 +8,7 @@
 #include <mw/font.h>
 #include <mw/color.h>
 #include <mw/music.h>
+#include <mw/textureatlas.h>
 
 #include <xml/dataentry.h>
 
@@ -27,13 +28,15 @@ public:
 	mw::Sound getSound() const;
 	mw::Music getMusic() const;
 	mw::Sprite getSprite() const;
-	mw::Texture getTexture() const;
 	mw::Color getColor() const;
 	Ai getAi() const;
 
 private:
 	class Data {
 	public:
+		inline Data() : textureAtlas_(2048, 2048) {
+		}
+
 		mw::Sprite extractSprite(TetrisEntry entry) const;
 
 		mw::Sound extractSound(TetrisEntry entry) const;
@@ -42,10 +45,9 @@ private:
 
 		mw::Font loadFont(std::string file, unsigned int fontSize) const;
 		mw::Sound loadSound(std::string file) const;
-		mw::Texture loadTexture(std::string file) const;
 		mw::Music loadMusic(std::string file) const;
 
-		mutable std::map<std::string, mw::Texture> textures_;
+		mutable mw::TextureAtlas textureAtlas_;
 		mutable std::map<std::string, mw::Sound> sounds_;
 		mutable std::map<std::string, mw::Font> fonts_;
 		mutable std::map<std::string, mw::Music> musics_;

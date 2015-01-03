@@ -36,96 +36,30 @@
         </sounds>
         <sprites>
             <background>images/background.png</background>
-            <computer x="1" y="1" w="62" h="62">images/tetris.png</computer>
-            <human x="129" y="1" w="62" h="62">images/tetris.png</human>
-            <cross x="65" y="1" w="62" h="62">images/tetris.png</cross>
-            <zoom x="193" y="1" w="62" h="62">images/tetris.png</zoom>
+            <computer>images/computer.png</computer>
+            <human>images/human.png</human>
+            <cross>images/cross.png</cross>
+            <zoom>images/signs.png</zoom>
         </sprites>
 		<tetrisBoard>
 			<font>fonts/Ubuntu-B.ttf</font>
 			<squareSize>10</squareSize>
-			<texture>images/tetris.png</texture>
-			<squareZ>
-				<x>1</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareZ>
-			<squareS>
-				<x>65</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareS>
-			<squareJ>
-				<x>129</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareJ>
-			<squareI>
-				<x>193</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareI>
-			<squareL>
-				<x>257</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareL>
-			<squareT>
-				<x>321</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareT>
-			<squareO>
-				<x>385</x>
-				<y>65</y>
-				<w>62</w>
-				<h>62</h>
-			</squareO>
-			
-			<borderHorizontal>
-				<x>1</x>
-				<y>129</y>
-				<w>62</w>
-				<h>62</h>
-			</borderHorizontal>
-			<borderVertical>
-				<x>65</x>
-				<y>129</y>
-				<w>62</w>
-				<h>62</h>
-			</borderVertical>
-			<borderLeftUp>
-				<x>129</x>
-				<y>129</y>
-				<w>62</w>
-				<h>62</h>
-			</borderLeftUp>
-			<borderRightUp>
-				<x>193</x>
-				<y>129</y>
-				<w>62</w>
-				<h>62</h>
-			</borderRightUp>
-			<borderDownRight>
-				<x>257</x>
-				<y>129</y>
-				<w>62</w>
-				<h>62</h>
-			</borderDownRight>
-			<borderDownLeft>
-				<x>321</x>
-				<y>129</y>
-				<w>62</w>
-				<h>62</h>
-			</borderDownLeft>
-			
 			<borderSize>10</borderSize>
+			<sprites>
+				<squareZ>images/Z.png</squareZ>
+				<squareS>images/S.png</squareS>
+				<squareJ>images/J.png</squareJ>
+				<squareI>images/I.png</squareI>
+				<squareL>images/L.png</squareL>
+				<squareT>images/T.png</squareT>
+				<squareO>images/O.png</squareO>
+				<borderHorizontal>images/border1.png</borderHorizontal>
+				<borderVertical>images/border2.png</borderVertical>
+				<borderLeftUp>images/border3.png</borderLeftUp>
+				<borderRightUp>images/border4.png</borderRightUp>
+				<borderDownRight>images/border5.png</borderDownRight>
+				<borderDownLeft>images/border6.png</borderDownLeft>
+			</sprites>
 			<borderColor>(0.5 0 0 0.7)</borderColor>
 			<startAreaColor>(0.64 0.16 0.24 0.5)</startAreaColor>
 			<outerSquareColor>(0.64 0.04 0.09 0.6)</outerSquareColor>

@@ -14,18 +14,6 @@
 #include <vector>
 #include <cassert>
 
-namespace {
-
-	mw::Sprite getBoardSprite(mw::Texture texture, TetrisEntry spriteEntry) {
-		float x = spriteEntry.getChildEntry("x").getFloat();
-		float y = spriteEntry.getChildEntry("y").getFloat();
-		float w = spriteEntry.getChildEntry("w").getFloat();
-		float h = spriteEntry.getChildEntry("h").getFloat();
-		return mw::Sprite(texture, x, y, w, h);
-	}
-
-} // Anonymous namespace.
-
 StaticGraphicBoard::StaticGraphicBoard() {
 }
 
@@ -42,14 +30,13 @@ StaticGraphicBoard::StaticGraphicBoard(float x, float y, TetrisEntry boardEntry,
 	mw::Color color4 = boardEntry.getChildEntry("playerAreaColor").getColor();
 	borderColor_ = boardEntry.getChildEntry("borderColor").getColor();
 
-	texture_ = boardEntry.getChildEntry("texture").getTexture();
-
-	borderHorizontal_ = getBoardSprite(texture_, boardEntry.getChildEntry("borderHorizontal"));
-	borderVertical_ = getBoardSprite(texture_, boardEntry.getChildEntry("borderVertical"));
-	borderLeftUp_ = getBoardSprite(texture_, boardEntry.getChildEntry("borderLeftUp"));
-	borderRightUp_ = getBoardSprite(texture_, boardEntry.getChildEntry("borderRightUp"));
-	borderDownLeft_ = getBoardSprite(texture_, boardEntry.getChildEntry("borderDownLeft"));
-	borderDownRight_ = getBoardSprite(texture_, boardEntry.getChildEntry("borderDownRight"));
+	auto spriteEntry = boardEntry.getChildEntry("sprites");
+	borderHorizontal_ = spriteEntry.getChildEntry("borderHorizontal").getSprite();
+	borderVertical_ = spriteEntry.getChildEntry("borderVertical").getSprite();
+	borderLeftUp_ = spriteEntry.getChildEntry("borderLeftUp").getSprite();
+	borderRightUp_ = spriteEntry.getChildEntry("borderRightUp").getSprite();
+	borderDownLeft_ = spriteEntry.getChildEntry("borderDownLeft").getSprite();
+	borderDownRight_ = spriteEntry.getChildEntry("borderDownRight").getSprite();
 	
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();

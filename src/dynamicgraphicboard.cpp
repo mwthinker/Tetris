@@ -110,14 +110,6 @@ namespace {
 			color);
 	}
 
-	mw::Sprite getBoardSprite(mw::Texture texture, TetrisEntry spriteEntry) {
-		float x = spriteEntry.getChildEntry("x").getFloat();
-		float y = spriteEntry.getChildEntry("y").getFloat();
-		float w = spriteEntry.getChildEntry("w").getFloat();
-		float h = spriteEntry.getChildEntry("h").getFloat();
-		return mw::Sprite(texture, x, y, w, h);
-	}
-
 	gui::Point calculateCenter(const Block& block) {
 		gui::Point point(0, 0);
 		for (const Square& sq : block) {
@@ -146,14 +138,14 @@ DynamicGraphicBoard::DynamicGraphicBoard(float x, float y, TetrisEntry boardEntr
 	columns_ = tetrisBoard.getColumns();
 	linesRemovedTimeLeft_ = 0;
 
-	mw::Texture texture = boardEntry.getChildEntry("texture").getTexture();
-	spriteZ_ = getBoardSprite(texture, boardEntry.getChildEntry("squareZ"));
-	spriteS_ = getBoardSprite(texture, boardEntry.getChildEntry("squareS"));
-	spriteJ_ = getBoardSprite(texture, boardEntry.getChildEntry("squareJ"));
-	spriteI_ = getBoardSprite(texture, boardEntry.getChildEntry("squareI"));
-	spriteL_ = getBoardSprite(texture, boardEntry.getChildEntry("squareL"));
-	spriteT_ = getBoardSprite(texture, boardEntry.getChildEntry("squareT"));
-	spriteO_ = getBoardSprite(texture, boardEntry.getChildEntry("squareO"));
+	auto spriteEntry = boardEntry.getChildEntry("sprites");
+	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
+	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
+	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
+	spriteI_ = spriteEntry.getChildEntry("squareI").getSprite();
+	spriteL_ = spriteEntry.getChildEntry("squareL").getSprite();
+	spriteT_ = spriteEntry.getChildEntry("squareT").getSprite();
+	spriteO_ = spriteEntry.getChildEntry("squareO").getSprite();
 		
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
