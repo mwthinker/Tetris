@@ -25,7 +25,6 @@ public:
 	void draw(float deltaTime, const BoardShader& shader);
 
 private:
-	void setVertexAttribPointer(const BoardShader& shader);
 	void initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows);
 		
 	float squareSize_;

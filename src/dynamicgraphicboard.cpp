@@ -195,12 +195,13 @@ void DynamicGraphicBoard::updateCurrentBlock(int &index, const RawTetrisBoard& t
 }
 
 void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
+	/*
 	int index = indexDynamicBoard_;
 	// Draw the board.
 	for (int row = 0; row < rows_ - 2; ++row) {
 		if (row != removedRow1_ || row != removedRow2_ || row != removedRow3_ || row != removedRow4_) {
 			for (int column = 0; column < columns_; ++column) {
-				BlockType type;// = tetrisBoard.getBlockType(row, column);
+				BlockType type// = tetrisBoard.getBlockType(row, column);
 				if (type != BlockType::EMPTY && type != BlockType::WALL) {
 					float x = lowX_ + borderSize_ + squareSize_ * column;
 					float y = lowY_ + borderSize_ + squareSize_ * row;
@@ -214,6 +215,7 @@ void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
 			}
 		}
 	}
+	*/
 }
 
 void DynamicGraphicBoard::updatePreviewBlock(int &index, const RawTetrisBoard& tetrisBoard) {
@@ -297,8 +299,8 @@ mw::Sprite DynamicGraphicBoard::getSprite(BlockType blockType) const {
 }
 
 void DynamicGraphicBoard::setVertexAttribPointer(const BoardShader& shader) {
-	shader.setGlVerA(sizeof(GLfloat) * 9, (GLvoid*) 0);
-	shader.setGlTexA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
-	shader.setGlIsTexA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
-	shader.setGlColorA(sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
+	shader.setGlPosA(2, sizeof(GLfloat) * 9, (GLvoid*) 0);
+	shader.setGlTexA(2, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
+	shader.setGlIsTexA(1, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
+	shader.setGlColorA(4, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
 }

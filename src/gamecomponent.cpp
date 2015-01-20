@@ -33,7 +33,7 @@ void GameComponent::validate() {
 void GameComponent::draw(Uint32 deltaTime) {
 	setGlModelMatrixU(getModelMatrix());
 
-	boardShader_.glUseProgram();	
+	boardShader_.glUseProgram();
 
 	if (updateMatrix_) {
 		gui::Dimension dim = getSize();
@@ -69,11 +69,11 @@ void GameComponent::draw(Uint32 deltaTime) {
 				pair.second.update(fontSize_, font_);
 			}
 		}
+		updateMatrix_ = false;
 	}
 	
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	mw::glActiveTexture(GL_TEXTURE1);
 	
 	// Draw boards.
 	for (auto& pair : graphicPlayers_) {
@@ -85,7 +85,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		pair.second.draw(deltaTime/1000.f, boardShader_);
 	}
 	// Draw texts.
-	mw::glActiveTexture(GL_TEXTURE0);
+	mw::glActiveTexture(GL_TEXTURE1);
 	glUseProgram();
 	float x = 0;
 	int i = 0;
@@ -94,9 +94,9 @@ void GameComponent::draw(Uint32 deltaTime) {
 		pair.second.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
 		++i;
 	}
-	
+		
 	mw::glDisable(GL_BLEND);
-
+	mw::glActiveTexture(GL_TEXTURE0);
 	mw::checkGlError();
 }
 

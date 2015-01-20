@@ -5,6 +5,8 @@
 #include "player.h"
 #include "tetrisentry.h"
 #include "boardshader.h"
+#include "dynamicgraphicboard.h"
+#include "staticgraphicboard.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -55,6 +57,8 @@ public:
 private:
 	void update(int rowsCleared, int points, int level);
 	
+	DynamicGraphicBoard dynamicBoard_;
+	StaticGraphicBoard staticBoard_;
 	float squareSize_;
 	float sizeBoard_;
 

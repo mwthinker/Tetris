@@ -110,14 +110,6 @@ namespace {
 			color);
 	}
 
-	mw::Sprite getBoardSprite(mw::Texture texture, TetrisEntry spriteEntry) {
-		float x = spriteEntry.getChildEntry("x").getFloat();
-		float y = spriteEntry.getChildEntry("y").getFloat();
-		float w = spriteEntry.getChildEntry("w").getFloat();
-		float h = spriteEntry.getChildEntry("h").getFloat();
-		return mw::Sprite(texture, x, y, w, h);
-	}
-
 	gui::Point calculateCenter(const Block& block) {
 		gui::Point point(0, 0);
 		for (const Square& sq : block) {
@@ -137,16 +129,17 @@ GameGraphic::GameGraphic() {
 }
 
 GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) :
+	dynamicBoard_(x, y, boardEntry, tetrisBoard),
+	staticBoard_(x, y, boardEntry, tetrisBoard),
 	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares].
 	lowX_(x), lowY_(y)	{
 
 	rows_ = tetrisBoard.getRows();
-	columns_ = tetrisBoard.getColumns();	
+	columns_ = tetrisBoard.getColumns();
 
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
-	//borderSize_ = boardEntry.getChildEntry("borderSize").getFloat();
 
 	// Define all text sizes and font usage.
 	level_ = mw::Text("Level ", font_, 16);
@@ -164,6 +157,8 @@ void GameGraphic::update(const PlayerPtr& player) {
 }
 
 void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
+	staticBoard_.draw(deltaTime, shader);
+	//dynamicBoard_.draw(deltaTime, shader);
 }
 
 void GameGraphic::drawText(float x, float y, float width, float height, float scale) {

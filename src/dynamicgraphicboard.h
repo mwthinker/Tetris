@@ -49,7 +49,7 @@ private:
 	float squareSize_;
 	float sizeBoard_;
 	
-	mw::VertexBufferObject vbo_;	
+	mw::VertexBufferObject vbo_;
 
 	float lowX_, lowY_;
 	float width_, height_;

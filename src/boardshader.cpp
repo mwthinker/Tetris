@@ -1,7 +1,7 @@
 #include "boardshader.h"
 
 BoardShader::BoardShader() {
-	aVerIndex_ = -1;
+	aPosIndex_ = -1;
 	aTexIndex_ = -1;
 	aIsTexIndex_ = -1;
 	aColorIndex_ = -1;
@@ -11,7 +11,7 @@ BoardShader::BoardShader() {
 }
 
 BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
-	shader_.bindAttribute("aVer");
+	shader_.bindAttribute("aPos");
 	shader_.bindAttribute("aTex");
 	shader_.bindAttribute("aIsTex");
 	shader_.bindAttribute("aColor");
@@ -20,7 +20,7 @@ BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
 	shader_.glUseProgram();
 
 	// Collect the vertex buffer attributes indexes.
-	aVerIndex_ = shader_.getAttributeLocation("aVer");
+	aPosIndex_ = shader_.getAttributeLocation("aPos");
 	aTexIndex_ = shader_.getAttributeLocation("aTex");
 	aIsTexIndex_ = shader_.getAttributeLocation("aIsTex");
 	aColorIndex_ = shader_.getAttributeLocation("aColor");
@@ -35,44 +35,44 @@ void BoardShader::glUseProgram() const {
 
 // Vertex buffer Attributes. ---------------------------
 
-void BoardShader::setGlVerA(const GLvoid* data) const {
-	mw::glVertexAttribPointer(aVerIndex_, 2, GL_FLOAT, GL_FALSE, 0, data);
-	mw::glEnableVertexAttribArray(aVerIndex_);
+void BoardShader::setGlPosA(GLint size, const GLvoid* data) const {
+	mw::glEnableVertexAttribArray(aPosIndex_);
+	mw::glVertexAttribPointer(aPosIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
 }
 
-void BoardShader::setGlVerA(GLsizei stride, const GLvoid* data) const {
-	mw::glVertexAttribPointer(aVerIndex_, 2, GL_FLOAT, GL_FALSE, stride, data);
-	mw::glEnableVertexAttribArray(aVerIndex_);
+void BoardShader::setGlPosA(GLint size, GLsizei stride, const GLvoid* data) const {
+	mw::glEnableVertexAttribArray(aPosIndex_);
+	mw::glVertexAttribPointer(aPosIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
 }
 
-void BoardShader::setGlTexA(const GLvoid* data) const {
-	mw::glVertexAttribPointer(aTexIndex_, 2, GL_FLOAT, GL_FALSE, 0, data);
+void BoardShader::setGlTexA(GLint size, const GLvoid* data) const {
 	mw::glEnableVertexAttribArray(aTexIndex_);
+	mw::glVertexAttribPointer(aTexIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
 }
 
-void BoardShader::setGlTexA(GLsizei stride, const GLvoid* data) const {
-	mw::glVertexAttribPointer(aTexIndex_, 2, GL_FLOAT, GL_FALSE, stride, data);
+void BoardShader::setGlTexA(GLint size, GLsizei stride, const GLvoid* data) const {
 	mw::glEnableVertexAttribArray(aTexIndex_);
+	mw::glVertexAttribPointer(aTexIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
 }
 
-void BoardShader::setGlIsTexA(const GLvoid* data) const {
-	mw::glVertexAttribPointer(aIsTexIndex_, 1, GL_FLOAT, GL_FALSE, 0, data);
+void BoardShader::setGlIsTexA(GLint size, const GLvoid* data) const {
 	mw::glEnableVertexAttribArray(aIsTexIndex_);
+	mw::glVertexAttribPointer(aIsTexIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
 }
 
-void BoardShader::setGlIsTexA(GLsizei stride, const GLvoid* data) const {
-	mw::glVertexAttribPointer(aIsTexIndex_, 1, GL_FLOAT, GL_FALSE, stride, data);
+void BoardShader::setGlIsTexA(GLint size, GLsizei stride, const GLvoid* data) const {
 	mw::glEnableVertexAttribArray(aIsTexIndex_);
+	mw::glVertexAttribPointer(aIsTexIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
 }
 
-void BoardShader::setGlColorA(const GLvoid* data) const {
-	mw::glVertexAttribPointer(aColorIndex_, 4, GL_FLOAT, GL_FALSE, 0, data);
+void BoardShader::setGlColorA(GLint size, const GLvoid* data) const {
 	mw::glEnableVertexAttribArray(aColorIndex_);
+	mw::glVertexAttribPointer(aColorIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
 }
 
-void BoardShader::setGlColorA(GLsizei stride, const GLvoid* data) const {
-	mw::glVertexAttribPointer(aColorIndex_, 4, GL_FLOAT, GL_FALSE, stride, data);
+void BoardShader::setGlColorA(GLint size, GLsizei stride, const GLvoid* data) const {
 	mw::glEnableVertexAttribArray(aColorIndex_);
+	mw::glVertexAttribPointer(aColorIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
 }
 
 // Uniforms. -------------------------------------------
