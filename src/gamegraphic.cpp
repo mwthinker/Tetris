@@ -32,7 +32,7 @@ void GameGraphic::update(const PlayerPtr& player) {
 
 void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
 	staticBoard_.draw(deltaTime, shader);
-	//dynamicBoard_.draw(deltaTime, shader);
+	dynamicBoard_.draw(deltaTime, shader);
 }
 
 void GameGraphic::drawText(float x, float y, float width, float height, float scale) {

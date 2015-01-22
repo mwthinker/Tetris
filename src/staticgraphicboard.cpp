@@ -1,6 +1,7 @@
 #include "staticgraphicboard.h"
 #include "rawtetrisboard.h"
 #include "boardshader.h"
+#include "boardshaderfunctions.h"
 
 #include <mw/opengl.h>
 #include <mw/color.h>
@@ -8,112 +9,6 @@
 
 #include <vector>
 #include <cassert>
-
-namespace {
-
-	inline void addVertex(GLfloat* data, int& index,
-		float x, float y,
-		float xTex, float yTex,
-		bool isTex,
-		const mw::Color& color) {
-
-		data[index++] = x;
-		data[index++] = y;
-
-		data[index++] = xTex;
-		data[index++] = yTex;
-
-		data[index++] = isTex;
-
-		data[index++] = color.red_;
-		data[index++] = color.green_;
-		data[index++] = color.blue_;
-		data[index++] = color.alpha_;
-	}
-
-	// Add a triangle, GL_TRIANGLES, i.e. 3 vertices.
-	inline void addTriangle(GLfloat* data, int& index,
-		float x1, float y1,
-		float x2, float y2,
-		float x3, float y3,
-		float xTex1, float yTex1,
-		float xTex2, float yTex2,
-		float xTex3, float yTex3,
-		bool isTex,
-		const mw::Color& color) {
-
-		addVertex(data, index, x1, y1, xTex1, yTex1, isTex, color);
-		addVertex(data, index, x2, y2, xTex2, yTex2, isTex, color);
-		addVertex(data, index, x3, y3, xTex3, yTex3, isTex, color);
-	}
-
-	// Add two triangles, GL_TRIANGLES, i.e. 6 vertices.
-	inline void addSquare(GLfloat* data, int& index,
-		float x, float y,
-		float w, float h,
-		const mw::Color& color) {
-
-		// Left triangle |_
-		addTriangle(data, index,
-			x, y,
-			x + w, y,
-			x, y + h,
-			0, 0,
-			0, 0,
-			0, 0,
-			false,
-			color);
-		//                _
-		// Right triangle  |
-		addTriangle(data, index,
-			x, y + h,
-			x + w, y,
-			x + w, y + h,
-			0, 0,
-			0, 0,
-			0, 0,
-			false,
-			color);
-	}
-
-	inline void addSquare(GLfloat* data, int& index,
-		float x, float y,
-		float w, float h,
-		const mw::Sprite& sprite, mw::Color color = mw::Color(1, 1, 1)) {
-		int textureW = sprite.getTexture().getWidth();
-		int textureH = sprite.getTexture().getHeight();
-
-		// Left triangle |_
-		addTriangle(data, index,
-			x, y,
-			x + w, y,
-			x, y + h,
-			sprite.getX() / textureW, sprite.getY() / textureH,
-			(sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH,
-			sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
-			true,
-			color);
-		//                _
-		// Right triangle  |
-		addTriangle(data, index,
-			x, y + h,
-			x + w, y,
-			x + w, y + h,
-			sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
-			(sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH,
-			(sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
-			true,
-			color);
-	}
-
-	void setVertexAttribPointer(const BoardShader& shader) {
-		shader.setGlPosA(2, sizeof(GLfloat) * 9, (GLvoid*) 0);
-		shader.setGlTexA(2, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
-		shader.setGlIsTexA(1, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
-		shader.setGlColorA(4, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
-	}
-
-}
 
 StaticGraphicBoard::StaticGraphicBoard() {
 }
@@ -154,7 +49,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Draw the player area.
 	float x = lowX + borderSize_;
 	float y = lowY * 0.5f + borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		boardWidth_ + infoSize, squareSize * (rows - 2),
 		c4);
@@ -162,7 +57,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Draw the outer square.
 	x = lowX + borderSize_;
 	y = lowY + borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		squareSize * columns, squareSize * (rows - 2),
 		c1);
@@ -172,7 +67,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 		for (int column = 0; column < columns; ++column) {
 			x = lowX + borderSize_ + squareSize * column + (squareSize * columns + infoSize) * 0 + squareSize * 0.1f;
 			y = lowY + borderSize_ + squareSize * row + squareSize * 0.1f;
-			addSquare(data.data(), index,
+			addSquareToBoardShader(data.data(), index,
 				x, y,
 				squareSize * 0.8f, squareSize * 0.8f,
 				c2);
@@ -182,7 +77,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Draw the block start area.
 	x = lowX + borderSize_;
 	y = lowY + borderSize_ + squareSize * (rows - 4);
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		squareSize * columns, squareSize * 2,
 		c3);
@@ -190,7 +85,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Draw the preview block area.
 	x = lowX + borderSize_ + boardWidth_ + 5;
 	y = lowY + borderSize_ + squareSize * (rows - 4) - (squareSize * 5 + 5);
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		squareSize * 5, squareSize * 5,
 		c3);
@@ -199,7 +94,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Left-up corner.
 	x = lowX;
 	y = lowY + height_ - borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
 		borderLeftUp,
@@ -208,7 +103,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Right-up corner.
 	x = lowX + width_ - borderSize_;
 	y = lowY + height_ - borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
 		borderRightUp,
@@ -217,7 +112,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Left-down corner.
 	x = lowX;
 	y = lowY;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
 		borderDownLeft,
@@ -226,7 +121,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Right-down corner.
 	x = lowX + width_ - borderSize_;
 	y = lowY;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
 		borderDownRight,
@@ -235,7 +130,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Up.
 	x = lowX + borderSize_;
 	y = lowY + height_ - borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		width_ - 2 * borderSize_, borderSize_,
 		borderHorizontal,
@@ -244,7 +139,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Down.
 	x = lowX + borderSize_;
 	y = lowY;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		width_ - 2 * borderSize_, borderSize_,
 		borderHorizontal,
@@ -253,7 +148,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Left.
 	x = lowX;
 	y = lowY + borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		borderSize_, height_ - 2 * borderSize_,
 		borderVertical,
@@ -262,7 +157,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 	// Right.
 	x = lowX + width_ - borderSize_;
 	y = lowY + borderSize_;
-	addSquare(data.data(), index,
+	addSquareToBoardShader(data.data(), index,
 		x, y,
 		borderSize_, height_ - 2 * borderSize_,
 		borderVertical,

@@ -35,7 +35,6 @@ public:
 	}
 
 private:
-	void setVertexAttribPointer(const BoardShader& shader);
 	void updateDynamicData(const RawTetrisBoard& tetrisBoard);
 	void initDynamicVbo(const RawTetrisBoard& tetrisBoard);
 

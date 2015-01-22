@@ -25,6 +25,8 @@ set(SOURCES
 	src/block.h
 	src/boardshader.cpp
 	src/boardshader.h
+	src/boardshaderfunctions.cpp
+	src/boardshaderfunctions.h
 	src/computer.cpp
 	src/computer.h
 	src/device.h
