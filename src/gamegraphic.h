@@ -1,22 +1,20 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
-#include "tetrisboard.h"
-#include "player.h"
 #include "tetrisentry.h"
 #include "boardshader.h"
 #include "dynamicgraphicboard.h"
 #include "staticgraphicboard.h"
+#include "player.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
-#include <mw/color.h>
 #include <mw/sprite.h>
-#include <mw/shader.h>
 #include <mw/vertexbufferobject.h>
 
 #include <string>
-#include <array>
+
+class RawTetrisBoard;
 
 class GameGraphic {
 public:
@@ -27,11 +25,11 @@ public:
 	void update(const PlayerPtr& player);
 
 	inline float getWidth() const {
-		return width_;
+		return staticBoard_.getWidth();
 	}
 
 	inline float getHeight() const {
-		return height_;
+		return staticBoard_.getHeight();
 	}
 
 	void draw(float deltaTime, const BoardShader& shader);
@@ -56,22 +54,13 @@ public:
 
 private:
 	void update(int rowsCleared, int points, int level);
-	
+
 	DynamicGraphicBoard dynamicBoard_;
 	StaticGraphicBoard staticBoard_;
-	float squareSize_;
-	float sizeBoard_;
-
-	mw::Text middleMessage_;
+	mw::Text level_, points_, nbrOfClearedRows_, name_, middleMessage_;
 	mw::Font font_;
 
-	float lowX_, lowY_;
-	float width_, height_;
-
-	mw::Text level_, points_, nbrOfClearedRows_, name_;
 	bool showPoints_;
-
-	int rows_, columns_;
 };
 
 #endif // GRAPHICBOARD_H

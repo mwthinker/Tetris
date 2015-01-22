@@ -33,32 +33,32 @@ private:
 	void soundEffects(GameEvent gameEvent) const;
 
 	// @gui::Component
-	// Called when the component is resized.
+	// Called when the component is resized or moved.
 	void validate() override;
 
-	mw::Font font_;
-	float fontSize_;
-	float dx_, dy_;
-	float scale_;
-
 	std::map<int, GameGraphic> graphicPlayers_;
-	TetrisGame& tetrisGame_;
-	int alivePlayers_;
-
+	BoardShader boardShader_;
 	TetrisEntry tetrisEntry_;
-
+	TetrisGame& tetrisGame_;
+	
 	mw::Sound soundBlockCollision_;
 	mw::Sound soundRowRemoved_;
 	mw::Sound soundTetris_;
-
-	BoardShader boardShader_;	
 
 	// Fix timestep.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
 
-	bool updateMatrix_;
+	// Updated in init.
 	mw::Matrix44 matrix_;
+	bool updateMatrix_;
+	int alivePlayers_;
+	
+	// Font related.
+	mw::Font font_;
+	float fontSize_;
+	float dx_, dy_;
+	float scale_;
 };
 
 #endif // GAMECOMPONENT_H

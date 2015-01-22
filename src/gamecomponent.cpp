@@ -22,7 +22,7 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
 	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
-		
+
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
 }
 
@@ -32,15 +32,17 @@ void GameComponent::validate() {
 
 void GameComponent::draw(Uint32 deltaTime) {
 	setGlModelMatrixU(getModelMatrix());
-
 	boardShader_.glUseProgram();
 
+	const gui::Dimension dim = getSize();
 	if (updateMatrix_) {
-		gui::Dimension dim = getSize();
-		gui::Dimension prefDim = getPreferredSize();
+		float width = 0;
+		float height = 0;
 
-		float width = prefDim.width_;
-		float height = prefDim.height_;
+		for (const auto& pair : graphicPlayers_) {
+			width += pair.second.getWidth();
+			height = pair.second.getHeight();
+		}
 
 		// Centers the game and holds the correct proportions.
 		// The sides is transparent.
@@ -56,6 +58,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 			dx_ = (dim.width_ - scale_ * width) * 0.5f;
 			dy_ = 0;
 		}
+
 		mw::translate2D(model, dx_, dy_);
 		mw::scale2D(model, scale_, scale_);
 
@@ -71,22 +74,27 @@ void GameComponent::draw(Uint32 deltaTime) {
 		}
 		updateMatrix_ = false;
 	}
-	
+
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+
+	mw::Text text; // Used to update the "Paus".
+
 	// Draw boards.
 	for (auto& pair : graphicPlayers_) {
+		GameGraphic& graphic = pair.second;
+
 		if (tetrisGame_.isPaused()) {
-			static mw::Text text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
-			pair.second.setMiddleMessage(text);
+			text = mw::Text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
+			graphic.setMiddleMessage(text);
 		}
 
-		pair.second.draw(deltaTime/1000.f, boardShader_);
+		graphic.draw(deltaTime / 1000.f, boardShader_);
 	}
+
 	// Draw texts.
-	mw::glActiveTexture(GL_TEXTURE1);
 	glUseProgram();
+
 	float x = 0;
 	int i = 0;
 	float boardWidth = getSize().width_ / graphicPlayers_.size();
@@ -94,9 +102,8 @@ void GameComponent::draw(Uint32 deltaTime) {
 		pair.second.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
 		++i;
 	}
-		
+
 	mw::glDisable(GL_BLEND);
-	mw::glActiveTexture(GL_TEXTURE0);
 	mw::checkGlError();
 }
 
@@ -108,17 +115,15 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 
 	graphicPlayers_.clear();
 
-	float width = 0;
-	float height = 0;
+	float w = 0;
 	for (const auto& player : players) {
-		graphicPlayers_[player->getId()] = GameGraphic(width, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"), player->getTetrisBoard());
-		width += graphicPlayers_[player->getId()].getWidth();
-		height = graphicPlayers_[player->getId()].getHeight();
+		graphicPlayers_[player->getId()] = GameGraphic(w, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"), player->getTetrisBoard());
 		graphicPlayers_[player->getId()].setName(player->getName());
+		w += graphicPlayers_[player->getId()].getWidth();
 	}
-	
+
 	alivePlayers_ = players.size();
-	setPreferredSize(width, height);
+	updateMatrix_ = true;
 }
 
 void GameComponent::countDown(int msCountDown) {
@@ -160,9 +165,9 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 		case GameEvent::FOUR_ROW_REMOVED:
 		{
 			int a = 0;
-			
+
 		}
-			break;
+		break;
 	}
 }
 

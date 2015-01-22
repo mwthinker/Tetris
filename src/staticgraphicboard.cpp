@@ -1,16 +1,11 @@
 #include "staticgraphicboard.h"
-#include "tetrisboard.h"
-#include "tetrisentry.h"
+#include "rawtetrisboard.h"
 #include "boardshader.h"
 
-#include <mw/sprite.h>
-#include <mw/font.h>
-#include <mw/text.h>
-#include <mw/color.h>
 #include <mw/opengl.h>
-#include <gui/component.h>
+#include <mw/color.h>
+#include <mw/sprite.h>
 
-#include <sstream>
 #include <vector>
 #include <cassert>
 
@@ -84,7 +79,7 @@ namespace {
 	inline void addSquare(GLfloat* data, int& index,
 		float x, float y,
 		float w, float h,
-		mw::Sprite& sprite, mw::Color color = mw::Color(1, 1, 1)) {
+		const mw::Sprite& sprite, mw::Color color = mw::Color(1, 1, 1)) {
 		int textureW = sprite.getTexture().getWidth();
 		int textureH = sprite.getTexture().getHeight();
 
@@ -123,160 +118,155 @@ namespace {
 StaticGraphicBoard::StaticGraphicBoard() {
 }
 
-StaticGraphicBoard::StaticGraphicBoard(float x, float y, TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) :
-// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares].
-	lowX_(x), lowY_(y) {
+StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
+	TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) {
 
-	rows_ = tetrisBoard.getRows();
-	columns_ = tetrisBoard.getColumns();
-
-	mw::Color color1 = boardEntry.getChildEntry("outerSquareColor").getColor();
-	mw::Color color2 = boardEntry.getChildEntry("innerSquareColor").getColor();
-	mw::Color color3 = boardEntry.getChildEntry("startAreaColor").getColor();
-	mw::Color color4 = boardEntry.getChildEntry("playerAreaColor").getColor();
-	borderColor_ = boardEntry.getChildEntry("borderColor").getColor();
+	const mw::Color c1 = boardEntry.getChildEntry("outerSquareColor").getColor();
+	const mw::Color c2 = boardEntry.getChildEntry("innerSquareColor").getColor();
+	const mw::Color c3 = boardEntry.getChildEntry("startAreaColor").getColor();
+	const mw::Color c4 = boardEntry.getChildEntry("playerAreaColor").getColor();
+	const mw::Color borderColor = boardEntry.getChildEntry("borderColor").getColor();
 
 	auto spriteEntry = boardEntry.getChildEntry("sprites");
-	borderHorizontal_ = spriteEntry.getChildEntry("borderHorizontal").getSprite();
-	borderVertical_ = spriteEntry.getChildEntry("borderVertical").getSprite();
-	borderLeftUp_ = spriteEntry.getChildEntry("borderLeftUp").getSprite();
-	borderRightUp_ = spriteEntry.getChildEntry("borderRightUp").getSprite();
-	borderDownLeft_ = spriteEntry.getChildEntry("borderDownLeft").getSprite();
-	borderDownRight_ = spriteEntry.getChildEntry("borderDownRight").getSprite();
+	const mw::Sprite borderHorizontal = spriteEntry.getChildEntry("borderHorizontal").getSprite();
+	const mw::Sprite borderVertical = spriteEntry.getChildEntry("borderVertical").getSprite();
+	const mw::Sprite borderLeftUp = spriteEntry.getChildEntry("borderLeftUp").getSprite();
+	const mw::Sprite borderRightUp = spriteEntry.getChildEntry("borderRightUp").getSprite();
+	const mw::Sprite borderDownLeft = spriteEntry.getChildEntry("borderDownLeft").getSprite();
+	const mw::Sprite borderDownRight = spriteEntry.getChildEntry("borderDownRight").getSprite();
 	
-	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
-	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
+	const float squareSize = boardEntry.getChildEntry("squareSize").getFloat();
 	borderSize_ = boardEntry.getChildEntry("borderSize").getFloat();
 
-	initStaticVbo(color1, color2, color3, color4, tetrisBoard.getColumns(), tetrisBoard.getRows());
-}
+	const int columns = tetrisBoard.getColumns();
+	const int rows = tetrisBoard.getRows();
 
-void StaticGraphicBoard::initStaticVbo(mw::Color c1, mw::Color c2, mw::Color c3, mw::Color c4, int columns, int rows) {
-	const float sizeInfo = 100;
-	const float sizePlayer = lowX_ + sizeBoard_ + sizeInfo;
+	const float infoSize = 70;
+	boardWidth_ = squareSize * columns;
+
+	width_ = squareSize * columns + infoSize + borderSize_ * 2;
+	height_ = squareSize * (rows - 2) + borderSize_ * 2;
+
+	// 9 [floats/vertices] * 6 [vertices/square] * ((rows - 2) * columns + 3*4) [squares].
+	std::vector<GLfloat> data(9 * 6 * ((rows - 2)*columns + 3 * 4)); // Hide the highest 2.
 	int index = 0;
 
-	width_ = squareSize_ * columns + sizeBoard_ + borderSize_ * 2;
-	height_ = squareSize_ * (rows - 2) + lowY_ * 2 + +borderSize_ * 2;
-
-	// 9 [floats/vertices] * 6 [vertices/square] * ((rows - 2) * columns + 3*4) [squares]. 
-	std::vector<GLfloat> data(9 * 6 * ((rows - 2)*columns + 3*4)); // Hide the highest 2.
 	// Draw the player area.
-	float x = lowX_ + borderSize_;
-	float y = lowY_ * 0.5f + borderSize_;
+	float x = lowX + borderSize_;
+	float y = lowY * 0.5f + borderSize_;
 	addSquare(data.data(), index,
 		x, y,
-		sizeBoard_ + sizeInfo + 2 * lowX_, squareSize_ * (rows - 2) + lowY_,
+		boardWidth_ + infoSize, squareSize * (rows - 2),
 		c4);
 
 	// Draw the outer square.
-	x = lowX_ + borderSize_;
-	y = lowY_ + borderSize_;
+	x = lowX + borderSize_;
+	y = lowY + borderSize_;
 	addSquare(data.data(), index,
 		x, y,
-		squareSize_ * columns, squareSize_ * (rows - 2),
+		squareSize * columns, squareSize * (rows - 2),
 		c1);
 
 	// Draw the inner squares.
 	for (int row = 0; row < rows - 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
-			x = lowX_ + borderSize_ + squareSize_ * column + (squareSize_ * columns + sizeInfo) * 0 + squareSize_ * 0.1f;
-			y = lowY_ + borderSize_ + squareSize_ * row + squareSize_ * 0.1f;
+			x = lowX + borderSize_ + squareSize * column + (squareSize * columns + infoSize) * 0 + squareSize * 0.1f;
+			y = lowY + borderSize_ + squareSize * row + squareSize * 0.1f;
 			addSquare(data.data(), index,
 				x, y,
-				squareSize_ * 0.8f, squareSize_ * 0.8f,
+				squareSize * 0.8f, squareSize * 0.8f,
 				c2);
 		}
 	}
 
 	// Draw the block start area.
-	x = lowX_ + borderSize_;
-	y = lowY_ + borderSize_ + squareSize_ * (rows - 4);
+	x = lowX + borderSize_;
+	y = lowY + borderSize_ + squareSize * (rows - 4);
 	addSquare(data.data(), index,
 		x, y,
-		squareSize_ * columns, squareSize_ * 2,
+		squareSize * columns, squareSize * 2,
 		c3);
 
 	// Draw the preview block area.
-	x = lowX_ + borderSize_ + sizeBoard_ + 5;
-	y = lowY_ + borderSize_ + squareSize_ * (rows - 4) - (squareSize_ * 5 + 5);
+	x = lowX + borderSize_ + boardWidth_ + 5;
+	y = lowY + borderSize_ + squareSize * (rows - 4) - (squareSize * 5 + 5);
 	addSquare(data.data(), index,
 		x, y,
-		squareSize_ * 5, squareSize_ * 5,
+		squareSize * 5, squareSize * 5,
 		c3);
 
 	// Add border.
 	// Left-up corner.
-	x = lowX_;
-	y = lowY_ + height_ - borderSize_;
+	x = lowX;
+	y = lowY + height_ - borderSize_;
 	addSquare(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
-		borderLeftUp_,
-		borderColor_);
+		borderLeftUp,
+		borderColor);
 
 	// Right-up corner.
-	x = lowX_ + width_ - borderSize_;
-	y = lowY_ + height_ - borderSize_;
+	x = lowX + width_ - borderSize_;
+	y = lowY + height_ - borderSize_;
 	addSquare(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
-		borderRightUp_,
-		borderColor_);
+		borderRightUp,
+		borderColor);
 
 	// Left-down corner.
-	x = lowX_;
-	y = lowY_;
+	x = lowX;
+	y = lowY;
 	addSquare(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
-		borderDownLeft_,
-		borderColor_);
+		borderDownLeft,
+		borderColor);
 
 	// Right-down corner.
-	x = lowX_ + width_ - borderSize_;
-	y = lowY_;
+	x = lowX + width_ - borderSize_;
+	y = lowY;
 	addSquare(data.data(), index,
 		x, y,
 		borderSize_, borderSize_,
-		borderDownRight_,
-		borderColor_);
+		borderDownRight,
+		borderColor);
 
 	// Up.
-	x = lowX_ + borderSize_;
-	y = lowY_ + height_ - borderSize_;
+	x = lowX + borderSize_;
+	y = lowY + height_ - borderSize_;
 	addSquare(data.data(), index,
 		x, y,
 		width_ - 2 * borderSize_, borderSize_,
-		borderHorizontal_,
-		borderColor_);
+		borderHorizontal,
+		borderColor);
 
 	// Down.
-	x = lowX_ + borderSize_;
-	y = lowY_;
+	x = lowX + borderSize_;
+	y = lowY;
 	addSquare(data.data(), index,
 		x, y,
 		width_ - 2 * borderSize_, borderSize_,
-		borderHorizontal_,
-		borderColor_);
+		borderHorizontal,
+		borderColor);
 
 	// Left.
-	x = lowX_;
-	y = lowY_ + borderSize_;
+	x = lowX;
+	y = lowY + borderSize_;
 	addSquare(data.data(), index,
 		x, y,
 		borderSize_, height_ - 2 * borderSize_,
-		borderVertical_,
-		borderColor_);
+		borderVertical,
+		borderColor);
 
 	// Right.
-	x = lowX_ + width_ - borderSize_;
-	y = lowY_ + borderSize_;
+	x = lowX + width_ - borderSize_;
+	y = lowY + borderSize_;
 	addSquare(data.data(), index,
 		x, y,
 		borderSize_, height_ - 2 * borderSize_,
-		borderVertical_,
-		borderColor_);
+		borderVertical,
+		borderColor);
 
 	staticVbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
 }
@@ -294,4 +284,20 @@ void StaticGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 
 		mw::checkGlError();
 	}
+}
+
+float StaticGraphicBoard::getWidth() const {
+	return width_;
+}
+
+float StaticGraphicBoard::getHeight() const {
+	return height_;
+}
+
+float StaticGraphicBoard::getBoardWidth() const {
+	return boardWidth_;
+}
+
+float StaticGraphicBoard::getBorderSize() const {
+	return borderSize_;
 }
