@@ -16,6 +16,9 @@ void addSquareToBoardShader(GLfloat* data, int& index,
 	float w, float h,
 	const mw::Sprite& sprite, const mw::Color& color = mw::Color(1, 1, 1));
 
+void addSquareToBoardShader(GLfloat* data, int& index,
+	float dx, float dy);
+
 void setVertexAttribPointer(const BoardShader& shader);
 
 #endif // BOARDSHADERFUNCTIONS_H

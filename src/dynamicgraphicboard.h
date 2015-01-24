@@ -25,14 +25,7 @@ public:
 
 	void draw(float deltaTime, const BoardShader& shader);
 
-	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
-		linesRemovedTimeLeft_ = downTime;
-		removedRow1_ = row1;
-		removedRow2_ = row2;
-		removedRow3_ = row3;
-		removedRow4_ = row4;
-		//dynamicVertercies_ - 4;
-	}
+	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4);
 
 private:
 	void updateDynamicData(const RawTetrisBoard& tetrisBoard);
@@ -42,6 +35,7 @@ private:
 	void updateCurrentBlock(int &index, const RawTetrisBoard& tetrisBoard);
 	void updatePreviewBlock(int &index, const RawTetrisBoard& tetrisBoard);
 	
+	void updateBoardLinesRemoved();
 	void updateBoardLinesRemoved(float ratio);
 
 	mw::Sprite getSprite(BlockType blockType) const;
@@ -63,6 +57,7 @@ private:
 	int rows_, columns_;
 
 	float linesRemovedTimeLeft_;
+	float linesRemovedTime_;
 	int removedRow1_, removedRow2_, removedRow3_, removedRow4_;
 };
 

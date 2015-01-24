@@ -1,5 +1,7 @@
 #include "boardshaderfunctions.h"
 
+#include <algorithm>
+
 namespace {
 
 	inline void addVertex(GLfloat* data, int& index,
@@ -97,6 +99,16 @@ void addSquareToBoardShader(GLfloat* data, int& index,
 		(sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
 		true,
 		color);
+}
+
+void addSquareToBoardShader(GLfloat* data, int& index,
+	float dx, float dy) {
+	
+	for (int i = 0; i < 4; ++i) {
+		data[index] += dx;
+		data[index + 1] += dy;
+		index += 9;
+	}
 }
 
 void setVertexAttribPointer(const BoardShader& shader) {

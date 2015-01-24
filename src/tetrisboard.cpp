@@ -22,7 +22,7 @@ void TetrisBoard::restart(BlockType current, BlockType next) {
 	nbrOfUpdates_ = 0;
 }
 
-void TetrisBoard::triggerEvent(GameEvent gameEvent, int row1, int row2, int row3, int row4) {
+void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 	gameEvents_.push(gameEvent);
 	switch (gameEvent) {
 	case GameEvent::BLOCK_COLLISION:

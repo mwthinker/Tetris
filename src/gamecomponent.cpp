@@ -162,12 +162,19 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 				//it->second.setMiddleMessage(text);
 			}
 			break;
+		case GameEvent::ONE_ROW_REMOVED:
+			// Fall through!
+		case GameEvent::TWO_ROW_REMOVED:
+			// Fall through!
+		case GameEvent::THREE_ROW_REMOVED:
+			// Fall through!
 		case GameEvent::FOUR_ROW_REMOVED:
-		{
-			int a = 0;
-
-		}
-		break;
+			graphic.updateLinesRemoved(3.f,
+				player->getTetrisBoard().getRemovedRow1(),
+				player->getTetrisBoard().getRemovedRow2(),
+				player->getTetrisBoard().getRemovedRow3(),
+				player->getTetrisBoard().getRemovedRow4());
+			break;
 	}
 }
 

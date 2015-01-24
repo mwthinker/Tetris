@@ -121,7 +121,7 @@ protected:
 	Block createBlock(BlockType blockType) const;
 
 private:
-	virtual void triggerEvent(GameEvent gameEvent, int row1 = -1, int row2 = -1, int row3 = -1, int row4 = -1) {
+	virtual void triggerEvent(GameEvent gameEvent) {
 	}
 
 	virtual std::vector<BlockType> addExternalRows() {

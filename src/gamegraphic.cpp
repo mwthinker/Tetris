@@ -10,8 +10,8 @@ GameGraphic::GameGraphic() {
 }
 
 GameGraphic::GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) :
-dynamicBoard_(x, y, boardEntry, tetrisBoard),
-staticBoard_(x, y, boardEntry, tetrisBoard) {
+	dynamicBoard_(x, y, boardEntry, tetrisBoard),
+	staticBoard_(x, y, boardEntry, tetrisBoard) {
 
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 
@@ -25,7 +25,7 @@ staticBoard_(x, y, boardEntry, tetrisBoard) {
 }
 
 void GameGraphic::update(const PlayerPtr& player) {
-	//updateDynamicData(player->getTetrisBoard());
+	dynamicBoard_.update(player);
 	PlayerInfo info = player->getPlayerInfo();
 	update(info.nbrClearedRows_, info.points_, player->getLevel());
 }

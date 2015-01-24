@@ -169,6 +169,10 @@ void RawTetrisBoard::clearBoard() {
 }
 
 int RawTetrisBoard::removeFilledRows(const Block& block) {
+	row1_ = -1;
+	row2_ = -1;
+	row3_ = -1;
+	row4_ = -1;
 	int row = block.getLowestRow();
 
 	int nbr = 0; // Number of rows filled.

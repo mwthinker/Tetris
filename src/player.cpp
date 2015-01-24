@@ -63,7 +63,7 @@ void Player::update(BlockType current, BlockType next) {
 }
 
 void Player::update(Move move, BlockType next) {
-	tetrisBoard_.setNextBlockType(next);	
+	tetrisBoard_.setNextBlockType(next);
 	tetrisBoard_.update(move);
 }
 

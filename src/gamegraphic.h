@@ -50,6 +50,7 @@ public:
 	void setName(std::string name);
 
 	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
+		dynamicBoard_.updateLinesRemoved(downTime, row1, row2, row3, row4);
 	}
 
 private:

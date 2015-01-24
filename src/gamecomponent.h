@@ -11,7 +11,6 @@
 #include <mw/vertexbufferobject.h>
 #include <mw/shader.h>
 
-#include <queue>
 #include <map>
 
 class TetrisGame;
