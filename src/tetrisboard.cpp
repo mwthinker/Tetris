@@ -10,16 +10,12 @@ TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockTy
 	: RawTetrisBoard(nbrRows, nbrColumns, current, next) {
 	
 	nbrOfUpdates_ = 0;
-	setCurrentBlock(current);
-	setNextBlockType(next);
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
 	squaresToAdd_.clear();
-	setCurrentBlock(current);
-	setNextBlockType(next);
-	clearBoard();
 	nbrOfUpdates_ = 0;
+	updateRestart(current, next);
 }
 
 void TetrisBoard::triggerEvent(GameEvent gameEvent) {
@@ -31,12 +27,8 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 	}
 }
 
-void TetrisBoard::setNextBlockType(BlockType next) {
-	RawTetrisBoard::setNextBlockType(next);
-}
-
 void TetrisBoard::addRows(const std::vector<BlockType>& blockTypes) {
-	squaresToAdd_.insert(squaresToAdd_.end(),blockTypes.begin(), blockTypes.end());
+	squaresToAdd_.insert(squaresToAdd_.end(), blockTypes.begin(), blockTypes.end());
 }
 
 std::vector<BlockType> TetrisBoard::addExternalRows() {

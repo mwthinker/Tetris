@@ -131,12 +131,25 @@ void RawTetrisBoard::update(Move move) {
 	}
 }
 
-const std::vector<BlockType>& RawTetrisBoard::getBoardVector() const {
-	return gameboard_;
+void RawTetrisBoard::updateNextBlock(BlockType nextBlock) {
+	next_ = nextBlock;
+	triggerEvent(GameEvent::NEXT_BLOCK_UPDATED);
 }
 
-void RawTetrisBoard::setCurrentBlock(BlockType current) {
+void RawTetrisBoard::updateCurrentBlock(BlockType current) {
 	current_ = createBlock(current);
+	triggerEvent(GameEvent::CURRENT_BLOCK_UPDATED);
+}
+
+void RawTetrisBoard::updateRestart(BlockType current, BlockType next) {
+	next_ = next;
+	current_ = createBlock(current);
+	clearBoard();
+	triggerEvent(GameEvent::RESTARTED);
+}
+
+const std::vector<BlockType>& RawTetrisBoard::getBoardVector() const {
+	return gameboard_;
 }
 
 void RawTetrisBoard::addBlockToBoard(const Block& block) {

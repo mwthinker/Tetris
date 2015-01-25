@@ -6,6 +6,10 @@
 #include <vector>
 
 enum class GameEvent : char {
+	RESTARTED,
+	CURRENT_BLOCK_UPDATED,
+	NEXT_BLOCK_UPDATED,
+	EXTERNAL_ROWS_ADDED,
 	PLAYER_ROTATES_BLOCK,
 	PLAYER_MOVES_BLOCK_LEFT,
 	PLAYER_MOVES_BLOCK_RIGHT,
@@ -40,6 +44,15 @@ public:
 
 	// Move the block. The board will stay constant if game over is true.
     void update(Move move);
+
+	// Update the next block to be. Triggers the game event NEXT_BLOCK_UPDATED.
+	void updateNextBlock(BlockType next);
+
+	// Update the current block to be. Triggers the gameevent CURRENT_BLOCK_UPDATED.
+	// The current block is placed at the start position on the board.
+	void updateCurrentBlock(BlockType current);
+
+	void updateRestart(BlockType current, BlockType next);
     
 	// Return the number of rows.
 	inline int getRows() const {
@@ -107,12 +120,6 @@ protected:
 	// Set all squares on the board to empty.
 	// Game over is set to false.
 	void clearBoard();
-
-	inline void setNextBlockType(BlockType next) {
-		next_ = next;
-	}
-
-	void setCurrentBlock(BlockType current);
 
 	inline BlockType& blockType(int row, int column) {
 		return gameboard_[row * nbrColumns_ + column];

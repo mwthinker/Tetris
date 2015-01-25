@@ -44,7 +44,7 @@ bool Player::updateBoard(Move& move, BlockType& next) {
 			gameEvents_.push(gameEvent);
 			if (!remote_ && gameEvent == GameEvent::BLOCK_COLLISION) {
 				// Generate a new block for a local player.
-				tetrisBoard_.setNextBlockType(generateBlockType());
+				tetrisBoard_.updateNextBlock(generateBlockType());
 			}
 		}
 		next = tetrisBoard_.getNextBlockType();
@@ -63,7 +63,7 @@ void Player::update(BlockType current, BlockType next) {
 }
 
 void Player::update(Move move, BlockType next) {
-	tetrisBoard_.setNextBlockType(next);
+	tetrisBoard_.updateNextBlock(next);
 	tetrisBoard_.update(move);
 }
 
