@@ -11,8 +11,9 @@ class BoardShader;
 class StaticGraphicBoard {
 public:
 	StaticGraphicBoard();
-
-	StaticGraphicBoard(float lowX, float lowY, TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard);
+	
+	void restart(float loxX, float lowY,
+		TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard);
 
 	void draw(float deltaTime, const BoardShader& shader);
 

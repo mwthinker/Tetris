@@ -31,18 +31,28 @@ namespace {
 
 } // Anonymous namespace.
 
-DynamicGraphicBoard::DynamicGraphicBoard() {
+DynamicGraphicBoard::DynamicGraphicBoard() :
+	INDEX_CURRENT_BLOCK(0),
+	INDEX_NEXT_BLOCK(9 * 6 * 4),
+	INDEX_BOARD(9 * 6 * 4 * 2),
+	BLOCK_VERTICES(6 * 4 * 2) {
+
 }
 
-DynamicGraphicBoard::DynamicGraphicBoard(float x, float y,
-	TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) :	
+void DynamicGraphicBoard::restart(float x, float y,
+	TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) {
+
 	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares].
-	dynamicData_(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 8)),
-	lowX_(x), lowY_(y),
-	linesRemovedTime_(1),
-	linesRemovedTimeLeft_(-1),
-	indexDynamicBoard_(432),
-	removedRow1_(-1), removedRow2_(-1), removedRow3_(-1), removedRow4_(-1) {
+	dynamicData_ = std::vector<GLfloat>(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 8));
+
+	lowX_ = x;
+	lowY_ = y;
+	linesRemovedTime_ = 1;
+	linesRemovedTimeLeft_ = -1;
+	removedRow1_ = -1;
+	removedRow2_ = -1;
+	removedRow3_ = -1;
+	removedRow4_ = -1;
 
 	rows_ = tetrisBoard.getRows();
 	columns_ = tetrisBoard.getColumns();
@@ -59,15 +69,25 @@ DynamicGraphicBoard::DynamicGraphicBoard(float x, float y,
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
 	borderSize_ = boardEntry.getChildEntry("borderSize").getFloat();
-	initDynamicVbo(tetrisBoard);
+
+	updateBlock_ = true;
+	
+	updateBoard(tetrisBoard);
+	updateVBO();
 }
 
-void DynamicGraphicBoard::initDynamicVbo(const RawTetrisBoard& tetrisBoard) {
-	updateDynamicData(tetrisBoard);
-	vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * dynamicData_.size(), dynamicData_.data(), GL_DYNAMIC_DRAW);
+void DynamicGraphicBoard::updateCurrentBlock(const Block& block) {
+	updateBlock_ = true;
+	currentBlock_ = block;
 }
 
-void DynamicGraphicBoard::updateBoard(int &index, const RawTetrisBoard& tetrisBoard) {
+void DynamicGraphicBoard::updatePreviewBlock(BlockType type) {
+	updateBlock_ = true;
+	preview_ = type;
+}
+
+void DynamicGraphicBoard::updateBoard(const RawTetrisBoard& tetrisBoard) {
+	int index = INDEX_BOARD;	
 	dynamicVertercies_ = 0;
 	// Draw the board.
 	for (int row = 0; row < rows_ - 2; ++row) {
@@ -87,13 +107,14 @@ void DynamicGraphicBoard::updateBoard(int &index, const RawTetrisBoard& tetrisBo
 	}
 }
 
-void DynamicGraphicBoard::updateCurrentBlock(int &index, const RawTetrisBoard& tetrisBoard) {
+void DynamicGraphicBoard::updateCurrentBlock() {
+	int index = INDEX_CURRENT_BLOCK;
+	
 	// Draw the current block.
 	float x = lowX_ + borderSize_;
 	float y = lowY_ + borderSize_;
-	Block block = tetrisBoard.getBlock();
-	mw::Sprite sprite = getSprite(block.blockType());
-	for (const Square& sq : block) {
+	mw::Sprite sprite = getSprite(currentBlock_.blockType());
+	for (const Square& sq : currentBlock_) {
 		if (sq.row_ < rows_ - 2) {
 			addSquareToBoardShader(dynamicData_.data(), index,
 				x + sq.column_ * squareSize_, y + sq.row_ * squareSize_,
@@ -109,7 +130,7 @@ void DynamicGraphicBoard::updateCurrentBlock(int &index, const RawTetrisBoard& t
 }
 
 void DynamicGraphicBoard::updateBoardLinesRemoved() {
-	int index = indexDynamicBoard_;
+	int index = INDEX_BOARD;
 	dynamicVertercies_ = 0;
 	// Draw the board.
 	for (int row = 0; row < rows_ - 2; ++row) {
@@ -135,7 +156,7 @@ void DynamicGraphicBoard::updateBoardLinesRemoved() {
 }
 
 void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
-	int index = indexDynamicBoard_;
+	int index = INDEX_BOARD;
 	// Draw the board.
 	for (int row = 0; row < rows_ - 2; ++row) {
 		bool rowNotRemoved = (row != removedRow1_ && row != removedRow2_
@@ -158,11 +179,13 @@ void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
 	}
 }
 
-void DynamicGraphicBoard::updatePreviewBlock(int &index, const RawTetrisBoard& tetrisBoard) {
+void DynamicGraphicBoard::updatePreviewBlock() {
+	int index = INDEX_NEXT_BLOCK;
+	
 	// Draw the preview block.
 	float x = lowX_ + borderSize_ + sizeBoard_ + 5 + squareSize_ * 2.5f;
 	float y = lowY_ + borderSize_ + squareSize_ * (rows_ - 4) - (squareSize_ * 2.5f + 5);
-	Block block = Block(tetrisBoard.getNextBlockType(), 0, 0);
+	Block block = Block(preview_, 0, 0);
 	gui::Point center = calculateCenter(block);
 	mw::Sprite sprite = getSprite(block.blockType());
 	for (const Square& sq : block) {
@@ -173,22 +196,31 @@ void DynamicGraphicBoard::updatePreviewBlock(int &index, const RawTetrisBoard& t
 	}
 }
 
-void DynamicGraphicBoard::updateDynamicData(const RawTetrisBoard& tetrisBoard) {
-	int index = 0;
-	updateCurrentBlock(index, tetrisBoard);
-	updatePreviewBlock(index, tetrisBoard);
-
-	if (linesRemovedTimeLeft_ < 0) {
-		// Update the board.
-		updateBoard(index, tetrisBoard);
+void DynamicGraphicBoard::updateVBO() {
+	if (updateBlock_) {
+		updateCurrentBlock();
+		updatePreviewBlock();
+		updateVBO_ = true;
+		updateBlock_ = false;
 	}
-}
 
-void DynamicGraphicBoard::update(const PlayerPtr& player) {
-	updateDynamicData(player->getTetrisBoard());
-	vbo_.bindBuffer();
-	vbo_.bindBufferSubData(0, sizeof(GLfloat) * (6 * 8 + dynamicVertercies_) * 9, dynamicData_.data());
-	vbo_.unbindBuffer();
+	if (linesRemovedTimeLeft_ > 0) {
+		updateBoardLinesRemoved(1 - linesRemovedTimeLeft_ / linesRemovedTime_);
+		updateVBO_ = true;
+	} else {
+		dynamicVertercies_ = 0;
+	}
+
+	if (vbo_.getSize() > 0) {
+		if (updateVBO_) {
+			vbo_.bindBuffer();
+			vbo_.bindBufferSubData(0, sizeof(GLfloat) * (BLOCK_VERTICES + dynamicVertercies_) * 9, dynamicData_.data());
+			vbo_.unbindBuffer();
+			updateVBO_ = false;
+		}
+	} else {
+		vbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * dynamicData_.size(), dynamicData_.data(), GL_DYNAMIC_DRAW);
+	}
 }
 
 void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
@@ -198,10 +230,11 @@ void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 
 		if (linesRemovedTimeLeft_ > 0) {
 			linesRemovedTimeLeft_ -= deltaTime;
-			//updateBoardLinesRemoved(1 - linesRemovedTimeLeft_ / linesRemovedTime_);
 		}
+		updateVBO();
+
 		setVertexAttribPointer(shader);
-		mw::glDrawArrays(GL_TRIANGLES, 0, 6 * 8 + dynamicVertercies_);
+		mw::glDrawArrays(GL_TRIANGLES, 0, BLOCK_VERTICES + dynamicVertercies_);
 
 		vbo_.unbindBuffer();
 	}
@@ -215,7 +248,7 @@ void DynamicGraphicBoard::updateLinesRemoved(float downTime, int row1, int row2,
 	removedRow3_ = row3;
 	removedRow4_ = row4;
 	// Update the board.
-	//updateBoardLinesRemoved();
+	updateBoardLinesRemoved();
 }
 
 mw::Sprite DynamicGraphicBoard::getSprite(BlockType blockType) const {

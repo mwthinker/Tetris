@@ -40,8 +40,9 @@ void GameComponent::draw(Uint32 deltaTime) {
 		float height = 0;
 
 		for (const auto& pair : graphicPlayers_) {
-			width += pair.second.getWidth();
-			height = pair.second.getHeight();
+			const GameGraphic& graphic = pair.second;
+			width += graphic.getWidth();
+			height = graphic.getHeight();
 		}
 
 		// Centers the game and holds the correct proportions.
@@ -69,7 +70,8 @@ void GameComponent::draw(Uint32 deltaTime) {
 			font_ = tetrisEntry_.getDeepChildEntry("window font").getFont((int) fontSize_);
 			// Update the font!
 			for (auto& pair : graphicPlayers_) {
-				pair.second.update(fontSize_, font_);
+				GameGraphic& graphic = pair.second;
+				graphic.updateTextSize(fontSize_, font_);
 			}
 		}
 		updateMatrix_ = false;
@@ -78,7 +80,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 	mw::glEnable(GL_BLEND);
 	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	mw::Text text; // Used to update the "Paus".
+	mw::Text text; // Used to update the "Pause".
 
 	// Draw boards.
 	for (auto& pair : graphicPlayers_) {
@@ -94,12 +96,12 @@ void GameComponent::draw(Uint32 deltaTime) {
 
 	// Draw texts.
 	glUseProgram();
-
-	float x = 0;
+	
 	int i = 0;
 	float boardWidth = getSize().width_ / graphicPlayers_.size();
 	for (auto& pair : graphicPlayers_) {
-		pair.second.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
+		GameGraphic& graphic = pair.second;
+		graphic.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
 		++i;
 	}
 
@@ -107,7 +109,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 	mw::checkGlError();
 }
 
-void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
+void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	bool showPoints = false;
 	if (players.size() == 1) {
 		showPoints = true;
@@ -116,10 +118,11 @@ void GameComponent::initGame(const std::vector<PlayerPtr>& players) {
 	graphicPlayers_.clear();
 
 	float w = 0;
-	for (const auto& player : players) {
-		graphicPlayers_[player->getId()] = GameGraphic(w, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"), player->getTetrisBoard());
-		graphicPlayers_[player->getId()].setName(player->getName());
-		w += graphicPlayers_[player->getId()].getWidth();
+	for (auto& player : players) {
+		auto& graphic = graphicPlayers_[player->getId()];
+		graphic.restart(*player, w, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"));
+		graphic.setName(player->getName());
+		w += graphic.getWidth();
 	}
 
 	alivePlayers_ = players.size();
@@ -137,8 +140,6 @@ void GameComponent::countDown(int msCountDown) {
 
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	GameGraphic& graphic = graphicPlayers_[player->getId()];
-
-	graphic.update(player);
 	soundEffects(gameEvent);
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
@@ -169,11 +170,6 @@ void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 		case GameEvent::THREE_ROW_REMOVED:
 			// Fall through!
 		case GameEvent::FOUR_ROW_REMOVED:
-			graphic.updateLinesRemoved(3.f,
-				player->getTetrisBoard().getRemovedRow1(),
-				player->getTetrisBoard().getRemovedRow2(),
-				player->getTetrisBoard().getRemovedRow3(),
-				player->getTetrisBoard().getRemovedRow4());
 			break;
 	}
 }

@@ -3,6 +3,8 @@
 
 #include "tetrisboard.h"
 
+#include <mw/signal.h>
+
 #include <string>
 #include <queue>
 #include <memory>
@@ -77,6 +79,8 @@ public:
 	bool isAi() const {
 		return ai_;
 	}
+
+	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
 protected:
 	// Pushed to a queue.

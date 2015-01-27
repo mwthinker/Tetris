@@ -129,6 +129,12 @@ const TetrisBoard& Player::getTetrisBoard() const {
 	return tetrisBoard_;
 }
 
+mw::signals::Connection Player::addGameEventListener(
+	const std::function<void(GameEvent, const TetrisBoard&)>& callback) {
+
+	return tetrisBoard_.addGameEventListener(callback);
+}
+
 void Player::setLevel(int level) {
 	level_ = level;
 }

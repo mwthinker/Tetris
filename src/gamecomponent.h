@@ -22,7 +22,7 @@ public:
 	
 	void draw(Uint32 deltaTime) override;
 
-	void initGame(const std::vector<PlayerPtr>& players) override;
+	void initGame(std::vector<PlayerPtr>& players) override;
 
 	void countDown(int msCountDown) override;
 

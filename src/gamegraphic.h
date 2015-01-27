@@ -11,18 +11,26 @@
 #include <mw/text.h>
 #include <mw/sprite.h>
 #include <mw/vertexbufferobject.h>
+#include <mw/signal.h>
 
 #include <string>
 
-class RawTetrisBoard;
+class TetrisBoard;
 
 class GameGraphic {
 public:
-	GameGraphic();
+	~GameGraphic();
 
-	GameGraphic(float x, float y, TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard);
+	void restart(Player& player, float x, float y,
+		TetrisEntry boardEntry);
+	
+	void update(int clearedRows, int points, int level);
 
-	void update(const PlayerPtr& player);
+	void updateTextSize(float size, const mw::Font& font);
+
+	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
+		dynamicBoard_.updateLinesRemoved(downTime, row1, row2, row3, row4);
+	}
 
 	inline float getWidth() const {
 		return staticBoard_.getWidth();
@@ -34,8 +42,6 @@ public:
 
 	void draw(float deltaTime, const BoardShader& shader);
 	void drawText(float x, float y, float width, float height, float scale);
-
-	void update(float size, const mw::Font& font);
 
 	void setMiddleMessage(const mw::Text& text);
 
@@ -49,17 +55,16 @@ public:
 
 	void setName(std::string name);
 
-	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
-		dynamicBoard_.updateLinesRemoved(downTime, row1, row2, row3, row4);
-	}
-
 private:
-	void update(int rowsCleared, int points, int level);
+	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
 	DynamicGraphicBoard dynamicBoard_;
 	StaticGraphicBoard staticBoard_;
-	mw::Text level_, points_, nbrOfClearedRows_, name_, middleMessage_;
+	mw::Text textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	int level_, points_, clearedRows_;
+
 	mw::Font font_;
+	mw::signals::Connection connection_;
 
 	bool showPoints_;
 };

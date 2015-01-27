@@ -5,7 +5,7 @@
 
 class GameHandler {
 public:
-	virtual void initGame(const std::vector<PlayerPtr>& players) = 0;
+	virtual void initGame(std::vector<PlayerPtr>& players) = 0;
 
 	virtual void eventHandler(const PlayerPtr& player, GameEvent gameEvent) = 0;
 

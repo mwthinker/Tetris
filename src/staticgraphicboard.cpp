@@ -13,7 +13,7 @@
 StaticGraphicBoard::StaticGraphicBoard() {
 }
 
-StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
+void StaticGraphicBoard::restart(float lowX, float lowY,
 	TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) {
 
 	const mw::Color c1 = boardEntry.getChildEntry("outerSquareColor").getColor();
@@ -163,6 +163,7 @@ StaticGraphicBoard::StaticGraphicBoard(float lowX, float lowY,
 		borderVertical,
 		borderColor);
 
+	staticVbo_ = mw::VertexBufferObject();
 	staticVbo_.bindBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.size(), data.data(), GL_STATIC_DRAW);
 }
 
