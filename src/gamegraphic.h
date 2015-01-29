@@ -55,8 +55,8 @@ public:
 
 	void setName(std::string name);
 
-private:
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
+private:
 
 	DynamicGraphicBoard dynamicBoard_;
 	StaticGraphicBoard staticBoard_;

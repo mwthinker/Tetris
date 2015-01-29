@@ -40,6 +40,24 @@ namespace {
 		addVertex(data, index, x3, y3, xTex3, yTex3, isTex, color);
 	}
 
+	inline void addVertex(GLfloat* data, int& index,
+		float x, float y) {
+
+		data[index] = x;
+		data[index+1] = y;
+		index += 9;
+	}
+
+	inline void addTriangle(GLfloat* data, int& index,
+		float x1, float y1,
+		float x2, float y2,
+		float x3, float y3) {
+
+		addVertex(data, index, x1, y1);
+		addVertex(data, index, x2, y2);
+		addVertex(data, index, x3, y3);
+	}
+
 } // Namespace mw.
 
 // Add two triangles, GL_TRIANGLES, i.e. 6 vertices.
@@ -102,13 +120,20 @@ void addSquareToBoardShader(GLfloat* data, int& index,
 }
 
 void addSquareToBoardShader(GLfloat* data, int& index,
-	float dx, float dy) {
+	float x, float y,
+	float w, float h) {
 	
-	for (int i = 0; i < 4; ++i) {
-		data[index] += dx;
-		data[index + 1] += dy;
-		index += 9;
-	}
+	// Left triangle |_
+	addTriangle(data, index,
+		x, y,
+		x + w, y,
+		x, y + h);
+	//                _
+	// Right triangle  |
+	addTriangle(data, index,
+		x, y + h,
+		x + w, y,
+		x + w, y + h);
 }
 
 void setVertexAttribPointer(const BoardShader& shader) {

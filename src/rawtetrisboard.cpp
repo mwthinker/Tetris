@@ -47,7 +47,7 @@ void RawTetrisBoard::update(Move move) {
 				if (!collision(tmp)) {
 					block = tmp;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_LEFT);
-				}			
+				}
 				break;
 			}
 			case Move::RIGHT:
@@ -109,6 +109,7 @@ void RawTetrisBoard::update(Move move) {
 
 			// Update the user controlled block.
 			current_ = createBlock(next_);
+			triggerEvent(GameEvent::CURRENT_BLOCK_UPDATED);
 
 			switch (nbr) {
 				case 1:

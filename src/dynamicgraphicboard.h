@@ -39,7 +39,6 @@ private:
 	void updateCurrentBlock();
 	void updatePreviewBlock();
 	
-	void updateBoardLinesRemoved();
 	void updateBoardLinesRemoved(float ratio);
 
 	mw::Sprite getSprite(BlockType blockType) const;

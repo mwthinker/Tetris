@@ -43,7 +43,8 @@ void DynamicGraphicBoard::restart(float x, float y,
 	TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) {
 
 	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares].
-	dynamicData_ = std::vector<GLfloat>(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 8));
+	dynamicData_ = std::vector<GLfloat>(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 4*2));
+	vbo_ = mw::VertexBufferObject();
 
 	lowX_ = x;
 	lowY_ = y;
@@ -65,13 +66,13 @@ void DynamicGraphicBoard::restart(float x, float y,
 	spriteL_ = spriteEntry.getChildEntry("squareL").getSprite();
 	spriteT_ = spriteEntry.getChildEntry("squareT").getSprite();
 	spriteO_ = spriteEntry.getChildEntry("squareO").getSprite();
-		
+	
 	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
 	sizeBoard_ = squareSize_ * tetrisBoard.getColumns();
 	borderSize_ = boardEntry.getChildEntry("borderSize").getFloat();
 
-	updateBlock_ = true;
-	
+	updateCurrentBlock(tetrisBoard.getBlock());
+	updatePreviewBlock(tetrisBoard.getNextBlockType());
 	updateBoard(tetrisBoard);
 	updateVBO();
 }
@@ -87,21 +88,31 @@ void DynamicGraphicBoard::updatePreviewBlock(BlockType type) {
 }
 
 void DynamicGraphicBoard::updateBoard(const RawTetrisBoard& tetrisBoard) {
-	int index = INDEX_BOARD;	
+	updateVBO_ = true;
+	int index = INDEX_BOARD;
 	dynamicVertercies_ = 0;
 	// Draw the board.
 	for (int row = 0; row < rows_ - 2; ++row) {
 		for (int column = 0; column < columns_; ++column) {
 			BlockType type = tetrisBoard.getBlockType(row, column);
-			if (type != BlockType::EMPTY && type != BlockType::WALL) {
+			
+			if (type != BlockType::WALL) {
 				float x = lowX_ + borderSize_ + squareSize_ * column;
 				float y = lowY_ + borderSize_ + squareSize_ * row;
-				mw::Sprite sprite = getSprite(type);
-				addSquareToBoardShader(dynamicData_.data(), index,
-					x, y,
-					squareSize_, squareSize_,
-					sprite);
-				dynamicVertercies_ += 6;
+				if (type != BlockType::EMPTY) {
+					mw::Sprite sprite = getSprite(type);
+					addSquareToBoardShader(dynamicData_.data(), index,
+						x, y,
+						squareSize_, squareSize_,
+						sprite);
+					dynamicVertercies_ += 6;
+				} else { // Type should be: BlockType::EMPTY!
+					addSquareToBoardShader(dynamicData_.data(), index,
+						x, y,
+						squareSize_, squareSize_,
+						mw::Color(0,0,0,0));
+					dynamicVertercies_ += 6;
+				}
 			}
 		}
 	}
@@ -129,33 +140,8 @@ void DynamicGraphicBoard::updateCurrentBlock() {
 	}
 }
 
-void DynamicGraphicBoard::updateBoardLinesRemoved() {
-	int index = INDEX_BOARD;
-	dynamicVertercies_ = 0;
-	// Draw the board.
-	for (int row = 0; row < rows_ - 2; ++row) {
-		bool rowNotRemoved = !(row == removedRow1_ || row == removedRow2_
-			|| row == removedRow3_ || row == removedRow4_);
-
-		if (rowNotRemoved) {
-			int linesToMoveDown = 0;
-			row > removedRow1_ && removedRow1_ != -1 ? ++linesToMoveDown : 0;
-			row > removedRow2_ && removedRow2_ != -1 ? ++linesToMoveDown : 0;
-			row > removedRow3_ && removedRow3_ != -1 ? ++linesToMoveDown : 0;
-			row > removedRow4_ && removedRow4_ != -1 ? ++linesToMoveDown : 0;
-			if (linesToMoveDown > 0) {
-				// Swap the current row.
-				std::swap_ranges(dynamicData_.data() + index,
-					dynamicData_.data() + index + 9 * 6 * columns_,
-					dynamicData_.data() + index + 9 * 6 * linesToMoveDown * columns_);
-			}
-			index += 9 * 6 * columns_;
-			dynamicVertercies_ += 6 * columns_;
-		}
-	}
-}
-
 void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
+	updateVBO_ = true;
 	int index = INDEX_BOARD;
 	// Draw the board.
 	for (int row = 0; row < rows_ - 2; ++row) {
@@ -168,13 +154,15 @@ void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
 			row > removedRow2_ && removedRow2_ != -1 ? ++linesToMoveDown : 0;
 			row > removedRow3_ && removedRow3_ != -1 ? ++linesToMoveDown : 0;
 			row > removedRow4_ && removedRow4_ != -1 ? ++linesToMoveDown : 0;
+
+			float y = lowY_ + borderSize_ + squareSize_ * (row - linesToMoveDown);
 			for (int column = 0; column < columns_; ++column) {
-				float dx = 0;
-				float dy = -squareSize_ * linesToMoveDown;
+				float x = lowX_ + borderSize_ + squareSize_ * column;
 				addSquareToBoardShader(dynamicData_.data(), index,
-					dx, dy);
+					x, y, squareSize_, squareSize_);
 			}
-			index += 9;
+		} else {
+			index += 9 * 6 * columns_;
 		}
 	}
 }
@@ -207,10 +195,8 @@ void DynamicGraphicBoard::updateVBO() {
 	if (linesRemovedTimeLeft_ > 0) {
 		updateBoardLinesRemoved(1 - linesRemovedTimeLeft_ / linesRemovedTime_);
 		updateVBO_ = true;
-	} else {
-		dynamicVertercies_ = 0;
 	}
-
+		
 	if (vbo_.getSize() > 0) {
 		if (updateVBO_) {
 			vbo_.bindBuffer();
@@ -226,18 +212,32 @@ void DynamicGraphicBoard::updateVBO() {
 void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 	// Draw the dynamic part.
 	if (vbo_.getSize() > 0) {
-		vbo_.bindBuffer();
-
 		if (linesRemovedTimeLeft_ > 0) {
 			linesRemovedTimeLeft_ -= deltaTime;
 		}
 		updateVBO();
+		
+		vbo_.bindBuffer();
 
 		setVertexAttribPointer(shader);
 		mw::glDrawArrays(GL_TRIANGLES, 0, BLOCK_VERTICES + dynamicVertercies_);
 
 		vbo_.unbindBuffer();
 	}
+}
+
+namespace {
+		
+	void makeRowEmpty(std::vector<GLfloat>& v, int emptyRow, int columns) {
+		if (emptyRow >= 0) {
+			for (int i = 0; i < columns; ++i) {
+				for (int j = 1; j <= 6; ++j) {
+					v[9 * (emptyRow * columns + i) + 8] = 0.0; // Color alpha = 0.
+				}
+			}
+		}
+	}
+
 }
 
 void DynamicGraphicBoard::updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
@@ -247,8 +247,11 @@ void DynamicGraphicBoard::updateLinesRemoved(float downTime, int row1, int row2,
 	removedRow2_ = row2;
 	removedRow3_ = row3;
 	removedRow4_ = row4;
-	// Update the board.
-	updateBoardLinesRemoved();
+	
+	makeRowEmpty(dynamicData_, removedRow1_, columns_);
+	makeRowEmpty(dynamicData_, removedRow2_, columns_);
+	makeRowEmpty(dynamicData_, removedRow3_, columns_);
+	makeRowEmpty(dynamicData_, removedRow4_, columns_);
 }
 
 mw::Sprite DynamicGraphicBoard::getSprite(BlockType blockType) const {

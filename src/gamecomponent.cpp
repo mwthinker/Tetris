@@ -140,6 +140,7 @@ void GameComponent::countDown(int msCountDown) {
 
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	GameGraphic& graphic = graphicPlayers_[player->getId()];
+	//graphic.callback(gameEvent, player->getTetrisBoard());
 	soundEffects(gameEvent);
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:

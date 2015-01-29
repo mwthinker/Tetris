@@ -32,19 +32,30 @@ void GameGraphic::restart(Player& player, float x, float y,
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
-	//dynamicBoard_.update
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
+			break;
+		case GameEvent::RESTARTED:
+			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
+			dynamicBoard_.updatePreviewBlock(tetrisBoard.getBlockType());
+			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::EXTERNAL_ROWS_ADDED:
 			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
-			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
+			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
+		case GameEvent::PLAYER_ROTATES_BLOCK:
+			// Fall through!
+		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
+			// Fall through!
+		case GameEvent::PLAYER_MOVES_BLOCK_LEFT:
+			// Fall through!
+		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
+			// Fall through!
 		case GameEvent::GRAVITY_MOVES_BLOCK:
 			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
-			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::NEXT_BLOCK_UPDATED:
 			dynamicBoard_.updatePreviewBlock(tetrisBoard.getNextBlockType());
