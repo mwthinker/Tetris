@@ -56,8 +56,8 @@ public:
 	void setName(std::string name);
 
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
-private:
 
+private:
 	DynamicGraphicBoard dynamicBoard_;
 	StaticGraphicBoard staticBoard_;
 	mw::Text textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;

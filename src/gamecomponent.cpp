@@ -121,7 +121,6 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player->getId()];
 		graphic.restart(*player, w, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"));
-		graphic.setName(player->getName());
 		w += graphic.getWidth();
 	}
 
@@ -140,7 +139,8 @@ void GameComponent::countDown(int msCountDown) {
 
 void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
 	GameGraphic& graphic = graphicPlayers_[player->getId()];
-	//graphic.callback(gameEvent, player->getTetrisBoard());
+	graphic.update(player->getPlayerInfo().nbrClearedRows_, player->getPlayerInfo().points_, player->getLevel());
+
 	soundEffects(gameEvent);
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:

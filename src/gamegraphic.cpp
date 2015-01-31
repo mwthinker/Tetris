@@ -14,6 +14,10 @@ GameGraphic::~GameGraphic() {
 void GameGraphic::restart(Player& player, float x, float y,
 	TetrisEntry boardEntry) {
 
+	level_ = -1;
+	points_ = -1;
+	clearedRows_ = -1;
+
 	dynamicBoard_.restart(x, y, boardEntry, player.getTetrisBoard());
 	staticBoard_.restart(x, y, boardEntry, player.getTetrisBoard());
 
@@ -23,12 +27,13 @@ void GameGraphic::restart(Player& player, float x, float y,
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 
 	// Define all text sizes and font usage.
-	textLevel_ = mw::Text("Level ", font_, 16);
-	textPoints_ = mw::Text("Points ", font_, 16);
-	textClearedRows_ = mw::Text("Rows ", font_, 16);
+	textLevel_ = mw::Text("", font_, 16);
+	textPoints_ = mw::Text("", font_, 16);
+	textClearedRows_ = mw::Text("", font_, 16);
 	showPoints_ = true;
 
-	name_ = mw::Text("Keyboard1 ", font_, 16);
+	name_ = mw::Text(player.getName(), font_, 16);
+	update(player.getPlayerInfo().nbrClearedRows_, player.getPlayerInfo().points_, player.getLevel());
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -89,8 +94,8 @@ void GameGraphic::drawText(float x, float y, float width, float height, float sc
 	float borderSize = staticBoard_.getBorderSize();
 	name_.draw(x + boardWidth + borderSize * scale, height - y - name_.getHeight() - borderSize * scale);
 	textPoints_.draw(x + boardWidth + borderSize * scale, y + 50 * scale + borderSize * scale);
-	textLevel_.draw(x + boardWidth + borderSize * scale, y + 100 * scale + borderSize * scale);
-	textClearedRows_.draw(x + boardWidth + borderSize * scale, y + 10 * scale + boardWidth * scale);
+	textLevel_.draw(x + boardWidth + borderSize * scale, y + 70 * scale + borderSize * scale);
+	textClearedRows_.draw(x + boardWidth + borderSize * scale, y + 100 * scale + borderSize * scale);
 }
 
 void GameGraphic::updateTextSize(float size, const mw::Font& font) {
@@ -113,7 +118,7 @@ void GameGraphic::update(int clearedRows, int points, int level) {
 	}
 	if (points_ != points) {
 		std::stringstream stream;
-		level_ = level;
+		points_ = points;
 		stream << "Points " << points;
 		textPoints_.setText(stream.str());
 	}

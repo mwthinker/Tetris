@@ -218,6 +218,9 @@ void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 		if (linesRemovedTimeLeft_ > 0) {
 			linesRemovedTimeLeft_ -= deltaTime;
 			linesRemovedTimeLeft = linesRemovedTimeLeft_;
+			if (linesRemovedTimeLeft < 0) {
+				linesRemovedTimeLeft = 0;
+			}
 		}
 		updateVBO(linesRemovedTimeLeft);
 		
