@@ -24,110 +24,85 @@ void RawTetrisBoard::update(Move move) {
 		}
 	} else {
 		Block block = current_;
-
-		// Collision caused by gravity.
-		bool gravityCollision = false;
 		switch (move) {
 			case Move::GAME_OVER:
 				// Only called once when the game becomes game over.
 				isGameOver_ = true;
 				triggerEvent(GameEvent::GAME_OVER);
 				break;
-			case Move::DOWN_GRAVITY:
-				block.moveDown();
-				gravityCollision = collision(block);
-				if (!gravityCollision) {
-					triggerEvent(GameEvent::GRAVITY_MOVES_BLOCK);
-				}
-				break;
-			case Move::LEFT:
-			{
-				Block tmp = block;
-				tmp.moveLeft();
-				if (!collision(tmp)) {
-					block = tmp;
+			case Move::LEFT:				
+				block.moveLeft();
+				if (!collision(block)) {
+					current_ = block;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_LEFT);
 				}
 				break;
-			}
 			case Move::RIGHT:
-			{
-				Block tmp = block;
-				tmp.moveRight();
-				if (!collision(tmp)) {
-					block = tmp;
+				block.moveRight();
+				if (!collision(block)) {
+					current_ = block;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_RIGHT);
 				}
 				break;
-			}
 			case Move::DOWN:
-			{
-				Block tmp = block;
-				tmp.moveDown();
-				if (!collision(tmp)) {
-					block = tmp;
+				block.moveDown();
+				if (!collision(block)) {
+					current_ = block;
 					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_DOWN);
 				}
 				break;
-			}
 			case Move::ROTATE_RIGHT:
-			{
-				Block tmp = block;
-				tmp.rotateRight();
-				if (!collision(tmp)) {
-					block = tmp;
+				block.rotateRight();
+				if (!collision(block)) {
+					current_ = block;
 					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
 				}
 				break;
-			}
 			case Move::ROTATE_LEFT:
-			{
-				Block tmp = block;
-				tmp.rotateLeft();
-				if (!collision(tmp)) {
-					block = tmp;
+				block.rotateLeft();
+				if (!collision(block)) {
+					current_ = block;
 					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
 				}
 				break;
-			}
-		}
+			case Move::DOWN_GRAVITY:
+				block.moveDown();
+				if (collision(block)) {
+					// Collision detected, add squares to the gameboard.
+					addBlockToBoard(current_);
 
-		if (gravityCollision) {
-			// Collision detected, add squares to the gameboard.
-			addBlockToBoard(current_);
+					// Remove any filled row on the gameboard.
+					int nbr = removeFilledRows(current_);
 
-			// Remove any filled row on the gameboard.
-			int nbr = removeFilledRows(current_);
+					// Add rows due to some external event.
+					std::vector<BlockType> squares = addExternalRows();
+					gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
+					gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
 
-			// Add rows due to some external event.
-			std::vector<BlockType> squares = addExternalRows();
-			gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
-			gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
+					// Update the user controlled block.
+					current_ = createBlock(next_);
+					triggerEvent(GameEvent::CURRENT_BLOCK_UPDATED);
 
-			// Update the user controlled block.
-			current_ = createBlock(next_);
-			triggerEvent(GameEvent::CURRENT_BLOCK_UPDATED);
-
-			switch (nbr) {
-				case 1:
-					triggerEvent(GameEvent::ONE_ROW_REMOVED);
-					break;
-				case 2:
-					triggerEvent(GameEvent::TWO_ROW_REMOVED);
-					break;
-				case 3:
-					triggerEvent(GameEvent::THREE_ROW_REMOVED);
-					break;
-				case 4:
-					triggerEvent(GameEvent::FOUR_ROW_REMOVED);
-					break;
-			}
-
-			// Add event.
-			triggerEvent(GameEvent::BLOCK_COLLISION);
-		} else {
-			// No collision, its journey can continue.
-			current_ = block;
+					switch (nbr) {
+						case 1:
+							triggerEvent(GameEvent::ONE_ROW_REMOVED);
+							break;
+						case 2:
+							triggerEvent(GameEvent::TWO_ROW_REMOVED);
+							break;
+						case 3:
+							triggerEvent(GameEvent::THREE_ROW_REMOVED);
+							break;
+						case 4:
+							triggerEvent(GameEvent::FOUR_ROW_REMOVED);
+							break;
+					}
+					triggerEvent(GameEvent::BLOCK_COLLISION);
+				} else {
+					current_ = block;
+					triggerEvent(GameEvent::GRAVITY_MOVES_BLOCK);
+				}
+				break;
 		}
 	}
 }
