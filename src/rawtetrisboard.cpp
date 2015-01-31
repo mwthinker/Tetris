@@ -206,8 +206,8 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 
 void RawTetrisBoard::moveRowsOneStepDown(int rowToRemove) {
 	int indexStartOfRow = rowToRemove * nbrColumns_;
-	// Erase the row to be removed.
-	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.begin() + nbrColumns_);
-	// Replace the row that was removed with a empty row at the top.
+	// Erase the row.
+	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.begin() + indexStartOfRow + nbrColumns_);
+	// Replace the removed row with an empty row at the top.
 	gameboard_.insert(gameboard_.end(), nbrColumns_, BlockType::EMPTY);	
 }
