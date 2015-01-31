@@ -30,7 +30,7 @@ void RawTetrisBoard::update(Move move) {
 				isGameOver_ = true;
 				triggerEvent(GameEvent::GAME_OVER);
 				break;
-			case Move::LEFT:				
+			case Move::LEFT:
 				block.moveLeft();
 				if (!collision(block)) {
 					current_ = block;
@@ -206,12 +206,8 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 
 void RawTetrisBoard::moveRowsOneStepDown(int rowToRemove) {
 	int indexStartOfRow = rowToRemove * nbrColumns_;
-	// Copy all rows abowe the row to be removed.
-	std::vector<BlockType> upperBoard(gameboard_.begin() + indexStartOfRow + nbrColumns_, gameboard_.end());
-	// Erase the row to be removed and all rows abowe.
-	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.end());
-	// Insert the rows that were abowe the row that was removed.
-	gameboard_.insert(gameboard_.end(), upperBoard.begin(), upperBoard.end());
-	// Add an empty row at the top in order of replacing the row that were removed.
-	gameboard_.resize(gameboard_.size() + nbrColumns_, BlockType::EMPTY);
+	// Erase the row to be removed.
+	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.begin() + nbrColumns_);
+	// Replace the row that was removed with a empty row at the top.
+	gameboard_.insert(gameboard_.end(), nbrColumns_, BlockType::EMPTY);	
 }
