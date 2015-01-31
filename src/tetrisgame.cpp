@@ -947,7 +947,7 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 				// Add rows only for local players. Remote players will add
 				// indirectly.
 				for (PlayerPtr local : *localUser_) {
-					if (player.getId() == local->getId()) {
+					if (player.getId() != local->getId()) {
 						std::vector<BlockType> blockTypes;
 						for (int i = 0; i < rows; ++i) {
 							std::vector<BlockType> tmp = local->generateRow();
