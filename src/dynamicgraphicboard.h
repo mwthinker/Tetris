@@ -35,12 +35,11 @@ public:
 	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4);
 
 private:
-	void updateVBO();
+	void updateVBO(float linesRemovedTimeLeft);
 	void updateCurrentBlock();
 	void updatePreviewBlock();
 	
 	void updateBoardLinesRemoved(float ratio);
-
 
 	mw::Sprite getSprite(BlockType blockType) const;
 	float squareSize_;

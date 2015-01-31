@@ -70,7 +70,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		case GameEvent::THREE_ROW_REMOVED:
 			// Fall through!
 		case GameEvent::FOUR_ROW_REMOVED:
-			dynamicBoard_.updateLinesRemoved(3.f,
+			dynamicBoard_.updateLinesRemoved(0.3f,
 				tetrisBoard.getRemovedRow1(),
 				tetrisBoard.getRemovedRow2(),
 				tetrisBoard.getRemovedRow3(),

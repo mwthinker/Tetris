@@ -71,6 +71,8 @@ void RawTetrisBoard::update(Move move) {
 					// Collision detected, add squares to the gameboard.
 					addBlockToBoard(current_);
 
+					triggerEvent(GameEvent::BLOCK_COLLISION);
+
 					// Remove any filled row on the gameboard.
 					int nbr = removeFilledRows(current_);
 
@@ -97,7 +99,6 @@ void RawTetrisBoard::update(Move move) {
 							triggerEvent(GameEvent::FOUR_ROW_REMOVED);
 							break;
 					}
-					triggerEvent(GameEvent::BLOCK_COLLISION);
 				} else {
 					current_ = block;
 					triggerEvent(GameEvent::GRAVITY_MOVES_BLOCK);

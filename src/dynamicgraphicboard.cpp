@@ -42,8 +42,8 @@ DynamicGraphicBoard::DynamicGraphicBoard() :
 void DynamicGraphicBoard::restart(float x, float y,
 	TetrisEntry boardEntry, const RawTetrisBoard& tetrisBoard) {
 
-	// sizeof [bytes/float] * 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares].
-	dynamicData_ = std::vector<GLfloat>(sizeof(GLfloat) * 9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 4*2));
+	// 9 [floats/vertices] * 6 [vertices/square] * (rows * columns + 8) [squares].
+	dynamicData_ = std::vector<GLfloat>(9 * 6 * (tetrisBoard.getRows() * tetrisBoard.getColumns() + 4*2));
 	vbo_ = mw::VertexBufferObject();
 
 	lowX_ = x;
@@ -74,7 +74,7 @@ void DynamicGraphicBoard::restart(float x, float y,
 	updateCurrentBlock(tetrisBoard.getBlock());
 	updatePreviewBlock(tetrisBoard.getNextBlockType());
 	updateBoard(tetrisBoard);
-	updateVBO();
+	updateVBO(-1);
 }
 
 void DynamicGraphicBoard::updateCurrentBlock(const Block& block) {
@@ -88,30 +88,32 @@ void DynamicGraphicBoard::updatePreviewBlock(BlockType type) {
 }
 
 void DynamicGraphicBoard::updateBoard(const RawTetrisBoard& tetrisBoard) {
-	updateVBO_ = true;
-	int index = INDEX_BOARD;
-	dynamicVertercies_ = 0;
-	// Draw the board.
-	for (int row = 0; row < rows_ - 2; ++row) {
-		for (int column = 0; column < columns_; ++column) {
-			BlockType type = tetrisBoard.getBlockType(row, column);
+	if (linesRemovedTimeLeft_ <= 0) {
+		updateVBO_ = true;
+		int index = INDEX_BOARD;
+		dynamicVertercies_ = 0;
+		// Draw the board.
+		for (int row = 0; row < rows_ - 2; ++row) {
+			for (int column = 0; column < columns_; ++column) {
+				BlockType type = tetrisBoard.getBlockType(row, column);
 			
-			if (type != BlockType::WALL) {
-				float x = lowX_ + borderSize_ + squareSize_ * column;
-				float y = lowY_ + borderSize_ + squareSize_ * row;
-				if (type != BlockType::EMPTY) {
-					mw::Sprite sprite = getSprite(type);
-					addSquareToBoardShader(dynamicData_.data(), index,
-						x, y,
-						squareSize_, squareSize_,
-						sprite);
-					dynamicVertercies_ += 6;
-				} else { // Type should be: BlockType::EMPTY!
-					addSquareToBoardShader(dynamicData_.data(), index,
-						x, y,
-						squareSize_, squareSize_,
-						mw::Color(0,0,0,0));
-					dynamicVertercies_ += 6;
+				if (type != BlockType::WALL) {
+					float x = lowX_ + borderSize_ + squareSize_ * column;
+					float y = lowY_ + borderSize_ + squareSize_ * row;
+					if (type != BlockType::EMPTY) {
+						mw::Sprite sprite = getSprite(type);
+						addSquareToBoardShader(dynamicData_.data(), index,
+							x, y,
+							squareSize_, squareSize_,
+							sprite);
+						dynamicVertercies_ += 6;
+					} else { // Type should be: BlockType::EMPTY!
+						addSquareToBoardShader(dynamicData_.data(), index,
+							x, y,
+							squareSize_, squareSize_,
+							mw::Color(0,0,0,0));
+						dynamicVertercies_ += 6;
+					}
 				}
 			}
 		}
@@ -155,7 +157,7 @@ void DynamicGraphicBoard::updateBoardLinesRemoved(float ratio) {
 			row > removedRow3_ && removedRow3_ != -1 ? ++linesToMoveDown : 0;
 			row > removedRow4_ && removedRow4_ != -1 ? ++linesToMoveDown : 0;
 
-			float y = lowY_ + borderSize_ + squareSize_ * (row - linesToMoveDown);
+			float y = lowY_ + borderSize_ + squareSize_ * (row - linesToMoveDown * (1 - ratio));
 			for (int column = 0; column < columns_; ++column) {
 				float x = lowX_ + borderSize_ + squareSize_ * column;
 				addSquareToBoardShader(dynamicData_.data(), index,
@@ -184,7 +186,7 @@ void DynamicGraphicBoard::updatePreviewBlock() {
 	}
 }
 
-void DynamicGraphicBoard::updateVBO() {
+void DynamicGraphicBoard::updateVBO(float linesRemovedTimeLeft) {
 	if (updateBlock_) {
 		updateCurrentBlock();
 		updatePreviewBlock();
@@ -192,8 +194,8 @@ void DynamicGraphicBoard::updateVBO() {
 		updateBlock_ = false;
 	}
 
-	if (linesRemovedTimeLeft_ > 0) {
-		//updateBoardLinesRemoved(linesRemovedTimeLeft_ / linesRemovedTime_);
+	if (linesRemovedTimeLeft >= 0) {
+		updateBoardLinesRemoved(linesRemovedTimeLeft_ / linesRemovedTime_);
 		updateVBO_ = true;
 	}
 		
@@ -212,10 +214,12 @@ void DynamicGraphicBoard::updateVBO() {
 void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 	// Draw the dynamic part.
 	if (vbo_.getSize() > 0) {
+		float linesRemovedTimeLeft = -1;
 		if (linesRemovedTimeLeft_ > 0) {
 			linesRemovedTimeLeft_ -= deltaTime;
+			linesRemovedTimeLeft = linesRemovedTimeLeft_;
 		}
-		updateVBO();
+		updateVBO(linesRemovedTimeLeft);
 		
 		vbo_.bindBuffer();
 
