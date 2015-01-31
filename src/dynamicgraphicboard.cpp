@@ -193,7 +193,7 @@ void DynamicGraphicBoard::updateVBO() {
 	}
 
 	if (linesRemovedTimeLeft_ > 0) {
-		updateBoardLinesRemoved(1 - linesRemovedTimeLeft_ / linesRemovedTime_);
+		//updateBoardLinesRemoved(linesRemovedTimeLeft_ / linesRemovedTime_);
 		updateVBO_ = true;
 	}
 		
@@ -228,12 +228,11 @@ void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 
 namespace {
 		
-	void makeRowEmpty(std::vector<GLfloat>& v, int emptyRow, int columns) {
+	void makeRowEmpty(GLfloat* data, int indexRow0, int emptyRow, int columns) {
+		indexRow0 += 9 * 6 * emptyRow * columns;
 		if (emptyRow >= 0) {
 			for (int i = 0; i < columns; ++i) {
-				for (int j = 1; j <= 6; ++j) {
-					v[9 * (emptyRow * columns + i) + 8] = 0.0; // Color alpha = 0.
-				}
+				addSquareToBoardShader(data, indexRow0, mw::Color(0, 0, 0, 0));
 			}
 		}
 	}
@@ -248,10 +247,10 @@ void DynamicGraphicBoard::updateLinesRemoved(float downTime, int row1, int row2,
 	removedRow3_ = row3;
 	removedRow4_ = row4;
 	
-	makeRowEmpty(dynamicData_, removedRow1_, columns_);
-	makeRowEmpty(dynamicData_, removedRow2_, columns_);
-	makeRowEmpty(dynamicData_, removedRow3_, columns_);
-	makeRowEmpty(dynamicData_, removedRow4_, columns_);
+	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow1_, columns_);
+	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow2_, columns_);
+	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow3_, columns_);
+	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow4_, columns_);
 }
 
 mw::Sprite DynamicGraphicBoard::getSprite(BlockType blockType) const {

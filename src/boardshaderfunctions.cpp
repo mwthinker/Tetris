@@ -4,6 +4,22 @@
 
 namespace {
 
+	inline void addVertex(GLfloat* data, int& index, const mw::Color& color) {
+		data[index + 5] = color.red_;
+		data[index + 6] = color.green_;
+		data[index + 7] = color.blue_;
+		data[index + 8] = color.alpha_;
+		index += 9;
+	}
+
+	inline void addVertex(GLfloat* data, int& index,
+		float x, float y) {
+
+		data[index] = x;
+		data[index + 1] = y;
+		index += 9;
+	}
+
 	inline void addVertex(GLfloat* data, int& index,
 		float x, float y,
 		float xTex, float yTex,
@@ -26,6 +42,26 @@ namespace {
 
 	// Add a triangle, GL_TRIANGLES, i.e. 3 vertices.
 	inline void addTriangle(GLfloat* data, int& index,
+		const mw::Color& color) {
+
+		addVertex(data, index, color);
+		addVertex(data, index, color);
+		addVertex(data, index, color);
+	}
+
+	// Add a triangle, GL_TRIANGLES, i.e. 3 vertices.
+	inline void addTriangle(GLfloat* data, int& index,
+		float x1, float y1,
+		float x2, float y2,
+		float x3, float y3) {
+
+		addVertex(data, index, x1, y1);
+		addVertex(data, index, x2, y2);
+		addVertex(data, index, x3, y3);
+	}
+
+	// Add a triangle, GL_TRIANGLES, i.e. 3 vertices.
+	inline void addTriangle(GLfloat* data, int& index,
 		float x1, float y1,
 		float x2, float y2,
 		float x3, float y3,
@@ -38,24 +74,6 @@ namespace {
 		addVertex(data, index, x1, y1, xTex1, yTex1, isTex, color);
 		addVertex(data, index, x2, y2, xTex2, yTex2, isTex, color);
 		addVertex(data, index, x3, y3, xTex3, yTex3, isTex, color);
-	}
-
-	inline void addVertex(GLfloat* data, int& index,
-		float x, float y) {
-
-		data[index] = x;
-		data[index+1] = y;
-		index += 9;
-	}
-
-	inline void addTriangle(GLfloat* data, int& index,
-		float x1, float y1,
-		float x2, float y2,
-		float x3, float y3) {
-
-		addVertex(data, index, x1, y1);
-		addVertex(data, index, x2, y2);
-		addVertex(data, index, x3, y3);
 	}
 
 } // Namespace mw.
@@ -135,6 +153,17 @@ void addSquareToBoardShader(GLfloat* data, int& index,
 		x + w, y,
 		x + w, y + h);
 }
+
+void addSquareToBoardShader(GLfloat* data, int& index,
+	const mw::Color& color) {
+
+	// Left triangle |_
+	addTriangle(data, index, color);
+	//                _
+	// Right triangle  |
+	addTriangle(data, index, color);
+}
+
 
 void setVertexAttribPointer(const BoardShader& shader) {
 	shader.setGlPosA(2, sizeof(GLfloat) * 9, (GLvoid*) 0);

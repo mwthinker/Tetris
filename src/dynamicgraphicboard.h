@@ -41,6 +41,7 @@ private:
 	
 	void updateBoardLinesRemoved(float ratio);
 
+
 	mw::Sprite getSprite(BlockType blockType) const;
 	float squareSize_;
 	float sizeBoard_;

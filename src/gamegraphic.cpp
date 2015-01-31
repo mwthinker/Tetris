@@ -35,6 +35,9 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			break;
+		case GameEvent::BLOCK_COLLISION:
+			dynamicBoard_.updateBoard(tetrisBoard);
+			break;
 		case GameEvent::RESTARTED:
 			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
 			dynamicBoard_.updatePreviewBlock(tetrisBoard.getBlockType());
@@ -44,7 +47,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
-			dynamicBoard_.updateBoard(tetrisBoard);
+			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
 			break;
 		case GameEvent::PLAYER_ROTATES_BLOCK:
 			// Fall through!

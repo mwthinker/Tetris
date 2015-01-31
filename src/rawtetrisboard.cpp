@@ -93,9 +93,6 @@ void RawTetrisBoard::update(Move move) {
 		}
 
 		if (gravityCollision) {
-			// Add event.
-			triggerEvent(GameEvent::BLOCK_COLLISION);
-
 			// Collision detected, add squares to the gameboard.
 			addBlockToBoard(current_);
 
@@ -125,6 +122,9 @@ void RawTetrisBoard::update(Move move) {
 					triggerEvent(GameEvent::FOUR_ROW_REMOVED);
 					break;
 			}
+
+			// Add event.
+			triggerEvent(GameEvent::BLOCK_COLLISION);
 		} else {
 			// No collision, its journey can continue.
 			current_ = block;

@@ -5,6 +5,7 @@
 
 #include <vector>
 
+// The events triggered by the tetris board.
 enum class GameEvent : char {
 	RESTARTED,
 	CURRENT_BLOCK_UPDATED,
@@ -128,6 +129,9 @@ protected:
 	Block createBlock(BlockType blockType) const;
 
 private:
+	// Is called just after the event given is triggered.
+	// e.g. if the row removed event is triggered (this function is called), the board has
+	// already removed the row mentioned.
 	virtual void triggerEvent(GameEvent gameEvent) {
 	}
 
