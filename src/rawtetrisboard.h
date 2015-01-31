@@ -38,7 +38,7 @@ enum class Move : char {
 // Represents a tetris board.
 class RawTetrisBoard {
 public:
-	RawTetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next);
+	RawTetrisBoard(int rows, int columns, BlockType current, BlockType next);
 	
 	inline virtual ~RawTetrisBoard() {
 	}
@@ -57,12 +57,12 @@ public:
     
 	// Return the number of rows.
 	inline int getRows() const {
-		return nbrRows_;
+		return rows_;
 	}
 
 	// Return the number of columns.
 	inline int getColumns() const {
-		return nbrColumns_;
+		return columns_;
 	}
 
 	// Return true if the game is over else false.
@@ -91,8 +91,8 @@ public:
 
 	// Return the blocktype for a given position.
 	inline BlockType getBlockType(int row, int column) const {
-		if (row >= 0 && row < nbrRows_ && column >= 0 && column < nbrColumns_) {
-			return gameboard_[row * nbrColumns_ + column];
+		if (row >= 0 && row < rows_ && column >= 0 && column < columns_) {
+			return gameboard_[row * columns_ + column];
 		}
 		return BlockType::WALL;
 	}
@@ -101,34 +101,37 @@ public:
 	// Otherwise it return false.
 	bool collision(const Block& block) const;
 
-	inline char getRemovedRow1() const {
+	inline int getRemovedRow1() const {
 		return row1_;
 	}
 
-	inline char getRemovedRow2() const {
+	inline int getRemovedRow2() const {
 		return row2_;
 	}
 
-	inline char getRemovedRow3() const {
+	inline int getRemovedRow3() const {
 		return row3_;
 	}
 
-	inline char getRemovedRow4() const {
+	inline int getRemovedRow4() const {
 		return row4_;
 	}
 
-protected:
-	// Set all squares on the board to empty.
-	// Game over is set to false.
-	void clearBoard();
+	inline int getNbrExternalRowsAdded() const {
+		return externalRowsAdded_;
+	}
 
+private:
 	inline BlockType& blockType(int row, int column) {
-		return gameboard_[row * nbrColumns_ + column];
+		return gameboard_[row * columns_ + column];
 	}
 
 	Block createBlock(BlockType blockType) const;
 
-private:
+	// Set all squares on the board to empty.
+	// Game over is set to false.
+	void clearBoard();
+
 	// Is called just after the event given is triggered.
 	// e.g. if the row removed event is triggered (this function is called), the board has
 	// already removed the row mentioned.
@@ -149,9 +152,10 @@ private:
 	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	BlockType next_;					// Next block for the player to control.
 	Block current_;						// The current block for the player to control.
-	int nbrRows_, nbrColumns_;			// The size of the gameboard.
+	int rows_, columns_;				// The size of the gameboard.
 	bool isGameOver_;					// True when game is over, else false.
-	char row1_, row2_, row3_, row4_;	// The last rows that was removed.
+	int row1_, row2_, row3_, row4_;		// The last rows that was removed.
+	int externalRowsAdded_;
 };
 
 #endif // RAWTETRISBOARD_H

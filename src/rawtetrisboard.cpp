@@ -2,13 +2,11 @@
 #include "square.h"
 #include "block.h"
 
-#include <vector>
-
-RawTetrisBoard::RawTetrisBoard(int nbrRows, int nbrColumns,
+RawTetrisBoard::RawTetrisBoard(int rows, int columns,
 	BlockType current, BlockType next) :
-	gameboard_(nbrRows * nbrColumns, BlockType::EMPTY),
+	gameboard_(rows * columns, BlockType::EMPTY),
 	next_(next),
-	nbrRows_(nbrRows), nbrColumns_(nbrColumns),
+	rows_(rows), columns_(columns),
 	isGameOver_(false) {
 	
 	current_ = createBlock(current);
@@ -78,8 +76,12 @@ void RawTetrisBoard::update(Move move) {
 
 					// Add rows due to some external event.
 					std::vector<BlockType> squares = addExternalRows();
-					gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
-					gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
+					if (squares.size() > 0) {
+						externalRowsAdded_ = squares.size() % columns_;
+						gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
+						gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
+						triggerEvent(GameEvent::EXTERNAL_ROWS_ADDED);
+					}
 
 					// Update the user controlled block.
 					current_ = createBlock(next_);
@@ -137,7 +139,7 @@ void RawTetrisBoard::addBlockToBoard(const Block& block) {
 }
 
 Block RawTetrisBoard::createBlock(BlockType blockType) const {
-	return Block(blockType, nbrRows_- 4, nbrColumns_ / 2 - 1); // 4 rows are the starting area.
+	return Block(blockType, rows_ - 4, columns_ / 2 - 1); // 4 rows are the starting area.
 }
 
 bool RawTetrisBoard::collision(const Block& block) const {
@@ -170,8 +172,8 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
 		if (row >= 0) {
-			int index = row * nbrColumns_;
-			for (int column = 0; column < nbrColumns_; ++column) {
+			int index = row * columns_;
+			for (int column = 0; column < columns_; ++column) {
 				if (gameboard_[index + column] == BlockType::EMPTY) {
 					filled = false;
 				}
@@ -206,9 +208,9 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 }
 
 void RawTetrisBoard::moveRowsOneStepDown(int rowToRemove) {
-	int indexStartOfRow = rowToRemove * nbrColumns_;
+	int indexStartOfRow = rowToRemove * columns_;
 	// Erase the row.
-	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.begin() + indexStartOfRow + nbrColumns_);
+	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.begin() + indexStartOfRow + columns_);
 	// Replace the removed row with an empty row at the top.
-	gameboard_.insert(gameboard_.end(), nbrColumns_, BlockType::EMPTY);	
+	gameboard_.insert(gameboard_.end(), columns_, BlockType::EMPTY);
 }
