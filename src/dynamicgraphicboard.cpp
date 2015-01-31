@@ -54,6 +54,9 @@ void DynamicGraphicBoard::restart(float x, float y,
 	removedRow2_ = -1;
 	removedRow3_ = -1;
 	removedRow4_ = -1;
+	upTime_ = 1;
+	upTimeLeft_ = -1;
+	externalRowsAdded_ = 0;
 
 	rows_ = tetrisBoard.getRows();
 	columns_ = tetrisBoard.getColumns();
@@ -258,6 +261,12 @@ void DynamicGraphicBoard::updateLinesRemoved(float downTime, int row1, int row2,
 	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow2_, columns_);
 	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow3_, columns_);
 	makeRowEmpty(dynamicData_.data(), INDEX_BOARD, removedRow4_, columns_);
+}
+
+void DynamicGraphicBoard::updateExternalRowsAdded(float upTime, int rowsAdded) {
+	upTime_ = upTime;
+	upTimeLeft_ = upTime;
+	externalRowsAdded_ = rowsAdded;
 }
 
 mw::Sprite DynamicGraphicBoard::getSprite(BlockType blockType) const {

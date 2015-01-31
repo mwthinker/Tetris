@@ -34,6 +34,8 @@ public:
 
 	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4);
 
+	void updateExternalRowsAdded(float upTime, int rowsAdded);
+
 private:
 	void updateVBO(float linesRemovedTimeLeft);
 	void updateCurrentBlock();
@@ -61,6 +63,9 @@ private:
 	float linesRemovedTimeLeft_;
 	float linesRemovedTime_;
 	int removedRow1_, removedRow2_, removedRow3_, removedRow4_;
+	int externalRowsAdded_;
+	float upTimeLeft_;
+	float upTime_;
 	
 	bool updateBlock_;
 	bool updateVBO_;

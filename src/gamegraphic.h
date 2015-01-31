@@ -32,6 +32,10 @@ public:
 		dynamicBoard_.updateLinesRemoved(downTime, row1, row2, row3, row4);
 	}
 
+	void updateExternalRowsAdded(float upTime, int rowsAdded) {
+		dynamicBoard_.updateExternalRowsAdded(upTime, rowsAdded);
+	}
+
 	inline float getWidth() const {
 		return staticBoard_.getWidth();
 	}

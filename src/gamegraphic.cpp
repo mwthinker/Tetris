@@ -5,7 +5,6 @@
 #include <mw/opengl.h>
 
 #include <sstream>
-#include <cassert>
 
 GameGraphic::~GameGraphic() {
 	connection_.disconnect();
@@ -22,7 +21,8 @@ void GameGraphic::restart(Player& player, float x, float y,
 	staticBoard_.restart(x, y, boardEntry, player.getTetrisBoard());
 
 	connection_.disconnect();
-	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
+	connection_ = player.addGameEventListener(
+		std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 
@@ -50,6 +50,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			break;
 		case GameEvent::EXTERNAL_ROWS_ADDED:
 			dynamicBoard_.updateBoard(tetrisBoard);
+			updateExternalRowsAdded(0.3f, tetrisBoard.getNbrExternalRowsAdded());
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
 			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
