@@ -2,8 +2,6 @@
 #include "tetrisboard.h"
 #include "player.h"
 
-#include <mw/opengl.h>
-
 #include <sstream>
 
 GameGraphic::~GameGraphic() {

@@ -14,8 +14,12 @@ int main (int argc, char** argv) {
 		stream >> menuIndex;
 	}
 
-	TetrisWindow game(tetrisEntry.getChildEntry("tetris"), menuIndex);
-	game.startLoop();
+	if (tetrisEntry.isError()) {
+		tetrisEntry.printError();
+	} else {
+		TetrisWindow game(tetrisEntry.getChildEntry("tetris"), menuIndex);
+		game.startLoop();
+	}
 	
     return 0;
 }
