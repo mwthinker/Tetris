@@ -23,11 +23,11 @@ void NetworkLooby::draw(Uint32 deltaTime) {
 	//setGlModelMatrix(model);
 
 	gui::Dimension dim = getSize();
-	
+
 	static mw::Text id("Id", font_);
 
 	mw::translate2D(model, 0, dim.height_ - id.getCharacterSize() - 2);
-	setGlModelMatrixU(model);
+	setGlModelU(model);
 	/*
 	auto old2 = wp->getModel();
 	id.draw();

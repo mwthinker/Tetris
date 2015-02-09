@@ -77,6 +77,10 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
+if (CMAKE_COMPILER_IS_GNUCXX)
+find_package(Threads REQUIRED) # Due to a bug, which forces the uses to link to Threads when using #include <thread>.
+endif (CMAKE_COMPILER_IS_GNUCXX)
+
 add_subdirectory(DataEntry)
 add_subdirectory(MwEnet)
 add_subdirectory(SdlGui)
@@ -107,7 +111,7 @@ if (MSVC)
 endif (MSVC)
 
 target_link_libraries(MWetris
-	Calculator	
+	Calculator
 	TinyXML2
 	DataEntry
 	MwEnet
@@ -120,4 +124,5 @@ target_link_libraries(MWetris
 	${SDL2_TTF_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 	${SDL2_IMAGE_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
 )

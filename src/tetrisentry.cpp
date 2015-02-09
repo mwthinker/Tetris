@@ -5,39 +5,43 @@
 #include <iostream>
 #include <stdexcept>
 
-// Template specialization. Color must be defined as "(0.1 0.2 0.3)" or "(0.1 0.2 0.3 0.4)"
-// red = 0.1, green = 0.2, blue = 0.3, alpha = 0.4
-template <>
-mw::Color xml::extract(tinyxml2::XMLHandle handle) {
-	const tinyxml2::XMLElement* element = handle.ToElement();
-	if (element == nullptr) {
-		throw std::runtime_error("Missing element!");
-	}
-	const char* str = element->GetText();
+namespace xml {
 
-	if (str == nullptr) {
-		throw std::runtime_error("Missing text!");
-	}
+    // Template specialization. Color must be defined as "(0.1 0.2 0.3)" or "(0.1 0.2 0.3 0.4)"
+    // red = 0.1, green = 0.2, blue = 0.3, alpha = 0.4
+    template <>
+    mw::Color extract(tinyxml2::XMLHandle handle) {
+        const tinyxml2::XMLElement* element = handle.ToElement();
+        if (element == nullptr) {
+            throw std::runtime_error("Missing element!");
+        }
+        const char* str = element->GetText();
 
-	std::stringstream stream(str);
-	char chr = 0;;
-	mw::Color color;
-	stream >> chr;
-	if (chr != '(') {
-		throw std::runtime_error("Missing '('!");
-	}
-	if (!(stream >> color.red_)) {
-		throw std::runtime_error("Red value invalid");
-	}
-	if (!(stream >> color.green_)) {
-		throw std::runtime_error("Green value invalid");
-	}
-	if (!(stream >> color.blue_)) {
-		throw std::runtime_error("Blue value invalid");
-	}
-	// Assume that everything is correct.
-	stream >> color.alpha_;
-	return color;
+        if (str == nullptr) {
+            throw std::runtime_error("Missing text!");
+        }
+
+        std::stringstream stream(str);
+        char chr = 0;;
+        mw::Color color;
+        stream >> chr;
+        if (chr != '(') {
+            throw std::runtime_error("Missing '('!");
+        }
+        if (!(stream >> color.red_)) {
+            throw std::runtime_error("Red value invalid");
+        }
+        if (!(stream >> color.green_)) {
+            throw std::runtime_error("Green value invalid");
+        }
+        if (!(stream >> color.blue_)) {
+            throw std::runtime_error("Blue value invalid");
+        }
+        // Assume that everything is correct.
+        stream >> color.alpha_;
+        return color;
+    }
+
 }
 
 TetrisEntry::TetrisEntry(std::string fileName) : xml::DataEntry(fileName), data_(std::make_shared<Data>()) {

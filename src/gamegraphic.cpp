@@ -88,13 +88,13 @@ void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
 	dynamicBoard_.draw(deltaTime, shader);
 }
 
-void GameGraphic::drawText(float x, float y, float width, float height, float scale) {
+void GameGraphic::drawText(const gui::Component& component, float x, float y, float width, float height, float scale) {
 	float boardWidth = staticBoard_.getBoardWidth() * scale;
 	float borderSize = staticBoard_.getBorderSize();
-	name_.draw(x + boardWidth + borderSize * scale, height - y - name_.getHeight() - borderSize * scale);
-	textPoints_.draw(x + boardWidth + borderSize * scale, y + 50 * scale + borderSize * scale);
-	textLevel_.draw(x + boardWidth + borderSize * scale, y + 70 * scale + borderSize * scale);
-	textClearedRows_.draw(x + boardWidth + borderSize * scale, y + 100 * scale + borderSize * scale);
+	component.drawText(name_, x + boardWidth + borderSize * scale, height - y - name_.getHeight() - borderSize * scale);
+	component.drawText(textPoints_, x + boardWidth + borderSize * scale, y + 50 * scale + borderSize * scale);
+	component.drawText(textLevel_, x + boardWidth + borderSize * scale, y + 70 * scale + borderSize * scale);
+	component.drawText(textClearedRows_, x + boardWidth + borderSize * scale, y + 100 * scale + borderSize * scale);
 }
 
 void GameGraphic::updateTextSize(float size, const mw::Font& font) {

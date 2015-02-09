@@ -13,6 +13,8 @@
 #include <mw/vertexbufferobject.h>
 #include <mw/signal.h>
 
+#include <gui/component.h>
+
 #include <string>
 
 class TetrisBoard;
@@ -23,7 +25,7 @@ public:
 
 	void restart(Player& player, float x, float y,
 		TetrisEntry boardEntry);
-	
+
 	void update(int clearedRows, int points, int level);
 
 	void updateTextSize(float size, const mw::Font& font);
@@ -45,7 +47,7 @@ public:
 	}
 
 	void draw(float deltaTime, const BoardShader& shader);
-	void drawText(float x, float y, float width, float height, float scale);
+	void drawText(const gui::Component& component, float x, float y, float width, float height, float scale);
 
 	void setMiddleMessage(const mw::Text& text);
 

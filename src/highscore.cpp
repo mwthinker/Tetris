@@ -20,7 +20,7 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 void Highscore::draw(Uint32 deltaTime) {
 	glUseProgram();
 	mw::Matrix44 model = getModelMatrix();
-	setGlModelMatrixU(model);
+	setGlModelU(model);
 	setGlColorU(1, 1, 1);
 
 	gui::Dimension size = getSize();
@@ -32,16 +32,16 @@ void Highscore::draw(Uint32 deltaTime) {
 		mw::Text& points = highscore.points_;
 		mw::Text& name = highscore.name_;
 		mw::Text& date = highscore.date_;
-		
+
 		x = 5;
 		y += 5;
-		numbers_[index++].draw(x, y);
+		drawText(numbers_[index++], x, y);
 		x += 50;
-		points.draw(x, y);
+		drawText(points, x, y);
 		x += 150;
-		name.draw(x, y);
+		drawText(name, x, y);
 		x += 170;
-		date.draw(x, y);
+		drawText(date, x, y);
 		y += font_.getCharacterSize() + 2;
 	}
 
@@ -49,9 +49,9 @@ void Highscore::draw(Uint32 deltaTime) {
 	static mw::Text nameH("Name", font_, 28);
 	static mw::Text dataH("Date", font_, 28);
 	x = 5;
-	pointsH.draw(x + 50, y);
-	nameH.draw(x + 50 + 150, y);
-	dataH.draw(x + 50 + 150 + 150, y);
+	drawText(pointsH, x + 50, y);
+	drawText(nameH, x + 50 + 150, y);
+	drawText(dataH, x + 50 + 150 + 150, y);
 }
 
 bool Highscore::isNewRecord(int record) const {

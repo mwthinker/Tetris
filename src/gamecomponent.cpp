@@ -31,7 +31,7 @@ void GameComponent::validate() {
 }
 
 void GameComponent::draw(Uint32 deltaTime) {
-	setGlModelMatrixU(getModelMatrix());
+	setGlModelU(getModelMatrix());
 	boardShader_.glUseProgram();
 
 	const gui::Dimension dim = getSize();
@@ -96,12 +96,12 @@ void GameComponent::draw(Uint32 deltaTime) {
 
 	// Draw texts.
 	glUseProgram();
-	
+
 	int i = 0;
 	float boardWidth = getSize().width_ / graphicPlayers_.size();
 	for (auto& pair : graphicPlayers_) {
 		GameGraphic& graphic = pair.second;
-		graphic.drawText(i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
+		graphic.drawText(*this, i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
 		++i;
 	}
 

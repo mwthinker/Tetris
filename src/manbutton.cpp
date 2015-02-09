@@ -5,7 +5,7 @@
 ManButton::ManButton(unsigned int max, const mw::Sprite& man, const mw::Sprite& cross) : max_(max) {
 	man_ = man;
 	cross_ = cross;
-	
+
 	nbr_ = 1;
 	mouseInside_ = false;
 
@@ -31,7 +31,7 @@ void ManButton::draw(Uint32 deltaTime) {
 	glUseProgram();
 	mw::Matrix44 model = getModelMatrix();
 	setGlColorU(1, 1, 1);
-	
+
 	gui::Dimension dim = getSize();
 	if (nbr_ == 0) {
 		drawPlayer(model, man_);
@@ -44,15 +44,15 @@ void ManButton::draw(Uint32 deltaTime) {
 	}
 }
 
-void ManButton::drawPlayer(mw::Matrix44 model, mw::Sprite& sprite) {
+void ManButton::drawPlayer(mw::Matrix44 model, const mw::Sprite& sprite) const {
 	gui::Dimension dim = getSize();
 	mw::translate2D(model, dim.height_ / 2.f, dim.height_ / 2.f);
 	if (mouseInside_) {
 		mw::scale2D(model, 1.2f, 1.2f);
 	}
-	setGlModelMatrixU(model * mw::getScaleMatrix44(dim.height_, dim.height_));
-	
-	sprite.draw();
+	setGlModelU(model * mw::getScaleMatrix44(dim.height_, dim.height_));
+
+	drawSprite(sprite, 0, 0, sprite.getWidth(), sprite.getHeight());
 }
 
 void ManButton::handleMouse(const SDL_Event& mouseEvent) {

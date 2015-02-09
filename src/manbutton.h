@@ -1,7 +1,7 @@
 #ifndef MANBUTTON_H
 #define MANBUTTON_H
 
-#include <gui/button.h>
+#include <gui/component.h>
 
 #include <mw/sprite.h>
 
@@ -23,7 +23,7 @@ protected:
 	void mouseMotionLeave() override;
 
 private:
-	void drawPlayer(mw::Matrix44 model, mw::Sprite& sprite);
+	void drawPlayer(mw::Matrix44 model, const mw::Sprite& sprite) const;
 	unsigned int nbr_;
 
 	mw::Sprite man_, cross_;

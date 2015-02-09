@@ -7,8 +7,8 @@
 
 namespace {
 
-	// Calculates and returns all posible states from the point of view from the block provided.
-	// The algortihm rotates and goes left or rigth with the block which then fall to the ground.
+	// Calculates and returns all possible states from the point of view from the block provided.
+	// The algorithm rotates and goes left or right with the block which then fall to the ground.
 	// I.e. The possible state.
 	std::vector<Computer::State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block) {
 		std::vector<Computer::State> states;
