@@ -19,7 +19,7 @@ class GameData;
 class GameComponent : public gui::Component, public GameHandler {
 public:
 	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
-	
+
 	void draw(Uint32 deltaTime) override;
 
 	void initGame(std::vector<PlayerPtr>& players) override;
@@ -39,20 +39,20 @@ private:
 	BoardShader boardShader_;
 	TetrisEntry tetrisEntry_;
 	TetrisGame& tetrisGame_;
-	
+
 	mw::Sound soundBlockCollision_;
 	mw::Sound soundRowRemoved_;
 	mw::Sound soundTetris_;
 
-	// Fix timestep.
+	// Fix time step.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
 
-	// Updated in init.
+	// Updated in initGame().
 	mw::Matrix44 matrix_;
 	bool updateMatrix_;
 	int alivePlayers_;
-	
+
 	// Font related.
 	mw::Font font_;
 	float fontSize_;

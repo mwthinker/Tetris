@@ -28,19 +28,51 @@
 
 namespace {
 
-	std::shared_ptr<gui::Panel> createBackgroundPanel(mw::Sprite background) {
-		auto panel = std::make_shared<gui::Panel>();
-		panel->setBackground(background);
-		panel->setLayout<gui::BorderLayout>();
-		return panel;
-	}
+    class Bar : public gui::Panel {
+    public:
+        Bar(TetrisEntry entry) {
+            setPreferredSize(entry.getDeepChildEntry("window bar height").getFloat(), entry.getDeepChildEntry("window bar height").getFloat());
+            setBackgroundColor(entry.getDeepChildEntry("window bar color").getColor());
+            setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
+        }
+    };
 
-	std::shared_ptr<gui::Panel> createPanel(float preferredWidth = 100, float preferredHeight = 100) {
-		auto panel = std::make_shared<gui::Panel>();
-		panel->setBackgroundColor(1, 1, 1, 0);
-		panel->setPreferredSize(preferredWidth, preferredHeight);
-		return panel;
-	}
+    class Background : public gui::Panel {
+    public:
+        Background(const mw::Sprite& background) {
+            setBackground(background);
+            setLayout<gui::BorderLayout>();
+        }
+    };
+
+    class Label : public gui::Label {
+    public:
+        Label(std::string text, mw::Font font, TetrisEntry entry) : gui::Label(text, font) {
+            setTextColor(entry.getDeepChildEntry("window label textColor").getColor());
+            setBackgroundColor(entry.getDeepChildEntry("window label backgroundColor").getColor());
+        }
+    };
+
+    class Button : public gui::Button {
+    public:
+        Button(std::string text, mw::Font font, TetrisEntry entry) : gui::Button(text, font) {
+            setFocusColor(entry.getDeepChildEntry("window button focusColor").getColor());
+            setTextColor(entry.getDeepChildEntry("window button textColor").getColor());
+            setHoverColor(entry.getDeepChildEntry("window button hoverColor").getColor());
+            setPushColor(entry.getDeepChildEntry("window button pushColor").getColor());
+            setBackgroundColor(entry.getDeepChildEntry("window button backgroundColor").getColor());
+            setBorderColor(entry.getDeepChildEntry("window button borderColor").getColor());
+            setAutoSizeToFitText(true);
+        }
+    };
+
+    class TransparentPanel : public gui::Panel {
+    public:
+        TransparentPanel(float preferredWidth = 100, float preferredHeight = 100) {
+            setBackgroundColor(1, 1, 1, 0);
+            setPreferredSize(preferredWidth, preferredHeight);
+        }
+    };
 
 	void showHideHumanFields(std::shared_ptr<ManButton> humans, std::array<std::shared_ptr<gui::Panel>, 4>& humanPanels) {
 		for (unsigned int i = 0; i < humanPanels.size(); ++i) {
@@ -113,19 +145,19 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	auto background = tetrisEntry_.getDeepChildEntry("window sprites background").getSprite();
 	getCurrentPanel()->setBackground(background);
 	menuIndex_ = getCurrentPanelIndex();
-	playIndex_ = pushBackPanel(createBackgroundPanel(background));
-	highscoreIndex_ = pushBackPanel(createBackgroundPanel(background));
-	customIndex_ = pushBackPanel(createBackgroundPanel(background));
-	settingsIndex_ = pushBackPanel(createBackgroundPanel(background));
-	newHighscoreIndex_ = pushBackPanel(createBackgroundPanel(background));
-	networkIndex_ = pushBackPanel(createBackgroundPanel(background));
-	createClientIndex_ = pushBackPanel(createBackgroundPanel(background));
-	createServerIndex_ = pushBackPanel(createBackgroundPanel(background));
-	loobyClientIndex_ = pushBackPanel(createBackgroundPanel(background));
-	loobyServerIndex_ = pushBackPanel(createBackgroundPanel(background));
-	waitToConnectIndex_ = pushBackPanel(createBackgroundPanel(background));
-	networkPlayIndex_ = pushBackPanel(createBackgroundPanel(background));
-	aiIndex_ = pushBackPanel(createBackgroundPanel(background));
+	playIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	highscoreIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	customIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	settingsIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	newHighscoreIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	networkIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	createClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	createServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	loobyClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	loobyServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	waitToConnectIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	networkPlayIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	aiIndex_ = pushBackPanel(std::make_shared<Background>(background));
 
 	initMenuPanel();
 	initPlayPanel();
@@ -175,101 +207,66 @@ TetrisWindow::~TetrisWindow() {
 	tetrisEntry_.save();
 }
 
-std::shared_ptr<gui::Panel> TetrisWindow::createBar() const {
-	auto bar = std::make_shared<gui::Panel>();
-	bar->setPreferredSize(tetrisEntry_.getDeepChildEntry("window bar height").getFloat(), tetrisEntry_.getDeepChildEntry("window bar height").getFloat());
-	bar->setBackgroundColor(tetrisEntry_.getDeepChildEntry("window bar color").getColor());
-	bar->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
-	return bar;
-}
-
-std::shared_ptr<gui::Label> TetrisWindow::createLabel(std::string text, mw::Font font) const {
-	auto label = std::make_shared<gui::Label>(text, font);
-	label->setTextColor(tetrisEntry_.getDeepChildEntry("window label textColor").getColor());
-	label->setBackgroundColor(tetrisEntry_.getDeepChildEntry("window label backgroundColor").getColor());
-	return label;
-}
-
 void TetrisWindow::createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const {
 	for (unsigned int i = 0; i < players.size(); ++i) {
-		players[i] = createPanel(400, 35);
+		players[i] = std::make_shared<TransparentPanel>(400, 35);
 		std::stringstream stream;
 		stream << "Human " << i + 1;
-		players[i]->addDefault(createLabel(stream.str(), font));
+		players[i]->addDefault<Label>(stream.str(), font, tetrisEntry_);
 		names[i] = std::make_shared<gui::TextField>(stream.str(), font);
 		players[i]->addDefault(names[i]);
 		players[i]->setVisible(false);
 	}
 }
 
-std::shared_ptr<gui::Button> TetrisWindow::createButton(std::string text, mw::Font font) const {
-	auto button = std::make_shared<gui::Button>(text, font);
-	button->setFocusColor(tetrisEntry_.getDeepChildEntry("window button focusColor").getColor());
-	button->setTextColor(tetrisEntry_.getDeepChildEntry("window button textColor").getColor());
-	button->setHoverColor(tetrisEntry_.getDeepChildEntry("window button hoverColor").getColor());
-	button->setPushColor(tetrisEntry_.getDeepChildEntry("window button pushColor").getColor());
-	button->setBackgroundColor(tetrisEntry_.getDeepChildEntry("window button backgroundColor").getColor());
-	button->setBorderColor(tetrisEntry_.getDeepChildEntry("window button borderColor").getColor());
-	button->setAutoSizeToFitText(true);
-	return button;
-}
-
 void TetrisWindow::initMenuPanel() {
 	setCurrentPanel(menuIndex_);
 
-	auto bar = createBar();
-	resume_ = createButton("Resume", getDefaultFont(30));
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
+	resume_ = bar->addDefault<Button>("Resume", getDefaultFont(30), tetrisEntry_);
+    resume_->setVisible(false);
     resume_->addActionListener([&](gui::Component&) {
 		setCurrentPanel(playIndex_);
 	});
-	resume_->setVisible(false);
-	bar->addDefault(resume_);
 
 	add(gui::BorderLayout::NORTH, bar);
 
-	auto panel = createPanel(400, 400);
+	auto panel = std::make_shared<TransparentPanel>();
 	panel->setLayout<gui::VerticalLayout>(5.f, 15.f, 10.f);
 	panel->setBackgroundColor(1, 1, 1, 0);
+	panel->addDefault<Label>("MWetris", getDefaultFont(50), tetrisEntry_);
 
-	panel->addDefault(createLabel("MWetris", getDefaultFont(50)));
-
-	auto b1 = createButton("Play", getDefaultFont(30));
+	auto b1 = panel->addDefaultToGroup<Button>("Play", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
 		setCurrentPanel(playIndex_);
 		resume_->setVisible(true);
 	});
-	panel->addDefaultToGroup(b1);
 
-	auto b2 = createButton("Custom play", getDefaultFont(30));
+	auto b2 = panel->addDefaultToGroup<Button>("Custom play", getDefaultFont(30), tetrisEntry_);
 	b2->addActionListener([&](gui::Component&) {
 		setCurrentPanel(customIndex_);
 	});
-	panel->addDefaultToGroup(b2);
 
-	auto b3 = createButton("Network play", getDefaultFont(30));
+	auto b3 = panel->addDefaultToGroup<Button>("Network play", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component&) {
 		setCurrentPanel(createServerIndex_);
 	});
-	panel->addDefaultToGroup(b3);
 
-	auto b4 = createButton("Highscore", getDefaultFont(30));
+	auto b4 = panel->addDefaultToGroup<Button>("Highscore", getDefaultFont(30), tetrisEntry_);
 	b4->addActionListener([&](gui::Component&) {
 		setCurrentPanel(highscoreIndex_);
 	});
-	panel->addDefaultToGroup(b4);
 
-	auto b5 = createButton("Settings", getDefaultFont(30));
+	auto b5 = panel->addDefaultToGroup<Button>("Settings", getDefaultFont(30), tetrisEntry_);
 	b5->addActionListener([&](gui::Component&) {
 		setCurrentPanel(settingsIndex_);
 	});
-	panel->addDefaultToGroup(b5);
 
-	auto b6 = createButton("Exit", getDefaultFont(30));
+	auto b6 = panel->addDefaultToGroup<Button>("Exit", getDefaultFont(30), tetrisEntry_);
 	b6->addActionListener([&](gui::Component&) {
 		Window::quit();
 	});
-	panel->addDefaultToGroup(b6);
 
 	add(gui::BorderLayout::WEST, panel);
 }
@@ -277,16 +274,16 @@ void TetrisWindow::initMenuPanel() {
 void TetrisWindow::initPlayPanel() {
 	setCurrentPanel(playIndex_);
 
-	auto bar = createBar();
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
 	bar->setLayout<gui::BorderLayout>();
 
-	auto p1 = createPanel(300.f, 100.f);
-	auto p2 = createPanel(300.f, 100.f);
+	auto p1 = std::make_shared<TransparentPanel>(300.f, 100.f);
+	auto p2 = std::make_shared<TransparentPanel>(300.f, 100.f);
 
 	p1->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
 	p2->setLayout<gui::FlowLayout>(gui::FlowLayout::RIGHT, 5.f, 0.f);
 
-	menu_ = createButton("Menu", getDefaultFont(30));
+	menu_ = p1->addDefault<Button>("Menu", getDefaultFont(30), tetrisEntry_);
 	menu_->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
@@ -297,19 +294,16 @@ void TetrisWindow::initPlayPanel() {
 			restart_->setVisible(true);
 		}
 	});
-	p1->addDefault(menu_);
 
-	restart_ = createButton("Restart", getDefaultFont(30));
+	restart_ = p1->addDefault<Button>("Restart", getDefaultFont(30), tetrisEntry_);
 	restart_->addActionListener([&](gui::Component&) {
 		tetrisGame_.restartGame();
 	});
-	p1->addDefault(restart_);
 
-	pauseButton_ = createButton("Pause", getDefaultFont(30));
+	pauseButton_ = p2->addDefault<Button>("Pause", getDefaultFont(30), tetrisEntry_);
 	pauseButton_->addActionListener([&](gui::Component&) {
 		tetrisGame_.pause();
 	});
-	p2->addDefault(pauseButton_);
 
 	nbrHumans_ = p1->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
@@ -352,12 +346,11 @@ void TetrisWindow::initPlayPanel() {
 void TetrisWindow::initHighscorePanel() {
 	setCurrentPanel(highscoreIndex_);
 
-	auto bar = createBar();
-	auto b1 = createButton("Menu", getDefaultFont(30));
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
+	auto b1 = bar->addDefault<Button>("Menu", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
-	bar->addDefault(b1);
 
 	add(gui::BorderLayout::NORTH, bar);
 	highscore_ = add<Highscore>(gui::BorderLayout::CENTER, 10, mw::Color(1, 1, 1), getDefaultFont(18));
@@ -365,12 +358,10 @@ void TetrisWindow::initHighscorePanel() {
 
 void TetrisWindow::initNewHighscorePanel() {
 	setCurrentPanel(newHighscoreIndex_);
-	add(gui::BorderLayout::NORTH, createBar());
+	add<Bar>(gui::BorderLayout::NORTH, tetrisEntry_);
 
-	auto panel = createPanel(200, 200);
-	add(gui::BorderLayout::CENTER, panel);
-
-	panel->addDefault(createLabel("Name: ", getDefaultFont(18)));
+	auto panel = add<TransparentPanel>(gui::BorderLayout::CENTER);
+	panel->addDefault<Label>("Name: ", getDefaultFont(18), tetrisEntry_);
 
     textField_ = panel->addDefault<gui::TextField>(getDefaultFont(18));
 	textField_->addActionListener([&](gui::Component& c) {
@@ -395,53 +386,49 @@ void TetrisWindow::initNewHighscorePanel() {
 		}
 	});
 
-	auto button = createButton("Ok", getDefaultFont(18));
+	auto button = panel->addDefault<Button>("Ok", getDefaultFont(18), tetrisEntry_);
 	button->addActionListener([&](gui::Component& c) {
 		textField_->doAction();
 	});
-	panel->addDefault(button);
 }
 
 void TetrisWindow::initCustomPlayPanel() {
 	setCurrentPanel(customIndex_);
-	auto bar = createBar();
-	auto b1 = createButton("Menu", getDefaultFont(30));
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
+	auto b1 = bar->addDefault<Button>("Menu", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
-	bar->addDefault(b1);
 	add(gui::BorderLayout::NORTH, bar);
 
-	auto p1 = createPanel(450, 100);
-	p1->addDefault(createLabel("Width", getDefaultFont(18)));
+	auto p1 = std::make_shared<TransparentPanel>(450, 100);
+	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
 	customWidthField_  = p1->addDefault<gui::TextField>("10", getDefaultFont(18));
-	p1->addDefault(createLabel("Height", getDefaultFont(18)));
+	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
 	customHeightField_ = p1->addDefault<gui::TextField>("24", getDefaultFont(18));
 
-	auto p2 = createPanel(100, 100);
-	p2->addDefault(createLabel("Min Level", getDefaultFont(18)));
+	auto p2 = std::make_shared<TransparentPanel>(100, 100);
+	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
 	customMinLevel_ = p2->addDefault<gui::TextField>("1", getDefaultFont(18));
-	p2->addDefault(createLabel("Max Level", getDefaultFont(18)));
+	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
 	customMaxLevel_ = p2->addDefault<gui::TextField>("24", getDefaultFont(18));
 
-	auto centerPanel = createPanel();
+	auto centerPanel = std::make_shared<TransparentPanel>();
 	centerPanel->setLayout<gui::VerticalLayout>();
 
 	centerPanel->addDefault(p1);
 	centerPanel->addDefault(p2);
-
-	auto button = createButton("Play", getDefaultFont(30));
-	centerPanel->addDefault(button);
+	centerPanel->addDefault<Button>("Play", getDefaultFont(30), tetrisEntry_);
 
 	add(gui::BorderLayout::CENTER, centerPanel);
 }
 
 void TetrisWindow::initSettingsPanel() {
 	setCurrentPanel(settingsIndex_);
-	auto bar = createBar();
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
 
-	auto b1 = bar->addDefault(createButton("Menu", getDefaultFont(30)));
+	auto b1 = bar->addDefault<Button>("Menu", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
@@ -451,45 +438,41 @@ void TetrisWindow::initSettingsPanel() {
 
 void TetrisWindow::initCreateServerPanel() {
 	setCurrentPanel(createServerIndex_);
-	auto bar = createBar();
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
 
-	auto b1 = bar->addDefault(createButton("Menu", getDefaultFont(30)));
+	auto b1 = bar->addDefault<Button>("Menu", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
-	auto b2 = bar->addDefault(createButton("Client", getDefaultFont(30)));
+	auto b2 = bar->addDefault<Button>("Client", getDefaultFont(30), tetrisEntry_);
     b2->addActionListener([&](gui::Component&) {
 		setCurrentPanel(createClientIndex_);
 	});
 
 	add(gui::BorderLayout::NORTH, bar);
 
-	auto centerPanel = createPanel();
+	auto centerPanel = std::make_shared<TransparentPanel>();
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = createPanel(450, 40);
-	p1->addDefault(createLabel("Width", getDefaultFont(18)));
+	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
 	serverWidthField_ = p1->addDefault<gui::TextField>("10", getDefaultFont(18));
-	p1->addDefault(createLabel("Height", getDefaultFont(18)));
+	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
 	serverHeightField_ = p1->addDefault<gui::TextField>("24", getDefaultFont(18));
-	centerPanel->addDefault(p1);
 
-	auto p2 = createPanel(100, 150);
-	p2->addDefault(createLabel("Min Level", getDefaultFont(18)));
+	auto p2 = centerPanel->addDefault<TransparentPanel>(100, 150);
+	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
 	serverMinLevel_ = p2->addDefault<gui::TextField>("1", getDefaultFont(18));
-	p2->addDefault(createLabel("Max Level", getDefaultFont(18)));
+	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
 	serverMaxLevel_ = p2->addDefault<gui::TextField>("20", getDefaultFont(18));
-	centerPanel->addDefault(p2);
 
-	auto p3 = createPanel(450, 40);
-	p3->addDefault(createLabel("Port", getDefaultFont(18)));
+	auto p3 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	p3->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portServer_ = p3->addDefault<gui::TextField>("11155", getDefaultFont(18));
-	centerPanel->addDefault(p3);
 
-	auto p4 = createPanel(450, 40);
-	p4->addDefault(createLabel("Local players", getDefaultFont(18)));
-	centerPanel->addDefault(p4);
+	auto p4 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	p4->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
 
 	nbrHumansServer_ = p4->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrAisServer_ = p4->addDefault<ManButton>(activeAis_.size(), tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
@@ -516,7 +499,7 @@ void TetrisWindow::initCreateServerPanel() {
 		nbrOfHumanPlayers_ = nbrHumansServer_->getNbr();
 	});
 
-	auto b3 = centerPanel->addDefault(createButton("Connect", getDefaultFont(30)));
+	auto b3 = centerPanel->addDefault<Button>("Connect", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component& c) {
 		int port, width, height;
 		std::stringstream stream1;
@@ -537,36 +520,33 @@ void TetrisWindow::initCreateServerPanel() {
 
 void TetrisWindow::initCreateClientPanel() {
 	setCurrentPanel(createClientIndex_);
-	auto bar = createBar();
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
 
-	auto b1 = bar->addDefault(createButton("Menu", getDefaultFont(30)));
+	auto b1 = bar->addDefault<Button>("Menu", getDefaultFont(30), tetrisEntry_);
     b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
-	auto b2 = bar->addDefault(createButton("Client", getDefaultFont(30)));
+	auto b2 = bar->addDefault<Button>("Client", getDefaultFont(30), tetrisEntry_);
     b2->addActionListener([&](gui::Component&) {
 		setCurrentPanel(createServerIndex_);
 	});
 
 	add(gui::BorderLayout::NORTH, bar);
 
-	auto centerPanel = createPanel();
+	auto centerPanel = std::make_shared<TransparentPanel>();
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = createPanel(450, 40);
-	p1->addDefault(createLabel("Ip", getDefaultFont(18)));
+	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	p1->addDefault<Label>("Ip", getDefaultFont(18), tetrisEntry_);
 	ipClient_ = p1->addDefault<gui::TextField>("", getDefaultFont(18));
-	p1->addDefault(createLabel("Port", getDefaultFont(18)));
+	p1->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portClient_ = p1->addDefault<gui::TextField>("11155", getDefaultFont(18));
-	centerPanel->addDefault(p1);
 
-	auto p2 = createPanel(450, 40);
-	p2->addDefault(createLabel("Local players", getDefaultFont(18)));
-	centerPanel->addDefault(p2);
+	auto p2 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	p2->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
 
 	nbrHumansClient_ = p2->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
-
 
     nbrAisClient_ = p2->addDefault<ManButton>(activeAis_.size(), tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
     nbrAisClient_->addActionListener([&](gui::Component& c) {
@@ -591,7 +571,7 @@ void TetrisWindow::initCreateClientPanel() {
 		nbrOfHumanPlayers_ = nbrHumansServer_->getNbr();
 	});
 
-	auto b3 = centerPanel->addDefault(createButton("Connect", getDefaultFont(30)));
+	auto b3 = centerPanel->addDefault<Button>("Connect", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component& c) {
 		int port;
 		std::stringstream stream1;
@@ -606,8 +586,8 @@ void TetrisWindow::initCreateClientPanel() {
 
 void TetrisWindow::initServerLoobyPanel() {
 	setCurrentPanel(loobyServerIndex_);
-	auto bar = createBar();
-	auto b1 = bar->addDefault(createButton("Abort", getDefaultFont(30)));
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
+	auto b1 = bar->addDefault<Button>("Abort", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 		tetrisGame_.closeGame();
@@ -615,12 +595,12 @@ void TetrisWindow::initServerLoobyPanel() {
 
 	add(gui::BorderLayout::NORTH, bar);
 	serverLooby_ = add<NetworkLooby>(gui::BorderLayout::CENTER, getDefaultFont(18));
-	auto p = createPanel();
-	auto b2 = p->addDefault(createButton("Ready", getDefaultFont(30)));
+	auto p = std::make_shared<TransparentPanel>();
+	auto b2 = p->addDefault<Button>("Ready", getDefaultFont(30), tetrisEntry_);
 	b2->addActionListener([&](gui::Component&) {
 		tetrisGame_.changeReadyState();
 	});
-	auto b3 = p->addDefault(createButton("Start", getDefaultFont(30)));
+	auto b3 = p->addDefault<Button>("Start", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component&) {
 		tetrisGame_.startGame();
 	});
@@ -630,14 +610,14 @@ void TetrisWindow::initServerLoobyPanel() {
 
 void TetrisWindow::initClientLoobyPanel() {
 	setCurrentPanel(loobyClientIndex_);
-	auto bar = createBar();
-	auto b1 = createButton("Abort", getDefaultFont(30));
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
+	auto b1 = std::make_shared<Button>("Abort", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 		tetrisGame_.closeGame();
 	});
 
-	auto b2 = createButton("Ready", getDefaultFont(30));
+	auto b2 = std::make_shared<Button>("Ready", getDefaultFont(30), tetrisEntry_);
 	b2->addActionListener([&](gui::Component&) {
 		tetrisGame_.changeReadyState();
 	});
@@ -645,22 +625,22 @@ void TetrisWindow::initClientLoobyPanel() {
 	add(gui::BorderLayout::NORTH, bar);
 	clientLooby_ = add<NetworkLooby>(gui::BorderLayout::CENTER, getDefaultFont(18));
 
-	auto p = createPanel();
+	auto p = std::make_shared<TransparentPanel>();
 	p->addDefault(b2);
 	add(gui::BorderLayout::SOUTH, p);
 }
 
 void TetrisWindow::initWaitToConnectPanel() {
 	setCurrentPanel(waitToConnectIndex_);
-	auto bar = createBar();
+	auto bar = std::make_shared<Bar>(tetrisEntry_);
 
-	auto b1 = bar->addDefault(createButton("Abort", getDefaultFont(30)));
+	auto b1 = bar->addDefault<Button>("Abort", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
 	add(gui::BorderLayout::NORTH, bar);
-	add(gui::BorderLayout::CENTER, createLabel("Waiting for the server to accept connection!", getDefaultFont(18)));
+	add<Label>(gui::BorderLayout::CENTER, "Waiting for the server to accept connection!", getDefaultFont(18), tetrisEntry_);
 }
 
 void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {

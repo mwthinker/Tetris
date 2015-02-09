@@ -31,15 +31,12 @@ public:
 	~TetrisWindow();
 
 private:
-	std::shared_ptr<gui::Panel> createBar() const;
-	std::shared_ptr<gui::Label> createLabel(std::string text, mw::Font font) const;
 	void createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const;
-	std::shared_ptr<gui::Button> createButton(std::string text, mw::Font font) const;
 
 	mw::Font getDefaultFont(int size);
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
-	
+
 	void createLocalGame(int width, int height, int maxLevel);
 	void createServerGame(int port, int width, int height);
 	void createClientGame(int port, std::string ip);
@@ -61,10 +58,10 @@ private:
 	std::shared_ptr<gui::Button> pauseButton_;
 	std::shared_ptr<gui::Button> menu_;
 	std::shared_ptr<gui::Button> restart_;
-	
+
 	// initHighscorePanel
 	std::shared_ptr<Highscore> highscore_;
-	
+
 	// initNewHighscorePanel
 	std::shared_ptr<gui::TextField> textField_;
 
@@ -73,7 +70,7 @@ private:
 	std::shared_ptr<gui::TextField> customHeightField_;
 	std::shared_ptr<gui::TextField> customMinLevel_;
 	std::shared_ptr<gui::TextField> customMaxLevel_;
-	
+
 	// initCreateServerPanel
 	std::shared_ptr<gui::TextField> portServer_;
 	std::array<std::shared_ptr<gui::Panel>, 4> playersServer_;
@@ -96,7 +93,7 @@ private:
 	// initServerLoobyPanel
 	std::shared_ptr<NetworkLooby> serverLooby_;
 	std::shared_ptr<gui::Button> serverReady_;;
-	
+
 	// initServerLoobyPanel
 	std::shared_ptr<NetworkLooby> clientLooby_;
 	std::shared_ptr<gui::Button> clientReady_;;
@@ -122,7 +119,7 @@ private:
 	void initClientLoobyPanel();
 	void initWaitToConnectPanel();
 	void initNewHighScorePanel();
-	
+
 	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
 
 	// Panel indexes.

@@ -29,6 +29,8 @@ void ManButton::setNbr(unsigned int nbr) {
 
 void ManButton::draw(Uint32 deltaTime) {
 	glUseProgram();
+	enableGlTransparancy();
+
 	mw::Matrix44 model = getModelMatrix();
 	setGlColorU(1, 1, 1);
 

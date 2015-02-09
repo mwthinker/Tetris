@@ -31,7 +31,6 @@ void GameComponent::validate() {
 }
 
 void GameComponent::draw(Uint32 deltaTime) {
-	setGlModelU(getModelMatrix());
 	boardShader_.glUseProgram();
 
 	const gui::Dimension dim = getSize();
@@ -77,8 +76,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		updateMatrix_ = false;
 	}
 
-	mw::glEnable(GL_BLEND);
-	mw::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	enableGlTransparancy();
 
 	mw::Text text; // Used to update the "Pause".
 
@@ -96,6 +94,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 
 	// Draw texts.
 	glUseProgram();
+	setGlModelU(getModelMatrix());
 
 	int i = 0;
 	float boardWidth = getSize().width_ / graphicPlayers_.size();
@@ -105,7 +104,6 @@ void GameComponent::draw(Uint32 deltaTime) {
 		++i;
 	}
 
-	mw::glDisable(GL_BLEND);
 	mw::checkGlError();
 }
 
