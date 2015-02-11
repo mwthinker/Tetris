@@ -17,6 +17,7 @@
 #include <gui/gridlayout.h>
 #include <gui/label.h>
 #include <gui/textfield.h>
+#include <gui/checkbox.h>
 
 #include <mw/sprite.h>
 #include <mw/color.h>
@@ -63,6 +64,21 @@ namespace {
             setBackgroundColor(entry.getDeepChildEntry("window button backgroundColor").getColor());
             setBorderColor(entry.getDeepChildEntry("window button borderColor").getColor());
             setAutoSizeToFitText(true);
+        }
+    };
+
+    class CheckBox : public gui::CheckBox {
+    public:
+        CheckBox(std::string text, const mw::Font& font, TetrisEntry entry)
+            : gui::CheckBox(text,
+                font,
+                entry.getDeepChildEntry("window checkBox boxImage").getSprite(),
+                entry.getDeepChildEntry("window checkBox checkImage").getSprite()) {
+
+            setTextColor(entry.getDeepChildEntry("window checkBox textColor").getColor());
+            setBackgroundColor(entry.getDeepChildEntry("window checkBox backgroundColor").getColor());
+            setBoxColor(entry.getDeepChildEntry("window checkBox boxColor").getColor());
+            setCheckColor(entry.getDeepChildEntry("window checkBox checkColor").getColor());
         }
     };
 
@@ -434,6 +450,25 @@ void TetrisWindow::initSettingsPanel() {
 	});
 
 	add(gui::BorderLayout::NORTH, bar);
+
+    auto p = add<TransparentPanel>(gui::BorderLayout::CENTER);
+    p->setLayout<gui::VerticalLayout>();
+	p->addDefault<Label>("Settings", getDefaultFont(30), tetrisEntry_);
+
+	auto checkBox1 = p->addDefault<CheckBox>("Border around window", getDefaultFont(18), tetrisEntry_);
+	checkBox1->setSelected(tetrisEntry_.getDeepChildEntry("window border").getBool());
+	checkBox1->addActionListener([&](gui::Component& c) {
+        auto& check = (CheckBox&) c;
+		tetrisEntry_.getDeepChildEntry("window border").setBool(check.isSelected());
+		tetrisEntry_.save();
+	});
+	auto checkBox2 = p->addDefault<CheckBox>("Fullscreen on double click", getDefaultFont(18), tetrisEntry_);
+	checkBox2->setSelected(tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").getBool());
+	checkBox2->addActionListener([&](gui::Component& c) {
+        auto& check = (CheckBox&) c;
+		tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").setBool(check.isSelected());
+		tetrisEntry_.save();
+	});
 }
 
 void TetrisWindow::initCreateServerPanel() {
@@ -687,7 +722,7 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 }
 
 void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
-	if (std::shared_ptr<GameOver> gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
+	if (auto gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
 		// Points high enough to be saved in the highscore list?
 		if (highscore_->isNewRecord(gameOver->points_)) {
 			// Set points in order for highscore to know which point to save in list.
@@ -695,13 +730,13 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 			// In order for the user to insert name.
 			setCurrentPanel(newHighscoreIndex_);
 		}
-	} else if (std::shared_ptr<GamePause> gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
+	} else if (auto gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
 		if (gameOver->pause_) {
 			pauseButton_->setLabel("Unpause");
 		} else {
 			pauseButton_->setLabel("Pause");
 		}
-	} else if (std::shared_ptr<NewConnection> newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
+	} else if (auto newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
 		switch (newConnection->status_) {
 			case NewConnection::CLIENT:
 				clientLooby_->clear();
@@ -721,7 +756,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 				// Is no local looby.
 				break;
 		}
-	} else if (std::shared_ptr<GameStart> start = std::dynamic_pointer_cast<GameStart>(nEvent)) {
+	} else if (auto start = std::dynamic_pointer_cast<GameStart>(nEvent)) {
 		switch (start->status_) {
 			case GameStart::LOCAL:
 				break;
@@ -740,7 +775,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 				break;
 		}
 		setCurrentPanel(playIndex_);
-	} else if (std::shared_ptr<GameReady> ready = std::dynamic_pointer_cast<GameReady>(nEvent)) {
+	} else if (auto ready = std::dynamic_pointer_cast<GameReady>(nEvent)) {
 		serverLooby_->setReady(ready->id_, ready->ready_);
 		clientLooby_->setReady(ready->id_, ready->ready_);
 	}
@@ -806,7 +841,7 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 				windowFollowMouse_ = true;
 				followMouseX_ = e.button.x;
 				followMouseY_ = e.button.y;
-				if (e.button.clicks == 2) {
+				if (e.button.clicks == 2 && tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").getBool()) {
 					TetrisWindow::setFullScreen(!TetrisWindow::isFullScreen());
 					windowFollowMouse_ = false;
 				}

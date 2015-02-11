@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tetris>
     <window>
+		<fullscreenOnDoubleClick>0</fullscreenOnDoubleClick>
 		<border>0</border>
         <bar>
             <height>35</height>
@@ -10,6 +11,14 @@
             <textColor>(1 1 1)</textColor>
             <backgroundColor>(1 1 1 0)</backgroundColor>
         </label>
+		<checkBox>
+            <textColor>(1 1 1)</textColor>
+            <backgroundColor>(1 1 1 0)</backgroundColor>
+            <checkColor>(0 1 0 1)</checkColor>
+            <boxColor>(1 1 1 1)</boxColor>
+			<boxImage>images/box.png</boxImage>
+            <checkImage>images/check.png</checkImage>
+        </checkBox>
         <button>
             <focusColor>(.8 .1 0 .3)</focusColor>
             <textColor>(1 0.1 0.1)</textColor>

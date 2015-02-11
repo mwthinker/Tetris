@@ -32,9 +32,9 @@ void ManButton::draw(Uint32 deltaTime) {
 	gui::Dimension dim = getSize();
 	mw::Matrix44 model = getModelMatrix();
 	if (mouseInside_) {
+	    float delta = (1.f - 1.f/1.2f) * 0.5f * dim.height_;
+        mw::translate2D(model, -delta, -delta);
 		mw::scale2D(model, 1.2f, 1.2f);
-        float delta = (1.f - 1.f/1.2f) * 0.5f * dim.height_;
-		mw::translate2D(model, delta, delta);
 	}
     setGlModelU(model);
 	enableGlTransparancy();
