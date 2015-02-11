@@ -22,8 +22,8 @@ namespace xml {
         }
 
         std::stringstream stream(str);
-        char chr = 0;;
-        mw::Color color;
+        char chr = 0;
+        mw::Color color(1,1,1,1);
         stream >> chr;
         if (chr != '(') {
             throw std::runtime_error("Missing '('!");
@@ -37,8 +37,12 @@ namespace xml {
         if (!(stream >> color.blue_)) {
             throw std::runtime_error("Blue value invalid");
         }
-        // Assume that everything is correct.
-        stream >> color.alpha_;
+        float alpha;
+        if (stream >> alpha) {
+            // Assume that everything is correct.
+            color.alpha_ = alpha;
+        }
+
         return color;
     }
 

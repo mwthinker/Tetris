@@ -18,12 +18,10 @@ public:
 
 	void draw(Uint32 deltaTime) override;
 
-protected:
+private:
 	void handleMouse(const SDL_Event& mouseEvent) override;
 	void mouseMotionLeave() override;
 
-private:
-	void drawPlayer(mw::Matrix44 model, const mw::Sprite& sprite) const;
 	unsigned int nbr_;
 
 	mw::Sprite man_, cross_;

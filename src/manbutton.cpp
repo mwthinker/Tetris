@@ -29,32 +29,25 @@ void ManButton::setNbr(unsigned int nbr) {
 
 void ManButton::draw(Uint32 deltaTime) {
 	glUseProgram();
-	enableGlTransparancy();
-
+	gui::Dimension dim = getSize();
 	mw::Matrix44 model = getModelMatrix();
-	setGlColorU(1, 1, 1);
-
-	gui::Dimension dim = getSize();
-	if (nbr_ == 0) {
-		drawPlayer(model, man_);
-		drawPlayer(model, cross_);
-	} else {
-		for (unsigned int i = 0; i < nbr_; ++i) {
-			drawPlayer(model, man_);
-			mw::translate2D(model, dim.height_, 0);
-		}
-	}
-}
-
-void ManButton::drawPlayer(mw::Matrix44 model, const mw::Sprite& sprite) const {
-	gui::Dimension dim = getSize();
-	mw::translate2D(model, dim.height_ / 2.f, dim.height_ / 2.f);
 	if (mouseInside_) {
 		mw::scale2D(model, 1.2f, 1.2f);
+        float delta = (1.f - 1.f/1.2f) * 0.5f * dim.height_;
+		mw::translate2D(model, delta, delta);
 	}
-	setGlModelU(model * mw::getScaleMatrix44(dim.height_, dim.height_));
+    setGlModelU(model);
+	enableGlTransparancy();
 
-	drawSprite(sprite, 0, 0, sprite.getWidth(), sprite.getHeight());
+	setGlColorU(1, 1, 1);
+	if (nbr_ == 0) {
+		drawSprite(man_, 0, 0, dim.height_, dim.height_);
+		drawSprite(cross_, 0, 0, dim.height_, dim.height_);
+	} else {
+		for (unsigned int i = 0; i < nbr_; ++i) {
+            drawSprite(man_, dim.height_ * i, 0, dim.height_, dim.height_);
+		}
+	}
 }
 
 void ManButton::handleMouse(const SDL_Event& mouseEvent) {
