@@ -162,7 +162,7 @@ TetrisWindow::~TetrisWindow() {
 
 void TetrisWindow::createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const {
 	for (unsigned int i = 0; i < players.size(); ++i) {
-		players[i] = std::make_shared<TransparentPanel>(400, 35);
+		players[i] = std::make_shared<TransparentPanel>(400.f, 35.f);
 		std::stringstream stream;
 		stream << "Human " << i + 1;
 		players[i]->addDefault<Label>(stream.str(), font, tetrisEntry_);
@@ -183,7 +183,7 @@ void TetrisWindow::initMenuPanel() {
 	});
 
 	// 400 in order to be wide enough for all buttons.
-	auto panel = add<TransparentPanel>(gui::BorderLayout::WEST, 400);
+	auto panel = add<TransparentPanel>(gui::BorderLayout::WEST, 400.f);
 
 	panel->setLayout<gui::VerticalLayout>(5.f, 15.f, 10.f);
 	panel->setBackgroundColor(1, 1, 1, 0);
@@ -353,13 +353,13 @@ void TetrisWindow::initCustomPlayPanel() {
 	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 100);
+	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 100.f);
 	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
 	customWidthField_  = p1->addDefault<TextField>("10", getDefaultFont(18));
 	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
 	customHeightField_ = p1->addDefault<TextField>("24", getDefaultFont(18));
 
-	auto p2 = centerPanel->addDefault<TransparentPanel>(100, 100);
+	auto p2 = centerPanel->addDefault<TransparentPanel>(100.f, 100.f);
 	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
 	customMinLevel_ = p2->addDefault<TextField>("1", getDefaultFont(18));
 	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
@@ -422,23 +422,23 @@ void TetrisWindow::initCreateServerPanel() {
 	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
 	serverWidthField_ = p1->addDefault<TextField>("10", getDefaultFont(18));
 	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
 	serverHeightField_ = p1->addDefault<TextField>("24", getDefaultFont(18));
 
-	auto p2 = centerPanel->addDefault<TransparentPanel>(100, 150);
+	auto p2 = centerPanel->addDefault<TransparentPanel>(100.f, 150.f);
 	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
 	serverMinLevel_ = p2->addDefault<TextField>("1", getDefaultFont(18));
 	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
 	serverMaxLevel_ = p2->addDefault<TextField>("20", getDefaultFont(18));
 
-	auto p3 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	auto p3 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p3->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portServer_ = p3->addDefault<TextField>("11155", getDefaultFont(18));
 
-	auto p4 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	auto p4 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p4->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
 
 	nbrHumansServer_ = p4->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
@@ -500,13 +500,13 @@ void TetrisWindow::initCreateClientPanel() {
 	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p1->addDefault<Label>("Ip", getDefaultFont(18), tetrisEntry_);
 	ipClient_ = p1->addDefault<TextField>("", getDefaultFont(18));
 	p1->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portClient_ = p1->addDefault<TextField>("11155", getDefaultFont(18));
 
-	auto p2 = centerPanel->addDefault<TransparentPanel>(450, 40);
+	auto p2 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p2->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
 
 	nbrHumansClient_ = p2->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
