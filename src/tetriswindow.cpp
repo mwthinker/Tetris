@@ -11,13 +11,11 @@
 #include "networklooby.h"
 #include "tetrisentry.h"
 
+#include "guiclasses.h"
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
 #include <gui/verticallayout.h>
 #include <gui/gridlayout.h>
-#include <gui/label.h>
-#include <gui/textfield.h>
-#include <gui/checkbox.h>
 
 #include <mw/sprite.h>
 #include <mw/color.h>
@@ -29,68 +27,7 @@
 
 namespace {
 
-    class Bar : public gui::Panel {
-    public:
-        Bar(TetrisEntry entry) {
-            setPreferredSize(entry.getDeepChildEntry("window bar height").getFloat(), entry.getDeepChildEntry("window bar height").getFloat());
-            setBackgroundColor(entry.getDeepChildEntry("window bar color").getColor());
-            setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
-        }
-    };
-
-    class Background : public gui::Panel {
-    public:
-        Background(const mw::Sprite& background) {
-            setBackground(background);
-            setLayout<gui::BorderLayout>();
-        }
-    };
-
-    class Label : public gui::Label {
-    public:
-        Label(std::string text, mw::Font font, TetrisEntry entry) : gui::Label(text, font) {
-            setTextColor(entry.getDeepChildEntry("window label textColor").getColor());
-            setBackgroundColor(entry.getDeepChildEntry("window label backgroundColor").getColor());
-        }
-    };
-
-    class Button : public gui::Button {
-    public:
-        Button(std::string text, mw::Font font, TetrisEntry entry) : gui::Button(text, font) {
-            setFocusColor(entry.getDeepChildEntry("window button focusColor").getColor());
-            setTextColor(entry.getDeepChildEntry("window button textColor").getColor());
-            setHoverColor(entry.getDeepChildEntry("window button hoverColor").getColor());
-            setPushColor(entry.getDeepChildEntry("window button pushColor").getColor());
-            setBackgroundColor(entry.getDeepChildEntry("window button backgroundColor").getColor());
-            setBorderColor(entry.getDeepChildEntry("window button borderColor").getColor());
-            setAutoSizeToFitText(true);
-        }
-    };
-
-    class CheckBox : public gui::CheckBox {
-    public:
-        CheckBox(std::string text, const mw::Font& font, TetrisEntry entry)
-            : gui::CheckBox(text,
-                font,
-                entry.getDeepChildEntry("window checkBox boxImage").getSprite(),
-                entry.getDeepChildEntry("window checkBox checkImage").getSprite()) {
-
-            setTextColor(entry.getDeepChildEntry("window checkBox textColor").getColor());
-            setBackgroundColor(entry.getDeepChildEntry("window checkBox backgroundColor").getColor());
-            setBoxColor(entry.getDeepChildEntry("window checkBox boxColor").getColor());
-            setCheckColor(entry.getDeepChildEntry("window checkBox checkColor").getColor());
-        }
-    };
-
-    class TransparentPanel : public gui::Panel {
-    public:
-        TransparentPanel(float preferredWidth = 100, float preferredHeight = 100) {
-            setBackgroundColor(1, 1, 1, 0);
-            setPreferredSize(preferredWidth, preferredHeight);
-        }
-    };
-
-	void showHideHumanFields(std::shared_ptr<ManButton> humans, std::array<std::shared_ptr<gui::Panel>, 4>& humanPanels) {
+    void showHideHumanFields(std::shared_ptr<ManButton> humans, std::array<std::shared_ptr<gui::Panel>, 4>& humanPanels) {
 		for (unsigned int i = 0; i < humanPanels.size(); ++i) {
 			if (i < humans->getNbr()) {
 				humanPanels[i]->setVisible(true);
@@ -100,7 +37,7 @@ namespace {
 		}
 	}
 
-}
+} // Namespace anonymous.
 
 TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	gui::Frame(e.getDeepChildEntry("window positionX").getInt(),
@@ -229,7 +166,7 @@ void TetrisWindow::createPlayersFields(const mw::Font& font, std::array<std::sha
 		std::stringstream stream;
 		stream << "Human " << i + 1;
 		players[i]->addDefault<Label>(stream.str(), font, tetrisEntry_);
-		names[i] = std::make_shared<gui::TextField>(stream.str(), font);
+		names[i] = std::make_shared<TextField>(stream.str(), font);
 		players[i]->addDefault(names[i]);
 		players[i]->setVisible(false);
 	}
@@ -375,9 +312,9 @@ void TetrisWindow::initNewHighscorePanel() {
 	auto panel = add<TransparentPanel>(gui::BorderLayout::CENTER);
 	panel->addDefault<Label>("Name: ", getDefaultFont(18), tetrisEntry_);
 
-    textField_ = panel->addDefault<gui::TextField>(getDefaultFont(18));
+    textField_ = panel->addDefault<TextField>(getDefaultFont(18));
 	textField_->addActionListener([&](gui::Component& c) {
-		gui::TextField& textField = static_cast<gui::TextField&>(c);
+		TextField& textField = static_cast<TextField&>(c);
 		std::string name = textField.getText();
 
 		bool validName = false;
@@ -418,15 +355,15 @@ void TetrisWindow::initCustomPlayPanel() {
 
 	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 100);
 	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
-	customWidthField_  = p1->addDefault<gui::TextField>("10", getDefaultFont(18));
+	customWidthField_  = p1->addDefault<TextField>("10", getDefaultFont(18));
 	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
-	customHeightField_ = p1->addDefault<gui::TextField>("24", getDefaultFont(18));
+	customHeightField_ = p1->addDefault<TextField>("24", getDefaultFont(18));
 
 	auto p2 = centerPanel->addDefault<TransparentPanel>(100, 100);
 	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
-	customMinLevel_ = p2->addDefault<gui::TextField>("1", getDefaultFont(18));
+	customMinLevel_ = p2->addDefault<TextField>("1", getDefaultFont(18));
 	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
-	customMaxLevel_ = p2->addDefault<gui::TextField>("24", getDefaultFont(18));
+	customMaxLevel_ = p2->addDefault<TextField>("24", getDefaultFont(18));
 
 	centerPanel->addDefault<Button>("Play", getDefaultFont(30), tetrisEntry_);
 }
@@ -447,14 +384,14 @@ void TetrisWindow::initSettingsPanel() {
 	auto checkBox1 = p->addDefault<CheckBox>("Border around window", getDefaultFont(18), tetrisEntry_);
 	checkBox1->setSelected(tetrisEntry_.getDeepChildEntry("window border").getBool());
 	checkBox1->addActionListener([&](gui::Component& c) {
-        auto& check = (CheckBox&) c;
+        auto& check = static_cast<CheckBox&>(c);
 		tetrisEntry_.getDeepChildEntry("window border").setBool(check.isSelected());
 		tetrisEntry_.save();
 	});
 	auto checkBox2 = p->addDefault<CheckBox>("Fullscreen on double click", getDefaultFont(18), tetrisEntry_);
 	checkBox2->setSelected(tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").getBool());
 	checkBox2->addActionListener([&](gui::Component& c) {
-        auto& check = (CheckBox&) c;
+        auto& check = static_cast<CheckBox&>(c);
 		tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").setBool(check.isSelected());
 		tetrisEntry_.save();
 	});
@@ -462,7 +399,7 @@ void TetrisWindow::initSettingsPanel() {
 	auto checkBox3 = p->addDefault<CheckBox>("Move the window by holding down left mouse button", getDefaultFont(18), tetrisEntry_);
 	checkBox3->setSelected(tetrisEntry_.getDeepChildEntry("window moveWindowByHoldingDownMouse").getBool());
 	checkBox3->addActionListener([&](gui::Component& c) {
-        auto& check = (CheckBox&) c;
+        auto& check =  static_cast<CheckBox&>(c);
 		tetrisEntry_.getDeepChildEntry("window moveWindowByHoldingDownMouse").setBool(check.isSelected());
 		tetrisEntry_.save();
 	});
@@ -487,19 +424,19 @@ void TetrisWindow::initCreateServerPanel() {
 
 	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 40);
 	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
-	serverWidthField_ = p1->addDefault<gui::TextField>("10", getDefaultFont(18));
+	serverWidthField_ = p1->addDefault<TextField>("10", getDefaultFont(18));
 	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
-	serverHeightField_ = p1->addDefault<gui::TextField>("24", getDefaultFont(18));
+	serverHeightField_ = p1->addDefault<TextField>("24", getDefaultFont(18));
 
 	auto p2 = centerPanel->addDefault<TransparentPanel>(100, 150);
 	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
-	serverMinLevel_ = p2->addDefault<gui::TextField>("1", getDefaultFont(18));
+	serverMinLevel_ = p2->addDefault<TextField>("1", getDefaultFont(18));
 	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
-	serverMaxLevel_ = p2->addDefault<gui::TextField>("20", getDefaultFont(18));
+	serverMaxLevel_ = p2->addDefault<TextField>("20", getDefaultFont(18));
 
 	auto p3 = centerPanel->addDefault<TransparentPanel>(450, 40);
 	p3->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
-	portServer_ = p3->addDefault<gui::TextField>("11155", getDefaultFont(18));
+	portServer_ = p3->addDefault<TextField>("11155", getDefaultFont(18));
 
 	auto p4 = centerPanel->addDefault<TransparentPanel>(450, 40);
 	p4->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
@@ -565,9 +502,9 @@ void TetrisWindow::initCreateClientPanel() {
 
 	auto p1 = centerPanel->addDefault<TransparentPanel>(450, 40);
 	p1->addDefault<Label>("Ip", getDefaultFont(18), tetrisEntry_);
-	ipClient_ = p1->addDefault<gui::TextField>("", getDefaultFont(18));
+	ipClient_ = p1->addDefault<TextField>("", getDefaultFont(18));
 	p1->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
-	portClient_ = p1->addDefault<gui::TextField>("11155", getDefaultFont(18));
+	portClient_ = p1->addDefault<TextField>("11155", getDefaultFont(18));
 
 	auto p2 = centerPanel->addDefault<TransparentPanel>(450, 40);
 	p2->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);

@@ -38,6 +38,7 @@ set(SOURCES
 	src/gamehandler.h
 	src/gamegraphic.cpp
 	src/gamegraphic.h
+	src/guiclasses.h
 	src/highscore.cpp
 	src/highscore.h
 	src/joystick.cpp
