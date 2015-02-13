@@ -3,6 +3,7 @@
     <window>
 		<fullscreenOnDoubleClick>0</fullscreenOnDoubleClick>
 		<border>0</border>
+		<moveWindowByHoldingDownMouse>0</moveWindowByHoldingDownMouse>
         <bar>
             <height>35</height>
             <color>(.5 0 0 .30)</color>
