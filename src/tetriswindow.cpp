@@ -715,12 +715,12 @@ void TetrisWindow::loadHighscore() {
 
 void TetrisWindow::saveHighscore() {
 	auto entry = tetrisEntry_.getDeepChildEntry("highscore item");
-	highscore_->iterateRecords([&](int points, std::string name, std::string date) {
-		entry.getChildEntry("name").setString(name);
-		entry.getChildEntry("points").setInt(points);
-		entry.getChildEntry("date").setString(date);
+	for (const auto& score : *highscore_) {
+		entry.getChildEntry("name").setString(score.name_.getText());
+		entry.getChildEntry("points").setInt(score.intPoints_);
+		entry.getChildEntry("date").setString(score.date_.getText());
 		entry = entry.getSibling("item");
-	});
+	}
 	entry.save();
 }
 
