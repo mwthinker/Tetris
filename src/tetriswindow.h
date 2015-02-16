@@ -20,9 +20,7 @@ class Highscore;
 class NetworkLooby;
 class GameComponent;
 
-class NetworkEvent;
-typedef std::shared_ptr<NetworkEvent> NetworkEventPtr;
-
+class TetrisGameEvent;
 class GameData;
 
 class TetrisWindow : public gui::Frame {
@@ -41,7 +39,7 @@ private:
 	void createServerGame(int port, int width, int height);
 	void createClientGame(int port, std::string ip);
 
-	void handleConnectionEvent(NetworkEvent& nEvent);
+	void handleConnectionEvent(TetrisGameEvent& tetrisEvent);
 
 	void loadHighscore();
 	void saveHighscore();

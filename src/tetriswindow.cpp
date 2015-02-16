@@ -11,6 +11,7 @@
 #include "networklooby.h"
 #include "tetrisentry.h"
 #include "guiclasses.h"
+#include "tetrisgameevent.h"
 
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
@@ -642,9 +643,9 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
 }
 
-void TetrisWindow::handleConnectionEvent(NetworkEvent& nEvent) {
+void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
-		auto& gameOver = dynamic_cast<GameOver&>(nEvent);
+		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 		// Points high enough to be saved in the highscore list?
 		if (highscore_->isNewRecord(gameOver.points_)) {
 			// Set points in order for highscore to know which point to save in list.
@@ -656,7 +657,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEvent& nEvent) {
 	} catch (std::bad_cast exp) {}
 	
 	try {
-		auto& gamePause = dynamic_cast<GamePause&>(nEvent);
+		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
 		// Points high enough to be saved in the highscore list?
 		if (gamePause.pause_) {
 			pauseButton_->setLabel("Unpause");
@@ -667,7 +668,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEvent& nEvent) {
 	} catch (std::bad_cast exp) {}
 	
 	try {
-		auto& newConnection = dynamic_cast<NewConnection&>(nEvent);
+		auto& newConnection = dynamic_cast<NewConnection&>(tetrisEvent);
 		switch (newConnection.status_) {
 			case NewConnection::CLIENT:
 				clientLooby_->clear();
@@ -691,7 +692,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEvent& nEvent) {
 	} catch (std::bad_cast exp) {}
 	
 	try {
-		auto& start = dynamic_cast<GameStart&>(nEvent);
+		auto& start = dynamic_cast<GameStart&>(tetrisEvent);
 		switch (start.status_) {
 			case GameStart::LOCAL:
 				break;
@@ -714,7 +715,7 @@ void TetrisWindow::handleConnectionEvent(NetworkEvent& nEvent) {
 	} catch (std::bad_cast exp) {}
 	
 	try {
-		auto& ready = dynamic_cast<GameReady&>(nEvent);
+		auto& ready = dynamic_cast<GameReady&>(tetrisEvent);
 		serverLooby_->setReady(ready.id_, ready.ready_);
 		clientLooby_->setReady(ready.id_, ready.ready_);
 		return;

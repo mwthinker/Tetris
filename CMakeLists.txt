@@ -50,7 +50,6 @@ set(SOURCES
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
-	src/networkevent.h
 	src/networklooby.cpp
 	src/networklooby.h
 	src/player.cpp
@@ -67,6 +66,7 @@ set(SOURCES
 	src/tetrisentry.h
 	src/tetrisgame.cpp
 	src/tetrisgame.h
+	src/tetrisgameevent.h
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h

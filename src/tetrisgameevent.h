@@ -1,19 +1,15 @@
-#ifndef NETWORKEVENT_H
-#define NETWORKEVENT_H
+#ifndef TETRISGAMEEVENT_H
+#define TETRISGAMEEVENT_H
 
 #include <vector>
 
-class NetworkEvent {
+class TetrisGameEvent {
 public:
-	virtual ~NetworkEvent() {
-	}
-
-protected:
-	NetworkEvent() {
+	virtual ~TetrisGameEvent() {
 	}
 };
 
-class NewConnection : public NetworkEvent {
+class NewConnection : public TetrisGameEvent {
 public:
 	struct Data {
 		Data(int id, int nbr, bool ready) : id_(id), nbr_(nbr), ready_(ready) {
@@ -51,7 +47,7 @@ private:
 	std::vector<Data> dataV_;
 };
 
-class GameReady : public NetworkEvent {
+class GameReady : public TetrisGameEvent {
 public:
 	GameReady(int id, bool ready) : id_(id), ready_(ready) {
 	}
@@ -60,7 +56,7 @@ public:
 	bool ready_;
 };
 
-class GameStart : public NetworkEvent {
+class GameStart : public TetrisGameEvent {
 public:
 	enum Status {
 		LOCAL,
@@ -74,7 +70,7 @@ public:
 	const Status status_;
 };
 
-class GamePause : public NetworkEvent {
+class GamePause : public TetrisGameEvent {
 public:
 	GamePause(bool pause) : pause_(pause) {
 	}
@@ -82,7 +78,7 @@ public:
 	bool pause_;
 };
 
-class GameOver : public NetworkEvent {
+class GameOver : public TetrisGameEvent {
 public:
     GameOver(int points) : points_(points) {
     }
@@ -90,4 +86,4 @@ public:
     int points_;
 };
 
-#endif // NETWORKEVENT_H
+#endif // TETRISGAMEEVENT_H

@@ -5,7 +5,7 @@
 #include "remoteplayer.h"
 #include "userconnection.h"
 #include "localplayer.h"
-#include "networkevent.h"
+#include "tetrisgameevent.h"
 #include "userconnection.h"
 #include "localplayer.h"
 #include "computer.h"
@@ -219,7 +219,7 @@ bool TetrisGame::isStarted() const {
 	return start_;
 }
 
-void TetrisGame::addCallback(const mw::Signal<NetworkEvent&>::Callback& callback) {
+void TetrisGame::addCallback(const mw::Signal<TetrisGameEvent&>::Callback& callback) {
 	eventHandler_.connect(callback);
 }
 

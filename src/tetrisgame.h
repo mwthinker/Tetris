@@ -2,7 +2,6 @@
 #define TETRISGAME_H
 
 #include "player.h"
-#include "networkevent.h"
 #include "userconnection.h"
 #include "device.h"
 #include "ai.h"
@@ -14,6 +13,8 @@
 #include <mw/server.h>
 
 #include <vector>
+
+class TetrisGameEvent;
 
 class TetrisGame : public mw::ServerInterface {
 public:
@@ -55,7 +56,7 @@ public:
 	// Only the server can restart the game.
 	void restartGame();
 
-	void addCallback(const mw::Signal<NetworkEvent&>::Callback& callback);
+	void addCallback(const mw::Signal<TetrisGameEvent&>::Callback& callback);
 
 	int getNbrOfPlayers() const;
 
@@ -162,7 +163,7 @@ private:
 
 	void applyRules(Player& player, GameEvent gameEvent);
 
-	mw::Signal<NetworkEvent&> eventHandler_;
+	mw::Signal<TetrisGameEvent&> eventHandler_;
 	bool start_; // The game is started?
 	bool pause_; // Is game paused?
 	int nbrOfPlayers_;
