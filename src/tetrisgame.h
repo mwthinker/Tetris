@@ -55,7 +55,7 @@ public:
 	// Only the server can restart the game.
 	void restartGame();
 
-	void addCallback(mw::Signal<NetworkEventPtr>::Callback callback);
+	void addCallback(const mw::Signal<NetworkEvent&>::Callback& callback);
 
 	int getNbrOfPlayers() const;
 
@@ -162,7 +162,7 @@ private:
 
 	void applyRules(Player& player, GameEvent gameEvent);
 
-	mw::Signal<NetworkEventPtr> eventHandler_;
+	mw::Signal<NetworkEvent&> eventHandler_;
 	bool start_; // The game is started?
 	bool pause_; // Is game paused?
 	int nbrOfPlayers_;

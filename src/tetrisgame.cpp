@@ -219,7 +219,7 @@ bool TetrisGame::isStarted() const {
 	return start_;
 }
 
-void TetrisGame::addCallback(mw::Signal<NetworkEventPtr>::Callback callback) {
+void TetrisGame::addCallback(const mw::Signal<NetworkEvent&>::Callback& callback) {
 	eventHandler_.connect(callback);
 }
 
@@ -328,8 +328,8 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 					localUser_->add(PlayerPtr(new LocalPlayer(++playerId_, width_, height_, device)));
 				}
 				{
-					auto newConnection = std::make_shared<NewConnection>(NewConnection::SERVER);
-					newConnection->add(network_->getId(), localUser_->getNbrOfPlayers(), localUser_->isReady());
+					NewConnection newConnection(NewConnection::SERVER);
+					newConnection.add(network_->getId(), localUser_->getNbrOfPlayers(), localUser_->isReady());
 					eventHandler_(newConnection);
 				}
 				break;
@@ -490,7 +490,7 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 			iterateUserConnections([&](UserConnection& user) {
 				if (user.getId() == id) {
 					user.setReady(!user.isReady());
-					eventHandler_(std::make_shared<GameReady>(user.getId(), user.isReady()));
+					eventHandler_(GameReady(user.getId(), user.isReady()));
 					return false; // User found, stop looking!
 				}
 				// User not found, keep iterating!!
@@ -546,7 +546,7 @@ void TetrisGame::receiveData(const mw::Packet& data, int id) {
 			pause_ = !pause_;
 
 			// Signals the gui that the game begins.
-			eventHandler_(std::make_shared<GamePause>(pause_));
+			eventHandler_(GamePause(pause_));
 
 			countDown_ = 3000;
 			break;
@@ -647,7 +647,7 @@ void TetrisGame::serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet pa
 // ..............
 // char player2NId
 void TetrisGame::sendServerInfo() {
-	auto newConnection = std::make_shared<NewConnection>(NewConnection::SERVER);
+	NewConnection newConnection(NewConnection::SERVER);
 	nbrOfPlayers_ = 0;
 	// Add new player to all human players.
 	mw::Packet data;
@@ -658,7 +658,7 @@ void TetrisGame::sendServerInfo() {
 		data << user.isReady();
 		data << user.getNbrOfPlayers();
 		nbrOfPlayers_ += user.getNbrOfPlayers();
-		newConnection->add(user.getId(), user.getNbrOfPlayers(), user.isReady());
+		newConnection.add(user.getId(), user.getNbrOfPlayers(), user.isReady());
 		for (PlayerPtr player : user) {
 			data << player->getId();
 			std::string name = player->getName();
@@ -681,7 +681,7 @@ void TetrisGame::clientReceiveServerInfo(mw::Packet data) {
 
 	users_.clear();
 	nbrOfPlayers_ = 0;
-	auto newConnection = std::make_shared<NewConnection>(NewConnection::CLIENT);
+	NewConnection newConnection(NewConnection::CLIENT);
 	width_ = data[1];
 	height_ = data[2];
 
@@ -692,7 +692,7 @@ void TetrisGame::clientReceiveServerInfo(mw::Packet data) {
 		int nbrOfPlayers = data[++index];
 		nbrOfPlayers_ += nbrOfPlayers;
 
-		newConnection->add(id, nbrOfPlayers, ready);
+		newConnection.add(id, nbrOfPlayers, ready);
 
 		// This network (local)?
 		if (id == network_->getId()) {
@@ -867,13 +867,13 @@ void TetrisGame::clientStartGame() {
 		// Signals the gui that the game begins.
 		switch (status_) {
 			case TetrisGame::LOCAL:
-				eventHandler_(std::make_shared<GameStart>(GameStart::LOCAL));
+				eventHandler_(GameStart(GameStart::LOCAL));
 				break;
 			case TetrisGame::CLIENT:
-				eventHandler_(std::make_shared<GameStart>(GameStart::CLIENT));
+				eventHandler_(GameStart(GameStart::CLIENT));
 				break;
 			case TetrisGame::SERVER:
-				eventHandler_(std::make_shared<GameStart>(GameStart::SERVER));
+				eventHandler_(GameStart(GameStart::SERVER));
 				break;
 			case TetrisGame::WAITING_TO_CONNECT:
 				break;
@@ -901,7 +901,7 @@ void TetrisGame::clientStartGame() {
 	gameHandler_->initGame(players);
 
 	// Signals the gui that the game is not paused.
-	eventHandler_(std::make_shared<GamePause>(pause_));
+	eventHandler_(GamePause(pause_));
 }
 
 void TetrisGame::updateGame(Uint32 msDeltaTime) {
@@ -981,7 +981,7 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 
 					// Is local and a human player?
 					if (status_ == LOCAL && !player.isAi()) {
-						eventHandler_(std::make_shared<GameOver>(pInfo.points_));
+						eventHandler_(GameOver(pInfo.points_));
 					}
 				}
 			}

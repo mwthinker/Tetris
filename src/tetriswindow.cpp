@@ -10,8 +10,8 @@
 #include "joystick.h"
 #include "networklooby.h"
 #include "tetrisentry.h"
-
 #include "guiclasses.h"
+
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
 #include <gui/verticallayout.h>
@@ -73,9 +73,7 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	// Saves the last window position. And makes the window movable by holding down left mouse button.
 	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));
 
-	tetrisGame_.addCallback([&](NetworkEventPtr nEvent) {
-		handleConnectionEvent(nEvent);
-	});
+	tetrisGame_.addCallback(std::bind(&TetrisWindow::handleConnectionEvent, this, std::placeholders::_1));
 
 	// Initializes default keyboard devices for two players.
 	DevicePtr device1(new Keyboard("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
@@ -644,43 +642,57 @@ void TetrisWindow::createClientGame(int port, std::string ip) {
 	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
 }
 
-void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
-	if (auto gameOver = std::dynamic_pointer_cast<GameOver>(nEvent)) {
+void TetrisWindow::handleConnectionEvent(NetworkEvent& nEvent) {
+	try {
+		auto& gameOver = dynamic_cast<GameOver&>(nEvent);
 		// Points high enough to be saved in the highscore list?
-		if (highscore_->isNewRecord(gameOver->points_)) {
+		if (highscore_->isNewRecord(gameOver.points_)) {
 			// Set points in order for highscore to know which point to save in list.
-			highscore_->setNextRecord(gameOver->points_);
+			highscore_->setNextRecord(gameOver.points_);
 			// In order for the user to insert name.
 			setCurrentPanel(newHighscoreIndex_);
 		}
-	} else if (auto gameOver = std::dynamic_pointer_cast<GamePause>(nEvent)) {
-		if (gameOver->pause_) {
+		return;
+	} catch (std::bad_cast exp) {}
+	
+	try {
+		auto& gamePause = dynamic_cast<GamePause&>(nEvent);
+		// Points high enough to be saved in the highscore list?
+		if (gamePause.pause_) {
 			pauseButton_->setLabel("Unpause");
 		} else {
 			pauseButton_->setLabel("Pause");
 		}
-	} else if (auto newConnection = std::dynamic_pointer_cast<NewConnection>(nEvent)) {
-		switch (newConnection->status_) {
+		return;
+	} catch (std::bad_cast exp) {}
+	
+	try {
+		auto& newConnection = dynamic_cast<NewConnection&>(nEvent);
+		switch (newConnection.status_) {
 			case NewConnection::CLIENT:
 				clientLooby_->clear();
-				newConnection->iterate([&](int id, int nbrOfPlayers, bool ready) {
-					clientLooby_->addConnection(id, nbrOfPlayers, ready);
-				});
+				for (auto& data : newConnection) {
+					clientLooby_->addConnection(data.id_, data.nbr_, data.ready_);
+				}
 				setCurrentPanel(loobyClientIndex_);
 				break;
 			case NewConnection::SERVER:
 				serverLooby_->clear();
-				newConnection->iterate([&](int id, int nbrOfPlayers, bool ready) {
-					serverLooby_->addConnection(id, nbrOfPlayers, ready);
-				});
+				for (auto& data : newConnection) {
+					serverLooby_->addConnection(data.id_, data.nbr_, data.ready_);
+				}
 				setCurrentPanel(loobyServerIndex_);
 				break;
 			case NewConnection::LOCAL:
 				// Is no local looby.
 				break;
 		}
-	} else if (auto start = std::dynamic_pointer_cast<GameStart>(nEvent)) {
-		switch (start->status_) {
+		return;
+	} catch (std::bad_cast exp) {}
+	
+	try {
+		auto& start = dynamic_cast<GameStart&>(nEvent);
+		switch (start.status_) {
 			case GameStart::LOCAL:
 				break;
 			case GameStart::CLIENT:
@@ -698,10 +710,15 @@ void TetrisWindow::handleConnectionEvent(NetworkEventPtr nEvent) {
 				break;
 		}
 		setCurrentPanel(playIndex_);
-	} else if (auto ready = std::dynamic_pointer_cast<GameReady>(nEvent)) {
-		serverLooby_->setReady(ready->id_, ready->ready_);
-		clientLooby_->setReady(ready->id_, ready->ready_);
-	}
+		return;
+	} catch (std::bad_cast exp) {}
+	
+	try {
+		auto& ready = dynamic_cast<GameReady&>(nEvent);
+		serverLooby_->setReady(ready.id_, ready.ready_);
+		clientLooby_->setReady(ready.id_, ready.ready_);
+		return;
+	} catch (std::bad_cast exp) {}
 }
 
 void TetrisWindow::loadHighscore() {

@@ -1,26 +1,29 @@
 #ifndef NETWORKEVENT_H
 #define NETWORKEVENT_H
 
-#include <memory>
-#include <functional>
-
-#include <mw/packet.h>
-
-class NetworkEvent;
-typedef std::shared_ptr<NetworkEvent> NetworkEventPtr;
+#include <vector>
 
 class NetworkEvent {
+public:
+	virtual ~NetworkEvent() {
+	}
+
 protected:
 	NetworkEvent() {
 	}
-
-public:
-    virtual ~NetworkEvent() {
-    }
 };
 
 class NewConnection : public NetworkEvent {
 public:
+	struct Data {
+		Data(int id, int nbr, bool ready) : id_(id), nbr_(nbr), ready_(ready) {
+		}
+
+		int id_;
+		int nbr_;
+		bool ready_;
+	};
+
 	enum Status {
 		LOCAL,
 		SERVER,
@@ -31,28 +34,21 @@ public:
 	}
 
 	void add(int id, int nbrOfPlayers, bool ready) {
-		dataV.push_back(Data(id, nbrOfPlayers,ready));
+		dataV_.push_back(Data(id, nbrOfPlayers, ready));
 	}
 
-	void iterate(std::function<void(int id, int nbrOfPlayers, bool ready)> funcIdPort) {
-		for (const Data& data : dataV) {
-			funcIdPort(data.id_,data.nbr_,data.ready_);
-		}
+	std::vector<Data>::const_iterator begin() const {
+		return dataV_.cbegin();
+	}
+
+	std::vector<Data>::const_iterator end() const {
+		return dataV_.cend();
 	}
 
 	const Status status_;
 
 private:
-	struct Data {
-		Data(int id, int nbr, bool ready) : id_(id), nbr_(nbr), ready_(ready) {
-		}
-
-		int id_;
-		int nbr_;
-		bool ready_;
-	};
-
-	std::vector<Data> dataV;
+	std::vector<Data> dataV_;
 };
 
 class GameReady : public NetworkEvent {

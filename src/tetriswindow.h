@@ -41,7 +41,7 @@ private:
 	void createServerGame(int port, int width, int height);
 	void createClientGame(int port, std::string ip);
 
-	void handleConnectionEvent(NetworkEventPtr nEvent);
+	void handleConnectionEvent(NetworkEvent& nEvent);
 
 	void loadHighscore();
 	void saveHighscore();
