@@ -23,7 +23,7 @@ public:
 	TetrisGame();
 	~TetrisGame();
 
-	void setGameHandler(GameHandler* gameHandler) {
+	inline void setGameHandler(GameHandler* gameHandler) {
 		gameHandler_ = gameHandler;
 	}
 
@@ -32,9 +32,14 @@ public:
 	
 	// Uses the same settings as last call.
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers);
-	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int width, int height, int maxLevel);
-	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, int width, int height, int maxLevel);
-	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers, int port, std::string ip, int maxLevel);
+	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
+		int width, int height, int maxLevel);
+	
+	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
+		int port, int width, int height, int maxLevel);
+	
+	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
+		int port, std::string ip, int maxLevel);
 
 	void startGame();
 	void closeGame();
@@ -176,7 +181,7 @@ private:
     UserConnectionPtr localUser_;
     std::vector<DevicePtr> devices_;
 
-	mw::Network* network_; // The connection manager.
+	mw::Network* network_;
 	mw::Server* server_;
 
 	int playerId_; // The id for the last added player.

@@ -402,8 +402,6 @@ void TetrisGame::receiveToServer(const mw::Packet& packet, int clientId) {
 
 			// Sent to all players to start the game.
 			break;
-		default:
-			break;
 	}
 }
 
@@ -967,7 +965,7 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 				// All dead except one => End game!
 				if (nbrOfAlivePlayers_ == 1) {
 					iterateAllPlayers([&](PlayerPtr player) {
-						// Will be noticed in the next call to PlayerManager::applyRules(...).
+						// Will be noticed in the next call to applyRules(...).
 						// Nothing happens if player allready dead.
 						player->update(Move::GAME_OVER);
 						return true;
