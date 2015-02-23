@@ -8,15 +8,14 @@
 #include "gamehandler.h"
 
 #include <mw/signal.h>
-#include <mw/packet.h>
-#include <mw/network.h>
-#include <mw/server.h>
+#include <net/packet.h>
+#include <net/network.h>
 
 #include <vector>
 
 class TetrisGameEvent;
 
-class TetrisGame : public mw::ServerInterface {
+class TetrisGame {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
 
@@ -94,11 +93,11 @@ private:
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value
 	// defined in PacketType.
-	void receiveData(const mw::Packet& data, int id);
+	void receiveData(const net::Packet& data, int id);
 
 	// Server receives info from a client with id (id) about the number (nbrOfPlayers)
 	// of local players.
-	void serverReceiveClientInfo(UserConnectionPtr remote, mw::Packet packet);
+	void serverReceiveClientInfo(UserConnectionPtr remote, net::Packet packet);
 
 	// Sent by client to notify the server about number of local players.
 	void sendClientInfo();
@@ -110,7 +109,7 @@ private:
 	// Send the current move from the local player corresponding to the id provided.	
 	void sendMove(char playerId, Move move, BlockType next);
 
-	void receivInput(mw::Packet packet, char& playerId, Move& move, BlockType& next);
+	void receivInput(net::Packet packet, char& playerId, Move& move, BlockType& next);
 
 	// Pause/Unpause the game.
 	void sendPause();
@@ -144,24 +143,24 @@ private:
 	// Returns the ip to the server.
 	std::string getConnectToIp() const;
 
-	void receiveToServer(const mw::Packet& packet, int clientId) override;
+	void receiveToServer(const net::Packet& packet, int clientId);
 
-	bool connectToServer(int clientId) override;
+	bool connectToServer(int clientId);
 
-	void disconnectToServer(int clientId) override;
+	void disconnectToServer(int clientId);
 
 	// Server sends data of all the players in the game.
 	void sendServerInfo();
 
 	// Client received data from server. The server assignes id about all
 	// players in the game.
-	void clientReceiveServerInfo(mw::Packet data);
+	void clientReceiveServerInfo(net::Packet data);
 
 	// Sends information about the start block and preview block of all local players.
 	void sendStartBlock();
 
 	// Receives the starting block from remote player.
-	void receiveStartBlock(const mw::Packet& data, int id);
+	void receiveStartBlock(const net::Packet& data, int id);
 
 	// All client will start the game.
 	void clientStartGame();
@@ -181,8 +180,7 @@ private:
     UserConnectionPtr localUser_;
     std::vector<DevicePtr> devices_;
 
-	mw::Network* network_;
-	mw::Server* server_;
+	net::Network network_;
 
 	int playerId_; // The id for the last added player.
 	bool acceptNewConnections_; // Is true if more players are allowed to connect.

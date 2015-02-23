@@ -1,6 +1,3 @@
-[submodule "MwEnet"]
-	path = MwEnet
-	url = https://github.com/mwthinker/MwEnet.git
 [submodule "MwLibrary2"]
 	path = MwLibrary2
 	url = https://github.com/mwthinker/MwLibrary2.git
@@ -13,3 +10,6 @@
 [submodule "Calculator"]
 	path = Calculator
 	url = https://github.com/mwthinker/Calculator.git
+[submodule "SimpleNetwork"]
+	path = SimpleNetwork
+	url = https://github.com/mwthinker/SimpleNetwork.git

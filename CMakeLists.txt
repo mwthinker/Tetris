@@ -5,7 +5,6 @@ if (MSVC)
 	# Exception handler model.
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc")
-	set(WINDOWS_ENET_DEPENDENCIES "ws2_32;winmm") # ENET
 	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32)
 else (MSVC)
@@ -78,15 +77,16 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_net REQUIRED)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
 find_package(Threads REQUIRED) # Due to a bug, which forces the uses to link to Threads when using #include <thread>.
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory(DataEntry)
-add_subdirectory(MwEnet)
 add_subdirectory(SdlGui)
 add_subdirectory(Calculator)
+add_subdirectory(SimpleNetwork)
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
@@ -95,8 +95,8 @@ include_directories(
 	${SDL2_TTF_INCLUDE_DIRS}
 	${SDL2_MIXER_INCLUDE_DIRS} 
 	${SDL2_IMAGE_INCLUDE_DIRS}
-	MwEnet/src
-	MwEnet/Enet/src
+	${SDL2_NET_INCLUDE_DIRS}
+	SimpleNetwork/src
 	SdlGui/src
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
@@ -116,15 +116,14 @@ target_link_libraries(MWetris
 	Calculator
 	TinyXML2
 	DataEntry
-	MwEnet
-	Enet
+	SimpleNetwork
 	MwLibrary2
 	Signal
 	SdlGui
-	${WINDOWS_ENET_DEPENDENCIES}
 	${SDL2_LIBRARIES}
 	${SDL2_TTF_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}
 	${SDL2_IMAGE_LIBRARIES}
+	${SDL2_NET_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )

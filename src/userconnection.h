@@ -8,7 +8,7 @@
 class UserConnection;
 typedef std::shared_ptr<UserConnection> UserConnectionPtr;
 
-// Hold information about all local players on a client/server.
+// Hold information about all players on one computer on a network.
 class UserConnection {
 public:
     UserConnection() : id_(1) {
@@ -19,7 +19,7 @@ public:
 		ready_ = false;
 	}
 
-	// Returns the id. It will never change.
+	// Return the id.
 	int getId() const {
 		return id_;
 	}
