@@ -10,6 +10,7 @@
 #include <mw/signal.h>
 #include <net/packet.h>
 #include <net/network.h>
+#include <net/connection.h>
 
 #include <vector>
 
@@ -88,7 +89,16 @@ private:
 	void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
 	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
 	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
+	
 	bool isAllUsersReady();
+
+	void serverReceive(net::Packet& packet);
+
+	void clientReceive(net::Packet& packet);
+
+	void serverSendToAll(const net::Packet& packet);
+
+	void receiveNetworkData();
 
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value
@@ -100,7 +110,7 @@ private:
 	void serverReceiveClientInfo(UserConnectionPtr remote, net::Packet packet);
 
 	// Sent by client to notify the server about number of local players.
-	void sendClientInfo();
+	void clientSendClientInfo();
 
 	// Is sent to notify the server that the client is ready to start the game.
 	// Should be sent when client is in looby.
@@ -143,8 +153,6 @@ private:
 	// Returns the ip to the server.
 	std::string getConnectToIp() const;
 
-	void receiveToServer(const net::Packet& packet, int clientId);
-
 	bool connectToServer(int clientId);
 
 	void disconnectToServer(int clientId);
@@ -160,7 +168,7 @@ private:
 	void sendStartBlock();
 
 	// Receives the starting block from remote player.
-	void receiveStartBlock(const net::Packet& data, int id);
+	void receiveStartBlock(net::Packet& data, int id);
 
 	// All client will start the game.
 	void clientStartGame();
@@ -181,9 +189,10 @@ private:
     std::vector<DevicePtr> devices_;
 
 	net::Network network_;
+	std::shared_ptr<net::Connection> clientConnection_;
+	std::list<std::shared_ptr<net::Connection>> serverConnections_;
 
 	int playerId_; // The id for the last added player.
-	bool acceptNewConnections_; // Is true if more players are allowed to connect.
 	Status status_;
 	int width_, height_, maxLevel_;
 	std::array<Ai, 4> ais_;

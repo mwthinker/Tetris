@@ -97,14 +97,38 @@ namespace {
 		return packet;
 	}
 
-	// char type = STARTGAME
-	/*
-	void serverSendStartGame(mw::Server* server) {
-		mw::Packet data;
-		data << PacketType::STARTGAME;
-		server->serverPushToSendBuffer(data, mw::Network::RELIABLE);
+	net::Packet& operator>>(net::Packet& packet, int& number) {
+		char tmp;
+		packet >> tmp;
+		number = static_cast<int>(tmp);
+		return packet;
 	}
-	*/
+
+	net::Packet& operator>>(net::Packet& packet, bool& data) {
+		char tmp;
+		packet >> tmp;
+		data = tmp > 0;
+		return packet;
+	}
+
+	net::Packet& operator<<(net::Packet& packet, const std::string& text) {
+		packet << (char) text.size();
+		for (char c : text) {
+			packet << c;
+		}
+		return packet;
+	}
+
+	net::Packet& operator>>(net::Packet& packet, std::string& text) {
+		char size;
+		packet >> size;
+		for (int i = 0; i < size; ++i) {
+			char c;
+			packet >> c;
+			text.push_back(c);
+		}
+		return packet;
+	}
 
 } // Anonymous namespace.
 
@@ -114,7 +138,6 @@ TetrisGame::TetrisGame() {
 	connectToPort_ = 12008;
 	start_ = false;
 	connectToIp_ = "localhost";
-	acceptNewConnections_ = false;
 	status_ = WAITING_TO_CONNECT;
 	nbrOfPlayers_ = 0;
 	playerId_ = 0;
@@ -135,6 +158,7 @@ void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrO
 
 void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
 	int width, int height, int maxLevel) {
+	
 	width_ = width;
 	height_ = height;
 	maxLevel_ = maxLevel;
@@ -143,6 +167,7 @@ void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrO
 
 void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
 	int port, int width, int height, int maxLevel) {
+	
 	width_ = width;
 	height_ = height;
 	maxLevel_ = maxLevel;
@@ -152,6 +177,7 @@ void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbr
 
 void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
 	int port, std::string ip, int maxLevel) {
+	
 	if (status_ == WAITING_TO_CONNECT) {
 		setConnectToIp(ip);
 		setConnectToPort(port);
@@ -160,18 +186,80 @@ void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbr
 }
 
 void TetrisGame::startGame() {
-	// Game is not started? And this is a server? And network is active?
-	if (!start_ && network_.getStatus() == net::NOT_ACTIVE) {
-		// Only the server can start the game!
-		//serverSendStartGame(server_);
+	// Is a server?
+	if (network_.isServer()) {
+		// Check if all players are ready to start!
+		if (!isAllUsersReady()) {
+			// Not ready -> don't start!
+			return;
+		}
+
+		// Stops new connections.
+		network_.setAcceptConnections(false);
+
+		// Only the server can start/restart the game!
+		net::Packet packet;
+		packet << PacketType::STARTGAME;
+		serverSendToAll(packet);
+	}
+
+	if (!start_) {
+		countDown_ = 3000;
+		
+		// Signals the gui that the game begins.
+		switch (status_) {
+			case TetrisGame::LOCAL:
+				eventHandler_(GameStart(GameStart::LOCAL));
+				break;
+			case TetrisGame::CLIENT:
+				eventHandler_(GameStart(GameStart::CLIENT));
+				break;
+			case TetrisGame::SERVER:
+				eventHandler_(GameStart(GameStart::SERVER));
+				break;
+		}
+
+		start_ = true;
+		pause_ = false;
+
+		// When server decides to start, all clients must be ready.
+		// If not they are set to ready. To avoid sync problem.
+		iterateUserConnections([&](UserConnection& user) {
+			user.setReady(true);
+			return true;
+		});
+
+		sendStartBlock();
+		std::vector<PlayerPtr> players;
+		iterateAllPlayers([&players](PlayerPtr player) {
+			players.push_back(player);
+			player->setPlayerInfo(PlayerInfo());
+			return true;
+		});
+
+		nbrOfAlivePlayers_ = nbrOfPlayers_; // All players are living again.
+		gameHandler_->initGame(players);
+
+		// Signals the gui that the game is not paused.
+		eventHandler_(GamePause(pause_));
 	}
 }
 
 void TetrisGame::restartGame() {
-	// Game is started? And this is a server?
-	if (start_ && network_.isServer()) {
-		// Only the server can restart the game!
-		//serverSendStartGame(server_);
+	// Game is started?
+	if (start_) {
+		// Is a server?
+		if (network_.isServer()) {
+			// Only the server can restart the game!
+			net::Packet packet;
+			packet << PacketType::STARTGAME;
+			serverSendToAll(packet);
+		}
+
+		// Is a server or a local game?
+		if (!network_.isClient()) {
+			startGame();
+		}
 	}
 }
 
@@ -220,59 +308,64 @@ int TetrisGame::getNbrOfPlayers() const {
 	return nbrOfPlayers_;
 }
 
+void TetrisGame::serverSendToAll(const net::Packet& packet) {
+	for (auto& connection : serverConnections_) {
+		connection->send(packet);
+	}
+}
+
+void TetrisGame::receiveNetworkData() {
+	if (network_.isServer()) {
+		for (auto& connection : serverConnections_) {
+			net::Packet packet;
+			while (connection->receive(packet)) {
+				net::Packet packet;
+				serverReceive(packet);
+			}
+		}
+	} else if (network_.isClient()) {
+		net::Packet packet;
+		while (clientConnection_->receive(packet)) {
+			net::Packet packet;
+			clientReceive(packet);
+		}
+	}
+}
+
 void TetrisGame::update(Uint32 deltaTime) {
-	/*
-	if (network_ != 0) {
-		
-			case net::Network::ACTIVE:
-			{
-				net::Packet data;
-				int id = 0;
-				while ((id = network_->pullFromReceiveBuffer(data)) != 0) {
-					receiveData(data, id);
+	receiveNetworkData();
+
+	if (isStarted()) {
+		if (!pause_) {
+			countDown_ -= deltaTime;
+			if (countDown_ < 0) {
+				if (countDown_ > -20000) { // -20000 = Time impossible to reach.
+					gameHandler_->countDown(countDown_);
+				}
+				updateGame(deltaTime);
+				countDown_ = -20000;
+			} else {
+				gameHandler_->countDown(countDown_);
+			}
+
+			// Update the board for the local users and send updates to remote players.
+			for (PlayerPtr& player : *localUser_) {
+				Move move;
+				BlockType next;
+				// Update the local player tetris board and send the input to all remote players.
+				while (player->updateBoard(move, next)) {
+					sendMove(player->getId(), move, next);
 				}
 			}
-				if (isStarted()) {
-					if (!pause_) {
-						countDown_ -= deltaTime;
-						if (countDown_ < 0) {
-							if (countDown_ > -20000) { // -20000 = Time impossible to reach.
-								gameHandler_->countDown(countDown_);
-							}
-							updateGame(deltaTime);
-							countDown_ = -20000;
-						} else {
-							gameHandler_->countDown(countDown_);
-						}
-					}
-
-					// Update the board for the local users and sent updates to remote players.
-					for (PlayerPtr& player : *localUser_) {
-						Move move;
-						BlockType next;
-						// Update the local player tetris board and send the input to all remote players.
-						while (player->updateBoard(move, next)) {
-							sendMove(player->getId(), move, next);
-						}
-					}
-				}
-				break;
-			case mw::Network::DISCONNECTING:
-				// Will soon change status to not active.
-				break;
 		}
-	} else {
-		status_ = WAITING_TO_CONNECT;
 	}
-	*/
 }
 
 // Initiates the choosen connection.
 void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status) {
+	status_ = status;
 	if (status_ == WAITING_TO_CONNECT) {
 		// Settings.
-		status_ = status;
-		acceptNewConnections_ = true;
 		devices_ = devices;
 		nbrOfPlayers_ = 0;
 		playerId_ = 0;
@@ -314,14 +407,17 @@ void TetrisGame::connect(const std::vector<DevicePtr>& devices, int nbrOfCompute
 				break;
 			case CLIENT:
 				network_.startClient(connectToIp_, connectToPort_);
-				sendClientInfo();
+				clientSendClientInfo();
 				break;
 		};
+		// Accepting external connections. Does nothing, when the network is not a server.
+		network_.setAcceptConnections(true);
 	}
 }
 
-void TetrisGame::receiveToServer(const net::Packet& packet, int clientId) {
-	PacketType type = static_cast<PacketType>(packet[0]);
+void TetrisGame::serverReceive(net::Packet& packet) {
+	PacketType type;
+	packet >> type;
 	switch (type) {
 		case PacketType::SERVERINFO:
 			// Game started?
@@ -343,50 +439,35 @@ void TetrisGame::receiveToServer(const net::Packet& packet, int clientId) {
 			}
 
 			// Find the remote user with id (fromId).
-			auto it = std::find_if(users_.begin(), users_.end(), [clientId](UserConnectionPtr remote) {
-				return remote->getId() == clientId;
-			});
+			//auto it = std::find_if(users_.begin(), users_.end(), [clientId](UserConnectionPtr remote) {
+			//	return remote->getId() == clientId;
+			//});
 
 			// Find remote player.
-			UserConnectionPtr remote = *it;
+			//UserConnectionPtr remote = *it;
 
 			// Failed to find?
-			if (remote == nullptr) {
-				throw mw::Exception("Protocol error!\n");
-			}
+			//if (remote == nullptr) {
+			//	throw mw::Exception("Protocol error!\n");
+			//}
 
-			serverReceiveClientInfo(remote, packet);
+			//serverReceiveClientInfo(remote, packet);
 
 			sendServerInfo(); // Is sent before the data will be sent.
 			break;
 		}
 		case PacketType::STARTGAME:
-			// Data not from server?
-			/*
-			if (net::Network::SERVER_ID != clientId) {
-				throw mw::Exception("Protocol error!\n");
-			}
-			*/
-
-			// Check if all players ready to start!
-			if (!isAllUsersReady()) {
-				// Not ready -> don't start!
-				break;
-			}
-
-			// Stops new connections.
-			acceptNewConnections_ = false;
-
-			// This server will start also.
-			clientStartGame();
-
-			// Sent to all players to start the game.
+			startGame();
 			break;
 	}
 }
 
+void TetrisGame::clientReceive(net::Packet& packet) {
+
+}
+
 bool TetrisGame::connectToServer(int clientId) {
-	if (acceptNewConnections_) {
+	if (true) { //(acceptNewConnections_) {
 		users_.push_back(UserConnectionPtr(new UserConnection(clientId)));
 
 		sendServerInfo();
@@ -635,103 +716,85 @@ void TetrisGame::sendServerInfo() {
 	NewConnection newConnection(NewConnection::SERVER);
 	nbrOfPlayers_ = 0;
 	// Add new player to all human players.
-	net::Packet data;
-	data << PacketType::SERVERINFO;
-	data << width_ << height_;
+	net::Packet packet;
+	packet << PacketType::SERVERINFO;
+	packet << width_ << height_;
 	iterateUserConnections([&](const UserConnection& user) {
-		data << user.getId();
-		data << user.isReady();
-		data << user.getNbrOfPlayers();
+		packet << user.getId();
+		packet << user.isReady();
+		packet << user.getNbrOfPlayers();
 		nbrOfPlayers_ += user.getNbrOfPlayers();
 		newConnection.add(user.getId(), user.getNbrOfPlayers(), user.isReady());
 		for (PlayerPtr player : user) {
-			data << player->getId();
+			packet << player->getId();
 			std::string name = player->getName();
-			data << name.length();
+			packet << name.length();
 			for (char chr : name) {
-				data << chr;
+				packet << chr;
 			}
 		}
 		return true;
 	});
-
 	eventHandler_(newConnection);
-	//server_->serverPushToSendBuffer(data, mw::Network::RELIABLE);
+	serverSendToAll(packet);
 }
 
-void TetrisGame::clientReceiveServerInfo(net::Packet data) {
-	/*
-	if (data.size() < 3) {
-		throw mw::Exception("Protocol error!\n");
-	}
-
+void TetrisGame::clientReceiveServerInfo(net::Packet packet) {
 	users_.clear();
 	nbrOfPlayers_ = 0;
 	NewConnection newConnection(NewConnection::CLIENT);
-	width_ = data[1];
-	height_ = data[2];
+	packet >> width_;
+	packet >> height_;
 
 	int index = 2;
-	while (++index < data.size()) {
-		int id = data[index];
-		bool ready = data[++index] != 0;
-		int nbrOfPlayers = data[++index];
+	while (packet.dataLeftToRead()) {
+		int id;
+		packet >> id;
+		bool ready;
+		packet >> ready;
+		int nbrOfPlayers;
+		packet >> nbrOfPlayers;
 		nbrOfPlayers_ += nbrOfPlayers;
 
 		newConnection.add(id, nbrOfPlayers, ready);
+		
+		auto user = std::make_shared<UserConnection>(id);
+		// The id for the local user?
+		if (id == localUser_->getId()) {
+			localUser_ = user;
+		}
+		users_.push_back(user);
+		for (int i = 0; i < nbrOfPlayers; ++i) {
+			int playerId;
+			packet >> playerId;
 
-		// This network (local)?
-		if (id == network_->getId()) {
-			localUser_ = UserConnectionPtr(new UserConnection(id));
-			users_.push_back(localUser_);
-			for (int i = 0; i < nbrOfPlayers; ++i) {
-				int playerId = data[++index];
-				PlayerPtr player(new LocalPlayer(playerId, width_, height_, devices_[i]));
-				localUser_->add(player);
-				localUser_->setReady(ready);
-				std::stringstream stream;
-				int length = data[++index];
-				for (int i = 0; i < length; ++i) {
-					stream << data[++index];
-				}
-				player->setName(stream.str());
+			PlayerPtr player;
+			// The id for the local user?
+			if (id == localUser_->getId()) {
+				player = std::make_shared<LocalPlayer>(playerId, width_, height_, devices_[i]);
+			} else { // Remote user.
+				player = (std::make_shared<RemotePlayer>(playerId, width_, height_));
 			}
-		} else {
-			UserConnectionPtr user(new UserConnection(id));
-			users_.push_back(user);
-			for (int i = 0; i < nbrOfPlayers; ++i) {
-				int playerId = data[++index];
-				PlayerPtr player(new RemotePlayer(playerId, width_, height_));
-				user->add(player);
-				user->setReady(ready);
-				std::stringstream stream;
-				int length = data[++index];
-				for (int i = 0; i < length; ++i) {
-					stream << data[++index];
-				}
-				player->setName(stream.str());
-			}
+			user->add(player);
+			user->setReady(ready);
+			std::string name;
+			packet >> name;
+			player->setName(name);
 		}
 	}
-	
 	eventHandler_(newConnection);
-	*/
 }
 
 // char type = CLIENTINFO
 // char nbrOfPlayers
-void TetrisGame::sendClientInfo() {
-	net::Packet data;
-	data << PacketType::CLIENTINFO;
-	data << devices_.size();
+void TetrisGame::clientSendClientInfo() {
+	net::Packet packet;
+	packet << PacketType::CLIENTINFO;
+	packet << devices_.size();
 	for (auto& device : devices_) {
-		std::string name = device->getPlayerName();
-		data << name.length();
-		for (char chr : name) {
-			data << chr;
-		}
+		packet << device->getPlayerName();
 	}
-	//network_->pushToSendBuffer(data, mw::Network::RELIABLE);
+	clientConnection_->send(packet);
 }
 
 void TetrisGame::sendReady() {
@@ -771,37 +834,25 @@ void TetrisGame::sendStartBlock() {
 	//network_->pushToSendBuffer(data, mw::Network::RELIABLE);
 }
 
-void TetrisGame::receiveStartBlock(const net::Packet& data, int id) {
+void TetrisGame::receiveStartBlock(net::Packet& packet, int id) {
 	UserConnectionPtr user = nullptr;
-	for (UserConnectionPtr tmp : users_) {
-		if (tmp->getId() == id) {
-			user = tmp;
-			break;
-		}
-	}
+	
+	auto it = std::find_if(users_.begin(), users_.end(), [id](const UserConnectionPtr& user) {
+		return user->getId() == id;
+	});
 
-	if (user == nullptr) {
+	if (it == users_.end()) {
 		throw mw::Exception("Protocol error!\n");
 	}
 
-	auto it = user->begin();
-	int i = 0;
-	/*
-	while (++i < data.size()) {
-		BlockType current = static_cast<BlockType>(data[i]);
-		BlockType next = static_cast<BlockType>(data[++i]);
-
-		// Player exist?
-		if (it != user->end()) {
-			PlayerPtr player = *it;
-			player->restart();
-			player->update(current, next);
-		} else {
-			throw mw::Exception("Protocol error!\n");
-		}
-		++it;
+	for (auto& player : *user) {
+		BlockType current;
+		packet >> current;
+		BlockType next;
+		packet >> next;
+		player->restart();
+		player->update(current, next);
 	}
-	*/
 }
 
 void TetrisGame::sendTetrisInfo(char playerId, const std::vector<BlockType>& blockTypes) {
@@ -848,7 +899,7 @@ void TetrisGame::clientStartGame() {
 	// Game already started?
 	if (start_) {
 		// Restart local players.
-		for (PlayerPtr player : *localUser_) {
+		for (auto& player : *localUser_) {
 			// Restart player.
 			player->restart();
 		}
