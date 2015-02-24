@@ -1,7 +1,7 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-enum class BlockType : char {
+enum class BlockType {
 	I,
 	J,
 	L,

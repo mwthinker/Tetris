@@ -11,6 +11,7 @@
 #include "computer.h"
 #include "device.h"
 #include "tetrisparameters.h"
+#include "protocol.h"
 
 #include <mw/exception.h>
 #include <net/packet.h>
@@ -19,118 +20,6 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
-
-namespace {
-
-	// Defines the packet content.
-	// Value of the first byte.
-	enum class PacketType : char {
-		MOVE,       // Tetrisboard updates.
-		STARTGAME,   // The server starts the game. All user starts the game.
-		READY,       // The client is ready/unready to start.
-		SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
-		TETRIS,      // Data describing when player adds rows.
-		CLIENTINFO,  // A client send info to the server.
-		STARTBLOCK,  // Sends the start current block and the next block.
-		PAUSE        // Pause/Unpause the game for all users.
-	};
-
-	net::Packet& operator<<(net::Packet& packet, const Input& input) {
-		char data = input.rotate_;
-		data <<= 1;
-		data += input.down_;
-		data <<= 1;
-		data += input.left_;
-		data <<= 1;
-		data += input.right_;
-		packet << data;
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, Input& input) {
-		char data;
-		packet >> data;
-		char bit = 1;
-		input.right_ = (bit & data) > 0;
-		bit <<= 1;
-		input.left_ = (bit & data) > 0;
-		bit <<= 1;
-		input.down_ = (bit & data) > 0;
-		bit <<= 1;
-		input.rotate_ = (bit & data) > 0;
-		return packet;
-	}
-
-	net::Packet& operator<<(net::Packet& packet, PacketType type) {
-		packet << static_cast<char>(type);
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, PacketType& type) {
-		char tmp;
-		packet >> tmp;
-		type = static_cast<PacketType>(tmp);
-		return packet;
-	}
-
-	net::Packet& operator<<(net::Packet& packet, Move move) {
-		packet << static_cast<char>(move);
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, Move& move) {
-		char tmp;
-		packet >> tmp;
-		move = static_cast<Move>(tmp);
-		return packet;
-	}
-
-	net::Packet& operator<<(net::Packet& packet, BlockType type) {
-		packet << static_cast<char>(type);
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, BlockType& type) {
-		char tmp;
-		packet >> tmp;
-		type = static_cast<BlockType>(tmp);
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, int& number) {
-		char tmp;
-		packet >> tmp;
-		number = static_cast<int>(tmp);
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, bool& data) {
-		char tmp;
-		packet >> tmp;
-		data = tmp > 0;
-		return packet;
-	}
-
-	net::Packet& operator<<(net::Packet& packet, const std::string& text) {
-		packet << (char) text.size();
-		for (char c : text) {
-			packet << c;
-		}
-		return packet;
-	}
-
-	net::Packet& operator>>(net::Packet& packet, std::string& text) {
-		char size;
-		packet >> size;
-		for (int i = 0; i < size; ++i) {
-			char c;
-			packet >> c;
-			text.push_back(c);
-		}
-		return packet;
-	}
-
-} // Anonymous namespace.
 
 TetrisGame::TetrisGame() {
 	pause_ = false;
@@ -728,7 +617,7 @@ void TetrisGame::sendServerInfo() {
 		for (PlayerPtr player : user) {
 			packet << player->getId();
 			std::string name = player->getName();
-			packet << name.length();
+			packet << (int) name.length();
 			for (char chr : name) {
 				packet << chr;
 			}
@@ -790,7 +679,7 @@ void TetrisGame::clientReceiveServerInfo(net::Packet packet) {
 void TetrisGame::clientSendClientInfo() {
 	net::Packet packet;
 	packet << PacketType::CLIENTINFO;
-	packet << devices_.size();
+	packet << (int) devices_.size();
 	for (auto& device : devices_) {
 		packet << device->getPlayerName();
 	}

@@ -6,7 +6,7 @@
 #include <vector>
 
 // The events triggered by the tetris board.
-enum class GameEvent : char {
+enum class GameEvent {
 	RESTARTED,
 	BLOCK_COLLISION,
 	CURRENT_BLOCK_UPDATED,
@@ -25,7 +25,7 @@ enum class GameEvent : char {
 };
 
 // Defines all valid ways of controlling the falling block.
-enum class Move : char {
+enum class Move {
 	ROTATE_LEFT,
 	ROTATE_RIGHT,
 	DOWN_GRAVITY,
