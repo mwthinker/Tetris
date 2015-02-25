@@ -76,7 +76,7 @@ public:
 		ais_[3] = ai4;
 	}
 
-	Status getStatus() const {
+	inline Status getStatus() const {
 		return status_;
 	}
 
@@ -103,7 +103,7 @@ private:
 	// Receives data (data) received from user with id (id).
 	// First element in (data) must be of a value
 	// defined in PacketType.
-	void receiveData(const net::Packet& data, int id);
+	void receiveData(net::Packet& data, int id);
 
 	// Server receives info from a client with id (id) about the number (nbrOfPlayers)
 	// of local players.
@@ -112,46 +112,7 @@ private:
 	// Sent by client to notify the server about number of local players.
 	void clientSendClientInfo();
 
-	// Is sent to notify the server that the client is ready to start the game.
-	// Should be sent when client is in looby.
-	void sendReady();
-
-	// Send the current move from the local player corresponding to the id provided.	
-	void sendMove(char playerId, Move move, BlockType next);
-
-	void receivInput(net::Packet packet, char& playerId, Move& move, BlockType& next);
-
-	// Pause/Unpause the game.
-	void sendPause();
-
-	// Sends info about a local player with id (playerId) who triggered a
-	// tetris event (4 rows removal at once). The rows to be transformed to
-	// all opponent players is saved in vector (blockTypes) which must be
-	// in complete rows. With the upper left and block and row first.
-	void sendTetrisInfo(char playerId, const std::vector<BlockType>& blockTypes);
-
-	// Sets the port which PlayerManager should connect to if status
-	// is CLIENT. I.e. calling connect(humans, Status::CLIENT).
-	void setConnectToPort(int port);
-
-	// Returns the current port to connect to if calling
-	// connect(humans, Status::CLIENT).
-	int getConnectToPort() const;
-
-	// Sets the port which PlayerManager should be connected to if status
-	// is SERVER. I.e. calling connect(humans, Status::SERVER).
-	void setServerPort(int port);
-
-	// Returns the current port to to which new connection connects to.
-	// This accurs when a call to connect(humans, Status::SERVER) is made.
-	int getServerPort() const;
-
-	// Sets the ip to the server to connect to.
-	// This ip us used when a call to connect(humans, Status::SERVER) is made.
-	void setConnectToIp(std::string ip);
-
-	// Returns the ip to the server.
-	std::string getConnectToIp() const;
+	void receivInput(net::Packet& packet, int& playerId, Move& move, BlockType& next);
 
 	bool connectToServer(int clientId);
 
@@ -163,9 +124,6 @@ private:
 	// Client received data from server. The server assignes id about all
 	// players in the game.
 	void clientReceiveServerInfo(net::Packet data);
-
-	// Sends information about the start block and preview block of all local players.
-	void sendStartBlock();
 
 	// Receives the starting block from remote player.
 	void receiveStartBlock(net::Packet& data, int id);

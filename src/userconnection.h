@@ -3,6 +3,8 @@
 
 #include "player.h"
 
+#include <net/connection.h>
+
 #include <vector>
 
 class UserConnection;
@@ -17,6 +19,16 @@ public:
 
 	UserConnection(int id) : id_(id) {
 		ready_ = false;
+	}
+
+	UserConnection(int id, const net::ConnectionPtr& connection) : connection_(connection), id_(id) {
+		ready_ = false;
+	}
+
+	~UserConnection() {
+		if (connection_) {
+			connection_->stop();
+		}
 	}
 
 	// Return the id.
@@ -37,12 +49,12 @@ public:
 		players_.push_back(player);
 	}
 
-	// Removes all players.
+	// Remove all players.
 	void clear() {
 		players_.clear();
 	}
 
-	// Returns the number of players contain.
+	// Return the number of players contain.
 	int getNbrOfPlayers() const {
 		return players_.size();
 	}
@@ -63,8 +75,25 @@ public:
         return players_.end();
     }
 
+	bool isActive() const {
+		return connection_->isActive();
+	}
+
+	bool receive(net::Packet& packet) {
+		connection_->receive(packet);
+	}
+
+	void send(const net::Packet& packet) {
+		connection_->send(packet);
+	}
+
+	void stop() {
+		connection_->stop();
+	}
+
 private:
 	std::vector<PlayerPtr> players_;
+	net::ConnectionPtr connection_;
 
 	const int id_; // Server/client id.
 	bool ready_; // Is ready to start.
