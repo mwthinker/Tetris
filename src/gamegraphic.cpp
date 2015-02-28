@@ -31,7 +31,7 @@ void GameGraphic::restart(Player& player, float x, float y,
 	showPoints_ = true;
 
 	name_ = mw::Text(player.getName(), font_, 16);
-	update(player.getPlayerInfo().nbrClearedRows_, player.getPlayerInfo().points_, player.getLevel());
+	//update(player.getPlayerInfo().nbrClearedRows_, player.getPlayerInfo().points_, player.getLevel());
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {

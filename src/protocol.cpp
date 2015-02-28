@@ -2,6 +2,14 @@
 
 #include <sstream>
 
+net::Packet& operator<<(net::Packet& packe1t, const net::Packet& packet2) {
+	int size = packet2.getSize();
+	for (int i = 1; i < size; ++i) {
+		packe1t << packet2[i];
+	}
+	return packe1t;
+}
+
 net::Packet& operator<<(net::Packet& packet, Input input) {
 	char data = input.rotate_;
 	data <<= 1;

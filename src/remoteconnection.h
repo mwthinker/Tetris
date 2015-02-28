@@ -1,31 +1,28 @@
-#ifndef USERCONNECTION_H
-#define USERCONNECTION_H
+#ifndef REMOTECONNECTION_H
+#define REMOTECONNECTION_H
 
-#include "player.h"
+#include "remoteplayer.h"
 
 #include <net/connection.h>
 
 #include <vector>
 
-class UserConnection;
-typedef std::shared_ptr<UserConnection> UserConnectionPtr;
-
-// Hold information about all players on one computer on a network.
-class UserConnection {
+// Hold information about all remote players.
+class RemoteConnection {
 public:
-    UserConnection() : id_(1) {
+	RemoteConnection() : id_(1) {
 		ready_ = false;
 	}
 
-	UserConnection(int id) : id_(id) {
+	RemoteConnection(int id) : id_(id) {
 		ready_ = false;
 	}
 
-	UserConnection(int id, const net::ConnectionPtr& connection) : connection_(connection), id_(id) {
+	RemoteConnection(int id, const net::ConnectionPtr& connection) : connection_(connection), id_(id) {
 		ready_ = false;
 	}
 
-	~UserConnection() {
+	~RemoteConnection() {
 		if (connection_) {
 			connection_->stop();
 		}
@@ -45,7 +42,7 @@ public:
 	}
 
 	// Add a player.
-	void add(PlayerPtr player) {
+	void add(std::shared_ptr<RemotePlayer> player) {
 		players_.push_back(player);
 	}
 
@@ -59,19 +56,11 @@ public:
 		return players_.size();
 	}
 
-    std::vector<PlayerPtr>::iterator begin() {
+	std::vector<std::shared_ptr<RemotePlayer>>::iterator begin() {
         return players_.begin();
     }
 
-    std::vector<PlayerPtr>::iterator end() {
-        return players_.end();
-    }
-
-    std::vector<PlayerPtr>::const_iterator begin() const {
-        return players_.begin();
-    }
-
-    std::vector<PlayerPtr>::const_iterator end() const {
+	std::vector<std::shared_ptr<RemotePlayer>>::iterator end() {
         return players_.end();
     }
 
@@ -80,7 +69,7 @@ public:
 	}
 
 	bool receive(net::Packet& packet) {
-		connection_->receive(packet);
+		return connection_->receive(packet);
 	}
 
 	void send(const net::Packet& packet) {
@@ -92,11 +81,11 @@ public:
 	}
 
 private:
-	std::vector<PlayerPtr> players_;
+	std::vector<std::shared_ptr<RemotePlayer>> players_;
 	net::ConnectionPtr connection_;
 
 	const int id_; // Server/client id.
 	bool ready_; // Is ready to start.
 };
 
-#endif // USERCONNECTION_H
+#endif // REMOTECONNECTION_H

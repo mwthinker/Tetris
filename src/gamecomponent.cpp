@@ -107,7 +107,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 	mw::checkGlError();
 }
 
-void GameComponent::initGame(std::vector<PlayerPtr>& players) {
+void GameComponent::initGame(std::vector<std::shared_ptr<Player>>& players) {
 	bool showPoints = false;
 	if (players.size() == 1) {
 		showPoints = true;
@@ -135,9 +135,9 @@ void GameComponent::countDown(int msCountDown) {
 	}
 }
 
-void GameComponent::eventHandler(const PlayerPtr& player, GameEvent gameEvent) {
+void GameComponent::eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) {
 	GameGraphic& graphic = graphicPlayers_[player->getId()];
-	graphic.update(player->getPlayerInfo().nbrClearedRows_, player->getPlayerInfo().points_, player->getLevel());
+	//graphic.update(player->getPlayerInfo().nbrClearedRows_, player->getPlayerInfo().points_, player->getLevel());
 
 	soundEffects(gameEvent);
 	switch (gameEvent) {

@@ -11,15 +11,21 @@
 // Defines the packet content.
 // Value of the first byte.
 enum class PacketType {
-	MOVE,       // Tetrisboard updates.
-	STARTGAME,   // The server starts the game. All user starts the game.
+	MOVE,        // Tetrisboard updates.
+	STARTGAME,	 // The server starts the game. All user starts the game.
 	READY,       // The client is ready/unready to start.
 	SERVERINFO,  // Sent from the server. The info about players and tetrisboard conditions (e.g. length and width).
-	TETRIS,      // Player add rows.
+	TETRIS,	     // Player add rows.
 	CLIENTINFO,  // A client send info to the server.
 	STARTBLOCK,  // Send the start block, i.e. current block and the next block.
-	PAUSE        // Pause/Unpause the game for all users.
+	PAUSE,       // Pause/Unpause the game for all users.
+	PLAYERNAME,  // The name for a player.
+	LEVEL,       // The level for a player.
+	POINT,       // The point for a player.
 };
+
+net::Packet& operator<<(net::Packet& packe1t, const net::Packet& packet2);
+
 
 net::Packet& operator<<(net::Packet& packet, Input input);
 

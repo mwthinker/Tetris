@@ -2,20 +2,41 @@
 #include "actionhandler.h"
 
 #include <string>
-#include <memory>
+#include <functional>
 
-LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device) : Player(id, width, height, false, device->isAi()) {
-	leftHandler_ = ActionHandler(0.09, false);
-	rightHandler_ = ActionHandler(0.09, false);
-	rotateHandler_ = ActionHandler(0.0, true);
-
-	gravityMove_ = ActionHandler(1, false); // Value does'nt matter! Changes every frame.
-	downHandler_ = ActionHandler(0.04, false);
-
-	device_ = device;
+LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device) :
+	Player(id, width, height),
+	leftHandler_(ActionHandler(0.09, false)),
+	rightHandler_(ActionHandler(0.09, false)),
+	rotateHandler_(ActionHandler(0.0, true)),
+	
+	gravityMove_(ActionHandler(1, false)), // Value doesn't matter! Changes every frame.
+	downHandler_(ActionHandler(0.04, false)),
+	device_(device) {
+	
 	device_->update(getTetrisBoard());
 	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
-	setName(device_->getPlayerName());
+	name_ = device_->getPlayerName();
+	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
+}
+
+void LocalPlayer::update(Move move) {
+	tetrisBoard_.update(move);
+	packet_ << move;
+	packet_ << tetrisBoard_.getNextBlockType();
+}
+
+void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
+	if (gameEvent == GameEvent::CURRENT_BLOCK_UPDATED) {		
+		// Generate a new block for a local player.
+		BlockType type = randomBlockType();
+		tetrisBoard_.updateNextBlock(type); // The listener will be called again, but with GameEvent::NEXT_BLOCK_UPDATED.
+		
+		leftHandler_.reset();
+		rightHandler_.reset();
+		downHandler_.reset();
+		device_->update(board);
+	}
 }
 
 void LocalPlayer::update(double deltaTime) {
@@ -27,41 +48,37 @@ void LocalPlayer::update(double deltaTime) {
 
 	gravityMove_.update(deltaTime, true);
 	if (gravityMove_.doAction()) {
-		downHandler_.reset();
-		pushMove(Move::DOWN_GRAVITY);
+		update(Move::DOWN_GRAVITY);
 	}
 
 	leftHandler_.update(deltaTime, input.left_ && !input.right_);
 	if (leftHandler_.doAction()) {
-		pushMove(Move::LEFT);
+		update(Move::LEFT);
 	}
 
 	rightHandler_.update(deltaTime, input.right_ && !input.left_);
 	if (rightHandler_.doAction()) {
-		pushMove(Move::RIGHT);
+		update(Move::RIGHT);
 	}
 
 	downHandler_.update(deltaTime, input.down_);
 	if (downHandler_.doAction()) {
-		pushMove(Move::DOWN);
+		update(Move::DOWN);
 	}
 
 	rotateHandler_.update(deltaTime, input.rotate_);
 	if (rotateHandler_.doAction()) {
-		pushMove(Move::ROTATE_LEFT);
+		update(Move::ROTATE_LEFT);
 	}
 }
 
-void LocalPlayer::updateAi() {
-	const TetrisBoard& board = getTetrisBoard();
-	// New block appears?
-	if (nbrOfUpdates_ != board.getNbrOfUpdates()) {
-		nbrOfUpdates_ = board.getNbrOfUpdates();
-		leftHandler_.reset();
-		rightHandler_.reset();
-		downHandler_.reset();
+bool LocalPlayer::pollPacket(net::Packet& packet) {
+	if (packet_.getSize() > 1) {
+		packet << packet_;
+		packet_ = net::Packet();
+		return true;
 	}
-	device_->update(board);
+	return false;
 }
 
 double LocalPlayer::calculateDownSpeed(int level) const {

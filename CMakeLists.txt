@@ -46,6 +46,7 @@ set(SOURCES
 	src/keyboard.h
 	src/localplayer.cpp
 	src/localplayer.h
+	src/localconnection.h
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
@@ -58,6 +59,7 @@ set(SOURCES
 	src/rawtetrisboard.cpp
 	src/rawtetrisboard.h
 	src/remoteplayer.h
+	src/remoteconnection.h
 	src/square.h
 	src/staticgraphicboard.cpp
 	src/staticgraphicboard.h
@@ -71,7 +73,6 @@ set(SOURCES
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h
-	src/userconnection.h
 )
 # End of source files.
 

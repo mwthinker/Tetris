@@ -22,12 +22,12 @@ public:
 
 	void draw(Uint32 deltaTime) override;
 
-	void initGame(std::vector<PlayerPtr>& players) override;
+	void initGame(std::vector<std::shared_ptr<Player>>& player) override;
 
 	void countDown(int msCountDown) override;
 
 private:
-	void eventHandler(const PlayerPtr& player, GameEvent gameEvent) override;
+	void eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) override;
 
 	void soundEffects(GameEvent gameEvent) const;
 

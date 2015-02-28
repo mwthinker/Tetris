@@ -2,7 +2,11 @@
 #define TETRISGAME_H
 
 #include "player.h"
-#include "userconnection.h"
+#include "localplayer.h"
+#include "remoteplayer.h"
+
+#include "localconnection.h"
+#include "remoteconnection.h"
 #include "device.h"
 #include "ai.h"
 #include "gamehandler.h"
@@ -31,7 +35,6 @@ public:
 	void update(Uint32 msDeltaTime);
 	
 	// Uses the same settings as last call.
-	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers);
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
 		int width, int height, int maxLevel);
 	
@@ -81,18 +84,9 @@ public:
 	}
 
 private:
-	void connect(const std::vector<DevicePtr>& devices, int nbrOfComputerPlayers, Status status);
-
-	// Is called every frame when a game is running.
-	void updateGame(Uint32 msDeltaTime);
-
-	void iterateAllPlayers(std::function<bool(PlayerPtr)> nextPlayer) const;
-	void iterateUserConnections(std::function<bool(const UserConnection&)> nextUserConnection) const;
-	void iterateUserConnections(std::function<bool(UserConnection&)> nextUserConnection);
-	
 	bool isAllUsersReady();
 
-	void serverReceive(net::Packet& packet);
+	void serverReceive(std::shared_ptr<RemoteConnection> client, net::Packet& packet);
 
 	void clientReceive(net::Packet& packet);
 
@@ -105,18 +99,10 @@ private:
 	// defined in PacketType.
 	void receiveData(net::Packet& data, int id);
 
-	// Server receives info from a client with id (id) about the number (nbrOfPlayers)
-	// of local players.
-	void serverReceiveClientInfo(UserConnectionPtr remote, net::Packet packet);
-
 	// Sent by client to notify the server about number of local players.
 	void clientSendClientInfo();
 
 	void receivInput(net::Packet& packet, int& playerId, Move& move, BlockType& next);
-
-	bool connectToServer(int clientId);
-
-	void disconnectToServer(int clientId);
 
 	// Server sends data of all the players in the game.
 	void sendServerInfo();
@@ -138,26 +124,16 @@ private:
 	bool pause_; // Is game paused?
 	int nbrOfPlayers_;
 
-	int serverPort_; // The port on the local server.
-	int connectToPort_; // The port on the remote server.
-	std::string connectToIp_; // The ip on the remote server.
-
-	std::vector<UserConnectionPtr> users_;  // All users.
-    UserConnectionPtr localUser_;
-    std::vector<DevicePtr> devices_;
+	std::vector<std::shared_ptr<RemoteConnection>> users_;  // All users.
+	LocalConnection localUser_;    
 
 	net::Network network_;
-	std::shared_ptr<net::Connection> clientConnection_;
-	std::list<std::shared_ptr<net::Connection>> serverConnections_;
 
 	int playerId_; // The id for the last added player.
 	Status status_;
 	int width_, height_, maxLevel_;
 	std::array<Ai, 4> ais_;
 
-	// Fix timestep.
-	Uint32 timeStep_;
-	Uint32 accumulator_;
 	
 	GameHandler* gameHandler_;
 	int nbrOfAlivePlayers_; // The total number of alive players.

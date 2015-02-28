@@ -9,6 +9,10 @@
 #include <vector>
 #include <queue>
 
+BlockType randomBlockType();
+
+std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPerLength);
+
 // Represents a tetris board.
 class TetrisBoard : public RawTetrisBoard {
 public:

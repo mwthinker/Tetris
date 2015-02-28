@@ -6,28 +6,38 @@
 #include "actionhandler.h"
 #include "device.h"
 
-#include <memory>
+#include "protocol.h"
 
-class LocalPlayer;
-typedef std::shared_ptr<LocalPlayer> LocalPlayerPtr;
+#include <net/connection.h>
+#include <net/packet.h>
+
+#include <memory>
+#include <queue>
 
 class LocalPlayer : public Player {
 public:
     LocalPlayer(int id, int width, int height, const DevicePtr& device);
 
     void update(double deltaTime) override;
-	void updateAi() override;
 
 	inline const DevicePtr& getDevice() const {
 		return device_;
 	}
+
+	bool pollPacket(net::Packet& packet);
+
 private:
 	double calculateDownSpeed(int level) const;
+
+	void update(Move move);
+
+	void boardListener(GameEvent, const TetrisBoard&);
 
     // Controls how the moving block is moved.
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
 	int nbrOfUpdates_;
     DevicePtr device_;
+	net::Packet packet_;
 };
 
 #endif // LOCALPLAYER_H
