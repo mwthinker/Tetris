@@ -12,16 +12,28 @@ class LocalConnection {
 public:
 	LocalConnection() : id_(1),
 		timeStep_(17),
-		accumulator_(0) {
-		ready_ = false;
+		accumulator_(0),
+		ready_(false),
+		lastPlayerId_(0) {
+
 	}
 
-	LocalConnection(int id) : id_(id) {
-		ready_ = false;
+	LocalConnection(int id) : id_(id),
+		timeStep_(17),
+		accumulator_(0),
+		ready_(false),
+		lastPlayerId_(0) {
+
 	}
 
-	LocalConnection(int id, const net::ConnectionPtr& connection) : connection_(connection), id_(id) {
-		ready_ = false;
+	LocalConnection(int id, const net::ConnectionPtr& connection) :
+		connection_(connection),
+		id_(id),
+		timeStep_(17),
+		accumulator_(0),
+		ready_(false),
+		lastPlayerId_(0) {
+
 	}
 
 	~LocalConnection() {
@@ -44,8 +56,8 @@ public:
 	}
 
 	// Add a player.
-	void add(std::shared_ptr<LocalPlayer> player) {
-		players_.push_back(player);
+	void addPlayer(int width, int height, const DevicePtr& device) {
+		players_.push_back(std::make_shared<LocalPlayer>(++lastPlayerId_, width, height, device));
 	}
 
 	// Remove all players.
@@ -53,7 +65,7 @@ public:
 		players_.clear();
 	}
 
-	// Return the number of players contain.
+	// Return the number of players.
 	int getNbrOfPlayers() const {
 		return players_.size();
 	}
@@ -70,7 +82,7 @@ public:
 		return connection_->isActive();
 	}
 
-	bool receive(net::Packet& packet) {
+	bool pollReceivePacket(net::Packet& packet) {
 		return connection_->receive(packet);
 	}
 
@@ -102,15 +114,23 @@ public:
 		return players_.size();
 	}
 
+	void restart() {
+		for (auto& player : players_) {
+			player->restart(randomBlockType(), randomBlockType());
+		}
+	}
+
 private:
 	std::vector<std::shared_ptr<LocalPlayer>> players_;
 	net::ConnectionPtr connection_;
 
 	const int id_; // Server/client id.
 	bool ready_; // Is ready to start.
+	int lastPlayerId_;
+	//int connectionId_;
 
 	// Fix timestep.
-	Uint32 timeStep_;
+	const Uint32 timeStep_;
 	Uint32 accumulator_;
 };
 

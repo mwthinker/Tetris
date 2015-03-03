@@ -24,6 +24,8 @@ public:
 		return device_;
 	}
 
+	void restart(BlockType current, BlockType next);
+
 	bool pollPacket(net::Packet& packet);
 
 private:

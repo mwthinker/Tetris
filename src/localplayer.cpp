@@ -22,8 +22,8 @@ LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device)
 
 void LocalPlayer::update(Move move) {
 	tetrisBoard_.update(move);
-	packet_ << move;
-	packet_ << tetrisBoard_.getNextBlockType();
+	//packet_ << move;
+	//packet_ << tetrisBoard_.getNextBlockType();
 }
 
 void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
@@ -70,6 +70,10 @@ void LocalPlayer::update(double deltaTime) {
 	if (rotateHandler_.doAction()) {
 		update(Move::ROTATE_LEFT);
 	}
+}
+
+void LocalPlayer::restart(BlockType current, BlockType next) {
+	tetrisBoard_.restart(current, next);
 }
 
 bool LocalPlayer::pollPacket(net::Packet& packet) {

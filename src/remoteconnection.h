@@ -33,17 +33,8 @@ public:
 		return id_;
 	}
 
-	void setReady(bool ready) {
-		ready_ = ready;
-	}
-
 	bool isReady() const {
 		return ready_;
-	}
-
-	// Add a player.
-	void add(std::shared_ptr<RemotePlayer> player) {
-		players_.push_back(player);
 	}
 
 	// Remove all players.
@@ -51,7 +42,7 @@ public:
 		players_.clear();
 	}
 
-	// Return the number of players contain.
+	// The number of players are returned.
 	int getNbrOfPlayers() const {
 		return players_.size();
 	}
@@ -64,11 +55,37 @@ public:
         return players_.end();
     }
 
+	void receive(net::Packet& packet) {
+		PacketType type;
+		packet >> type;
+		switch (type) {
+			case PacketType::CLIENTINFO: {
+				int nbrOfPlayers;
+				packet >> nbrOfPlayers;
+				for (int i = 0; i < nbrOfPlayers; ++i) {
+					std::string name;
+					packet >> name;
+					//addPlayer(width_, height_, name);
+				}
+				break;
+			}
+			case PacketType::READY:
+				ready_ = !ready_;
+				break;
+			case PacketType::MOVE:
+				// Fall through!
+			case PacketType::TETRIS:
+				// Fall through!
+			case PacketType::STARTBLOCK:
+				break;
+		}
+	}
+
 	bool isActive() const {
 		return connection_->isActive();
 	}
 
-	bool receive(net::Packet& packet) {
+	bool pollReceivePacket(net::Packet& packet) {
 		return connection_->receive(packet);
 	}
 

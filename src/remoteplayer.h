@@ -29,6 +29,10 @@ public:
 			}
 			case PacketType::TETRIS: {
 				std::vector<BlockType> blockTypes;
+				while (packet.dataLeftToRead() > 0) {
+					BlockType type;
+					packet >> type;
+				}
 				tetrisBoard_.addRows(blockTypes);
 				break;
 			}

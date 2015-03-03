@@ -1,7 +1,8 @@
 #include "player.h"
 
 Player::Player(int id, int width, int height) : 
-	tetrisBoard_(height, width, BlockType::I, BlockType::I), id_(id) {
+	tetrisBoard_(height, width, BlockType::I, BlockType::I), 
+	id_(id), level_(1), points_(0), nbrClearedRows_(0), levelUpCounter_(0) {
 
 }
 

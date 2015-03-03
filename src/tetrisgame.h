@@ -12,6 +12,7 @@
 #include "gamehandler.h"
 
 #include <mw/signal.h>
+
 #include <net/packet.h>
 #include <net/network.h>
 #include <net/connection.h>
@@ -84,7 +85,7 @@ public:
 	}
 
 private:
-	bool isAllUsersReady();
+	bool areRemoteConnectionsReady();
 
 	void serverReceive(std::shared_ptr<RemoteConnection> client, net::Packet& packet);
 
@@ -93,16 +94,6 @@ private:
 	void serverSendToAll(const net::Packet& packet);
 
 	void receiveNetworkData();
-
-	// Receives data (data) received from user with id (id).
-	// First element in (data) must be of a value
-	// defined in PacketType.
-	void receiveData(net::Packet& data, int id);
-
-	// Sent by client to notify the server about number of local players.
-	void clientSendClientInfo();
-
-	void receivInput(net::Packet& packet, int& playerId, Move& move, BlockType& next);
 
 	// Server sends data of all the players in the game.
 	void sendServerInfo();
@@ -124,12 +115,12 @@ private:
 	bool pause_; // Is game paused?
 	int nbrOfPlayers_;
 
-	std::vector<std::shared_ptr<RemoteConnection>> users_;  // All users.
-	LocalConnection localUser_;    
+	std::vector<std::shared_ptr<RemoteConnection>> remoteConnections_;  // All users.
+
+	LocalConnection localUser_;
 
 	net::Network network_;
-
-	int playerId_; // The id for the last added player.
+	
 	Status status_;
 	int width_, height_, maxLevel_;
 	std::array<Ai, 4> ais_;
