@@ -2,53 +2,29 @@
 #define LOCALCONNECTION_H
 
 #include "localplayer.h"
-
-#include <net/connection.h>
+#include "protocol.h"
 
 #include <vector>
 
 // Hold information about all local players.
 class LocalConnection {
 public:
-	LocalConnection() : id_(1),
+	static const int SERVER_ID = 0;
+
+	LocalConnection(PacketSender& packetSender) :
+		packetSender_(packetSender),
 		timeStep_(17),
 		accumulator_(0),
-		ready_(false),
-		lastPlayerId_(0) {
+		ready_(false) {
 
-	}
-
-	LocalConnection(int id) : id_(id),
-		timeStep_(17),
-		accumulator_(0),
-		ready_(false),
-		lastPlayerId_(0) {
-
-	}
-
-	LocalConnection(int id, const net::ConnectionPtr& connection) :
-		connection_(connection),
-		id_(id),
-		timeStep_(17),
-		accumulator_(0),
-		ready_(false),
-		lastPlayerId_(0) {
-
-	}
-
-	~LocalConnection() {
-		if (connection_) {
-			connection_->stop();
-		}
-	}
-
-	// Return the id.
-	int getId() const {
-		return id_;
 	}
 
 	void setReady(bool ready) {
 		ready_ = ready;
+		net::Packet packet;
+		packet << PacketType::READY;
+		packet << SERVER_ID;
+		packetSender_.sendToAll(packet);
 	}
 
 	bool isReady() const {
@@ -57,7 +33,7 @@ public:
 
 	// Add a player.
 	void addPlayer(int width, int height, const DevicePtr& device) {
-		players_.push_back(std::make_shared<LocalPlayer>(++lastPlayerId_, width, height, device));
+		players_.push_back(std::make_shared<LocalPlayer>(players_.size(), width, height, device, packetSender_));
 	}
 
 	// Remove all players.
@@ -76,23 +52,7 @@ public:
 
 	std::vector<std::shared_ptr<LocalPlayer>>::iterator end() {
         return players_.end();
-    }
-
-	bool isActive() const {
-		return connection_->isActive();
-	}
-
-	bool pollReceivePacket(net::Packet& packet) {
-		return connection_->receive(packet);
-	}
-
-	void send(const net::Packet& packet) {
-		connection_->send(packet);
-	}
-
-	void stop() {
-		connection_->stop();
-	}
+    }	
 
 	void updateGame(Uint32 msDeltaTime) {
 		// DeltaTime to big?
@@ -122,12 +82,9 @@ public:
 
 private:
 	std::vector<std::shared_ptr<LocalPlayer>> players_;
-	net::ConnectionPtr connection_;
-
-	const int id_; // Server/client id.
+	PacketSender& packetSender_;
+	
 	bool ready_; // Is ready to start.
-	int lastPlayerId_;
-	//int connectionId_;
 
 	// Fix timestep.
 	const Uint32 timeStep_;

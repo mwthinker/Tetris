@@ -4,6 +4,7 @@
 #include "player.h"
 #include "localplayer.h"
 #include "remoteplayer.h"
+#include "protocol.h"
 
 #include "localconnection.h"
 #include "remoteconnection.h"
@@ -85,6 +86,22 @@ public:
 	}
 
 private:
+	class Sender : public PacketSender {
+	public:
+		void sendToAll(const net::Packet& packet) const override {
+			if (clientConnection_) {
+				clientConnection_->send(packet);
+			} else {
+				for (auto& connection : remoteConnections_) {
+					connection->send(packet);
+				}
+			}
+		}
+
+		std::vector<std::shared_ptr<RemoteConnection>> remoteConnections_;
+		std::shared_ptr<RemoteConnection> clientConnection_;
+	};
+
 	bool areRemoteConnectionsReady();
 
 	void serverReceive(std::shared_ptr<RemoteConnection> client, net::Packet& packet);
@@ -115,9 +132,10 @@ private:
 	bool pause_; // Is game paused?
 	int nbrOfPlayers_;
 
-	std::vector<std::shared_ptr<RemoteConnection>> remoteConnections_;  // All users.
+	Sender sender_;  // All users.
 
 	LocalConnection localUser_;
+	int lastConnectionId_;
 
 	net::Network network_;
 	

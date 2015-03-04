@@ -16,7 +16,7 @@
 
 class LocalPlayer : public Player {
 public:
-    LocalPlayer(int id, int width, int height, const DevicePtr& device);
+	LocalPlayer(int id, int width, int height, const DevicePtr& device, PacketSender& sender);
 
     void update(double deltaTime) override;
 
@@ -25,8 +25,6 @@ public:
 	}
 
 	void restart(BlockType current, BlockType next);
-
-	bool pollPacket(net::Packet& packet);
 
 private:
 	double calculateDownSpeed(int level) const;
@@ -39,7 +37,7 @@ private:
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
 	int nbrOfUpdates_;
     DevicePtr device_;
-	net::Packet packet_;
+	PacketSender& sender_;
 };
 
 #endif // LOCALPLAYER_H

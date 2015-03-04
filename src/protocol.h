@@ -61,4 +61,19 @@ net::Packet& operator<<(net::Packet& packet, const std::string& text);
 
 net::Packet& operator>>(net::Packet& packet, std::string& text);
 
+class PacketSender {
+public:
+	virtual void sendToAll(const net::Packet& packet) const = 0;
+
+	bool active_;
+
+protected:
+	PacketSender() : active_(false) {
+	}
+
+	~PacketSender() {
+	}
+
+};
+
 #endif // PROTOCOL_H
