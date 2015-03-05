@@ -54,6 +54,8 @@ public:
 	void updateCurrentBlock(BlockType current);
 
 	void updateRestart(BlockType current, BlockType next);
+
+	void updateRestart(int rows, int columns, BlockType current, BlockType next);
     
 	// Return the number of rows.
 	inline int getRows() const {

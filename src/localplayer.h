@@ -16,7 +16,7 @@
 
 class LocalPlayer : public Player {
 public:
-	LocalPlayer(int id, int width, int height, const DevicePtr& device, PacketSender& sender);
+	LocalPlayer(int id, int width, int height, BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
 
     void update(double deltaTime) override;
 

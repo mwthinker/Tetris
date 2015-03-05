@@ -121,9 +121,16 @@ void RawTetrisBoard::updateCurrentBlock(BlockType current) {
 }
 
 void RawTetrisBoard::updateRestart(BlockType current, BlockType next) {
+	updateRestart(rows_, columns_, current, next);
+}
+
+void RawTetrisBoard::updateRestart(int rows, int columns, BlockType current, BlockType next) {
 	next_ = next;
 	current_ = createBlock(current);
+	rows_ = rows;
+	columns_ = columns;
 	clearBoard();
+	gameboard_.resize(rows * columns, BlockType::EMPTY);
 	triggerEvent(GameEvent::RESTARTED);
 }
 

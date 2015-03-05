@@ -557,11 +557,6 @@ void TetrisWindow::initServerLoobyPanel() {
 	serverLooby_ = add<NetworkLooby>(gui::BorderLayout::CENTER, getDefaultFont(18));
 	auto p = add<TransparentPanel>(gui::BorderLayout::SOUTH);
 
-	auto b2 = p->addDefault<Button>("Ready", getDefaultFont(30), tetrisEntry_);
-	b2->addActionListener([&](gui::Component&) {
-		tetrisGame_.changeReadyState();
-	});
-
 	auto b3 = p->addDefault<Button>("Start", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component&) {
 		tetrisGame_.startGame();
@@ -578,11 +573,6 @@ void TetrisWindow::initClientLoobyPanel() {
 	});
 
 	auto p = add<TransparentPanel>(gui::BorderLayout::SOUTH);
-
-	auto b2 = p->addDefault<Button>("Ready", getDefaultFont(30), tetrisEntry_);
-	b2->addActionListener([&](gui::Component&) {
-		tetrisGame_.changeReadyState();
-	});
 
      // The component is reused in callbacks.
 	clientLooby_ = add<NetworkLooby>(gui::BorderLayout::CENTER, getDefaultFont(18));

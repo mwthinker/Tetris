@@ -9,31 +9,18 @@
 // Hold information about all local players.
 class LocalConnection {
 public:
-	static const int SERVER_ID = 0;
-
 	LocalConnection(PacketSender& packetSender) :
 		packetSender_(packetSender),
 		timeStep_(17),
 		accumulator_(0),
-		ready_(false) {
+		id_(SERVER_CONNECTION_ID) {
 
 	}
-
-	void setReady(bool ready) {
-		ready_ = ready;
-		net::Packet packet;
-		packet << PacketType::READY;
-		packet << SERVER_ID;
-		packetSender_.sendToAll(packet);
-	}
-
-	bool isReady() const {
-		return ready_;
-	}
-
+	
 	// Add a player.
 	void addPlayer(int width, int height, const DevicePtr& device) {
-		players_.push_back(std::make_shared<LocalPlayer>(players_.size(), width, height, device, packetSender_));
+		players_.push_back(std::make_shared<LocalPlayer>(players_.size(), width, height,
+			randomBlockType(), randomBlockType(), device, packetSender_));
 	}
 
 	// Remove all players.
@@ -70,6 +57,20 @@ public:
 		}
 	}
 
+	net::Packet getClientInfo() const {
+		net::Packet packet;
+		packet << PacketType::CLIENTINFO;
+		packet << id_;
+		for (auto& player : players_) {
+			packet << player->getName();
+		}
+		return packet;
+	}
+
+	void setId(int id) {
+		id_ = id;
+	}
+
 	int getSize() const {
 		return players_.size();
 	}
@@ -84,7 +85,7 @@ private:
 	std::vector<std::shared_ptr<LocalPlayer>> players_;
 	PacketSender& packetSender_;
 	
-	bool ready_; // Is ready to start.
+	int id_;
 
 	// Fix timestep.
 	const Uint32 timeStep_;

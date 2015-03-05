@@ -9,7 +9,7 @@
 
 class RemotePlayer : public Player {
 public:
-    RemotePlayer(int id, int width, int height) : Player(id, width, height) {
+	RemotePlayer(int id, int width, int height, BlockType moving, BlockType next) : Player(id, width, height, moving, next) {
     }
 
     void update(double deltaTime) override {
@@ -19,12 +19,19 @@ public:
 		PacketType type;
 		packet >> type;
 		switch (type) {
+			case PacketType::SERVERINFO: {
+				int width, height;
+				packet >> width >> height;
+				tetrisBoard_.updateRestart(width, height,
+					tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
+				break;
+			}
 			case PacketType::MOVE: {
 				Move move;
-				BlockType next;
-				tetrisBoard_.update(move);
 				packet >> move;
+				BlockType next;
 				packet >> next;
+				tetrisBoard_.update(move);
 				break;
 			}
 			case PacketType::TETRIS: {
@@ -49,6 +56,18 @@ public:
 				break;
 			}
 		}
+	}
+
+	void setName(std::string name) {
+		name_ = name;
+	}
+
+	void setLevel(int level) {
+		level_ = level;
+	}
+
+	void setPoints(int points) {
+		points_ = points;
 	}
 };
 

@@ -56,9 +56,6 @@ public:
 	// the game.
 	void pause();
 
-	void changeReadyState();
-	bool isReady() const;
-
 	// Returns true if the game is started.
 	bool isStarted() const;
 
@@ -88,15 +85,15 @@ public:
 private:
 	class Sender : public PacketSender {
 	public:
-		void sendToAll(const net::Packet& packet) const override {
-			if (clientConnection_) {
-				clientConnection_->send(packet);
-			} else {
-				for (auto& connection : remoteConnections_) {
-					connection->send(packet);
-				}
-			}
-		}
+		void sendToAll(const net::Packet& packet) const override;
+
+		void sendToAllExcept(std::shared_ptr<RemoteConnection> remoteSendNot, const net::Packet& packet) const;
+
+		std::shared_ptr<RemoteConnection> findRemoteConnection(int connectionId);
+
+		std::shared_ptr<RemoteConnection> addRemoteConnection(int connectionId);
+
+		void removeDisconnectedRemoteConnections();
 
 		std::vector<std::shared_ptr<RemoteConnection>> remoteConnections_;
 		std::shared_ptr<RemoteConnection> clientConnection_;
@@ -108,22 +105,15 @@ private:
 
 	void clientReceive(net::Packet& packet);
 
-	void serverSendToAll(const net::Packet& packet);
-
 	void receiveNetworkData();
 
 	// Server sends data of all the players in the game.
-	void sendServerInfo();
-
-	// Client received data from server. The server assignes id about all
-	// players in the game.
-	void clientReceiveServerInfo(net::Packet data);
-
-	// Receives the starting block from remote player.
-	void receiveStartBlock(net::Packet& data, int id);
+	void sendServerInfo(net::Connection connection);
 
 	// All client will start the game.
 	void clientStartGame();
+
+	void initGame();
 
 	void applyRules(Player& player, GameEvent gameEvent);
 
@@ -143,7 +133,6 @@ private:
 	int width_, height_, maxLevel_;
 	std::array<Ai, 4> ais_;
 
-	
 	GameHandler* gameHandler_;
 	int nbrOfAlivePlayers_; // The total number of alive players.
 

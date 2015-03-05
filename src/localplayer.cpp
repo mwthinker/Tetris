@@ -4,12 +4,12 @@
 #include <string>
 #include <functional>
 
-LocalPlayer::LocalPlayer(int id, int width, int height, const DevicePtr& device, PacketSender& sender) :
-Player(id, width, height),
-sender_(sender),
-leftHandler_(ActionHandler(0.09, false)),
-rightHandler_(ActionHandler(0.09, false)),
-rotateHandler_(ActionHandler(0.0, true)),
+LocalPlayer::LocalPlayer(int id, int width, int height, BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender) :
+	Player(id, width, height, moving, next),
+	sender_(sender),
+	leftHandler_(ActionHandler(0.09, false)),
+	rightHandler_(ActionHandler(0.09, false)),
+	rotateHandler_(ActionHandler(0.0, true)),
 
 gravityMove_(ActionHandler(1, false)), // Value doesn't matter! Changes every frame.
 downHandler_(ActionHandler(0.04, false)),
