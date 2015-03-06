@@ -121,7 +121,7 @@ private:
 
 	Sender sender_;  // All users.
 
-	LocalConnection localUser_;
+	LocalConnection localConnection_;
 	int lastConnectionId_;
 
 	net::Network network_;

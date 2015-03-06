@@ -12,30 +12,38 @@ class Player {
 public:
 	Player(int id, int width, int height, BlockType moving, BlockType next);
 	
-	virtual ~Player() {
+	inline virtual ~Player() {
 	}
 	
 	// Update the player.
 	virtual void update(double deltaTime) = 0;
-
-	// Return the player's id.
-	int getId() const;
 	
-	std::string getName() const;
+	inline int getId() const {
+		return id_;
+	}
 	
-	int getLevel() const;
+	std::string getName() const {
+		return name_;
+	}
+	
+	inline int getLevel() const {
+		return level_;
+	}
 
-	int getPoints() const;
-
-	// Get the tetrisboard.
-	const TetrisBoard& getTetrisBoard() const;
+	inline int getPoints() const {
+		return points_;
+	}
+	
+	const TetrisBoard& getTetrisBoard() const {
+		return tetrisBoard_;
+	}
 
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
 protected:
 	TetrisBoard tetrisBoard_;
-	int id_;
 	std::string name_;
+	int id_;
 	int level_;
 	int points_, nbrClearedRows_, levelUpCounter_;
 };
