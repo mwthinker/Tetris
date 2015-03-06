@@ -19,14 +19,7 @@ public:
 		PacketType type;
 		packet >> type;
 		switch (type) {
-			case PacketType::SERVERINFO: {
-				int width, height;
-				packet >> width >> height;
-				tetrisBoard_.updateRestart(width, height,
-					tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
-				break;
-			}
-			case PacketType::MOVE: {
+			case PacketType::PLAYER_MOVE: {
 				Move move;
 				packet >> move;
 				BlockType next;
@@ -34,7 +27,7 @@ public:
 				tetrisBoard_.update(move);
 				break;
 			}
-			case PacketType::TETRIS: {
+			case PacketType::PLAYER_TETRIS: {
 				std::vector<BlockType> blockTypes;
 				while (packet.dataLeftToRead() > 0) {
 					BlockType type;
@@ -43,7 +36,7 @@ public:
 				tetrisBoard_.addRows(blockTypes);
 				break;
 			}
-			case PacketType::STARTBLOCK: {
+			case PacketType::PLAYER_START_BLOCK: {
 				BlockType current;
 				packet >> current;
 				BlockType next;
@@ -51,10 +44,15 @@ public:
 				tetrisBoard_.restart(current, next);
 				break;
 			}
-			case PacketType::PLAYERNAME: {
+			case PacketType::PLAYER_NAME:
 				packet >> name_;
 				break;
-			}
+			case PacketType::PLAYER_LEVEL:
+				packet >> level_;
+				break;
+			case PacketType::PLAYER_POINTS:
+				packet >> points_;
+				break;
 		}
 	}
 

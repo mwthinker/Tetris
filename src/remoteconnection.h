@@ -50,14 +50,14 @@ public:
 		PacketType type;
 		packet >> type;
 		switch (type) {
-			case PacketType::SERVERINFO:
+			case PacketType::CONNECTION_BOARD_SIZE:
 				packet >> width_ >> height_;
 				for (auto player : players_) {
 					packet.reset();
 					player->receive(packet);
 				}
 				break;
-			case PacketType::CLIENTINFO: {
+			case PacketType::CONNECTION_INFO: {
 				packet >> id_;
 				while (packet.dataLeftToRead() > 0) {
 					std::string name;
@@ -80,13 +80,17 @@ public:
 				}
 				break;
 			}
-			case PacketType::MOVE:
+			case PacketType::PLAYER_MOVE:
 				// Fall through!
-			case PacketType::TETRIS:
+			case PacketType::PLAYER_TETRIS:
 				// Fall through!
-			case PacketType::PLAYERNAME:
+			case PacketType::PLAYER_START_BLOCK:
 				// Fall through!
-			case PacketType::STARTBLOCK: {
+			case PacketType::PLAYER_NAME:
+				// Fall through!
+			case PacketType::PLAYER_LEVEL:
+				// Fall through!
+			case PacketType::PLAYER_POINTS: {
 				packet >> id_;
 				int playerId;
 				packet >> playerId;
@@ -117,7 +121,7 @@ public:
 
 	net::Packet getClientInfo() const {
 		net::Packet packet;
-		packet << PacketType::CLIENTINFO;
+		packet << PacketType::CONNECTION_INFO;
 		packet << id_;
 		for (auto& player : players_) {
 			packet << player->getName();

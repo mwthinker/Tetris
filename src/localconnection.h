@@ -59,7 +59,7 @@ public:
 
 	net::Packet getClientInfo() const {
 		net::Packet packet;
-		packet << PacketType::CLIENTINFO;
+		packet << PacketType::CONNECTION_INFO;
 		packet << id_;
 		for (auto& player : players_) {
 			packet << player->getName();

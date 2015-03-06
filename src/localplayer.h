@@ -26,6 +26,30 @@ public:
 
 	void restart(BlockType current, BlockType next);
 
+	inline int getLevelUpCounter() const {
+		return levelUpCounter_;
+	}
+
+	inline int getClearedRows() const {
+		return clearedRows_;
+	}
+
+	inline void setLevelUpCounter(int levelUpCounter) {
+		levelUpCounter_ = levelUpCounter;
+	}
+
+	inline void setClearedRows(int clearedRows) {
+		clearedRows_ = clearedRows;
+	}
+
+	inline void setLevel(int level) {
+		level_ = level;
+	}
+
+	inline void setPoints(int points) {
+		points_ = points;
+	}
+
 private:
 	double calculateDownSpeed(int level) const;
 
@@ -38,6 +62,8 @@ private:
 	int nbrOfUpdates_;
     DevicePtr device_;
 	PacketSender& sender_;
+	int levelUpCounter_;
+	int clearedRows_;
 };
 
 #endif // LOCALPLAYER_H

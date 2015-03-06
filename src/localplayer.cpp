@@ -80,6 +80,10 @@ void LocalPlayer::update(double deltaTime) {
 
 void LocalPlayer::restart(BlockType current, BlockType next) {
 	tetrisBoard_.restart(current, next);
+	levelUpCounter_ = 0;
+	clearedRows_ = 0;
+	level_ = 1;
+	points_ = 0;
 }
 
 double LocalPlayer::calculateDownSpeed(int level) const {

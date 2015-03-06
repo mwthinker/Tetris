@@ -110,9 +110,6 @@ private:
 	// Server sends data of all the players in the game.
 	void sendServerInfo(net::Connection connection);
 
-	// All client will start the game.
-	void clientStartGame();
-
 	void initGame();
 
 	void applyRules(Player& player, GameEvent gameEvent);
