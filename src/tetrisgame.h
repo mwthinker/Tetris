@@ -40,27 +40,23 @@ public:
 	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
 		int width, int height, int maxLevel);
 	
-	void createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
-		int port, int width, int height, int maxLevel);
+	void createServerGame(int port, int width, int height, int maxLevel);
 	
-	void createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
-		int port, std::string ip, int maxLevel);
+	void createClientGame(int port, std::string ip, int maxLevel);
 
 	void startGame();
 	void closeGame();
-
-	// Returns true when the game is paused.
+	
 	bool isPaused() const;
 
 	// Pause/Unpause the game depending on the current state of
 	// the game.
 	void pause();
 
-	// Returns true if the game is started.
+	// Return true if the game is started.
 	bool isStarted() const;
 
-	// Restarts the active game. If the game is not started, nothing happens.
-	// Only the server can restart the game.
+	// Restart the active game. If the game was not started, nothing happens.
 	void restartGame();
 
 	void addCallback(const mw::Signal<TetrisGameEvent&>::Callback& callback);
@@ -99,15 +95,12 @@ private:
 		std::shared_ptr<RemoteConnection> clientConnection_;
 	};
 
-	bool areRemoteConnectionsReady();
-
 	void serverReceive(std::shared_ptr<RemoteConnection> client, net::Packet& packet);
 
 	void clientReceive(net::Packet& packet);
 
 	void receiveNetworkData();
-
-	// Server sends data of all the players in the game.
+		
 	void sendServerInfo(net::Connection connection);
 
 	void initGame();
@@ -115,11 +108,11 @@ private:
 	void applyRules(Player& player, GameEvent gameEvent);
 
 	mw::Signal<TetrisGameEvent&> eventHandler_;
-	bool start_; // The game is started?
-	bool pause_; // Is game paused?
+	bool start_;        // The game is started?
+	bool pause_;        // The game is paused?
 	int nbrOfPlayers_;
 
-	Sender sender_;  // All users.
+	Sender sender_;
 
 	LocalConnection localConnection_;
 	int lastConnectionId_;

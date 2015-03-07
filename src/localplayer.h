@@ -11,9 +11,6 @@
 #include <net/connection.h>
 #include <net/packet.h>
 
-#include <memory>
-#include <queue>
-
 class LocalPlayer : public Player {
 public:
 	LocalPlayer(int id, int width, int height, BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);

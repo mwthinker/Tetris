@@ -11,13 +11,12 @@
 #include "tetrisparameters.h"
 #include "protocol.h"
 
-#include <mw/exception.h>
 #include <net/packet.h>
 
 #include <vector>
 #include <algorithm>
 
-TetrisGame::TetrisGame() : 
+TetrisGame::TetrisGame() :
 	pause_(false), start_(false),
 	status_(WAITING_TO_CONNECT), nbrOfPlayers_(0),
 	countDown_(3000), localConnection_(sender_) {
@@ -37,7 +36,7 @@ void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrO
 		height_ = height;
 		maxLevel_ = maxLevel;
 		status_ = LOCAL;
-		
+
 		// Add human players.
 		for (const DevicePtr& device : devices) {
 			localConnection_.addPlayer(width_, height_, device);
@@ -47,13 +46,12 @@ void TetrisGame::createLocalGame(const std::vector<DevicePtr>& devices, int nbrO
 			localConnection_.addPlayer(width_, height_, std::make_shared<Computer>(ais_[i]));
 		}
 		nbrOfPlayers_ = localConnection_.getSize();
-	}	
+	}
 }
 
-void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
-	int port, int width, int height, int maxLevel) {
+void TetrisGame::createServerGame(int port, int width, int height, int maxLevel) {
 	if (status_ == WAITING_TO_CONNECT) {
-		lastConnectionId_ = 1;
+		lastConnectionId_ = SERVER_CONNECTION_ID;
 		localConnection_.setId(lastConnectionId_);
 		localConnection_.clear();
 
@@ -62,38 +60,19 @@ void TetrisGame::createServerGame(const std::vector<DevicePtr>& devices, int nbr
 		maxLevel_ = maxLevel;
 		status_ = SERVER;
 		
-		// Add human players.
-		for (const DevicePtr& device : devices) {
-			localConnection_.addPlayer(width_, height_, device);
-		}
-		// Add computer players.
-		for (int i = 0; i < nbrOfComputers; ++i) {
-			localConnection_.addPlayer(width_, height_, std::make_shared<Computer>(ais_[i]));
-		}
 		network_.startServer(port);
 		network_.setAcceptConnections(true);
 	}
 }
 
-void TetrisGame::createClientGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
-	int port, std::string ip, int maxLevel) {
-	
+void TetrisGame::createClientGame(int port, std::string ip, int maxLevel) {
 	if (status_ == WAITING_TO_CONNECT) {
 		localConnection_.clear();
-		
+
 		maxLevel_ = maxLevel;
 		status_ = SERVER;
-		
-		// Add human players.
-		for (const DevicePtr& device : devices) {
-			localConnection_.addPlayer(width_, height_, device);
-		}
-		// Add computer players.
-		for (int i = 0; i < nbrOfComputers; ++i) {
-			localConnection_.addPlayer(width_, height_, std::make_shared<Computer>(ais_[i]));
-		}
+
 		network_.startClient(ip, port);
-		//clientSendClientInfo();
 	}
 }
 
@@ -347,7 +326,7 @@ void TetrisGame::sendServerInfo(net::Connection connection) {
 	for (auto& player : localConnection_) {
 		packet << player->getId();
 	}
-	
+
 	for (auto& remote : sender_.remoteConnections_) {
 		connection.send(remote->getClientInfo());
 	}
@@ -356,7 +335,6 @@ void TetrisGame::sendServerInfo(net::Connection connection) {
 }
 
 void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
-	//PlayerInfo& pInfo = player.getPlayerInfo();
 	int rows = 0;
 	switch (gameEvent) {
 		case GameEvent::ONE_ROW_REMOVED:
@@ -396,10 +374,10 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 				if (nbrOfAlivePlayers_ == 1) {
 					/*
 					iterateAllPlayers([&](PlayerPtr player) {
-						// Will be noticed in the next call to applyRules(...).
-						// Nothing happens if player allready dead.
-						player->update(Move::GAME_OVER);
-						return true;
+					// Will be noticed in the next call to applyRules(...).
+					// Nothing happens if player allready dead.
+					player->update(Move::GAME_OVER);
+					return true;
 					});
 					*/
 				}
@@ -410,7 +388,7 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 					&& maxLevel_ == TETRIS_MAX_LEVEL) {
 
 					// Is local and a human player?
-					
+
 					//if (status_ == LOCAL && player->) {
 					//	eventHandler_(GameOver(pInfo.points_));
 					//}
@@ -419,7 +397,7 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 			}
 			break;
 	}
-	
+
 
 	try {
 		auto localPlayer = dynamic_cast<LocalPlayer&>(player);
@@ -448,7 +426,7 @@ void TetrisGame::applyRules(Player& player, GameEvent gameEvent) {
 				localPlayer.setLevel(level);
 			}
 		}
-	} catch (std::exception&) {
+	} catch (std::bad_cast&) {
 		// Reference cast failed, is therefore a remote player. Do nothing!
 	}
 }

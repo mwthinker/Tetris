@@ -50,8 +50,6 @@ set(SOURCES
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
-	src/networklooby.cpp
-	src/networklooby.h
 	src/player.cpp
 	src/player.h
 	src/protocol.cpp

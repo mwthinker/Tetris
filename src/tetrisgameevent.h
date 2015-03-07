@@ -47,15 +47,6 @@ private:
 	std::vector<Data> dataV_;
 };
 
-class GameReady : public TetrisGameEvent {
-public:
-	GameReady(int id, bool ready) : id_(id), ready_(ready) {
-	}
-
-    int id_;
-	bool ready_;
-};
-
 class GameStart : public TetrisGameEvent {
 public:
 	enum Status {

@@ -8,7 +8,6 @@
 #include "highscore.h"
 #include "gamecomponent.h"
 #include "joystick.h"
-#include "networklooby.h"
 #include "tetrisentry.h"
 #include "guiclasses.h"
 #include "tetrisgameevent.h"
@@ -25,20 +24,6 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
-
-namespace {
-
-    void showHideHumanFields(std::shared_ptr<ManButton> humans, std::array<std::shared_ptr<gui::Panel>, 4>& humanPanels) {
-		for (unsigned int i = 0; i < humanPanels.size(); ++i) {
-			if (i < humans->getNbr()) {
-				humanPanels[i]->setVisible(true);
-			} else {
-				humanPanels[i]->setVisible(false);
-			}
-		}
-	}
-
-} // Namespace anonymous.
 
 TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	gui::Frame(e.getDeepChildEntry("window positionX").getInt(),
@@ -105,8 +90,6 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	networkIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	createClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	createServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	loobyClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	loobyServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	waitToConnectIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	networkPlayIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	aiIndex_ = pushBackPanel(std::make_shared<Background>(background));
@@ -119,8 +102,6 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	initSettingsPanel();
 	initCreateServerPanel();
 	initCreateClientPanel();
-	initServerLoobyPanel();
-	initClientLoobyPanel();
 	initWaitToConnectPanel();
 
 	if (frame >= 0 && frame < aiIndex_) {
@@ -421,18 +402,6 @@ void TetrisWindow::initCreateServerPanel() {
 	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
-	p1->addDefault<Label>("Width", getDefaultFont(18), tetrisEntry_);
-	serverWidthField_ = p1->addDefault<TextField>("10", getDefaultFont(18));
-	p1->addDefault<Label>("Height", getDefaultFont(18), tetrisEntry_);
-	serverHeightField_ = p1->addDefault<TextField>("24", getDefaultFont(18));
-
-	auto p2 = centerPanel->addDefault<TransparentPanel>(100.f, 150.f);
-	p2->addDefault<Label>("Min Level", getDefaultFont(18), tetrisEntry_);
-	serverMinLevel_ = p2->addDefault<TextField>("1", getDefaultFont(18));
-	p2->addDefault<Label>("Max Level", getDefaultFont(18), tetrisEntry_);
-	serverMaxLevel_ = p2->addDefault<TextField>("20", getDefaultFont(18));
-
 	auto p3 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p3->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portServer_ = p3->addDefault<TextField>("11155", getDefaultFont(18));
@@ -440,45 +409,12 @@ void TetrisWindow::initCreateServerPanel() {
 	auto p4 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p4->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
 
-	nbrHumansServer_ = p4->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
-	nbrAisServer_ = p4->addDefault<ManButton>(activeAis_.size(), tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
-
-	createPlayersFields(getDefaultFont(18), namesServer_, playersServer_);
-	showHideHumanFields(nbrHumansServer_, playersServer_);
-
-	for (std::shared_ptr<gui::Panel>& panel : playersServer_) {
-		centerPanel->addDefault(panel);
-	}
-
-	nbrAisServer_->addActionListener([&](gui::Component& c) {
-		nbrOfComputerPlayers_ = nbrAisServer_->getNbr();
-	});
-
-	nbrHumansServer_->addActionListener([&](gui::Component& c) {
-		for (unsigned int i = 0; i < playersServer_.size(); ++i) {
-			if (i < nbrHumansServer_->getNbr()) {
-				playersServer_[i]->setVisible(true);
-			} else {
-				playersServer_[i]->setVisible(false);
-			}
-		}
-		nbrOfHumanPlayers_ = nbrHumansServer_->getNbr();
-	});
-
 	auto b3 = centerPanel->addDefault<Button>("Connect", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component& c) {
-		int port, width, height;
-		std::stringstream stream1;
-		stream1 << portServer_->getText();
-		stream1 >> port;
-		std::stringstream stream2;
-		stream2 << serverWidthField_->getText();
-		stream2 >> width;
-		std::stringstream stream3;
-		stream3 << serverHeightField_->getText();
-		stream3 >> height;
-
-		createServerGame(port, width, height);
+		std::stringstream stream(portServer_->getText());
+		int port;
+		stream >> port;
+		createServerGame(port, 10, 24);
 	});
 }
 
@@ -508,31 +444,6 @@ void TetrisWindow::initCreateClientPanel() {
 	auto p2 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p2->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
 
-	nbrHumansClient_ = p2->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
-
-    nbrAisClient_ = p2->addDefault<ManButton>(activeAis_.size(), tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
-    nbrAisClient_->addActionListener([&](gui::Component& c) {
-		nbrOfComputerPlayers_ = nbrAisServer_->getNbr();
-	});
-
-	createPlayersFields(getDefaultFont(18), namesClient_, playersClient_);
-
-	showHideHumanFields(nbrHumansClient_, playersClient_);
-	for (auto& panel : playersClient_) {
-		centerPanel->addDefault(panel);
-	}
-
-	nbrHumansClient_->addActionListener([&](gui::Component& c) {
-		for (unsigned int i = 0; i < playersClient_.size(); ++i) {
-			if (i < nbrHumansClient_->getNbr()) {
-				playersClient_[i]->setVisible(true);
-			} else {
-				playersClient_[i]->setVisible(false);
-			}
-		}
-		nbrOfHumanPlayers_ = nbrHumansServer_->getNbr();
-	});
-
 	auto b3 = centerPanel->addDefault<Button>("Connect", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component& c) {
 		int port;
@@ -542,40 +453,6 @@ void TetrisWindow::initCreateClientPanel() {
 
 		createClientGame(port, ipClient_->getText());
 	});
-}
-
-void TetrisWindow::initServerLoobyPanel() {
-	setCurrentPanel(loobyServerIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH, tetrisEntry_);
-
-	auto b1 = bar->addDefault<Button>("Abort", getDefaultFont(30), tetrisEntry_);
-	b1->addActionListener([&](gui::Component&) {
-		setCurrentPanel(menuIndex_);
-		tetrisGame_.closeGame();
-	});
-
-	serverLooby_ = add<NetworkLooby>(gui::BorderLayout::CENTER, getDefaultFont(18));
-	auto p = add<TransparentPanel>(gui::BorderLayout::SOUTH);
-
-	auto b3 = p->addDefault<Button>("Start", getDefaultFont(30), tetrisEntry_);
-	b3->addActionListener([&](gui::Component&) {
-		tetrisGame_.startGame();
-	});
-}
-
-void TetrisWindow::initClientLoobyPanel() {
-	setCurrentPanel(loobyClientIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH, tetrisEntry_);
-	auto b1 = std::make_shared<Button>("Abort", getDefaultFont(30), tetrisEntry_);
-	b1->addActionListener([&](gui::Component&) {
-		setCurrentPanel(menuIndex_);
-		tetrisGame_.closeGame();
-	});
-
-	auto p = add<TransparentPanel>(gui::BorderLayout::SOUTH);
-
-     // The component is reused in callbacks.
-	clientLooby_ = add<NetworkLooby>(gui::BorderLayout::CENTER, getDefaultFont(18));
 }
 
 void TetrisWindow::initWaitToConnectPanel() {
@@ -608,29 +485,15 @@ void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
 }
 
 void TetrisWindow::createServerGame(int port, int width, int height) {
-	const int size = devices_.size();
-	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
-		tmpDevices.push_back(devices_[i]);
-		devices_[i]->setPlayerName(namesServer_[i]->getText());
-	}
-
 	tetrisGame_.closeGame();
 	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createServerGame(tmpDevices, nbrOfComputerPlayers_, port, width, height, TETRIS_MAX_LEVEL);
+	tetrisGame_.createServerGame(port, width, height, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::createClientGame(int port, std::string ip) {
-	const int size = devices_.size();
-	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
-		tmpDevices.push_back(devices_[i]);
-		devices_[i]->setPlayerName(namesClient_[i]->getText());
-	}
-
 	tetrisGame_.closeGame();
 	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createClientGame(tmpDevices, nbrOfComputerPlayers_, port, ip, TETRIS_MAX_LEVEL);
+	tetrisGame_.createClientGame(port, ip, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
@@ -661,18 +524,17 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		auto& newConnection = dynamic_cast<NewConnection&>(tetrisEvent);
 		switch (newConnection.status_) {
 			case NewConnection::CLIENT:
-				clientLooby_->clear();
+				//clientLooby_->clear();
 				for (auto& data : newConnection) {
-					clientLooby_->addConnection(data.id_, data.nbr_, data.ready_);
+					//clientLooby_->addConnection(data.id_, data.nbr_, data.ready_);
 				}
-				setCurrentPanel(loobyClientIndex_);
+				setCurrentPanel(networkPlayIndex_);
 				break;
 			case NewConnection::SERVER:
-				serverLooby_->clear();
 				for (auto& data : newConnection) {
-					serverLooby_->addConnection(data.id_, data.nbr_, data.ready_);
+					//serverLooby_->addConnection(data.id_, data.nbr_, data.ready_);
 				}
-				setCurrentPanel(loobyServerIndex_);
+				setCurrentPanel(networkPlayIndex_);
 				break;
 			case NewConnection::LOCAL:
 				// Is no local looby.
@@ -701,13 +563,6 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 				break;
 		}
 		setCurrentPanel(playIndex_);
-		return;
-	} catch (std::bad_cast exp) {}
-	
-	try {
-		auto& ready = dynamic_cast<GameReady&>(tetrisEvent);
-		serverLooby_->setReady(ready.id_, ready.ready_);
-		clientLooby_->setReady(ready.id_, ready.ready_);
 		return;
 	} catch (std::bad_cast exp) {}
 }
