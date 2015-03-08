@@ -4,16 +4,16 @@
 #include <string>
 #include <functional>
 
-LocalPlayer::LocalPlayer(int id, int width, int height, BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender) :
+LocalPlayer::LocalPlayer(int id, int width, int height,
+	BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender) :
 	Player(id, width, height, moving, next),
 	sender_(sender),
-	leftHandler_(ActionHandler(0.09, false)),
-	rightHandler_(ActionHandler(0.09, false)),
-	rotateHandler_(ActionHandler(0.0, true)),
-
-gravityMove_(ActionHandler(1, false)), // Value doesn't matter! Changes every frame.
-downHandler_(ActionHandler(0.04, false)),
-device_(device) {
+	leftHandler_(0.09, false),
+	rightHandler_(0.09, false),
+	rotateHandler_(0.0, true),
+	gravityMove_(1, false), // Value doesn't matter! Changes every frame.
+	downHandler_(0.04, false),
+	device_(device) {
 
 	device_->update(getTetrisBoard());
 	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
@@ -80,6 +80,14 @@ void LocalPlayer::update(double deltaTime) {
 
 void LocalPlayer::restart(BlockType current, BlockType next) {
 	tetrisBoard_.restart(current, next);
+	levelUpCounter_ = 0;
+	clearedRows_ = 0;
+	level_ = 1;
+	points_ = 0;
+}
+
+void LocalPlayer::resizeBoard(int width, int height) {
+	tetrisBoard_.updateRestart(height, width, tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
 	levelUpCounter_ = 0;
 	clearedRows_ = 0;
 	level_ = 1;

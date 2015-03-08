@@ -9,11 +9,12 @@
 
 class RemotePlayer : public Player {
 public:
-	RemotePlayer(int id, int width, int height, BlockType moving, BlockType next) : Player(id, width, height, moving, next) {
-    }
+	RemotePlayer(int id, int width, int height, BlockType moving, BlockType next)
+		: Player(id, width, height, moving, next) {
+	}
 
-    void update(double deltaTime) override {
-    }
+	void update(double deltaTime) override {
+	}
 
 	void receive(net::Packet& packet) {
 		PacketType type;
@@ -41,6 +42,7 @@ public:
 				packet >> current;
 				BlockType next;
 				packet >> next;
+				clearedRows_ = 0;
 				tetrisBoard_.restart(current, next);
 				break;
 			}

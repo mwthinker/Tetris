@@ -1,16 +1,11 @@
 #ifndef TETRISGAME_H
 #define TETRISGAME_H
 
-#include "player.h"
-#include "localplayer.h"
-#include "remoteplayer.h"
 #include "protocol.h"
-
+#include "gamehandler.h"
 #include "localconnection.h"
 #include "remoteconnection.h"
 #include "device.h"
-#include "ai.h"
-#include "gamehandler.h"
 
 #include <mw/signal.h>
 
@@ -21,6 +16,7 @@
 #include <vector>
 
 class TetrisGameEvent;
+class Player;
 
 class TetrisGame {
 public:
@@ -37,14 +33,12 @@ public:
 	void update(Uint32 msDeltaTime);
 	
 	// Uses the same settings as last call.
-	void createLocalGame(const std::vector<DevicePtr>& devices, int nbrOfComputers,
-		int width, int height, int maxLevel);
+	void createLocalGame(int width, int height, int maxLevel);
 	
 	void createServerGame(int port, int width, int height, int maxLevel);
 	
 	void createClientGame(int port, std::string ip, int maxLevel);
-
-	void startGame();
+	
 	void closeGame();
 	
 	bool isPaused() const;
@@ -52,9 +46,6 @@ public:
 	// Pause/Unpause the game depending on the current state of
 	// the game.
 	void pause();
-
-	// Return true if the game is started.
-	bool isStarted() const;
 
 	// Restart the active game. If the game was not started, nothing happens.
 	void restartGame();
@@ -67,12 +58,9 @@ public:
 		return maxLevel_;
 	}
 
-	inline void setAis(const Ai& ai1, const Ai& ai2, const Ai& ai3, const Ai& ai4) {
-		ais_[0] = ai1;
-		ais_[1] = ai2;
-		ais_[2] = ai3;
-		ais_[3] = ai4;
-	}
+	void setBoardSize(int width, int height);
+
+	void setPlayers(const std::vector<DevicePtr>& devices);
 
 	inline Status getStatus() const {
 		return status_;
@@ -100,16 +88,13 @@ private:
 	void clientReceive(net::Packet& packet);
 
 	void receiveNetworkData();
-		
-	void sendServerInfo(net::Connection connection);
 
 	void initGame();
 
 	void applyRules(Player& player, GameEvent gameEvent);
 
 	mw::Signal<TetrisGameEvent&> eventHandler_;
-	bool start_;        // The game is started?
-	bool pause_;        // The game is paused?
+	bool pause_;
 	int nbrOfPlayers_;
 
 	Sender sender_;
@@ -121,10 +106,9 @@ private:
 	
 	Status status_;
 	int width_, height_, maxLevel_;
-	std::array<Ai, 4> ais_;
 
 	GameHandler* gameHandler_;
-	int nbrOfAlivePlayers_; // The total number of alive players.
+	int nbrOfAlivePlayers_;
 
 	int countDown_;
 };

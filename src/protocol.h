@@ -11,19 +11,18 @@
 // Defines the packet content.
 // Value of the first byte.
 enum class PacketType {
-	START,                 // The server ends the looby and starts the game.
 	PAUSE,                 // Pause/Unpause the game.
 	CONNECTION_RESTART,    // The game is restarted.
 	CONNECTION_BOARD_SIZE, // The board size, restarts the game.
 	CONNECTION_INFO,       // The info about players and tetrisboard conditions (e.g. length and width) for one connection.
 	CONNECTION_ID,         // The id for the connection receiving this packet.
 	CONNECTION_DISCONNECT, // The connection with the id was disconnected.
-	PLAYER_MOVE,           // A move to update the tetrisboard.
-	PLAYER_TETRIS,           // A move to update the tetrisboard.
+	PLAYER_MOVE,           // A move to update the tetrisboard for a player.
+	PLAYER_TETRIS,         // Add rows to a player.
 	PLAYER_START_BLOCK,    // The start block for a player, i.e. current block and the next block.
 	PLAYER_NAME,           // The name for a player.
 	PLAYER_LEVEL,          // The level for a player.
-	PLAYER_POINTS       // The point for a player.
+	PLAYER_POINTS          // The point for a player.
 };
 
 static const int SERVER_CONNECTION_ID = 0;

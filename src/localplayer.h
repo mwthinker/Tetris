@@ -13,7 +13,8 @@
 
 class LocalPlayer : public Player {
 public:
-	LocalPlayer(int id, int width, int height, BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
+	LocalPlayer(int id, int width, int height, 
+		BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
 
     void update(double deltaTime) override;
 
@@ -23,20 +24,14 @@ public:
 
 	void restart(BlockType current, BlockType next);
 
+	void resizeBoard(int width, int height);
+
 	inline int getLevelUpCounter() const {
 		return levelUpCounter_;
 	}
 
-	inline int getClearedRows() const {
-		return clearedRows_;
-	}
-
 	inline void setLevelUpCounter(int levelUpCounter) {
 		levelUpCounter_ = levelUpCounter;
-	}
-
-	inline void setClearedRows(int clearedRows) {
-		clearedRows_ = clearedRows;
 	}
 
 	inline void setLevel(int level) {
@@ -54,13 +49,12 @@ private:
 
 	void boardListener(GameEvent, const TetrisBoard&);
 
-    // Controls how the moving block is moved.
+    // Objects controling how the moving block is moved.
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
 	int nbrOfUpdates_;
     DevicePtr device_;
 	PacketSender& sender_;
 	int levelUpCounter_;
-	int clearedRows_;
 };
 
 #endif // LOCALPLAYER_H

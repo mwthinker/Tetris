@@ -34,10 +34,6 @@ private:
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
 
-	void createLocalGame(int width, int height, int maxLevel);
-	void createServerGame(int port, int width, int height);
-	void createClientGame(int port, std::string ip);
-
 	void handleConnectionEvent(TetrisGameEvent& tetrisEvent);
 
 	void loadHighscore();
@@ -100,7 +96,6 @@ private:
 	// Panel indexes.
 	int menuIndex_,
 		playIndex_,
-		networkIndex_,
 		highscoreIndex_,
 		customIndex_,
 		settingsIndex_,

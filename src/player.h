@@ -33,6 +33,14 @@ public:
 	inline int getPoints() const {
 		return points_;
 	}
+
+	inline int getClearedRows() const {
+		return clearedRows_;
+	}
+
+	inline void setClearedRows(int clearedRows) {
+		clearedRows_ = clearedRows;
+	}
 	
 	const TetrisBoard& getTetrisBoard() const {
 		return tetrisBoard_;
@@ -45,7 +53,7 @@ protected:
 	std::string name_;
 	int id_;
 	int level_;
-	int points_, nbrClearedRows_, levelUpCounter_;
+	int points_, clearedRows_;
 };
 
 #endif // PLAYER_H

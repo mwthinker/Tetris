@@ -49,6 +49,8 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_);
 	SDL_GetWindowSize(getSdlWindow(), &lastWidth_, &lastHeight_);
 
+	setDefaultClosing(true);
+
 	game_ = std::make_shared<GameComponent>(tetrisGame_, tetrisEntry_);
 
 	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
@@ -62,20 +64,16 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	tetrisGame_.addCallback(std::bind(&TetrisWindow::handleConnectionEvent, this, std::placeholders::_1));
 
 	// Initializes default keyboard devices for two players.
-	DevicePtr device1(new Keyboard("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
-	devices_.push_back(device1);
-	DevicePtr device2(new Keyboard("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w));
-	devices_.push_back(device2);
-
-	setDefaultClosing(true);
+	devices_.push_back(std::make_shared<Keyboard>("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
+	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w));
 
 	// Initialization of all joysticks!
 	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();
-	for (const mw::JoystickPtr& joystick : joystics) {
+	for (auto& joystick : joystics) {
 		std::cout << joystick->getName() << std::endl;
-		DevicePtr device(new Joystick(joystick, 0, 1));
-		devices_.push_back(device);
+		devices_.push_back(std::make_shared<Joystick>(joystick, 0, 1));
 	}
+
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));
 
 	// Create all frames.
@@ -87,7 +85,6 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	customIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	settingsIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	newHighscoreIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	networkIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	createClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	createServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	waitToConnectIndex_ = pushBackPanel(std::make_shared<Background>(background));
@@ -107,7 +104,7 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	if (frame >= 0 && frame < aiIndex_) {
 		if (frame == playIndex_) {
 			// Initialization local game settings.
-			createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
+			tetrisGame_.createLocalGame(TETRIS_HEIGHT, TETRIS_WIDTH, TETRIS_MAX_LEVEL);
 		}
 		setCurrentPanel(frame);
 	}
@@ -171,7 +168,10 @@ void TetrisWindow::initMenuPanel() {
 
 	auto b1 = panel->addDefaultToGroup<Button>("Play", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
-		createLocalGame(TETRIS_WIDTH, TETRIS_HEIGHT, TETRIS_MAX_LEVEL);
+		tetrisGame_.closeGame();
+		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		tetrisGame_.createLocalGame(TETRIS_HEIGHT, TETRIS_WIDTH, TETRIS_MAX_LEVEL);
+		
 		setCurrentPanel(playIndex_);
 		resume_->setVisible(true);
 	});
@@ -220,9 +220,6 @@ void TetrisWindow::initPlayPanel() {
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.closeGame();
 			menu_->setLabel("Menu");
-			nbrAis_->setVisible(true);
-			nbrHumans_->setVisible(true);
-			restart_->setVisible(true);
 		}
 	});
 
@@ -238,19 +235,13 @@ void TetrisWindow::initPlayPanel() {
 
 	nbrHumans_ = p1->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
-		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 24, 20);
-		tetrisGame_.startGame();
-		tetrisGame_.restartGame();
+		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 	});
 
 	nbrAis_ = p2->addDefault<ManButton>(4, tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
-		tetrisGame_.closeGame();
-		tetrisGame_.createLocalGame(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()), nbrAis_->getNbr(), 10, 24, 20);
-		tetrisGame_.startGame();
-		tetrisGame_.restartGame();
+		//tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 	});
 
     // Add the game component, already created in the constructor.
@@ -406,15 +397,14 @@ void TetrisWindow::initCreateServerPanel() {
 	p3->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portServer_ = p3->addDefault<TextField>("11155", getDefaultFont(18));
 
-	auto p4 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
-	p4->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
-
 	auto b3 = centerPanel->addDefault<Button>("Connect", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component& c) {
 		std::stringstream stream(portServer_->getText());
 		int port;
 		stream >> port;
-		createServerGame(port, 10, 24);
+
+		tetrisGame_.closeGame();
+		tetrisGame_.createServerGame(port, 10, 24, 40);
 	});
 }
 
@@ -427,7 +417,7 @@ void TetrisWindow::initCreateClientPanel() {
 		setCurrentPanel(menuIndex_);
 	});
 
-	auto b2 = bar->addDefault<Button>("Client", getDefaultFont(30), tetrisEntry_);
+	auto b2 = bar->addDefault<Button>("Server", getDefaultFont(30), tetrisEntry_);
     b2->addActionListener([&](gui::Component&) {
 		setCurrentPanel(createServerIndex_);
 	});
@@ -441,9 +431,6 @@ void TetrisWindow::initCreateClientPanel() {
 	p1->addDefault<Label>("Port", getDefaultFont(18), tetrisEntry_);
 	portClient_ = p1->addDefault<TextField>("11155", getDefaultFont(18));
 
-	auto p2 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
-	p2->addDefault<Label>("Local players", getDefaultFont(18), tetrisEntry_);
-
 	auto b3 = centerPanel->addDefault<Button>("Connect", getDefaultFont(30), tetrisEntry_);
 	b3->addActionListener([&](gui::Component& c) {
 		int port;
@@ -451,7 +438,8 @@ void TetrisWindow::initCreateClientPanel() {
 		stream1 << portClient_->getText();
 		stream1 >> port;
 
-		createClientGame(port, ipClient_->getText());
+		tetrisGame_.closeGame();
+		tetrisGame_.createClientGame(port, ipClient_->getText(), 40);
 	});
 }
 
@@ -465,35 +453,6 @@ void TetrisWindow::initWaitToConnectPanel() {
 	});
 
 	add<Label>(gui::BorderLayout::CENTER, "Waiting for the server to accept connection!", getDefaultFont(18), tetrisEntry_);
-}
-
-void TetrisWindow::createLocalGame(int width, int height, int maxLevel) {
-	const int size = devices_.size();
-	std::vector<DevicePtr> tmpDevices;
-	for (int i = 0; i < nbrOfHumanPlayers_ && i < size; ++i) {
-		tmpDevices.push_back(devices_[i]);
-	}
-
-	for (DevicePtr& device : devices_) {
-		device->setPlayerName(device->getName());
-	}
-
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createLocalGame(tmpDevices, nbrOfComputerPlayers_, width, height, maxLevel);
-	tetrisGame_.startGame();
-}
-
-void TetrisWindow::createServerGame(int port, int width, int height) {
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createServerGame(port, width, height, TETRIS_MAX_LEVEL);
-}
-
-void TetrisWindow::createClientGame(int port, std::string ip) {
-	tetrisGame_.closeGame();
-	tetrisGame_.setAis(activeAis_[0], activeAis_[1], activeAis_[2], activeAis_[3]);
-	tetrisGame_.createClientGame(port, ip, TETRIS_MAX_LEVEL);
 }
 
 void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {

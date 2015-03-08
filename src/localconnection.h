@@ -16,11 +16,24 @@ public:
 		id_(SERVER_CONNECTION_ID) {
 
 	}
-	
-	// Add a player.
+
 	void addPlayer(int width, int height, const DevicePtr& device) {
 		players_.push_back(std::make_shared<LocalPlayer>(players_.size(), width, height,
 			randomBlockType(), randomBlockType(), device, packetSender_));
+	}
+
+	void restart() {
+		for (auto& player : players_) {
+			player->restart(player->getTetrisBoard().getBlockType(),
+				player->getTetrisBoard().getNextBlockType());
+		}
+	}
+
+	void setBoardSize(int width, int height) {
+		for (auto& player : players_) {
+			player->restart(player->getTetrisBoard().getBlockType(),
+				player->getTetrisBoard().getNextBlockType());
+		}
 	}
 
 	// Remove all players.
@@ -63,6 +76,11 @@ public:
 		packet << id_;
 		for (auto& player : players_) {
 			packet << player->getName();
+			packet << player->getLevel();
+			
+			auto& board = player->getTetrisBoard();
+			packet << board.getBlockType();
+			packet << board.getNextBlockType();
 		}
 		return packet;
 	}
@@ -75,9 +93,9 @@ public:
 		return players_.size();
 	}
 
-	void restart() {
+	void resizeBoard(int width, int height) {
 		for (auto& player : players_) {
-			player->restart(randomBlockType(), randomBlockType());
+			player->resizeBoard(width, height);
 		}
 	}
 

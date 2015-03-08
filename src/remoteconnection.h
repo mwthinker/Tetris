@@ -8,7 +8,7 @@
 
 #include <vector>
 
-// Hold information about all remote players.
+// Hold information about players from a remote connection.
 class RemoteConnection {
 public:
 	RemoteConnection(int id) : id_(id) {
@@ -76,6 +76,7 @@ public:
 					player->setName(name);
 					player->setLevel(level);
 					player->setPoints(points);
+					player->setPoints(points);
 					players_.push_back(player);
 				}
 				break;
@@ -125,6 +126,11 @@ public:
 		packet << id_;
 		for (auto& player : players_) {
 			packet << player->getName();
+			packet << player->getLevel();
+
+			auto& board = player->getTetrisBoard();
+			packet << board.getBlockType();
+			packet << board.getNextBlockType();
 		}
 		return packet;
 	}
