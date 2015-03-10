@@ -17,9 +17,11 @@ public:
 
 	}
 
-	void addPlayer(int width, int height, const DevicePtr& device) {
-		players_.push_back(std::make_shared<LocalPlayer>(players_.size(), width, height,
-			randomBlockType(), randomBlockType(), device, packetSender_));
+	void addPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
+		for (const auto& device : devices) {
+			players_.push_back(std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
+				randomBlockType(), randomBlockType(), device, packetSender_));
+		}
 	}
 
 	void restart() {
@@ -29,10 +31,9 @@ public:
 		}
 	}
 
-	void setBoardSize(int width, int height) {
+	void resizeBoard(int width, int height) {
 		for (auto& player : players_) {
-			player->restart(player->getTetrisBoard().getBlockType(),
-				player->getTetrisBoard().getNextBlockType());
+			player->resizeBoard(width, height);
 		}
 	}
 
@@ -52,7 +53,7 @@ public:
 
 	std::vector<std::shared_ptr<LocalPlayer>>::iterator end() {
         return players_.end();
-    }	
+    }
 
 	void updateGame(Uint32 msDeltaTime) {
 		// DeltaTime to big?
@@ -70,6 +71,16 @@ public:
 		}
 	}
 
+	void restartAndSend() {
+		restart();
+		sendConnectionStartBlock();
+	}
+
+	void resizeAndSend(int width, int height) {
+		resizeBoard(width, height);
+		sendConnectionStartBlock();
+	}
+
 	net::Packet getClientInfo() const {
 		net::Packet packet;
 		packet << PacketType::CONNECTION_INFO;
@@ -77,6 +88,7 @@ public:
 		for (auto& player : players_) {
 			packet << player->getName();
 			packet << player->getLevel();
+			packet << player->getPoints();
 			
 			auto& board = player->getTetrisBoard();
 			packet << board.getBlockType();
@@ -87,19 +99,31 @@ public:
 
 	void setId(int id) {
 		id_ = id;
+		for (auto& player : players_) {
+			player->setConnectionId(id_);
+		}
+	}
+
+	int getId() const {
+		return id_;
 	}
 
 	int getSize() const {
 		return players_.size();
 	}
 
-	void resizeBoard(int width, int height) {
+private:
+	void sendConnectionStartBlock() {
+		net::Packet packet;
+		packet << PacketType::CONNECTION_START_BLOCK;
+		packet << id_;
 		for (auto& player : players_) {
-			player->resizeBoard(width, height);
+			packet << player->getTetrisBoard().getBlockType();
+			packet << player->getTetrisBoard().getNextBlockType();
 		}
+		packetSender_.sendToAll(packet);
 	}
 
-private:
 	std::vector<std::shared_ptr<LocalPlayer>> players_;
 	PacketSender& packetSender_;
 	

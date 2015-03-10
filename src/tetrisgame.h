@@ -33,11 +33,11 @@ public:
 	void update(Uint32 msDeltaTime);
 	
 	// Uses the same settings as last call.
-	void createLocalGame(int width, int height, int maxLevel);
+	void createLocalGame();
 	
-	void createServerGame(int port, int width, int height, int maxLevel);
+	void createServerGame(int port);
 	
-	void createClientGame(int port, std::string ip, int maxLevel);
+	void createClientGame(int port, std::string ip);
 	
 	void closeGame();
 	
@@ -58,7 +58,7 @@ public:
 		return maxLevel_;
 	}
 
-	void setBoardSize(int width, int height);
+	void resizeBoard(int width, int height);
 
 	void setPlayers(const std::vector<DevicePtr>& devices);
 
@@ -69,25 +69,29 @@ public:
 private:
 	class Sender : public PacketSender {
 	public:
+		bool isActive() const override;
+
 		void sendToAll(const net::Packet& packet) const override;
 
 		void sendToAllExcept(std::shared_ptr<RemoteConnection> remoteSendNot, const net::Packet& packet) const;
 
 		std::shared_ptr<RemoteConnection> findRemoteConnection(int connectionId);
 
-		std::shared_ptr<RemoteConnection> addRemoteConnection(int connectionId);
+		std::shared_ptr<RemoteConnection> addRemoteConnection(int connectionId, net::ConnectionPtr connection);
 
 		void removeDisconnectedRemoteConnections();
 
 		std::vector<std::shared_ptr<RemoteConnection>> remoteConnections_;
-		std::shared_ptr<RemoteConnection> clientConnection_;
+		net::ConnectionPtr clientConnection_;
 	};
 
 	void serverReceive(std::shared_ptr<RemoteConnection> client, net::Packet& packet);
 
 	void clientReceive(net::Packet& packet);
 
-	void receiveNetworkData();
+	void remoteReceive(std::shared_ptr<RemoteConnection> remoteConnection, net::Packet& packet);
+
+	void receiveAndSendNetworkData();
 
 	void initGame();
 
@@ -109,8 +113,6 @@ private:
 
 	GameHandler* gameHandler_;
 	int nbrOfAlivePlayers_;
-
-	int countDown_;
 };
 
 #endif // TETRISGAME_H

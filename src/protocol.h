@@ -12,20 +12,21 @@
 // Value of the first byte.
 enum class PacketType {
 	PAUSE,                 // Pause/Unpause the game.
-	CONNECTION_RESTART,    // The game is restarted.
-	CONNECTION_BOARD_SIZE, // The board size, restarts the game.
-	CONNECTION_INFO,       // The info about players and tetrisboard conditions (e.g. length and width) for one connection.
+	RESTART,               // Restart the game.
+	BOARD_SIZE,            // Change board size.
+	CONNECTION_INFO,       // The info about players and tetrisboard conditions.
 	CONNECTION_ID,         // The id for the connection receiving this packet.
 	CONNECTION_DISCONNECT, // The connection with the id was disconnected.
+	CONNECTION_START_BLOCK,// The start blocks for all players for a connection.
 	PLAYER_MOVE,           // A move to update the tetrisboard for a player.
 	PLAYER_TETRIS,         // Add rows to a player.
-	PLAYER_START_BLOCK,    // The start block for a player, i.e. current block and the next block.
 	PLAYER_NAME,           // The name for a player.
 	PLAYER_LEVEL,          // The level for a player.
 	PLAYER_POINTS          // The point for a player.
 };
 
 static const int SERVER_CONNECTION_ID = 0;
+static const int CLIENT_UNDEFINED_CONNECTION_ID = -1;
 
 net::Packet& operator<<(net::Packet& packe1t, const net::Packet& packet2);
 
@@ -67,15 +68,14 @@ class PacketSender {
 public:
 	virtual void sendToAll(const net::Packet& packet) const = 0;
 
-	bool active_;
+	virtual bool isActive() const = 0;
 
 protected:
-	PacketSender() : active_(false) {
+	PacketSender() {
 	}
 
 	~PacketSender() {
 	}
-
 };
 
 #endif // PROTOCOL_H

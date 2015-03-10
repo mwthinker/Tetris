@@ -3,6 +3,7 @@
 
 #include "remoteplayer.h"
 #include "protocol.h"
+#include "tetrisparameters.h"
 
 #include <net/connection.h>
 
@@ -11,10 +12,9 @@
 // Hold information about players from a remote connection.
 class RemoteConnection {
 public:
-	RemoteConnection(int id) : id_(id) {
-	}
+	RemoteConnection(int id, const net::ConnectionPtr& connection) : 
+		connection_(connection), id_(id), width_(TETRIS_WIDTH), height_(TETRIS_HEIGHT) {
 
-	RemoteConnection(int id, const net::ConnectionPtr& connection) : connection_(connection), id_(id) {
 	}
 
 	~RemoteConnection() {
@@ -39,26 +39,31 @@ public:
 	}
 
 	std::vector<std::shared_ptr<RemotePlayer>>::iterator begin() {
-        return players_.begin();
-    }
+		return players_.begin();
+	}
 
 	std::vector<std::shared_ptr<RemotePlayer>>::iterator end() {
-        return players_.end();
-    }
+		return players_.end();
+	}
 
 	void receive(net::Packet& packet) {
+		packet.reset();
 		PacketType type;
 		packet >> type;
+		int id;
+		packet >> id; // Ignore, not important.
 		switch (type) {
-			case PacketType::CONNECTION_BOARD_SIZE:
-				packet >> width_ >> height_;
+			case PacketType::CONNECTION_START_BLOCK:
 				for (auto player : players_) {
-					packet.reset();
-					player->receive(packet);
+					BlockType current;
+					packet >> current;
+					BlockType next;
+					packet >> next;
+					player->restart(current, next);
 				}
 				break;
-			case PacketType::CONNECTION_INFO: {
-				packet >> id_;
+			case PacketType::CONNECTION_INFO:
+				players_.clear();
 				while (packet.dataLeftToRead() > 0) {
 					std::string name;
 					packet >> name;
@@ -66,13 +71,12 @@ public:
 					packet >> level;
 					int points;
 					packet >> points;
-					BlockType moving;
-					packet >> moving;
+					BlockType current;
+					packet >> current;
 					BlockType next;
 					packet >> next;
-
-					int playerId = players_.size();
-					auto player = std::make_shared<RemotePlayer>(playerId, width_, height_, moving, next);
+					
+					auto player = std::make_shared<RemotePlayer>(players_.size(), width_, height_, current, next);
 					player->setName(name);
 					player->setLevel(level);
 					player->setPoints(points);
@@ -80,28 +84,32 @@ public:
 					players_.push_back(player);
 				}
 				break;
-			}
 			case PacketType::PLAYER_MOVE:
 				// Fall through!
 			case PacketType::PLAYER_TETRIS:
-				// Fall through!
-			case PacketType::PLAYER_START_BLOCK:
 				// Fall through!
 			case PacketType::PLAYER_NAME:
 				// Fall through!
 			case PacketType::PLAYER_LEVEL:
 				// Fall through!
 			case PacketType::PLAYER_POINTS: {
-				packet >> id_;
 				int playerId;
 				packet >> playerId;
 				if (playerId >= 0 && playerId < (int) players_.size()) {
 					packet.reset();
 					players_[playerId]->receive(packet);
+				} else {
+					// Protocol error.
+					throw 1;
 				}
 				break;
 			}
 		}
+	}
+
+	void resizeBoard(int width, int height) {
+		width_ = width;
+		height_ = height;
 	}
 
 	bool isActive() const {
@@ -127,6 +135,7 @@ public:
 		for (auto& player : players_) {
 			packet << player->getName();
 			packet << player->getLevel();
+			packet << player->getPoints();
 
 			auto& board = player->getTetrisBoard();
 			packet << board.getBlockType();
@@ -139,8 +148,8 @@ private:
 	std::vector<std::shared_ptr<RemotePlayer>> players_;
 	net::ConnectionPtr connection_;
 
-	int id_;
-	int width_, height_; // Current dimension for the tetris boards.
+	const int id_;
+	int width_, height_;
 };
 
 #endif // REMOTECONNECTION_H

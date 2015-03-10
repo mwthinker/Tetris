@@ -28,8 +28,6 @@ public:
 	~TetrisWindow();
 
 private:
-	void createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const;
-
 	mw::Font getDefaultFont(int size);
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
@@ -102,9 +100,7 @@ private:
 		newHighscoreIndex_,
 		createClientIndex_,
 		createServerIndex_,
-		waitToConnectIndex_,
-		networkPlayIndex_,
-		aiIndex_;
+		waitToConnectIndex_;
 
 	TetrisEntry tetrisEntry_;
 	bool windowFollowMouse_;

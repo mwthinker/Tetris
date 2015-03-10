@@ -9,16 +9,22 @@
 
 class RemotePlayer : public Player {
 public:
-	RemotePlayer(int id, int width, int height, BlockType moving, BlockType next)
-		: Player(id, width, height, moving, next) {
+	RemotePlayer(int id, int width, int height, BlockType current, BlockType next) :
+		Player(id, width, height, current, next) {
+
 	}
 
 	void update(double deltaTime) override {
 	}
 
 	void receive(net::Packet& packet) {
+		packet.reset();
 		PacketType type;
 		packet >> type;
+		int id;
+		packet >> id;
+		int playerId;
+		packet >> playerId;
 		switch (type) {
 			case PacketType::PLAYER_MOVE: {
 				Move move;
@@ -26,6 +32,7 @@ public:
 				BlockType next;
 				packet >> next;
 				tetrisBoard_.update(move);
+				tetrisBoard_.updateNextBlock(next);
 				break;
 			}
 			case PacketType::PLAYER_TETRIS: {
@@ -35,15 +42,6 @@ public:
 					packet >> type;
 				}
 				tetrisBoard_.addRows(blockTypes);
-				break;
-			}
-			case PacketType::PLAYER_START_BLOCK: {
-				BlockType current;
-				packet >> current;
-				BlockType next;
-				packet >> next;
-				clearedRows_ = 0;
-				tetrisBoard_.restart(current, next);
 				break;
 			}
 			case PacketType::PLAYER_NAME:
@@ -56,6 +54,20 @@ public:
 				packet >> points_;
 				break;
 		}
+	}
+
+	void resizeBoard(int width, int height) {
+		tetrisBoard_.updateRestart(height, width, tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
+		clearedRows_ = 0;
+		level_ = 1;
+		points_ = 0;
+	}
+
+	void restart(BlockType current, BlockType next) {
+		tetrisBoard_.restart(current, next);
+		clearedRows_ = 0;
+		level_ = 1;
+		points_ = 0;
 	}
 
 	void setName(std::string name) {

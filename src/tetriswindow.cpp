@@ -88,8 +88,6 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	createClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	createServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	waitToConnectIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	networkPlayIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	aiIndex_ = pushBackPanel(std::make_shared<Background>(background));
 
 	initMenuPanel();
 	initPlayPanel();
@@ -101,10 +99,10 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	initCreateClientPanel();
 	initWaitToConnectPanel();
 
-	if (frame >= 0 && frame < aiIndex_) {
+	if (frame >= 0 && frame <= waitToConnectIndex_) {
 		if (frame == playIndex_) {
 			// Initialization local game settings.
-			tetrisGame_.createLocalGame(TETRIS_HEIGHT, TETRIS_WIDTH, TETRIS_MAX_LEVEL);
+			tetrisGame_.createLocalGame();
 		}
 		setCurrentPanel(frame);
 	}
@@ -137,18 +135,6 @@ TetrisWindow::~TetrisWindow() {
 	tetrisEntry_.save();
 }
 
-void TetrisWindow::createPlayersFields(const mw::Font& font, std::array<std::shared_ptr<gui::TextField>, 4>& names, std::array<std::shared_ptr<gui::Panel>, 4>&  players) const {
-	for (unsigned int i = 0; i < players.size(); ++i) {
-		players[i] = std::make_shared<TransparentPanel>(400.f, 35.f);
-		std::stringstream stream;
-		stream << "Human " << i + 1;
-		players[i]->addDefault<Label>(stream.str(), font, tetrisEntry_);
-		names[i] = std::make_shared<TextField>(stream.str(), font);
-		players[i]->addDefault(names[i]);
-		players[i]->setVisible(false);
-	}
-}
-
 void TetrisWindow::initMenuPanel() {
 	setCurrentPanel(menuIndex_);
 
@@ -170,7 +156,7 @@ void TetrisWindow::initMenuPanel() {
 	b1->addActionListener([&](gui::Component&) {
 		tetrisGame_.closeGame();
 		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-		tetrisGame_.createLocalGame(TETRIS_HEIGHT, TETRIS_WIDTH, TETRIS_MAX_LEVEL);
+		tetrisGame_.createLocalGame();
 		
 		setCurrentPanel(playIndex_);
 		resume_->setVisible(true);
@@ -220,6 +206,7 @@ void TetrisWindow::initPlayPanel() {
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.closeGame();
 			menu_->setLabel("Menu");
+			SDL_SetWindowTitle(getSdlWindow(), "MWetris");
 		}
 	});
 
@@ -404,7 +391,8 @@ void TetrisWindow::initCreateServerPanel() {
 		stream >> port;
 
 		tetrisGame_.closeGame();
-		tetrisGame_.createServerGame(port, 10, 24, 40);
+		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		tetrisGame_.createServerGame(port);
 	});
 }
 
@@ -439,7 +427,10 @@ void TetrisWindow::initCreateClientPanel() {
 		stream1 >> port;
 
 		tetrisGame_.closeGame();
-		tetrisGame_.createClientGame(port, ipClient_->getText(), 40);
+		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		tetrisGame_.createClientGame(port, ipClient_->getText());
+
+		setCurrentPanel(waitToConnectIndex_);
 	});
 }
 
@@ -450,6 +441,7 @@ void TetrisWindow::initWaitToConnectPanel() {
 	auto b1 = bar->addDefault<Button>("Abort", getDefaultFont(30), tetrisEntry_);
 	b1->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
+		tetrisGame_.closeGame();
 	});
 
 	add<Label>(gui::BorderLayout::CENTER, "Waiting for the server to accept connection!", getDefaultFont(18), tetrisEntry_);
@@ -481,24 +473,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	
 	try {
 		auto& newConnection = dynamic_cast<NewConnection&>(tetrisEvent);
-		switch (newConnection.status_) {
-			case NewConnection::CLIENT:
-				//clientLooby_->clear();
-				for (auto& data : newConnection) {
-					//clientLooby_->addConnection(data.id_, data.nbr_, data.ready_);
-				}
-				setCurrentPanel(networkPlayIndex_);
-				break;
-			case NewConnection::SERVER:
-				for (auto& data : newConnection) {
-					//serverLooby_->addConnection(data.id_, data.nbr_, data.ready_);
-				}
-				setCurrentPanel(networkPlayIndex_);
-				break;
-			case NewConnection::LOCAL:
-				// Is no local looby.
-				break;
-		}
+		setCurrentPanel(playIndex_);
 		return;
 	} catch (std::bad_cast exp) {}
 	
@@ -506,19 +481,15 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		auto& start = dynamic_cast<GameStart&>(tetrisEvent);
 		switch (start.status_) {
 			case GameStart::LOCAL:
+				menu_->setLabel("Menu");
 				break;
 			case GameStart::CLIENT:
+				SDL_SetWindowTitle(getSdlWindow(), "MWetris@Client");
 				menu_->setLabel("Abort");
-				nbrAis_->setVisible(false);
-				nbrHumans_->setVisible(false);
-				restart_->setVisible(false);
-				resume_->setVisible(false);
 				break;
 			case GameStart::SERVER:
+				SDL_SetWindowTitle(getSdlWindow(), "MWetris@Server");
 				menu_->setLabel("Abort");
-				nbrAis_->setVisible(false);
-				nbrHumans_->setVisible(false);
-				resume_->setVisible(false);
 				break;
 		}
 		setCurrentPanel(playIndex_);

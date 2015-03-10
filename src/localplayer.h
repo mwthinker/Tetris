@@ -13,7 +13,7 @@
 
 class LocalPlayer : public Player {
 public:
-	LocalPlayer(int id, int width, int height, 
+	LocalPlayer(int connectionId, int playerId, int width, int height,
 		BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
 
     void update(double deltaTime) override;
@@ -42,6 +42,10 @@ public:
 		points_ = points;
 	}
 
+	void setConnectionId(int connectionId) {
+		connectionId_ = connectionId;
+	}
+
 private:
 	double calculateDownSpeed(int level) const;
 
@@ -55,6 +59,7 @@ private:
     DevicePtr device_;
 	PacketSender& sender_;
 	int levelUpCounter_;
+	int connectionId_;
 };
 
 #endif // LOCALPLAYER_H

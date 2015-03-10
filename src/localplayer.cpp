@@ -4,14 +4,14 @@
 #include <string>
 #include <functional>
 
-LocalPlayer::LocalPlayer(int id, int width, int height,
+LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender) :
-	Player(id, width, height, moving, next),
+	Player(playerId, width, height, moving, next),
 	sender_(sender),
 	leftHandler_(0.09, false),
 	rightHandler_(0.09, false),
 	rotateHandler_(0.0, true),
-	gravityMove_(1, false), // Value doesn't matter! Changes every frame.
+	gravityMove_(1, false),				// Value doesn't matter! Changes every frame.
 	downHandler_(0.04, false),
 	device_(device) {
 
@@ -24,8 +24,11 @@ LocalPlayer::LocalPlayer(int id, int width, int height,
 
 void LocalPlayer::update(Move move) {
 	tetrisBoard_.update(move);
-	if (sender_.active_) {
+	if (sender_.isActive()) {
 		net::Packet packet;
+		packet << PacketType::PLAYER_MOVE;
+		packet << connectionId_;
+		packet << getId();
 		packet << move;
 		packet << tetrisBoard_.getNextBlockType();
 		sender_.sendToAll(packet);
@@ -35,8 +38,7 @@ void LocalPlayer::update(Move move) {
 void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 	if (gameEvent == GameEvent::CURRENT_BLOCK_UPDATED) {
 		// Generate a new block for a local player.
-		BlockType type = randomBlockType();
-		tetrisBoard_.updateNextBlock(type); // The listener will be called again, but with GameEvent::NEXT_BLOCK_UPDATED.
+		tetrisBoard_.updateNextBlock(randomBlockType()); // The listener will be called again, but with GameEvent::NEXT_BLOCK_UPDATED.
 
 		leftHandler_.reset();
 		rightHandler_.reset();

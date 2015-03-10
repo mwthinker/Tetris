@@ -10,7 +10,7 @@
 
 class Player {
 public:
-	Player(int id, int width, int height, BlockType moving, BlockType next);
+	Player(int id, int width, int height, BlockType current, BlockType next);
 	
 	inline virtual ~Player() {
 	}
