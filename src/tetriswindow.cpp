@@ -117,6 +117,29 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	}
 }
 
+void TetrisWindow::startServer(int port) {
+	std::stringstream stream;
+	stream << port;
+	portServer_->setText(stream.str());
+
+	tetrisGame_.closeGame();
+	tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+	tetrisGame_.createServerGame(port);
+}
+
+void TetrisWindow::startClient(int port, std::string ip) {
+	std::stringstream stream;
+	stream << port;
+	portClient_->setText(stream.str());
+	ipClient_->setText(ip);
+
+	tetrisGame_.closeGame();
+	tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+	tetrisGame_.createClientGame(port, ipClient_->getText());
+
+	setCurrentPanel(waitToConnectIndex_);
+}
+
 mw::Font TetrisWindow::getDefaultFont(int size) {
 	return tetrisEntry_.getDeepChildEntry("window font").getFont(size);
 }

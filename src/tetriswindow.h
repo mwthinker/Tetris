@@ -25,6 +25,11 @@ class GameData;
 class TetrisWindow : public gui::Frame {
 public:
 	TetrisWindow(TetrisEntry tetrisEntry, int frame);
+
+	void startServer(int port);
+
+	void startClient(int port, std::string ip);
+
 	~TetrisWindow();
 
 private:
