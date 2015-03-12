@@ -103,7 +103,7 @@ net::Packet& operator>>(net::Packet& packet, bool& data) {
 
 
 net::Packet& operator<<(net::Packet& packet, const std::string& text) {
-	packet << (int) text.size();
+	packet << (char) text.size();
 	for (char c : text) {
 		packet << c;
 	}

@@ -28,11 +28,6 @@ public:
 		return id_;
 	}
 
-	// Remove all players.
-	void clear() {
-		players_.clear();
-	}
-
 	// The number of players are returned.
 	int getNbrOfPlayers() const {
 		return players_.size();
@@ -122,10 +117,6 @@ public:
 
 	void send(const net::Packet& packet) {
 		connection_->send(packet);
-	}
-
-	void stop() {
-		connection_->stop();
 	}
 
 	net::Packet getClientInfo() const {

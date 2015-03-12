@@ -17,7 +17,7 @@ TetrisGame::TetrisGame() :
 	status_(WAITING_TO_CONNECT), nbrOfPlayers_(0),
 	localConnection_(sender_),
 	width_(TETRIS_WIDTH), height_(TETRIS_HEIGHT), maxLevel_(TETRIS_MAX_LEVEL),
-	lastConnectionId_(CLIENT_UNDEFINED_CONNECTION_ID) {
+	lastConnectionId_(UNDEFINED_CONNECTION_ID) {
 
 }
 
@@ -29,7 +29,6 @@ void TetrisGame::createLocalGame() {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
 		
-		nbrOfPlayers_ = localConnection_.getSize();
 		localConnection_.restart();
 		initGame();
 	}
@@ -51,7 +50,7 @@ void TetrisGame::createServerGame(int port) {
 void TetrisGame::createClientGame(int port, std::string ip) {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = CLIENT;
-		lastConnectionId_ = CLIENT_UNDEFINED_CONNECTION_ID;
+		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.setId(lastConnectionId_);
 
 		network_.startClient(ip, port);
@@ -71,8 +70,11 @@ void TetrisGame::initGame() {
 			eventHandler_(GameStart(GameStart::SERVER));
 			break;
 	}
-	
-	pause_ = false;
+
+	if (pause_) {
+		pause_ = false;
+		eventHandler_(GamePause(pause_));
+	}
 
 	// Init all players.
 	std::vector<std::shared_ptr<Player>> players;
@@ -85,11 +87,9 @@ void TetrisGame::initGame() {
 		}
 	}
 
+	nbrOfPlayers_ = players.size();
 	nbrOfAlivePlayers_ = nbrOfPlayers_; // All players are living again.
 	gameHandler_->initGame(players);
-
-	// Signal the gui that the game is not paused.
-	eventHandler_(GamePause(pause_));
 }
 
 void TetrisGame::restartGame() {
@@ -97,17 +97,11 @@ void TetrisGame::restartGame() {
 		if (network_.isServer() || network_.isClient()) {
 			// Go from looby to game.
 			net::Packet packet;
-			packet << localConnection_.getId();
 			packet << PacketType::RESTART;
+			packet << localConnection_.getId();
 			sender_.sendToAll(packet);
 
 			localConnection_.restartAndSend();
-
-			if (pause_) {
-				pause_ = false;
-				eventHandler_(GamePause(pause_));
-			}
-
 		} else {
 			localConnection_.restart();
 		}
@@ -237,6 +231,7 @@ void TetrisGame::receiveAndSendNetworkData() {
 		if (sender_.clientConnection_ == nullptr) {
 			sender_.clientConnection_ = network_.pollConnection();
 			if (sender_.clientConnection_) {
+				sender_.sendToAll(localConnection_.getClientInfo());
 				eventHandler_(NewConnection());
 			}
 		} else {
@@ -264,22 +259,17 @@ void TetrisGame::serverReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	packet >> type;
 	int id;
 	packet >> id;
-	
-	switch (type) {
-		case PacketType::CONNECTION_INFO:
-		{
-			packet.reset();
-			remoteConnection->receive(packet);
-			// Send the server's version of the packet in order for the  
-			// client to have the correct id.
-			sender_.sendToAllExcept(remoteConnection, remoteConnection->getClientInfo());
-			break;
-		}
-		default:
-			remoteReceive(remoteConnection, packet);
-			// Send through to all connections.
-			sender_.sendToAllExcept(remoteConnection, packet);
-			break;
+
+	if (type == PacketType::CONNECTION_INFO) {
+		remoteConnection->receive(packet);
+		// Send the server's version of the packet in order for the  
+		// client to have the correct id.
+		sender_.sendToAllExcept(remoteConnection, remoteConnection->getClientInfo());
+		initGame();
+	} else {
+		remoteReceive(remoteConnection, packet);
+		// Send through to all connections.
+		sender_.sendToAllExcept(remoteConnection, packet);
 	}
 }
 
@@ -293,15 +283,14 @@ void TetrisGame::clientReceive(net::Packet& packet) {
 
 	switch (type) {
 		case PacketType::CONNECTION_INFO:
-		{
 			// New connection?
 			if (remote == nullptr) {
 				// Add new connection.
 				remote = sender_.addRemoteConnection(id, nullptr);
 			}
 			remoteReceive(remote, packet);
+			initGame();
 			break;
-		}
 		case PacketType::CONNECTION_ID:
 			localConnection_.setId(id);
 			break;
@@ -320,11 +309,7 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	
 	switch (type) {
 		case PacketType::RESTART:
-			if (pause_) {
-				pause_ = false;
-				eventHandler_(GamePause(pause_));
-			}
-			localConnection_.restart();
+			localConnection_.restartAndSend();
 			initGame();
 			break;
 		case PacketType::PAUSE:
@@ -332,7 +317,6 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 			eventHandler_(GamePause(pause_));
 			break;
 		case PacketType::BOARD_SIZE:
-			pause_ = false;
 			packet >> width_;
 			packet >> height_;
 			localConnection_.resizeAndSend(width_, height_);
@@ -450,7 +434,7 @@ void TetrisGame::Sender::sendToAll(const net::Packet& packet) const {
 }
 
 bool TetrisGame::Sender::isActive() const {
-	return !remoteConnections_.empty() && clientConnection_ != nullptr;
+	return !remoteConnections_.empty() || clientConnection_ != nullptr;
 }
 
 void TetrisGame::Sender::sendToAllExcept(std::shared_ptr<RemoteConnection> remoteSendNot, const net::Packet& packet) const {
@@ -486,13 +470,8 @@ std::shared_ptr<RemoteConnection> TetrisGame::Sender::addRemoteConnection(int co
 }
 
 void TetrisGame::Sender::removeDisconnectedRemoteConnections() {
-	for (auto& client : remoteConnections_) {
-		if (client->isActive()) {
-			std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
-				[client](const std::shared_ptr<RemoteConnection>& remote) {
-
-				return remote == client;
-			});
-		}
-	}
+	std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
+		[](const std::shared_ptr<RemoteConnection>& remote) {
+				return !remote->isActive();
+		});
 }

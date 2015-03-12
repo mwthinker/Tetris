@@ -13,7 +13,7 @@ public:
 		packetSender_(packetSender),
 		timeStep_(17),
 		accumulator_(0),
-		id_(SERVER_CONNECTION_ID) {
+		id_(UNDEFINED_CONNECTION_ID) {
 
 	}
 
