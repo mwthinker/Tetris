@@ -43,7 +43,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			break;
 		case GameEvent::RESTARTED:
 			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
-			dynamicBoard_.updatePreviewBlock(tetrisBoard.getBlockType());
+			dynamicBoard_.updatePreviewBlock(tetrisBoard.getNextBlockType());
 			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::EXTERNAL_ROWS_ADDED:
