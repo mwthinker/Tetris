@@ -69,13 +69,6 @@ public:
 	virtual void sendToAll(const net::Packet& packet) const = 0;
 
 	virtual bool isActive() const = 0;
-
-protected:
-	PacketSender() {
-	}
-
-	~PacketSender() {
-	}
 };
 
 #endif // PROTOCOL_H

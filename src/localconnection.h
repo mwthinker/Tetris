@@ -17,10 +17,15 @@ public:
 
 	}
 
-	void addPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
+	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
+		players_.clear();
 		for (const auto& device : devices) {
 			players_.push_back(std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
 				randomBlockType(), randomBlockType(), device, packetSender_));
+		}
+		
+		if (packetSender_.isActive()) {
+			packetSender_.sendToAll(getClientInfo());
 		}
 	}
 
@@ -29,17 +34,20 @@ public:
 			player->restart(player->getTetrisBoard().getBlockType(),
 				player->getTetrisBoard().getNextBlockType());
 		}
+
+		if (packetSender_.isActive()) {
+			sendConnectionStartBlock();
+		}
 	}
 
 	void resizeBoard(int width, int height) {
 		for (auto& player : players_) {
 			player->resizeBoard(width, height);
 		}
-	}
 
-	// Remove all players.
-	void clear() {
-		players_.clear();
+		if (packetSender_.isActive()) {
+			sendConnectionStartBlock();
+		}
 	}
 
 	// Return the number of players.
@@ -69,16 +77,6 @@ public:
 				player->update(timeStep_ / 1000.0);
 			}
 		}
-	}
-
-	void restartAndSend() {
-		restart();
-		sendConnectionStartBlock();
-	}
-
-	void resizeAndSend(int width, int height) {
-		resizeBoard(width, height);
-		sendConnectionStartBlock();
 	}
 
 	net::Packet getClientInfo() const {

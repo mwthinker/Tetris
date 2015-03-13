@@ -79,10 +79,31 @@ private:
 
 		std::shared_ptr<RemoteConnection> addRemoteConnection(int connectionId, net::ConnectionPtr connection);
 
-		void removeDisconnectedRemoteConnections();
+		void serverRemoveDisconnectedConnections();
 
+		void removeConnection(int connectionId);
+
+		void disconnect();
+				
+		inline std::vector<std::shared_ptr<RemoteConnection>>::iterator begin() {
+			return remoteConnections_.begin();
+		}
+
+		inline std::vector<std::shared_ptr<RemoteConnection>>::iterator end() {
+			return remoteConnections_.end();
+		}
+
+		inline void setServerConnection(const net::ConnectionPtr& connectionToServer) {
+			connectionToServer_ = connectionToServer;
+		}
+		
+		inline bool receivePacketFromServer(net::Packet& packet) {
+			return connectionToServer_->receive(packet);
+		}
+
+	private:
 		std::vector<std::shared_ptr<RemoteConnection>> remoteConnections_;
-		net::ConnectionPtr clientConnection_;
+		net::ConnectionPtr connectionToServer_;
 	};
 
 	void serverReceive(std::shared_ptr<RemoteConnection> client, net::Packet& packet);
