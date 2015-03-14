@@ -42,6 +42,8 @@ private:
 	void loadHighscore();
 	void saveHighscore();
 
+	void setPlayers();
+
 	TetrisGame tetrisGame_;
 
 	// initMenuPanel

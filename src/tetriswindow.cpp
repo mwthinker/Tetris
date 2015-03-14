@@ -240,13 +240,13 @@ void TetrisWindow::initPlayPanel() {
 
 	nbrHumans_ = p1->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
-		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		setPlayers();
 	});
 
 	nbrAis_ = p1->addDefault<ManButton>(4, tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
-		//tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		setPlayers();
 	});
 
 	pauseButton_ = p2->addDefault<Button>("Pause", getDefaultFont(30), tetrisEntry_);
@@ -414,7 +414,6 @@ void TetrisWindow::initCreateServerPanel() {
 		stream >> port;
 
 		tetrisGame_.closeGame();
-		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 		tetrisGame_.createServerGame(port);
 	});
 }
@@ -450,9 +449,7 @@ void TetrisWindow::initCreateClientPanel() {
 		stream1 >> port;
 
 		tetrisGame_.closeGame();
-		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 		tetrisGame_.createClientGame(port, ipClient_->getText());
-
 		setCurrentPanel(waitToConnectIndex_);
 	});
 }
@@ -538,6 +535,15 @@ void TetrisWindow::saveHighscore() {
 		entry = entry.getSibling("item");
 	}
 	entry.save();
+}
+
+void TetrisWindow::setPlayers() {
+	std::vector<DevicePtr> playerDevices(devices_.begin(), devices_.begin() + nbrHumans_->getNbr());
+	for (unsigned int i = 0; i < nbrAis_->getNbr(); ++i) {
+		playerDevices.push_back(std::make_shared<Computer>(activeAis_[i]));
+	}
+	
+	tetrisGame_.setPlayers(playerDevices);
 }
 
 void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
