@@ -92,6 +92,12 @@ Ai TetrisEntry::getAi() const {
 	return ai;
 }
 
+void TetrisEntry::bindTextureFromAtlas() const {
+	if (data_) {
+		data_->textureAtlas_.getTexture().bindTexture();
+	}
+}
+
 mw::Sprite TetrisEntry::Data::extractSprite(TetrisEntry entry) const {
 	return textureAtlas_.add(entry.getString(), 4);
 }

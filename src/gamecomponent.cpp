@@ -88,7 +88,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 			text = mw::Text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
 			graphic.setMiddleMessage(text);
 		}
-
+		tetrisEntry_.bindTextureFromAtlas();
 		graphic.draw(deltaTime / 1000.f, boardShader_);
 	}
 

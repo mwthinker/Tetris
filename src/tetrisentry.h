@@ -31,6 +31,8 @@ public:
 	mw::Color getColor() const;
 	Ai getAi() const;
 
+	void bindTextureFromAtlas() const;
+
 private:
 	class Data {
 	public:

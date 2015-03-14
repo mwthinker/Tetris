@@ -217,8 +217,8 @@ void TetrisWindow::initPlayPanel() {
     auto bar = add<Bar>(gui::BorderLayout::NORTH, tetrisEntry_);
 	bar->setLayout<gui::BorderLayout>();
 
-	auto p1 = bar->add<TransparentPanel>(gui::BorderLayout::WEST, 300.f, 100.f);
-	auto p2 = bar->add<TransparentPanel>(gui::BorderLayout::EAST, 300.f, 100.f);
+	auto p1 = bar->add<TransparentPanel>(gui::BorderLayout::WEST, 400.f, 100.f);
+	auto p2 = bar->add<TransparentPanel>(gui::BorderLayout::EAST, 200.f, 100.f);
 
 	p1->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
 	p2->setLayout<gui::FlowLayout>(gui::FlowLayout::RIGHT, 5.f, 0.f);
@@ -236,22 +236,22 @@ void TetrisWindow::initPlayPanel() {
 	restart_ = p1->addDefault<Button>("Restart", getDefaultFont(30), tetrisEntry_);
 	restart_->addActionListener([&](gui::Component&) {
 		tetrisGame_.restartGame();
-	});
-
-	pauseButton_ = p2->addDefault<Button>("Pause", getDefaultFont(30), tetrisEntry_);
-	pauseButton_->addActionListener([&](gui::Component&) {
-		tetrisGame_.pause();
-	});
+	});	
 
 	nbrHumans_ = p1->addDefault<ManButton>(devices_.size(), tetrisEntry_.getDeepChildEntry("window sprites human").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
 		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 	});
 
-	nbrAis_ = p2->addDefault<ManButton>(4, tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
+	nbrAis_ = p1->addDefault<ManButton>(4, tetrisEntry_.getDeepChildEntry("window sprites computer").getSprite(), tetrisEntry_.getDeepChildEntry("window sprites cross").getSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
 		//tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+	});
+
+	pauseButton_ = p2->addDefault<Button>("Pause", getDefaultFont(30), tetrisEntry_);
+	pauseButton_->addActionListener([&](gui::Component&) {
+		tetrisGame_.pause();
 	});
 
     // Add the game component, already created in the constructor.
