@@ -46,6 +46,8 @@ public:
 		connectionId_ = connectionId;
 	}
 
+	void endGame();
+
 private:
 	double calculateDownSpeed(int level) const;
 

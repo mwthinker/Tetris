@@ -23,6 +23,12 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 		this, std::placeholders::_1, std::placeholders::_2));
 }
 
+void LocalPlayer::endGame() {
+	if (!tetrisBoard_.isGameOver()) {
+		update(Move::GAME_OVER);
+	}
+}
+
 void LocalPlayer::update(Move move) {
 	tetrisBoard_.update(move);
 	if (sender_.isActive()) {

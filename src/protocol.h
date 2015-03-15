@@ -15,7 +15,6 @@ enum class PacketType {
 	RESTART,               // Restart the game.
 	BOARD_SIZE,            // Change board size.
 	CONNECTION_INFO,       // The info about players and tetrisboard conditions.
-	CONNECTION_ID,         // The id for the connection receiving this packet.
 	CONNECTION_DISCONNECT, // The connection with the id was disconnected.
 	CONNECTION_START_BLOCK,// The start blocks for all players for a connection.
 	PLAYER_MOVE,           // A move to update the tetrisboard for a player.

@@ -20,8 +20,9 @@ public:
 	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
 		players_.clear();
 		for (const auto& device : devices) {
-			players_.push_back(std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
-				randomBlockType(), randomBlockType(), device, packetSender_));
+			auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
+				randomBlockType(), randomBlockType(), device, packetSender_);
+			players_.push_back(player);
 		}
 		
 		if (packetSender_.isActive()) {
@@ -111,6 +112,10 @@ public:
 	}
 
 private:
+	bool isMultiplayerGame() const {
+		return players_.size() > 1 && packetSender_.isActive();
+	}	
+
 	void sendConnectionStartBlock() {
 		net::Packet packet;
 		packet << PacketType::CONNECTION_START_BLOCK;
