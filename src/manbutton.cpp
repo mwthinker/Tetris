@@ -29,23 +29,23 @@ void ManButton::setNbr(unsigned int nbr) {
 
 void ManButton::draw(Uint32 deltaTime) {
 	glUseProgram();
-	gui::Dimension dim = getSize();
-	mw::Matrix44 model = getModelMatrix();
-	if (mouseInside_) {
-	    float delta = (1.f - 1.f/1.2f) * 0.5f * dim.height_;
-        mw::translate2D(model, -delta, -delta);
-		mw::scale2D(model, 1.2f, 1.2f);
-	}
-    setGlModelU(model);
+	setGlModelU(getModelMatrix());
 	enableGlTransparancy();
-
 	setGlColorU(1, 1, 1);
+	gui::Dimension dim = getSize();
+
+	float scale = 1;
+	float delta = 0;
+	if (mouseInside_) {
+		scale = 1.2f;
+		delta = 0.1f * dim.height_; // In order to make each sprite to be centered when scaled.
+	}
 	if (nbr_ == 0) {
-		drawSprite(man_, 0, 0, dim.height_, dim.height_);
-		drawSprite(cross_, 0, 0, dim.height_, dim.height_);
+		drawSprite(man_, -delta, -delta, dim.height_ * scale, dim.height_ * scale);
+		drawSprite(cross_, -delta, -delta, dim.height_ * scale, dim.height_ * scale);
 	} else {
 		for (unsigned int i = 0; i < nbr_; ++i) {
-            drawSprite(man_, dim.height_ * i, 0, dim.height_, dim.height_);
+			drawSprite(man_, dim.height_ * i - delta, -delta, dim.height_ * scale, dim.height_ * scale);
 		}
 	}
 }
