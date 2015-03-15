@@ -37,7 +37,7 @@ public:
 	void updateExternalRowsAdded(float upTime, int rowsAdded);
 
 private:
-	void updateVBO(float linesRemovedTimeLeft);
+	void updateVBO();
 	void updateCurrentBlock();
 	void updatePreviewBlock();
 	

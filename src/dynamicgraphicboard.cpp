@@ -77,7 +77,7 @@ void DynamicGraphicBoard::restart(float x, float y,
 	updateCurrentBlock(tetrisBoard.getBlock());
 	updatePreviewBlock(tetrisBoard.getNextBlockType());
 	updateBoard(tetrisBoard);
-	updateVBO(-1);
+	updateVBO();
 }
 
 void DynamicGraphicBoard::updateCurrentBlock(const Block& block) {
@@ -189,7 +189,7 @@ void DynamicGraphicBoard::updatePreviewBlock() {
 	}
 }
 
-void DynamicGraphicBoard::updateVBO(float linesRemovedTimeLeft) {
+void DynamicGraphicBoard::updateVBO() {
 	if (updateBlock_) {
 		updateCurrentBlock();
 		updatePreviewBlock();
@@ -197,8 +197,12 @@ void DynamicGraphicBoard::updateVBO(float linesRemovedTimeLeft) {
 		updateBlock_ = false;
 	}
 
-	if (linesRemovedTimeLeft >= 0) {
+	if (linesRemovedTimeLeft_ >= 0) {
 		updateBoardLinesRemoved(linesRemovedTimeLeft_ / linesRemovedTime_);
+		updateVBO_ = true;
+	} else if (linesRemovedTimeLeft_ > -0.2f) {
+		linesRemovedTimeLeft_ -= 1;
+		updateBoardLinesRemoved(0);
 		updateVBO_ = true;
 	}
 		
@@ -217,15 +221,10 @@ void DynamicGraphicBoard::updateVBO(float linesRemovedTimeLeft) {
 void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 	// Draw the dynamic part.
 	if (vbo_.getSize() > 0) {
-		float linesRemovedTimeLeft = -1;
 		if (linesRemovedTimeLeft_ > 0) {
 			linesRemovedTimeLeft_ -= deltaTime;
-			linesRemovedTimeLeft = linesRemovedTimeLeft_;
-			if (linesRemovedTimeLeft < 0) {
-				linesRemovedTimeLeft = 0;
-			}
 		}
-		updateVBO(linesRemovedTimeLeft);
+		updateVBO();
 		
 		vbo_.bindBuffer();
 
