@@ -38,10 +38,6 @@ public:
 		level_ = level;
 	}
 
-	inline void setPoints(int points) {
-		points_ = points;
-	}
-
 	void setConnectionId(int connectionId) {
 		connectionId_ = connectionId;
 	}

@@ -43,14 +43,33 @@ void LocalPlayer::update(Move move) {
 }
 
 void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
-	if (gameEvent == GameEvent::CURRENT_BLOCK_UPDATED) {
-		// Generate a new block for a local player.
-		tetrisBoard_.updateNextBlock(randomBlockType()); // The listener will be called again, but with GameEvent::NEXT_BLOCK_UPDATED.
+	switch (gameEvent) {
+		case GameEvent::ONE_ROW_REMOVED:
+			clearedRows_ += 1;
+			points_ += level_;
+			break;
+		case GameEvent::TWO_ROW_REMOVED:
+			clearedRows_ += 2;
+			points_ += level_ * 2 * 2;
+			break;
+		case GameEvent::THREE_ROW_REMOVED:
+			clearedRows_ += 3;
+			points_ += level_ * 3 * 3;
+			break;
+		case GameEvent::FOUR_ROW_REMOVED:
+			clearedRows_ += 4;
+			points_ += level_ * 4 * 4;
+			break;
+		case GameEvent::CURRENT_BLOCK_UPDATED:
+			// Generate a new block for a local player.
+			tetrisBoard_.updateNextBlock(randomBlockType()); // The listener will be called again, but with GameEvent::NEXT_BLOCK_UPDATED.
 
-		leftHandler_.reset();
-		rightHandler_.reset();
-		downHandler_.reset();
+			leftHandler_.reset();
+			rightHandler_.reset();
+			downHandler_.reset();
+			break;
 	}
+
 	device_->update(board);
 }
 

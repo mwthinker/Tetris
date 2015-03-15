@@ -394,11 +394,7 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 			break;
 	}
 
-	player.setClearedRows(player.getClearedRows() + rows);
-
 	if (rows != 0) {
-		player.setPoints(player.getPoints() + player.getLevel() * rows * rows);
-
 		// Multiplayer?
 		if (nbrOfPlayers_ > 1) {
 			// Increase level up counter for all opponents to the current player.
@@ -435,11 +431,19 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
 			break;
-		case GameEvent::GAME_OVER:
-			break;
 	}
 
 	player.setClearedRows(player.getClearedRows() + rows);
+
+	if (nbrOfPlayers_ > 1 && rows > 0) {
+		// Increase level up counter for all opponents to the current player.
+		// Remote players will be added indirectly.
+		for (auto& opponent : localConnection_) {
+			if (opponent->getId() != player.getId()) {
+				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
+			}
+		}
+	}
 }
 
 void TetrisGame::Sender::sendToAll(const net::Packet& packet) const {
@@ -500,7 +504,6 @@ void TetrisGame::Sender::disconnect() {
 	remoteConnections_.clear();
 	connectionToServer_ = nullptr;
 }
-
 
 void TetrisGame::Sender::removeConnection(int connectionId) {
 	auto it = std::find_if(remoteConnections_.begin(), remoteConnections_.end(),
