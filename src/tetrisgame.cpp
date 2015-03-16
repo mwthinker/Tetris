@@ -379,16 +379,16 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 					}
 				}
 			} else { // Singleplayer.
-				// And is the correct settings?				
+				// And is the correct settings?
 				if (player.getTetrisBoard().getRows() == TETRIS_HEIGHT
 					&& player.getTetrisBoard().getColumns() == TETRIS_WIDTH
 					&& maxLevel_ == TETRIS_MAX_LEVEL) {
 
-					// Is local and a human player?
-					//if (status_ == LOCAL && player->) {
-					//	eventHandler_(GameOver(pInfo.points_));
-					//}
-					//
+					// Is a human player?
+					if (!player.getDevice()->isAi()) {
+						// May be a record.
+						eventHandler_(GameOver(player.getPoints()));
+					}
 				}
 			}
 			break;
