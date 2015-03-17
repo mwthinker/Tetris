@@ -3,7 +3,7 @@ MWetris
 The project MWetris is a Tetris clone with network capabilities. You 
 can play up to 4 human players on one computer and up to 4 computer opponents.
 
-<b> About </b>
+<p><b> About </b></p>
 The project is using CMake to generate the environment specific development 
 tools. E.g. Visual Studio solution (Windows) and makefile (Unix). See more 
 at http://www.cmake.org/.
@@ -20,8 +20,5 @@ compiler are installed. The dependencies must also be recognized by CMAKE.
 
 Dependencies
 ======
-SDL2 (at least 2.0.3), SDL2_image, SDL2_ttf and SDL2_mixer. And the 
-application uses dynamic linking to Openg GL ES 2.
-
-External libraries such as TinyXML2 (https://github.com/leethomason/tinyxml2),
-and enet (http://enet.bespin.org/) is included as source.
+SDL2 (at least 2.0.3, http://www.libsdl.org/), SDL2_image, SDL2_ttf, 
+SDL2_mixer and SDL2_net. The application uses dynamic linking to Openg GL ES 2.

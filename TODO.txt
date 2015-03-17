@@ -10,7 +10,7 @@ Done! The gui code must be made smaller and if possible into an own project.
 
 Last played game can be resumed at the same point when the window was closed.
 
-Add animation effects to game.
+Partly done! Add animation effects to game.
 
 Done! Use external TinyXMl library to load xml files.
 
