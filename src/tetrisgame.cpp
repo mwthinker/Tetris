@@ -59,21 +59,21 @@ void TetrisGame::createClientGame(int port, std::string ip) {
 
 void TetrisGame::initGame() {
 	// Signals the gui that the game begins.
+	GameStart gameStart(GameStart::LOCAL);
 	switch (status_) {
-		case TetrisGame::LOCAL:
-			eventHandler_(GameStart(GameStart::LOCAL));
-			break;
 		case TetrisGame::CLIENT:
-			eventHandler_(GameStart(GameStart::CLIENT));
+			gameStart = GameStart(GameStart::CLIENT);
 			break;
 		case TetrisGame::SERVER:
-			eventHandler_(GameStart(GameStart::SERVER));
+			gameStart = GameStart(GameStart::SERVER);
 			break;
 	}
+	eventHandler_(gameStart);
 
 	if (pause_) {
 		pause_ = false;
-		eventHandler_(GamePause(pause_));
+		GamePause gamePause(pause_);
+		eventHandler_(gamePause);
 	}
 
 	// Init all players.
@@ -130,7 +130,8 @@ void TetrisGame::pause() {
 		packet << localConnection_.getId();
 		sender_.sendToAll(packet);
 	}
-	eventHandler_(GamePause(pause_));
+	GamePause gamePause(pause_);
+	eventHandler_(gamePause);
 }
 
 void TetrisGame::addCallback(const mw::Signal<TetrisGameEvent&>::Callback& callback) {
@@ -205,7 +206,8 @@ void TetrisGame::receiveAndSendNetworkData() {
 			// Send the new connection info to the old connections.
 			sender_.sendToAllExcept(newRemote, newRemote->getClientInfo());
 
-			eventHandler_(NewConnection());
+			NewConnection newConnection;
+			eventHandler_(newConnection);
 		}
 
 		// Remove the disconnected connections.
@@ -223,7 +225,8 @@ void TetrisGame::receiveAndSendNetworkData() {
 			if (connectionToServer) {
 				sender_.setServerConnection(connectionToServer);
 				sender_.sendToAll(localConnection_.getClientInfo());
-				eventHandler_(NewConnection());
+				NewConnection newConnection;
+				eventHandler_(newConnection);
 			}
 		} else {
 			net::Packet packet;
@@ -298,9 +301,12 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 			initGame();
 			break;
 		case PacketType::PAUSE:
+		{
 			pause_ = !pause_;
-			eventHandler_(GamePause(pause_));
+			GamePause gamePause(pause_);
+			eventHandler_(gamePause);
 			break;
+		}
 		case PacketType::BOARD_SIZE:
 			packet >> width_;
 			packet >> height_;
@@ -387,7 +393,8 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 					// Is a human player?
 					if (!player.getDevice()->isAi()) {
 						// May be a record.
-						eventHandler_(GameOver(player.getPoints()));
+						GameOver gameOver(player.getPoints());
+						eventHandler_(gameOver);
 					}
 				}
 			}

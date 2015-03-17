@@ -22,9 +22,9 @@ public:
 	};
 
 	GameStart(Status status) : status_(status) {
-	}
+	}	
 
-	const Status status_;
+	Status status_;
 };
 
 class GamePause : public TetrisGameEvent {
