@@ -229,7 +229,7 @@ void DynamicGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 		vbo_.bindBuffer();
 
 		setVertexAttribPointer(shader);
-		mw::glDrawArrays(GL_TRIANGLES, 0, BLOCK_VERTICES + dynamicVertercies_);
+		glDrawArrays(GL_TRIANGLES, 0, BLOCK_VERTICES + dynamicVertercies_);
 
 		vbo_.unbindBuffer();
 	}

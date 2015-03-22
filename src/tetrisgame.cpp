@@ -29,6 +29,7 @@ void TetrisGame::createLocalGame() {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
 		
+		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.restart();
 		initGame();
 	}

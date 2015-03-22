@@ -174,7 +174,7 @@ void StaticGraphicBoard::draw(float deltaTime, const BoardShader& shader) {
 
 		// Draw the static part.
 		int nbr = staticVbo_.getSize() / 9 / sizeof(GLfloat);
-		mw::glDrawArrays(GL_TRIANGLES, 0, staticVbo_.getSize() / 9 / sizeof(GLfloat)); // 9 floats*bytes/vertex.
+		glDrawArrays(GL_TRIANGLES, 0, staticVbo_.getSize() / 9 / sizeof(GLfloat)); // 9 floats*bytes/vertex.
 
 		staticVbo_.unbindBuffer();
 

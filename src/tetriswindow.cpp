@@ -26,7 +26,8 @@
 #include <sstream>
 
 TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
-	gui::Frame(e.getDeepChildEntry("window positionX").getInt(),
+	gui::Frame(2, 1, false,
+		e.getDeepChildEntry("window positionX").getInt(),
         e.getDeepChildEntry("window positionY").getInt(),
         e.getDeepChildEntry("window width").getInt(),
         e.getDeepChildEntry("window height").getInt(),
@@ -50,13 +51,6 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	SDL_GetWindowSize(getSdlWindow(), &lastWidth_, &lastHeight_);
 
 	setDefaultClosing(true);
-
-	game_ = std::make_shared<GameComponent>(tetrisGame_, tetrisEntry_);
-
-	addUpdateListener([&](gui::Frame& frame, Uint32 deltaTime) {
-		SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_); // Update last window position.
-		tetrisGame_.update(deltaTime);
-	});
 
 	// Saves the last window position. And makes the window movable by holding down left mouse button.
 	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));
@@ -252,7 +246,14 @@ void TetrisWindow::initPlayPanel() {
 		tetrisGame_.pause();
 	});
 
+	addDrawListener([&](gui::Frame& frame, Uint32 deltaTime) {
+		SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_); // Update last window position.
+		tetrisGame_.update(deltaTime);
+	});
+
     // Add the game component, already created in the constructor.
+	//game_ = add<GameComponent>(gui::BorderLayout::CENTER, tetrisGame_, tetrisEntry_);
+	game_ = std::make_shared<GameComponent>(tetrisGame_, tetrisEntry_);
 	add(gui::BorderLayout::CENTER, game_);
 
 	addKeyListener([&](gui::Component& c, const SDL_Event& keyEvent) {
