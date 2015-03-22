@@ -20,5 +20,6 @@ compiler are installed. The dependencies must also be recognized by CMAKE.
 
 Dependencies
 ======
-SDL2 (at least 2.0.3, http://www.libsdl.org/), SDL2_image, SDL2_ttf, 
-SDL2_mixer and SDL2_net. The application uses dynamic linking to Openg GL ES 2.
+SDL2 (at least 2.0.3, http://www.libsdl.org/), SDL2_image, SDL2_ttf, SDL2_mixer
+and SDL2_net. And the application uses GLEW(http://glew.sourceforge.net/) to
+load OpengGl 2.1.
