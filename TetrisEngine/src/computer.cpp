@@ -116,70 +116,70 @@ namespace {
 		return calculator.excecute(cache);
 	}
 
-	// Find the best state for the block to move.
-	Computer::State calculateBestState(calc::Calculator& calculator, const calc::Cache& cache, RawTetrisBoard board, int depth) {
-		if (depth != 0) {
-			std::vector<Computer::State> states = calculateAllPossibleStates(board, board.getBlock());
-
-			double highestValue = -100000;
-			int hIndex = -1;
-			for (unsigned int index = 0; index < states.size(); ++index) {
-				Computer::State state = states[index];
-				RawTetrisBoard childBoard = board;
-
-				for (int i = 0; i < state.rotations_; ++i) {
-					childBoard.update(Move::ROTATE_LEFT);
-				}
-
-				while (state.left_ != 0) {
-					if (state.left_ < 0) {
-						childBoard.update(Move::RIGHT);
-						++state.left_;
-					} else if (state.left_ > 0) {
-						childBoard.update(Move::LEFT);
-						--state.left_;
-					}
-				}
-
-				// Move down the block and stop just before impact.
-				for (int i = 0; i < state.down_ - 1; ++i) {
-					childBoard.update(Move::DOWN_GRAVITY);
-				}
-				// Save the current block before impact.
-				Block block = childBoard.getBlock();
-				// Impact, the block is now a part of the board.
-				childBoard.update(Move::DOWN_GRAVITY);
-
-				if (depth > 1) {
-					calculateBestState(calculator, cache, childBoard, depth - 1);
-					double value = calculateValue(calculator, cache, childBoard, block);
-
-					if (value > highestValue) {
-						hIndex = index;
-						highestValue = value;
-					}
-				} else {
-					double value = calculateValue(calculator, cache, childBoard, block);
-
-					if (value > highestValue) {
-						hIndex = index;
-						highestValue = value;
-					}
-				}
-			}
-
-			if (hIndex >= 0) {
-				return states[hIndex];
-			}
-		}
-		return Computer::State();
-	}
-
 	// All parameters are copied, to avoid thread problems.
 	Computer::State asyncCalculateBestState(calc::Calculator calculator, calc::Cache cache, RawTetrisBoard board, int depth) {
 		return calculateBestState(calculator, cache, board, depth);
 	}
 
+}
+
+// Find the best state for the block to move.
+Computer::State calculateBestState(calc::Calculator& calculator, const calc::Cache& cache, RawTetrisBoard board, int depth) {
+	if (depth != 0) {
+		std::vector<Computer::State> states = calculateAllPossibleStates(board, board.getBlock());
+
+		double highestValue = -100000;
+		int hIndex = -1;
+		for (unsigned int index = 0; index < states.size(); ++index) {
+			Computer::State state = states[index];
+			RawTetrisBoard childBoard = board;
+
+			for (int i = 0; i < state.rotations_; ++i) {
+				childBoard.update(Move::ROTATE_LEFT);
+			}
+
+			while (state.left_ != 0) {
+				if (state.left_ < 0) {
+					childBoard.update(Move::RIGHT);
+					++state.left_;
+				} else if (state.left_ > 0) {
+					childBoard.update(Move::LEFT);
+					--state.left_;
+				}
+			}
+
+			// Move down the block and stop just before impact.
+			for (int i = 0; i < state.down_ - 1; ++i) {
+				childBoard.update(Move::DOWN_GRAVITY);
+			}
+			// Save the current block before impact.
+			Block block = childBoard.getBlock();
+			// Impact, the block is now a part of the board.
+			childBoard.update(Move::DOWN_GRAVITY);
+
+			if (depth > 1) {
+				calculateBestState(calculator, cache, childBoard, depth - 1);
+				double value = calculateValue(calculator, cache, childBoard, block);
+
+				if (value > highestValue) {
+					hIndex = index;
+					highestValue = value;
+				}
+			} else {
+				double value = calculateValue(calculator, cache, childBoard, block);
+
+				if (value > highestValue) {
+					hIndex = index;
+					highestValue = value;
+				}
+			}
+		}
+
+		if (hIndex >= 0) {
+			return states[hIndex];
+		}
+	}
+	return Computer::State();
 }
 
 Computer::Computer() : Device(true) {

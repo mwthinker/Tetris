@@ -42,6 +42,14 @@ public:
 		int rotations_;
 	};
 
+	inline calc::Calculator& getCalculator() {
+		return calculator_;
+	}
+
+	inline const calc::Cache& getCache() {
+		return cache_;
+	}
+
 private:
 	void initCalculator(const Ai& ai);
 
@@ -59,5 +67,7 @@ private:
 	calc::Calculator calculator_;
 	calc::Cache cache_;
 };
+
+Computer::State calculateBestState(calc::Calculator& calculator, const calc::Cache& cache, RawTetrisBoard board, int depth);
 
 #endif // CUMPUTER_H

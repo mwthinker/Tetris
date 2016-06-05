@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(MWetris)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SdlGui/MwLibrary2/cmake/Modules/)
+
 if (MSVC)
 	# Exception handler model.
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
@@ -16,18 +17,12 @@ endif ()
 set(SOURCES
 	src/actionhandler.cpp
 	src/actionhandler.h
-	src/ai.h
-	src/block.cpp
-	src/block.h
 	src/boardshader.cpp
 	src/boardshader.h
 	src/boardshaderfunctions.cpp
 	src/boardshaderfunctions.h
 	src/boardsizebutton.cpp
 	src/boardsizebutton.h
-	src/computer.cpp
-	src/computer.h
-	src/device.h
 	src/dynamicgraphicboard.cpp
 	src/dynamicgraphicboard.h
 	src/gamecomponent.cpp
@@ -48,19 +43,12 @@ set(SOURCES
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
-	src/player.cpp
-	src/player.h
 	src/protocol.cpp
 	src/protocol.h
-	src/rawtetrisboard.cpp
-	src/rawtetrisboard.h
 	src/remoteplayer.h
 	src/remoteconnection.h
-	src/square.h
 	src/staticgraphicboard.cpp
 	src/staticgraphicboard.h
-	src/tetrisboard.cpp
-	src/tetrisboard.h
 	src/tetrisentry.cpp
 	src/tetrisentry.h
 	src/tetrisgame.cpp
@@ -87,6 +75,7 @@ add_subdirectory(DataEntry)
 add_subdirectory(SdlGui)
 add_subdirectory(Calculator)
 add_subdirectory(SimpleNetwork)
+add_subdirectory(TetrisEngine)
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
@@ -103,7 +92,8 @@ include_directories(
 	SdlGui/Signal/src
 	DataEntry/src
 	DataEntry/TinyXML2/src
-	Calculator/src)
+	Calculator/src
+	TetrisEngine/src)
 
 add_executable(MWetris ${SOURCES})
 
@@ -120,6 +110,7 @@ target_link_libraries(MWetris
 	MwLibrary2
 	Signal
 	SdlGui
+	TetrisEngine
 	${GLEW_LIBRARIES}
 	${OPENGL_LIBRARIES}
 	${SDL2_LIBRARIES}
