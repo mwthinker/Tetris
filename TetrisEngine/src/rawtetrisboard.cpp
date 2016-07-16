@@ -7,7 +7,8 @@ RawTetrisBoard::RawTetrisBoard(int rows, int columns,
 	gameboard_(rows * columns, BlockType::EMPTY),
 	next_(next),
 	rows_(rows), columns_(columns),
-	isGameOver_(false) {
+	isGameOver_(false),
+	rowsRemoved_(0) {
 	
 	current_ = createBlock(current);
 }
@@ -73,6 +74,7 @@ void RawTetrisBoard::update(Move move) {
 
 					// Remove any filled row on the gameboard.
 					int nbr = removeFilledRows(current_);
+					rowsRemoved_ += nbr;
 
 					// Add rows due to some external event.
 					std::vector<BlockType> squares = addExternalRows();

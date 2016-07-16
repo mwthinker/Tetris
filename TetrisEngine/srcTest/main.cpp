@@ -3,7 +3,6 @@
 
 #include <ai.h>
 #include <tetrisboard.h>
-#include <computer.h>
 
 void printBoard(const TetrisBoard& board) {
 	const std::vector<BlockType>& squares = board.getBoardVector();
@@ -49,7 +48,7 @@ int main(int argc, char** argv) {
 	using namespace std::chrono_literals;
 
 	std::cout << "\nAll tests succeeded!\n";	
-	Computer cp;
+	Ai defaultAi_;
 	TetrisBoard board(24, 10, randomBlockType(), randomBlockType());
 	int nbr = 0;
 
@@ -63,11 +62,11 @@ int main(int argc, char** argv) {
 	});
 
 	while (!board.isGameOver()) {
-		Computer::State state = calculateBestState(cp.getCalculator(), cp.getCache(), board, 2);
+		Ai::State state = defaultAi_.calculateBestState(board, 1);
 
 		if (newBlock) {
 			std::cout << "Turns : " << board.getNbrOfUpdates() << "\n";
-			//printBoard(board);
+			printBoard(board);
 
 			for (int i = 0; i < state.rotations_; ++i) {
 				board.update(Move::ROTATE_LEFT);

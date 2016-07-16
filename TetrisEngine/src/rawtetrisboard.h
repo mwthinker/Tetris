@@ -123,6 +123,10 @@ public:
 		return externalRowsAdded_;
 	}
 
+	inline int getRemovedRows() const {
+		return rowsRemoved_;
+	}
+
 private:
 	inline BlockType& blockType(int row, int column) {
 		return gameboard_[row * columns_ + column];
@@ -158,6 +162,7 @@ private:
 	bool isGameOver_;					// True when game is over, else false.
 	int row1_, row2_, row3_, row4_;		// The last rows that was removed.
 	int externalRowsAdded_;
+	int rowsRemoved_;
 };
 
 #endif // RAWTETRISBOARD_H

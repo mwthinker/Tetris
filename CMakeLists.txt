@@ -23,6 +23,9 @@ set(SOURCES
 	src/boardshaderfunctions.h
 	src/boardsizebutton.cpp
 	src/boardsizebutton.h
+	src/computer.cpp
+	src/computer.h
+	src/device.h
 	src/dynamicgraphicboard.cpp
 	src/dynamicgraphicboard.h
 	src/gamecomponent.cpp
@@ -43,6 +46,8 @@ set(SOURCES
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
+	src/player.cpp
+	src/player.h
 	src/protocol.cpp
 	src/protocol.h
 	src/remoteplayer.h
