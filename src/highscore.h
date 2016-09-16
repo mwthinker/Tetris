@@ -22,7 +22,7 @@ public:
 
 	Highscore(int nbr, const mw::Color& color, const mw::Font& font);
 
-	void draw(Uint32 deltaTime) override;
+	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
 	bool isNewRecord(int record) const;
 	void addNewRecord(std::string name, std::string date);

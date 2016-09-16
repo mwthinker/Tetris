@@ -81,7 +81,6 @@ void RawTetrisBoard::update(Move move) {
 					if (squares.size() > 0) {
 						externalRowsAdded_ = squares.size() % columns_;
 						gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
-						gameboard_.resize(gameboard_.size() - squares.size(), BlockType::EMPTY);
 						triggerEvent(GameEvent::EXTERNAL_ROWS_ADDED);
 					}
 
@@ -151,6 +150,16 @@ Block RawTetrisBoard::createBlock(BlockType blockType) const {
 	return Block(blockType, rows_ - 4, columns_ / 2 - 1); // 4 rows are the starting area.
 }
 
+BlockType RawTetrisBoard::getBlockType(int row, int column) const {
+	if (column < 0 || column >= columns_ || row < 0) {
+		return BlockType::WALL;
+	}
+	if (row * columns_ + column >= (int) gameboard_.size()) {
+		return BlockType::EMPTY;
+	}
+	return gameboard_[row * columns_ + column];
+}
+
 bool RawTetrisBoard::collision(const Block& block) const {
 	bool collision = false;
 
@@ -170,12 +179,7 @@ void RawTetrisBoard::clearBoard() {
 }
 
 int RawTetrisBoard::removeFilledRows(const Block& block) {
-	row1_ = -1;
-	row2_ = -1;
-	row3_ = -1;
-	row4_ = -1;
 	int row = block.getLowestRow();
-
 	int nbr = 0; // Number of rows filled.
 	const int nbrOfSquares = current_.nbrOfSquares();
 	for (int i = 0; i < nbrOfSquares; ++i) {
@@ -192,21 +196,6 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 		}
 		if (filled) {
 			moveRowsOneStepDown(row);
-			// Which row was filled?
-			switch (nbr) {
-				case 0:
-					row1_ = row + nbr;
-					break;
-				case 1:
-					row2_ = row + nbr;;
-					break;
-				case 2:
-					row3_ = row + nbr;;
-					break;
-				case 3:
-					row4_ = row + nbr;;
-					break;
-			}
 			++nbr;
 		} else {
 			++row;
@@ -217,9 +206,15 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 }
 
 void RawTetrisBoard::moveRowsOneStepDown(int rowToRemove) {
+	rowToBeRemoved_ = rowToRemove;
+	triggerEvent(GameEvent::ROW_TO_BE_REMOVED);
 	int indexStartOfRow = rowToRemove * columns_;
 	// Erase the row.
 	gameboard_.erase(gameboard_.begin() + indexStartOfRow, gameboard_.begin() + indexStartOfRow + columns_);
-	// Replace the removed row with an empty row at the top.
-	gameboard_.insert(gameboard_.end(), columns_, BlockType::EMPTY);
+	
+	// Is it necessary to replace the row?
+	if ((int) gameboard_.size() < rows_ * columns_) {
+		// Replace the removed row with an empty row at the top.
+		gameboard_.insert(gameboard_.end(), columns_, BlockType::EMPTY);
+	}
 }

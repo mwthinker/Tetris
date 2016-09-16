@@ -19,14 +19,18 @@ class GameData;
 class GameComponent : public gui::Component, public GameHandler {
 public:
 	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
+	
+	// @gui::Component
+	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
-	void draw(Uint32 deltaTime) override;
-
+	// @GameHandler
 	void initGame(std::vector<std::shared_ptr<Player>>& player) override;
 
+	// @GameHandler
 	void countDown(int msCountDown) override;
 
 private:
+	// @GameHandler
 	void eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) override;
 
 	void soundEffects(GameEvent gameEvent) const;
@@ -37,6 +41,7 @@ private:
 
 	std::map<int, GameGraphic> graphicPlayers_;
 	BoardShader boardShader_;
+	
 	TetrisEntry tetrisEntry_;
 	TetrisGame& tetrisGame_;
 
@@ -58,6 +63,8 @@ private:
 	float fontSize_;
 	float dx_, dy_;
 	float scale_;
+	float borderSize_;
+	
 };
 
 #endif // GAMECOMPONENT_H

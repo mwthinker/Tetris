@@ -94,7 +94,6 @@ private:
 	void initCreateServerPanel();
 	void initCreateClientPanel();
 	void initWaitToConnectPanel();
-	void initNewHighScorePanel();
 
 	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
 

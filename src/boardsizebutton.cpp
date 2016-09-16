@@ -7,12 +7,12 @@ BoardSizeButton::BoardSizeButton(int minX, int minY, int maxX, int maxY, const m
 }
 
 
-void BoardSizeButton::draw(Uint32 deltaTime) {
+void BoardSizeButton::draw(const gui::Graphic& graphic, double deltaTime) {
 	gui::Dimension size = getSize();
 	if (pushed_) {
-		drawSprite(iconDown_, 0, 0, size.width_, size.height_);
+		graphic.drawSprite(iconDown_, 0, 0, size.width_, size.height_);		
 	} else {
-		drawSprite(icon_, 0, 0, size.width_, size.height_);
+		graphic.drawSprite(icon_, 0, 0, size.width_, size.height_);
 	}
 }
 

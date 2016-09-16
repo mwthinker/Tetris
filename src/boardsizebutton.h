@@ -16,8 +16,8 @@ public:
 	int getRows() const {
 		return y_;
 	}
-
-	void draw(Uint32 deltaTime) override;
+	
+	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
 private:
 	void handleMouse(const SDL_Event& mouseEvent) override;

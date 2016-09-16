@@ -21,6 +21,7 @@ enum class GameEvent {
 	TWO_ROW_REMOVED,
 	THREE_ROW_REMOVED,
 	FOUR_ROW_REMOVED,
+	ROW_TO_BE_REMOVED,
 	GAME_OVER
 };
 
@@ -92,32 +93,11 @@ public:
 	}
 
 	// Return the blocktype for a given position.
-	inline BlockType getBlockType(int row, int column) const {
-		if (row >= 0 && row < rows_ && column >= 0 && column < columns_) {
-			return gameboard_[row * columns_ + column];
-		}
-		return BlockType::WALL;
-	}
+	inline BlockType getBlockType(int row, int column) const;
 
 	// Return true if the block is outside or on an already occupied square on the board.
 	// Otherwise it return false.
 	bool collision(const Block& block) const;
-
-	inline int getRemovedRow1() const {
-		return row1_;
-	}
-
-	inline int getRemovedRow2() const {
-		return row2_;
-	}
-
-	inline int getRemovedRow3() const {
-		return row3_;
-	}
-
-	inline int getRemovedRow4() const {
-		return row4_;
-	}
 
 	inline int getNbrExternalRowsAdded() const {
 		return externalRowsAdded_;
@@ -125,6 +105,10 @@ public:
 
 	inline int getRemovedRows() const {
 		return rowsRemoved_;
+	}
+
+	inline int getRowToBeRemoved() const {
+		return rowToBeRemoved_;
 	}
 
 private:
@@ -144,7 +128,7 @@ private:
 	virtual void triggerEvent(GameEvent gameEvent) {
 	}
 
-	virtual std::vector<BlockType> addExternalRows() {
+	inline virtual std::vector<BlockType> addExternalRows() {
 		return std::vector<BlockType>(0); // A vector with no dynamic allocated size.
 	}
 
@@ -160,9 +144,9 @@ private:
 	Block current_;						// The current block for the player to control.
 	int rows_, columns_;				// The size of the gameboard.
 	bool isGameOver_;					// True when game is over, else false.
-	int row1_, row2_, row3_, row4_;		// The last rows that was removed.
 	int externalRowsAdded_;
 	int rowsRemoved_;
+	int rowToBeRemoved_;
 };
 
 #endif // RAWTETRISBOARD_H

@@ -3,9 +3,14 @@
 
 #include "tetrisentry.h"
 #include "boardshader.h"
-#include "dynamicgraphicboard.h"
-#include "staticgraphicboard.h"
 #include "player.h"
+#include "drawrow.h"
+#include "vertexdata.h"
+#include "dynamicbuffer.h"
+#include "tetrisboard.h"
+#include "boardshader.h"
+#include "staticbuffer.h"
+#include "drawblock.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -17,37 +22,27 @@
 
 #include <string>
 
-class TetrisBoard;
-
 class GameGraphic {
 public:
 	~GameGraphic();
 
-	void restart(Player& player, float x, float y,
-		TetrisEntry boardEntry);
+	void restart(Player& player, float x, float y, const TetrisEntry& boardEntry);
 
 	void update(int clearedRows, int points, int level);
 
 	void updateTextSize(float size, const mw::Font& font);
 
-	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
-		dynamicBoard_.updateLinesRemoved(downTime, row1, row2, row3, row4);
-	}
-
-	void updateExternalRowsAdded(float upTime, int rowsAdded) {
-		dynamicBoard_.updateExternalRowsAdded(upTime, rowsAdded);
-	}
-
 	inline float getWidth() const {
-		return staticBoard_.getWidth();
+		return width_;
 	}
 
 	inline float getHeight() const {
-		return staticBoard_.getHeight();
+		return height_;
 	}
 
 	void draw(float deltaTime, const BoardShader& shader);
-	void drawText(const gui::Component& component, float x, float y, float width, float height, float scale);
+	
+	void drawText(const gui::Graphic& graphic, float x, float y, float width, float height, float scale);
 
 	void setMiddleMessage(const mw::Text& text);
 
@@ -62,17 +57,30 @@ public:
 	void setName(std::string name);
 
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
+	
+	void initStaticBackground(float lowX, float lowY, const TetrisEntry& boardEntry, Player& player);
 
 private:
-	DynamicGraphicBoard dynamicBoard_;
-	StaticGraphicBoard staticBoard_;
+	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
+
+	VertexDataPtr staticVertexData_;
+
 	mw::Text textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	int level_, points_, clearedRows_;
 
+	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 	mw::Font font_;
 	mw::signals::Connection connection_;
 
+	float borderSize_, boardWidth_, width_, height_;
 	bool showPoints_;
+
+	std::list<DrawRowPtr> rows_;
+	float squareSize_;
+
+	DynamicBuffer buffer_;
+	DrawBlockPtr currentBlockPtr_;
+	DrawBlockPtr nextBlockPtr_;
 };
 
 #endif // GRAPHICBOARD_H

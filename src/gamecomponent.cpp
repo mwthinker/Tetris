@@ -24,14 +24,16 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
 
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
+
+	GameGraphic g;
 }
 
 void GameComponent::validate() {
 	updateMatrix_ = true;
 }
 
-void GameComponent::draw(Uint32 deltaTime) {
-	boardShader_.glUseProgram();
+void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
+	boardShader_.useProgram();
 
 	const gui::Dimension dim = getSize();
 	if (updateMatrix_) {
@@ -62,7 +64,7 @@ void GameComponent::draw(Uint32 deltaTime) {
 		mw::translate2D(model, dx_, dy_);
 		mw::scale2D(model, scale_, scale_);
 
-		boardShader_.setGlMatrixU(getProjectionMatrix() * model);
+		boardShader_.setGlMatrixU(graphic.getProjectionMatrix() * model);
 
 		fontSize_ = scale_ * 12.f;
 		if (font_.getCharacterSize() != fontSize_) {
@@ -76,8 +78,6 @@ void GameComponent::draw(Uint32 deltaTime) {
 		updateMatrix_ = false;
 	}
 
-	enableGlTransparancy();
-
 	mw::Text text; // Used to update the "Pause".
 
 	// Draw boards.
@@ -89,18 +89,15 @@ void GameComponent::draw(Uint32 deltaTime) {
 			graphic.setMiddleMessage(text);
 		}
 		tetrisEntry_.bindTextureFromAtlas();
-		graphic.draw(deltaTime / 1000.f, boardShader_);
+		graphic.draw((float) deltaTime, boardShader_);
 	}
 
 	// Draw texts.
-	glUseProgram();
-	setGlModelU(getModelMatrix());
-
 	int i = 0;
 	float boardWidth = getSize().width_ / graphicPlayers_.size();
 	for (auto& pair : graphicPlayers_) {
-		GameGraphic& graphic = pair.second;
-		graphic.drawText(*this, i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
+		GameGraphic& gameGraphic = pair.second;
+		gameGraphic.drawText(graphic, i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
 		++i;
 	}
 
@@ -126,6 +123,7 @@ void GameComponent::initGame(std::vector<std::shared_ptr<Player>>& players) {
 	updateMatrix_ = true;
 }
 
+
 void GameComponent::countDown(int msCountDown) {
 	mw::Text text("", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
 	if (msCountDown > 0) {
@@ -137,7 +135,8 @@ void GameComponent::countDown(int msCountDown) {
 
 void GameComponent::eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) {
 	GameGraphic& graphic = graphicPlayers_[player->getId()];
-	//graphic.update(player->getPlayerInfo().nbrClearedRows_, player->getPlayerInfo().points_, player->getLevel());
+	
+	graphic.update(player->getClearedRows(), player->getPoints(), player->getLevel());
 
 	soundEffects(gameEvent);
 	switch (gameEvent) {

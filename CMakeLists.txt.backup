@@ -24,10 +24,6 @@ set(SOURCES
 	src/computer.cpp
 	src/computer.h
 	src/device.h
-	src/drawblock.cpp
-	src/drawblock.h
-	src/drawrow.cpp
-	src/drawrow.h
 	src/dynamicbuffer.cpp
 	src/dynamicbuffer.h
 	src/gamecomponent.cpp
@@ -54,6 +50,8 @@ set(SOURCES
 	src/protocol.h
 	src/remoteconnection.h
 	src/remoteplayer.h
+	src/drawrow.cpp
+	src/drawrow.h
 	src/staticbuffer.cpp
 	src/staticbuffer.h
 	src/tetrisentry.cpp

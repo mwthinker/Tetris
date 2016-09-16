@@ -17,7 +17,7 @@ BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
 	shader_.bindAttribute("aColor");
 	shader_.loadAndLinkFromFile(vShaderFile, fShaderFile);
 
-	shader_.glUseProgram();
+	shader_.useProgram();
 
 	// Collect the vertex buffer attributes indexes.
 	aPosIndex_ = shader_.getAttributeLocation("aPos");
@@ -29,8 +29,15 @@ BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
 	uMatrixIndex_ = shader_.getUniformLocation("uMat");
 }
 
-void BoardShader::glUseProgram() const {
-	shader_.glUseProgram();
+void BoardShader::setVertexAttribPointer() const {
+	setGlPosA(2, sizeof(GLfloat) * 9, (GLvoid*) 0);
+	setGlTexA(2, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
+	setGlIsTexA(1, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
+	setGlColorA(4, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
+}
+
+void BoardShader::useProgram() const {
+	shader_.useProgram();
 }
 
 // Vertex buffer Attributes. ---------------------------

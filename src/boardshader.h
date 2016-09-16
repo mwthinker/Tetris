@@ -10,11 +10,26 @@
 
 class BoardShader {
 public:
+	inline static constexpr unsigned int vertexSizeInBytes() {
+		return vertexSizeInFloat() * sizeof(GLfloat);
+	}
+
+	inline static constexpr unsigned int vertexSizeInFloat() {
+		return 9;
+	}
+
 	BoardShader();
 	BoardShader(std::string vShaderFile, std::string fShaderFile);
 
-	void glUseProgram() const;
+	void useProgram() const;
 
+	void setVertexAttribPointer() const;
+
+	// Uniforms. -------------------------------------------
+
+	void setGlMatrixU(const mw::Matrix44& matrix) const;
+
+private:
 	// Vertex buffer Attributes. ---------------------------
 
 	void setGlPosA(GLint size, const GLvoid* data) const;
@@ -29,11 +44,6 @@ public:
 	void setGlColorA(GLint size, const GLvoid* data) const;
 	void setGlColorA(GLint size, GLsizei stride, const GLvoid* data) const;
 
-	// Uniforms. -------------------------------------------
-
-	void setGlMatrixU(const mw::Matrix44& matrix) const;	
-
-private:
 	mw::Shader shader_;
 
 	int aPosIndex_;
