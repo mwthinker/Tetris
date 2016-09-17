@@ -30,9 +30,6 @@ public:
 	void countDown(int msCountDown) override;
 
 private:
-	// @GameHandler
-	void eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) override;
-
 	void soundEffects(GameEvent gameEvent) const;
 
 	// @gui::Component
@@ -64,7 +61,6 @@ private:
 	float dx_, dy_;
 	float scale_;
 	float borderSize_;
-	
 };
 
 #endif // GAMECOMPONENT_H

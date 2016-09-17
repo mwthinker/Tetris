@@ -14,7 +14,8 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	gravityMove_(1, false),				// Value doesn't matter! Changes every frame.
 	downHandler_(0.04, false),
 	device_(device),
-	connectionId_(connectionId) {
+	connectionId_(connectionId),
+	levelUpCounter_(0) {
 
 	device_->update(getTetrisBoard());
 	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();

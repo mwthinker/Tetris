@@ -116,9 +116,9 @@ private:
 
 	void initGame();
 
-	void applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoard& board, LocalPlayer& player);
+	void applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<LocalPlayer>& player);
 
-	void applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, RemotePlayer& player);
+	void applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<RemotePlayer>& player);
 
 	mw::Signal<TetrisGameEvent&> eventHandler_;
 	bool pause_;

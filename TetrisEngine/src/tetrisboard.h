@@ -7,7 +7,6 @@
 #include <mw/signal.h>
 
 #include <vector>
-#include <queue>
 
 BlockType randomBlockType();
 
@@ -22,7 +21,7 @@ public:
 
 	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
 	void restart(BlockType current, BlockType next);
-
+	
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
 
@@ -30,17 +29,16 @@ public:
 		return nbrOfUpdates_;
 	}
 
-	bool pollGameEvent(GameEvent& gameEvent);
-
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
 private:
+	// @RawTetrisBoard
 	void triggerEvent(GameEvent gameEvent) override;
 
+	// @RawTetrisBoard
 	std::vector<BlockType> addExternalRows() override;
 
 	std::vector<BlockType> squaresToAdd_;
-	std::queue<GameEvent> gameEvents_;
 	mw::Signal<GameEvent, const TetrisBoard&> listener_;
 	
 	int nbrOfUpdates_;

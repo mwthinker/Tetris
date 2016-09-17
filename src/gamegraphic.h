@@ -11,6 +11,7 @@
 #include "boardshader.h"
 #include "staticbuffer.h"
 #include "drawblock.h"
+#include "drawtext.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -42,8 +43,6 @@ public:
 
 	void draw(float deltaTime, const BoardShader& shader);
 	
-	void drawText(const gui::Graphic& graphic, float x, float y, float width, float height, float scale);
-
 	void setMiddleMessage(const mw::Text& text);
 
 	inline void showPoints() {
@@ -57,15 +56,14 @@ public:
 	void setName(std::string name);
 
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
-	
-	void initStaticBackground(float lowX, float lowY, const TetrisEntry& boardEntry, Player& player);
 
 private:
+	void initStaticBackground(float lowX, float lowY, const TetrisEntry& boardEntry, Player& player);
+
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
 	VertexDataPtr staticVertexData_;
-
-	mw::Text textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	int level_, points_, clearedRows_;
 
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
@@ -77,6 +75,8 @@ private:
 
 	std::list<DrawRowPtr> rows_;
 	float squareSize_;
+	float lowX_;
+	float lowY_;
 
 	DynamicBuffer buffer_;
 	DrawBlockPtr currentBlockPtr_;

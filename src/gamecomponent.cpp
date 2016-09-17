@@ -24,8 +24,6 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
 
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
-
-	GameGraphic g;
 }
 
 void GameComponent::validate() {
@@ -92,15 +90,6 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		graphic.draw((float) deltaTime, boardShader_);
 	}
 
-	// Draw texts.
-	int i = 0;
-	float boardWidth = getSize().width_ / graphicPlayers_.size();
-	for (auto& pair : graphicPlayers_) {
-		GameGraphic& gameGraphic = pair.second;
-		gameGraphic.drawText(graphic, i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
-		++i;
-	}
-
 	mw::checkGlError();
 }
 
@@ -133,12 +122,14 @@ void GameComponent::countDown(int msCountDown) {
 	}
 }
 
-void GameComponent::eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) {
-	GameGraphic& graphic = graphicPlayers_[player->getId()];
+/*
+void GameComponent::eventHandler(const Player& player, PlayerEvent playerEvent) {
+	GameGraphic& graphic = graphicPlayers_[player.getId()];
 	
-	graphic.update(player->getClearedRows(), player->getPoints(), player->getLevel());
+	graphic.update(player.getClearedRows(), player.getPoints(), player.getLevel());
 
-	soundEffects(gameEvent);
+	/*soundEffects(gameEvent);
+
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			if (tetrisGame_.getNbrOfPlayers() == 1) {
@@ -170,7 +161,7 @@ void GameComponent::eventHandler(const std::shared_ptr<Player>& player, GameEven
 		case GameEvent::FOUR_ROW_REMOVED:
 			break;
 	}
-}
+}*/
 
 void GameComponent::soundEffects(GameEvent gameEvent) const {
 	mw::Sound sound;

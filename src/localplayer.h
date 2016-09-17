@@ -16,6 +16,7 @@ public:
 	LocalPlayer(int connectionId, int playerId, int width, int height,
 		BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
 
+	// @Player
     void update(double deltaTime) override;
 
 	inline const DevicePtr& getDevice() const {
@@ -38,7 +39,7 @@ public:
 		level_ = level;
 	}
 
-	void setConnectionId(int connectionId) {
+	inline void setConnectionId(int connectionId) {
 		connectionId_ = connectionId;
 	}
 

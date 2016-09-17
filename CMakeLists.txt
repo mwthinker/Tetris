@@ -28,6 +28,8 @@ set(SOURCES
 	src/drawblock.h
 	src/drawrow.cpp
 	src/drawrow.h
+	src/drawtext.cpp
+	src/drawtext.h
 	src/dynamicbuffer.cpp
 	src/dynamicbuffer.h
 	src/gamecomponent.cpp
@@ -53,6 +55,7 @@ set(SOURCES
 	src/protocol.cpp
 	src/protocol.h
 	src/remoteconnection.h
+	src/remoteplayer.cpp
 	src/remoteplayer.h
 	src/staticbuffer.cpp
 	src/staticbuffer.h

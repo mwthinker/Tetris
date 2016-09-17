@@ -31,7 +31,7 @@ void DrawRow::init(DynamicBuffer& buffer, int row, const TetrisBoard& board, flo
 	squareSize_ = squareSize;
 	columns_ = board.getColumns();
 	timeLeft_ = 0.f;
-	movingTime_ = 0.05;
+	movingTime_ = 0.05f;
 }
 
 void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -66,7 +66,7 @@ void DrawRow::draw(float deltaTime, const BoardShader& shader) {
 		if (timeLeft_ < 0) {
 			oldRow_ = row_;
 			timeLeft_ = -0.0f;
-			graphicRow_ = row_;
+			graphicRow_ = (float) row_;
 		}
 		updateVertexData();
 	}

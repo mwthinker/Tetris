@@ -14,26 +14,24 @@ void GameGraphic::restart(Player& player, float x, float y,
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
-
-	initStaticBackground(x, y, boardEntry, player);
-
+	
 	connection_.disconnect();
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
 	font_ = boardEntry.getChildEntry("font").getFont(30);
 
-	// Define all text sizes and font usage.
-	textLevel_ = mw::Text("", font_, 16);
-	textPoints_ = mw::Text("", font_, 16);
-	textClearedRows_ = mw::Text("", font_, 16);
+	initStaticBackground(x, y, boardEntry, player);
+	
 	showPoints_ = true;
 
-	name_ = mw::Text(player.getName(), font_, 16);
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
 void GameGraphic::initStaticBackground(float lowX, float lowY,
 	const TetrisEntry& boardEntry, Player& player) {
+
+	lowX_ = lowX;
+	lowY_ = lowY;
 
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
 
@@ -121,6 +119,17 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 		c3);
 
 	nextBlockPtr_ = std::make_shared<DrawBlock>(spriteEntry, Block(tetrisBoard.getNextBlockType(), 0, 0), buffer_, squareSize_, x + squareSize_ * 2.5f, y + squareSize_ * 2.5f, true);
+	name_ = std::make_shared<DrawText>(buffer_, "Marcus", font_, x, y + squareSize_ * 5);
+	name_->update("Marcus", 10);
+
+	textLevel_ = std::make_shared<DrawText>(buffer_, "10", font_, x, y - 20);
+	textLevel_->update("1", 10);
+
+	textPoints_ = std::make_shared<DrawText>(buffer_, "10", font_, x, y - 40);
+	textPoints_->update("5", 10);
+
+	textClearedRows_ = std::make_shared<DrawText>(buffer_, "10", font_, x, y - 60);
+	textClearedRows_->update("1", 10);
 
 	// Add border.
 	// Left-up corner.
@@ -194,7 +203,6 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 		borderSize_, height_ - 2 * borderSize_,
 		borderVertical,
 		borderColor);
-
 	
 	staticVertexData_->end();	
 	staticBuffer.init();
@@ -298,31 +306,34 @@ void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
 	}
 	for (DrawRowPtr rowPtr : rows_) {
 		rowPtr->draw(deltaTime, shader);
-	}	
+	}
+
+	if (name_) {
+		name_->draw(deltaTime, shader);
+	}
+	if (textLevel_) {
+		textLevel_->draw(deltaTime, shader);
+	}
+	if (textPoints_) {
+		textPoints_->draw(deltaTime, shader);
+	}
+	if (textClearedRows_) {
+		textClearedRows_->draw(deltaTime, shader);
+	}
 	
 	glDisable(GL_BLEND);
 	mw::checkGlError();
 }
 
-void GameGraphic::drawText(const gui::Graphic& graphic, float x, float y, float width, float height, float scale) {
-	float boardWidth = boardWidth_ * scale;
-	float borderSize = borderSize_;	
-
-	graphic.drawText(name_, x + boardWidth + borderSize * scale, height - y - name_.getHeight() - borderSize * scale);
-	graphic.drawText(textPoints_, x + boardWidth + borderSize * scale, y + 50 * scale + borderSize * scale);
-	graphic.drawText(textLevel_, x + boardWidth + borderSize * scale, y + 70 * scale + borderSize * scale);
-	graphic.drawText(textClearedRows_, x + boardWidth + borderSize * scale, y + 100 * scale + borderSize * scale);
-}
-
 void GameGraphic::updateTextSize(float size, const mw::Font& font) {
-	textPoints_ = mw::Text(textPoints_.getText(), font, size);
-	name_ = mw::Text(name_.getText(), font, size);
-	textLevel_ = mw::Text(textLevel_.getText(), font, size);
-	textClearedRows_ = mw::Text(textClearedRows_.getText(), font, size);
+	//textPoints_ = mw::Text(textPoints_.getText(), font, size);
+	//name_ = mw::Text(name_.getText(), font, size);
+	//textLevel_ = mw::Text(textLevel_.getText(), font, size);
+	//textClearedRows_ = mw::Text(textClearedRows_.getText(), font, size);
 }
 
 void GameGraphic::setMiddleMessage(const mw::Text& text) {
-	middleMessage_ = text;
+	//middleMessage_ = text;
 }
 
 void GameGraphic::update(int clearedRows, int points, int level) {
@@ -330,22 +341,22 @@ void GameGraphic::update(int clearedRows, int points, int level) {
 		std::stringstream stream;
 		clearedRows_ = clearedRows;
 		stream << "Rows " << clearedRows;
-		textClearedRows_.setText(stream.str());
+		textClearedRows_->update(stream.str());
 	}
 	if (points_ != points) {
 		std::stringstream stream;
 		points_ = points;
 		stream << "Points " << points;
-		textPoints_.setText(stream.str());
+		textPoints_->update(stream.str());
 	}
 	if (level_ != level) {
 		std::stringstream stream;
 		level_ = level;
 		stream << "Level " << level;
-		textLevel_.setText(stream.str());
+		textLevel_->update(stream.str());
 	}
 }
 
 void GameGraphic::setName(std::string name) {
-	name_.setText(name);
+	name_->update(name);
 }
