@@ -58,8 +58,8 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	tetrisGame_.addCallback(std::bind(&TetrisWindow::handleConnectionEvent, this, std::placeholders::_1));
 
 	// Initializes default keyboard devices for two players.
-	devices_.push_back(std::make_shared<Keyboard>("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP));
-	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w));
+	devices_.push_back(std::make_shared<Keyboard>("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_RCTRL));
+	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w, SDLK_LCTRL));
 
 	// Initialization of all joysticks!
 	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();

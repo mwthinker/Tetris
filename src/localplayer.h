@@ -51,7 +51,7 @@ private:
 	void boardListener(GameEvent, const TetrisBoard&);
 
     // Objects controling how the moving block is moved.
-	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
+	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_, downGroundHandler_;
 	int nbrOfUpdates_;
     DevicePtr device_;
 	PacketSender& sender_;

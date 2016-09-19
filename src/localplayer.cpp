@@ -11,6 +11,7 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	leftHandler_(0.09, false),
 	rightHandler_(0.09, false),
 	rotateHandler_(0.0, true),
+	downGroundHandler_(0.0, true),
 	gravityMove_(1, false),				// Value doesn't matter! Changes every frame.
 	downHandler_(0.04, false),
 	device_(device),
@@ -108,6 +109,11 @@ void LocalPlayer::update(double deltaTime) {
 		rotateHandler_.update(deltaTime, input.rotate_);
 		if (rotateHandler_.doAction()) {
 			update(Move::ROTATE_LEFT);
+		}
+
+		downGroundHandler_.update(deltaTime, input.downGround_);
+		if (downGroundHandler_.doAction()) {
+			update(Move::DOWN_GROUND);
 		}
 	}
 }
