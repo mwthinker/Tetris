@@ -90,7 +90,8 @@ void TetrisGame::initGame() {
 
 	nbrOfPlayers_ = players.size();
 	nbrOfAlivePlayers_ = nbrOfPlayers_; // All players are living again.
-	gameHandler_->initGame(players);
+	InitGame initGame(players);
+	eventHandler_(initGame);
 }
 
 void TetrisGame::restartGame() {
@@ -417,8 +418,11 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 
 		// Set level.
 		int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
-		if (level <= maxLevel_) {
+		if (level <= maxLevel_ && level != player->getLevel()) {
+			int oldLevel = player->getLevel();
 			player->setLevel(level);
+			LevelChange levelChange(player, level, oldLevel);
+			eventHandler_(levelChange);
 		}
 	}
 }
@@ -439,8 +443,6 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 			rows = 4;
 			break;
 	}
-
-	player->setClearedRows(player->getClearedRows() + rows);
 
 	if (nbrOfPlayers_ > 1 && rows > 0) {
 		// Increase level up counter for all opponents to the current player.

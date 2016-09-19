@@ -12,7 +12,7 @@ using DrawBlockPtr = std::shared_ptr<DrawBlock>;
 
 class DrawBlock {
 public:
-	DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, float squareSize, float lowX, float lowY, bool center);
+	DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);
 	void draw(const BoardShader& shader);
@@ -25,6 +25,7 @@ private:
 	bool center_;
 	float squareSize_;
 	float lowX_, lowY_;
+	int boardHeight_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 };
 

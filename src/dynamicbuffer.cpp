@@ -19,8 +19,8 @@ DynamicBuffer::DynamicBuffer(int vertexes, int nbr) {
 	}
 }
 
-void DynamicBuffer::free(VertexDataPtr vertexesPtr) {
-	freeVertexDataList_.remove(vertexesPtr->offsetInBytes_ / BoardShader::vertexSizeInBytes());
+void DynamicBuffer::free(const VertexDataPtr& vertexesPtr) {
+	freeVertexDataList_.push_back(vertexesPtr->offsetInBytes_ / BoardShader::vertexSizeInBytes() / vertexes_);
 }
 
 VertexDataPtr DynamicBuffer::pollFirstFree(int vertexes) {

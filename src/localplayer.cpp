@@ -46,19 +46,15 @@ void LocalPlayer::update(Move move) {
 void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 	switch (gameEvent) {
 		case GameEvent::ONE_ROW_REMOVED:
-			clearedRows_ += 1;
 			points_ += level_;
 			break;
 		case GameEvent::TWO_ROW_REMOVED:
-			clearedRows_ += 2;
 			points_ += level_ * 2 * 2;
 			break;
 		case GameEvent::THREE_ROW_REMOVED:
-			clearedRows_ += 3;
 			points_ += level_ * 3 * 3;
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
-			clearedRows_ += 4;
 			points_ += level_ * 4 * 4;
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
@@ -110,7 +106,6 @@ void LocalPlayer::update(double deltaTime) {
 void LocalPlayer::restart(BlockType current, BlockType next) {
 	tetrisBoard_.restart(current, next);
 	levelUpCounter_ = 0;
-	clearedRows_ = 0;
 	level_ = 1;
 	points_ = 0;
 }
@@ -118,7 +113,6 @@ void LocalPlayer::restart(BlockType current, BlockType next) {
 void LocalPlayer::resizeBoard(int width, int height) {
 	tetrisBoard_.updateRestart(height, width, tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
 	levelUpCounter_ = 0;
-	clearedRows_ = 0;
 	level_ = 1;
 	points_ = 0;
 }

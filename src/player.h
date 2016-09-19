@@ -35,11 +35,7 @@ public:
 	}
 
 	inline int getClearedRows() const {
-		return clearedRows_;
-	}
-
-	inline void setClearedRows(int clearedRows) {
-		clearedRows_ = clearedRows;
+		return tetrisBoard_.getRemovedRows();
 	}
 	
 	const TetrisBoard& getTetrisBoard() const {
@@ -53,7 +49,7 @@ protected:
 	std::string name_;
 	int id_;
 	int level_;
-	int points_, clearedRows_;
+	int points_;
 };
 
 #endif // PLAYER_H

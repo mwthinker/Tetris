@@ -130,6 +130,9 @@ void RawTetrisBoard::updateRestart(int rows, int columns, BlockType current, Blo
 	current_ = createBlock(current);
 	rows_ = rows;
 	columns_ = columns;
+	rowsRemoved_ = 0;
+	rowToBeRemoved_ = -1;
+	externalRowsAdded_ = 0;
 	clearBoard();
 	gameboard_.resize(rows * columns, BlockType::EMPTY);
 	triggerEvent(GameEvent::RESTARTED);

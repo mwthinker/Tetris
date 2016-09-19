@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "player.h"
+
 class TetrisGameEvent {
 public:
 	virtual ~TetrisGameEvent() {
@@ -41,6 +43,34 @@ public:
     }
 
     int points_;
+};
+
+class InitGame : public TetrisGameEvent {
+public:
+	InitGame(const std::vector<std::shared_ptr<Player>>& players) : players_(players) {
+	}
+
+	std::vector<std::shared_ptr<Player>> players_;
+};
+
+class LevelChange : public TetrisGameEvent {
+public:
+	LevelChange(const std::shared_ptr<Player>& player, int newLevel, int oldLevel) : player_(player), newLevel_(newLevel), oldLevel_(oldLevel) {
+	}
+
+	int newLevel_;
+	int oldLevel_;
+	std::shared_ptr<Player> player_;
+};
+
+class PointsChange : public TetrisGameEvent {
+public:
+	PointsChange(const std::shared_ptr<Player>& player, int newPoints, int oldPoints) : player_(player), newPoints_(newPoints), oldPoints_(oldPoints) {
+	}
+
+	int newPoints_;
+	int oldPoints_;
+	std::shared_ptr<Player> player_;
 };
 
 #endif // TETRISGAMEEVENT_H

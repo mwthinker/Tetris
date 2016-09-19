@@ -2,7 +2,6 @@
 #define GAMECOMPONENT_H
 
 #include "gamegraphic.h"
-#include "gamehandler.h"
 #include "tetrisentry.h"
 #include "boardshader.h"
 
@@ -11,23 +10,27 @@
 #include <mw/vertexbufferobject.h>
 #include <mw/shader.h>
 
+#include <mw/signal.h>
+
 #include <map>
 
 class TetrisGame;
 class GameData;
+class TetrisGameEvent;
 
-class GameComponent : public gui::Component, public GameHandler {
+class GameComponent : public gui::Component {
 public:
 	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
+	~GameComponent();
 	
 	// @gui::Component
 	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
-	// @GameHandler
-	void initGame(std::vector<std::shared_ptr<Player>>& player) override;
+	void initGame(std::vector<std::shared_ptr<Player>>& player);
 
-	// @GameHandler
-	void countDown(int msCountDown) override;
+	void countDown(int msCountDown);
+
+	void eventHandler(TetrisGameEvent& tetrisGameEvent);
 
 private:
 	void soundEffects(GameEvent gameEvent) const;
@@ -45,6 +48,8 @@ private:
 	mw::Sound soundBlockCollision_;
 	mw::Sound soundRowRemoved_;
 	mw::Sound soundTetris_;
+
+	mw::signals::Connection eventConnection_;
 
 	// Fix time step.
 	Uint32 timeStep_;

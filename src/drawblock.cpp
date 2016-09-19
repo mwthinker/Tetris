@@ -1,6 +1,6 @@
 #include "drawblock.h"
 
-DrawBlock::DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, float squareSize, float lowX, float lowY, bool center) {
+DrawBlock::DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center) {
 	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
 	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
 	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
@@ -13,6 +13,7 @@ DrawBlock::DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer&
 	squareSize_ = squareSize;
 	vd_ = buffer.pollFirstFree();
 	center_ = center;
+	boardHeight_ = boardHeight;
 	update(block);
 }
 
@@ -30,10 +31,15 @@ void DrawBlock::update(const Block& block) {
 
 	vd_->begin();
 	for (Square sq : block) {
+		mw::Color color(1, 1, 1);
+		if (sq.row_ >= boardHeight_ - 2) {
+			color.alpha_ = 0;
+		}
 		vd_->addSquareTRIANGLES(
 			lowX_ + (sq.column_ + 1)* squareSize_ + deltaX, lowY_ + (sq.row_ + 1)* squareSize_ + deltaY,
 			squareSize_, squareSize_,
-			sprite
+			sprite,
+			color
 		);
 	}
 	vd_->end();

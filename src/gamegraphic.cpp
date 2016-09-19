@@ -72,7 +72,8 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 	StaticBuffer staticBuffer;
 	staticVertexData_ = staticBuffer.pollVertexData();
 	staticVertexData_->begin();
-							   // Draw the player area.
+	
+	// Draw the player area.
 	float x = lowX + borderSize_;
 	float y = lowY * 0.5f + borderSize_;
 	staticVertexData_->addSquareTRIANGLES(
@@ -91,7 +92,7 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 	// Draw the inner squares.
 	for (int row = 0; row < rows - 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
-			x = lowX + borderSize_ + squareSize_ * column + (squareSize_ * columns + infoSize) * 0 + squareSize_ * 0.1f;
+			x = lowX + borderSize_ + squareSize_ * column + squareSize_ * 0.1f;
 			y = lowY + borderSize_ + squareSize_ * row + squareSize_ * 0.1f;
 			staticVertexData_->addSquareTRIANGLES(
 				x, y,
@@ -118,8 +119,8 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 		squareSize_ * 5, squareSize_ * 5,
 		c3);
 
-	nextBlockPtr_ = std::make_shared<DrawBlock>(spriteEntry, Block(tetrisBoard.getNextBlockType(), 0, 0), buffer_, squareSize_, x + squareSize_ * 2.5f, y + squareSize_ * 2.5f, true);
-	name_ = std::make_shared<DrawText>(buffer_, "Marcus", font_, x, y + squareSize_ * 5);
+	nextBlockPtr_ = std::make_shared<DrawBlock>(spriteEntry, Block(tetrisBoard.getNextBlockType(), 0, 0), buffer_, tetrisBoard.getRows(), squareSize_, x + squareSize_ * 2.5f, y + squareSize_ * 2.5f, true);
+	name_ = std::make_shared<DrawText>(buffer_, player.getName(), font_, x, y + squareSize_ * 5);
 	name_->update("Marcus", 10);
 
 	textLevel_ = std::make_shared<DrawText>(buffer_, "10", font_, x, y - 20);
@@ -208,52 +209,48 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 	staticBuffer.init();
 
 	rows_.clear();
-	currentBlockPtr_ = std::make_shared<DrawBlock>(spriteEntry, tetrisBoard.getBlock(), buffer_, squareSize_, lowX, lowY, false);
+	currentBlockPtr_ = std::make_shared<DrawBlock>(spriteEntry, tetrisBoard.getBlock(), buffer_, tetrisBoard.getRows(), squareSize_, lowX, lowY, false);
 
 	for (int row = 0; row < rows; ++row) {
-		rows_.push_back(std::make_shared<DrawRow>(spriteEntry, buffer_, row, tetrisBoard, squareSize_));
+		rows_.push_back(std::make_shared<DrawRow>(spriteEntry, buffer_, row, tetrisBoard, squareSize_, lowX, lowY));
 	}
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
-	if (currentBlockPtr_) {
-		currentBlockPtr_->update(tetrisBoard.getBlock());
-	}
-	if (nextBlockPtr_) {
-		nextBlockPtr_->update(Block(tetrisBoard.getNextBlockType(), 0, 0));
-	}
 	for (auto row : rows_) {
 		row->handleEvent(gameEvent, tetrisBoard);
 	}
-	rows_.remove_if([](const auto& row) {
-		return !row->isAlive();
+	rows_.remove_if([&](const DrawRowPtr& row) {
+		if (!row->isAlive()) {
+			buffer_.free(row->getVertexData());
+			return true;
+		}
+		return false;
 	});
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			break;
 		case GameEvent::BLOCK_COLLISION:
-			//dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::RESTARTED:
-			//dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
-			//dynamicBoard_.updatePreviewBlock(tetrisBoard.getNextBlockType());
-			//dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::EXTERNAL_ROWS_ADDED:
 		{
-			//dynamicBoard_.updateBoard(tetrisBoard);
-			//updateExternalRowsAdded(0.3f, tetrisBoard.getNbrExternalRowsAdded());
 			int rows = tetrisBoard.getNbrExternalRowsAdded();
 			for (int row = 0; row < rows; ++row) {
-				auto rowPtr = std::make_shared<DrawRow>(buffer_, row, tetrisBoard, squareSize_);
+				auto rowPtr = std::make_shared<DrawRow>(buffer_, row, tetrisBoard, squareSize_, lowX_, lowY_);
 				rowPtr->setSprites(spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_);
 				rows_.push_back(rowPtr);
 			}
 		}
 			break;
-		case GameEvent::CURRENT_BLOCK_UPDATED:
-			//dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
+		case GameEvent::NEXT_BLOCK_UPDATED:
+			if (nextBlockPtr_) {
+				nextBlockPtr_->update(Block(tetrisBoard.getNextBlockType(), 0, 0));
+			}
 			break;
+		case GameEvent::CURRENT_BLOCK_UPDATED:
+			// Fall through!
 		case GameEvent::PLAYER_ROTATES_BLOCK:
 			// Fall through!
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
@@ -263,10 +260,9 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
 			// Fall through!
 		case GameEvent::GRAVITY_MOVES_BLOCK:
-			//dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
-			break;
-		case GameEvent::NEXT_BLOCK_UPDATED:
-			//dynamicBoard_.updatePreviewBlock(tetrisBoard.getNextBlockType());
+			if (currentBlockPtr_) {
+				currentBlockPtr_->update(tetrisBoard.getBlock());
+			}
 			break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
@@ -286,7 +282,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
 	int highestRow = tetrisBoard.getBoardVector().size() / tetrisBoard.getColumns();
 	for (int i = 0; i < nbr; ++i) {
-		auto rowPtr = std::make_shared<DrawRow>(buffer_, highestRow - i - 1, tetrisBoard, squareSize_);
+		auto rowPtr = std::make_shared<DrawRow>(buffer_, highestRow - i - 1, tetrisBoard, squareSize_, lowX_, lowY_);
 		rowPtr->setSprites(spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_);
 		rows_.push_back(rowPtr);
 	}

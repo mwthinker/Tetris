@@ -15,7 +15,7 @@ public:
 
 	DynamicBuffer(int vertexes, int nbr);
 
-	void free(VertexDataPtr vertexesPtr);
+	void free(const VertexDataPtr& vertexesPtr);
 
 	VertexDataPtr pollFirstFree(int vertexes);
 

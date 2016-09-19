@@ -8,7 +8,7 @@ namespace {
 
 }
 
-DrawRow::DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize) {
+DrawRow::DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
 	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
 	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
 	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
@@ -16,14 +16,16 @@ DrawRow::DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const 
 	spriteL_ = spriteEntry.getChildEntry("squareL").getSprite();
 	spriteT_ = spriteEntry.getChildEntry("squareT").getSprite();
 	spriteO_ = spriteEntry.getChildEntry("squareO").getSprite();
-	init(buffer, row, board, squareSize);
+	init(buffer, row, board, squareSize, lowX, lowY);
 }
 
-DrawRow::DrawRow(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize) {
-	init(buffer, row, board, squareSize);
+DrawRow::DrawRow(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
+	init(buffer, row, board, squareSize, lowX, lowY);
 }
 
-void DrawRow::init(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize) {
+void DrawRow::init(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
+	lowX_ = lowX;
+	lowY_ = lowY;
 	row_ = row;
 	oldRow_ = row;
 	graphicRow_ = (float) row;
@@ -93,7 +95,7 @@ void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
 		}
 
 		vd_->addSquareTRIANGLES(
-			(column + 1) * squareSize_, (graphicRow_ + 1)* squareSize_,
+			lowX_ + (column + 1) * squareSize_, lowY_ + (graphicRow_ + 1)* squareSize_,
 			squareSize_, squareSize_,
 			getSprite(type),
 			color

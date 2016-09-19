@@ -3,6 +3,7 @@
 #include "gamegraphic.h"
 #include "tetrisparameters.h"
 #include "tetrisentry.h"
+#include "tetrisgameevent.h"
 
 #include <mw/opengl.h>
 #include <gui/component.h>
@@ -17,13 +18,17 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	updateMatrix_(true) {
 
 	setGrabFocus(true);
-	tetrisGame_.setGameHandler(this);
+	eventConnection_ = tetrisGame_.addGameEventHandler(std::bind(&GameComponent::eventHandler, this, std::placeholders::_1));
 
 	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
 	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
 
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
+}
+
+GameComponent::~GameComponent() {
+	eventConnection_.disconnect();
 }
 
 void GameComponent::validate() {
@@ -120,6 +125,30 @@ void GameComponent::countDown(int msCountDown) {
 		stream << "Start in " << (int) (msCountDown / 1000) + 1;
 		text.setText(stream.str());
 	}
+}
+
+void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
+	try {
+		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
+		return;
+	} catch (std::bad_cast exp) {}
+
+	try {
+		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
+		return;
+	} catch (std::bad_cast exp) {}
+
+	try {
+		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
+		initGame(initGameVar.players_);
+		return;
+	} catch (std::bad_cast exp) {}
+
+	try {
+		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
+		graphicPlayers_[levelChange.player_->getId()].update(levelChange.player_->getPoints(), levelChange.player_->getPoints(), levelChange.newLevel_);
+		return;
+	} catch (std::bad_cast exp) {}
 }
 
 /*

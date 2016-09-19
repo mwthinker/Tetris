@@ -2,7 +2,6 @@
 #define TETRISGAME_H
 
 #include "protocol.h"
-#include "gamehandler.h"
 #include "localconnection.h"
 #include "remoteconnection.h"
 #include "device.h"
@@ -24,10 +23,6 @@ public:
 
 	TetrisGame();
 	~TetrisGame();
-
-	inline void setGameHandler(GameHandler* gameHandler) {
-		gameHandler_ = gameHandler;
-	}
 
 	// Updates everything. Should be called each frame.
 	void update(Uint32 msDeltaTime);
@@ -64,6 +59,10 @@ public:
 
 	inline Status getStatus() const {
 		return status_;
+	}
+
+	inline mw::signals::Connection addGameEventHandler(const std::function<void (TetrisGameEvent&)>& handler) {
+		return eventHandler_.connect(handler);
 	}
 
 private:
@@ -134,7 +133,6 @@ private:
 	Status status_;
 	int width_, height_, maxLevel_;
 
-	GameHandler* gameHandler_;
 	int nbrOfAlivePlayers_;
 };
 

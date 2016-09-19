@@ -12,8 +12,8 @@ using DrawRowPtr = std::shared_ptr<DrawRow>;
 
 class DrawRow {
 public:
-	DrawRow(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize);
-	DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize);
+	DrawRow(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
+	DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 	inline int getRow() const {
 		return row_;
@@ -35,8 +35,12 @@ public:
 		spriteZ_ = spriteZ;
 	}
 
+	VertexDataPtr getVertexData() const {
+		return vd_;
+	}
+
 private:
-	void init(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize);
+	void init(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 	void updateVertexData(const TetrisBoard& tetrisBoard);
 	void updateVertexData();
@@ -48,7 +52,7 @@ private:
 	int oldRow_;
 	float graphicRow_;
 	float squareSize_;
-	float x_, y_;
+	float lowX_, lowY_;
 	float timeLeft_;
 
 	float movingTime_;
