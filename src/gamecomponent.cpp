@@ -23,7 +23,7 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
 	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
-
+	
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
 }
 
@@ -109,7 +109,7 @@ void GameComponent::initGame(std::vector<std::shared_ptr<Player>>& players) {
 	float w = 0;
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player->getId()];
-		graphic.restart(*player, w, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"));
+		graphic.restart(*player, w, 0, tetrisEntry_.getDeepChildEntry("window"));
 		w += graphic.getWidth();
 	}
 
@@ -146,7 +146,8 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 
 	try {
 		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
-		graphicPlayers_[levelChange.player_->getId()].update(levelChange.player_->getPoints(), levelChange.player_->getPoints(), levelChange.newLevel_);
+		GameGraphic& gg = graphicPlayers_[levelChange.player_->getId()];
+		gg.update(levelChange.player_->getPoints(), levelChange.player_->getPoints(), levelChange.newLevel_);
 		return;
 	} catch (std::bad_cast exp) {}
 }

@@ -18,15 +18,16 @@ DrawBlock::DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer&
 }
 
 void DrawBlock::update(const Block& block) {
+	block_ = block;
 	mw::Sprite sprite = getSprite(block.blockType());
 
-	float deltaX = 0.f;
-	float deltaY = 0.f;
+	deltaX_ = 0.f;
+	deltaY_ = 0.f;
 
 	if (center_) {
-		calculateCenterOfMass(block, deltaX, deltaY);
-		deltaX = (-1.5f - deltaX) * squareSize_;
-		deltaY = (-1.5f - deltaY) * squareSize_;
+		calculateCenterOfMass(block, deltaX_, deltaY_);
+		deltaX_ = (-1.5f - deltaX_) * squareSize_;
+		deltaY_ = (-1.5f - deltaY_) * squareSize_;
 	}
 
 	vd_->begin();
@@ -36,7 +37,7 @@ void DrawBlock::update(const Block& block) {
 			color.alpha_ = 0;
 		}
 		vd_->addSquareTRIANGLES(
-			lowX_ + (sq.column_ + 1)* squareSize_ + deltaX, lowY_ + (sq.row_ + 1)* squareSize_ + deltaY,
+			lowX_ + (sq.column_ + 1)* squareSize_ + deltaX_, lowY_ + (sq.row_ + 1)* squareSize_ + deltaY_,
 			squareSize_, squareSize_,
 			sprite,
 			color

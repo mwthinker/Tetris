@@ -44,10 +44,8 @@ public:
 	}
 
 	void endGame();
-
+	
 private:
-	double calculateDownSpeed(int level) const;
-
 	void update(Move move);
 
 	void boardListener(GameEvent, const TetrisBoard&);
@@ -59,6 +57,7 @@ private:
 	PacketSender& sender_;
 	int levelUpCounter_;
 	int connectionId_;
+	float watingTime_;
 };
 
 #endif // LOCALPLAYER_H

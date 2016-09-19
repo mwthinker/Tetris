@@ -42,6 +42,14 @@ public:
 		return tetrisBoard_;
 	}
 
+	inline float getGravityDownSpeed() const {
+		return 1 + level_ * 0.5f;
+	}
+
+	inline float getWaitingTime() const {
+		return 0.5f;
+	}
+
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
 protected:

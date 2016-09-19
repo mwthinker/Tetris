@@ -58,7 +58,7 @@ public:
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
 private:
-	void initStaticBackground(float lowX, float lowY, const TetrisEntry& boardEntry, Player& player);
+	void initStaticBackground(float lowX, float lowY, const TetrisEntry& windowEntry, Player& player);
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
@@ -77,6 +77,7 @@ private:
 	float squareSize_;
 	float lowX_;
 	float lowY_;
+	mw::Sound removeRowSound_;;
 
 	DynamicBuffer buffer_;
 	DrawBlockPtr currentBlockPtr_;

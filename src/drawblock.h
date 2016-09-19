@@ -15,6 +15,7 @@ public:
 	DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);
+
 	void draw(const BoardShader& shader);
 
 private:
@@ -26,6 +27,8 @@ private:
 	float squareSize_;
 	float lowX_, lowY_;
 	int boardHeight_;
+	Block block_;
+	float deltaX_, deltaY_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 };
 

@@ -24,24 +24,26 @@ void GameGraphic::restart(Player& player, float x, float y,
 	
 	showPoints_ = true;
 
+	removeRowSound_ = boardEntry.getDeepChildEntry("sounds rowRemoved").getSound();
+
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
 void GameGraphic::initStaticBackground(float lowX, float lowY,
-	const TetrisEntry& boardEntry, Player& player) {
+	const TetrisEntry& windowEntry, Player& player) {
 
 	lowX_ = lowX;
 	lowY_ = lowY;
 
-	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
+	const TetrisBoard& tetrisBoard = player.getTetrisBoard();	
 
-	const mw::Color c1 = boardEntry.getChildEntry("outerSquareColor").getColor();
-	const mw::Color c2 = boardEntry.getChildEntry("innerSquareColor").getColor();
-	const mw::Color c3 = boardEntry.getChildEntry("startAreaColor").getColor();
-	const mw::Color c4 = boardEntry.getChildEntry("playerAreaColor").getColor();
-	const mw::Color borderColor = boardEntry.getChildEntry("borderColor").getColor();
+	const mw::Color c1 = windowEntry.getDeepChildEntry("tetrisBoard outerSquareColor").getColor();
+	const mw::Color c2 = windowEntry.getDeepChildEntry("tetrisBoard innerSquareColor").getColor();
+	const mw::Color c3 = windowEntry.getDeepChildEntry("tetrisBoard startAreaColor").getColor();
+	const mw::Color c4 = windowEntry.getDeepChildEntry("tetrisBoard playerAreaColor").getColor();
+	const mw::Color borderColor = windowEntry.getDeepChildEntry("tetrisBoard borderColor").getColor();
 
-	auto spriteEntry = boardEntry.getChildEntry("sprites");
+	auto spriteEntry = windowEntry.getDeepChildEntry("tetrisBoard sprites");
 	const mw::Sprite borderHorizontal = spriteEntry.getChildEntry("borderHorizontal").getSprite();
 	const mw::Sprite borderVertical = spriteEntry.getChildEntry("borderVertical").getSprite();
 	const mw::Sprite borderLeftUp = spriteEntry.getChildEntry("borderLeftUp").getSprite();
@@ -49,8 +51,8 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 	const mw::Sprite borderDownLeft = spriteEntry.getChildEntry("borderDownLeft").getSprite();
 	const mw::Sprite borderDownRight = spriteEntry.getChildEntry("borderDownRight").getSprite();
 
-	squareSize_ = boardEntry.getChildEntry("squareSize").getFloat();
-	borderSize_ = boardEntry.getChildEntry("borderSize").getFloat();
+	squareSize_ = windowEntry.getDeepChildEntry("tetrisBoard squareSize").getFloat();
+	borderSize_ = windowEntry.getDeepChildEntry("tetrisBoard borderSize").getFloat();
 
 	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
 	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
@@ -131,6 +133,8 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 
 	textClearedRows_ = std::make_shared<DrawText>(buffer_, "10", font_, x, y - 60);
 	textClearedRows_->update("1", 10);
+
+	
 
 	// Add border.
 	// Left-up corner.
@@ -252,12 +256,15 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		case GameEvent::CURRENT_BLOCK_UPDATED:
 			// Fall through!
 		case GameEvent::PLAYER_ROTATES_BLOCK:
-			// Fall through!
-		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
-			// Fall through!
+			// Fall through!		
 		case GameEvent::PLAYER_MOVES_BLOCK_LEFT:
 			// Fall through!
 		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
+			if (currentBlockPtr_) {
+				currentBlockPtr_->update(tetrisBoard.getBlock());
+			}
+			break;
+		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
 			// Fall through!
 		case GameEvent::GRAVITY_MOVES_BLOCK:
 			if (currentBlockPtr_) {
@@ -266,15 +273,19 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
+			removeRowSound_.play();
 			break;
 		case GameEvent::TWO_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 2);
+			removeRowSound_.play();
 			break;
 		case GameEvent::THREE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 3);
+			removeRowSound_.play();
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 4);
+			removeRowSound_.play();
 			break;
 	}
 }
@@ -293,7 +304,7 @@ void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	staticVertexData_->drawTRIANGLES(shader);
-
+	
 	if (currentBlockPtr_) {
 		currentBlockPtr_->draw(shader);
 	}
