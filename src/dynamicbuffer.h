@@ -11,9 +11,9 @@ class DynamicBuffer {
 public:
 	DynamicBuffer();
 
-	void init();
+	DynamicBuffer(int vertexesPerObject, int nbrObjects);
 
-	DynamicBuffer(int vertexes, int nbr);
+	void init();
 
 	void free(const VertexDataPtr& vertexesPtr);
 
@@ -21,12 +21,12 @@ public:
 
 	VertexDataPtr pollFirstFree();
 
-	inline int getNbrVertexes() const {
-		return vertexes_;
+	inline int getNbrObjects() const {
+		return nbrObjects_;
 	}
 
-	inline int getMaxVertices() const {
-		return vertexes_ / nbr_;
+	inline int getVertexesPerObject() const {
+		return vertexesPerObject_;
 	}
 
 	inline bool isDynamic() const {
@@ -34,9 +34,12 @@ public:
 	}
 
 private:
+	static const int DEFAULT_VERTEXES_PER_OBJECT = 10000;
+	static const int DEFAUL_OBJECTS = 1000;
+
 	bool dynamic_;
-	int vertexes_;
-	int nbr_;
+	int nbrObjects_;
+	int vertexesPerObject_;
 	mw::VertexBufferObject vbo_;
 	std::list<int> freeVertexDataList_;
 	std::list<VertexDataPtr> vertexDataList_;

@@ -40,7 +40,7 @@
         <sounds>
             <buttonPush/>
             <blockCollision>sounds/blockCollision.wav</blockCollision>
-            <rowRemoved>sounds/rowRemoved.wav</rowRemoved>
+            <rowRemoved>sounds/puff.wav</rowRemoved>
             <tetris>sounds/tetris.wav</tetris>
             <highscore/>
         </sounds>
@@ -56,6 +56,8 @@
 			<squareSize>10</squareSize>
 			<borderSize>10</borderSize>
 			<sprites>
+				<halfCircle>images/half_circle.png</halfCircle>
+				<lineSegment>images/lightning_segment.png</lineSegment>
 				<squareZ>images/Z.png</squareZ>
 				<squareS>images/S.png</squareS>
 				<squareJ>images/J.png</squareJ>

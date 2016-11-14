@@ -10,7 +10,7 @@ namespace xml {
     // Template specialization. Color must be defined as "(0.1 0.2 0.3)" or "(0.1 0.2 0.3 0.4)"
     // red = 0.1, green = 0.2, blue = 0.3, alpha = 0.4
     template <>
-    mw::Color extract(tinyxml2::XMLHandle handle) {
+    Color extract(tinyxml2::XMLHandle handle) {
         const tinyxml2::XMLElement* element = handle.ToElement();
         if (element == nullptr) {
             throw std::runtime_error("Missing element!");
@@ -23,7 +23,7 @@ namespace xml {
 
         std::stringstream stream(str);
         char chr = 0;
-        mw::Color color(1,1,1,1);
+        Color color(1,1,1,1);
         stream >> chr;
         if (chr != '(') {
             throw std::runtime_error("Missing '('!");
@@ -83,8 +83,8 @@ mw::Sprite TetrisEntry::getSprite() const {
 	return data_->extractSprite(*this);
 }
 
-mw::Color TetrisEntry::getColor() const {
-	return get<mw::Color>();
+Color TetrisEntry::getColor() const {
+	return get<Color>();
 }
 
 Ai TetrisEntry::getAi() const {
@@ -99,7 +99,7 @@ void TetrisEntry::bindTextureFromAtlas() const {
 }
 
 mw::Sprite TetrisEntry::Data::extractSprite(TetrisEntry entry) const {
-	return textureAtlas_.add(entry.getString(), 4);
+	return textureAtlas_.add(entry.getString(), 1);
 }
 
 mw::Sound TetrisEntry::Data::extractSound(TetrisEntry entry) const {

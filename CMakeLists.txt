@@ -21,8 +21,10 @@ set(SOURCES
 	src/boardshader.h
 	src/boardsizebutton.cpp
 	src/boardsizebutton.h
+	src/color.h
 	src/computer.cpp
 	src/computer.h
+	src/definitions.h
 	src/device.h
 	src/drawblock.cpp
 	src/drawblock.h
@@ -43,12 +45,19 @@ set(SOURCES
 	src/joystick.h
 	src/keyboard.cpp
 	src/keyboard.h
+	src/lightningbolt.cpp
+	src/lightningbolt.h
+	src/lightningboltcluster.cpp
+	src/lightningboltcluster.h
+	src/lightningvertexdata.cpp
+	src/lightningvertexdata.h
 	src/localconnection.h
 	src/localplayer.cpp
 	src/localplayer.h
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
+	src/mat44.h
 	src/player.cpp
 	src/player.h
 	src/protocol.cpp

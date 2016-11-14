@@ -2,11 +2,11 @@
 #define TETRISENTY_H
 
 #include "ai.h"
+#include "color.h"
 
 #include <mw/sound.h>
 #include <mw/sprite.h>
 #include <mw/font.h>
-#include <mw/color.h>
 #include <mw/music.h>
 #include <mw/textureatlas.h>
 
@@ -28,7 +28,7 @@ public:
 	mw::Sound getSound() const;
 	mw::Music getMusic() const;
 	mw::Sprite getSprite() const;
-	mw::Color getColor() const;
+	Color getColor() const;
 	Ai getAi() const;
 
 	void bindTextureFromAtlas() const;

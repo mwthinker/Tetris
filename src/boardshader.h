@@ -1,12 +1,11 @@
 #ifndef BOARDSHADER_H
 #define BOARDSHADER_H
 
-#include <mw/opengl.h>
-#include <mw/matrix.h>
 #include <mw/shader.h>
-
 #include <mw/color.h>
 #include <mw/sprite.h>
+
+#include "mat44.h"
 
 class BoardShader {
 public:
@@ -27,7 +26,7 @@ public:
 
 	// Uniforms. -------------------------------------------
 
-	void setGlMatrixU(const mw::Matrix44& matrix) const;
+	void setGlMatrixU(const Mat44& matrix) const;
 
 private:
 	// Vertex buffer Attributes. ---------------------------

@@ -1,4 +1,5 @@
 #include "drawrow.h"
+#include "color.h"
 
 namespace {
 
@@ -76,6 +77,8 @@ void DrawRow::draw(float deltaTime, const BoardShader& shader) {
 
 	if (vd_ && isAlive()) {
 		vd_->drawTRIANGLES(shader);
+	} else {
+		int a = 0;
 	}
 }
 
@@ -89,9 +92,9 @@ void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
 	for (int column = 0; column < columns_; ++column) {
 		BlockType type = tetrisBoard.getBlockType(row_, column);
 
-		mw::Color color(1, 1, 1, 1);
+		Color color(1, 1, 1, 1);
 		if (type == BlockType::EMPTY) {
-			color = mw::Color(1, 1, 1, 0);
+			color = Color(1, 1, 1, 0);
 		}
 
 		vd_->addSquareTRIANGLES(

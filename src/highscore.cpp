@@ -11,7 +11,7 @@ Highscore::HighscoreElement::HighscoreElement(int intPoints, const mw::Text& poi
 
 }
 
-Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : color_(color), font_(font) {
+Highscore::Highscore(int nbr, const Color& color, const mw::Font& font) : color_(color), font_(font) {
 	for (int i = 0; i < nbr; ++i) {
 		std::stringstream stream;
 		stream << nbr - i << ":";

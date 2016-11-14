@@ -12,6 +12,9 @@
 #include "staticbuffer.h"
 #include "drawblock.h"
 #include "drawtext.h"
+#include "mat44.h"
+#include "lightningvertexdata.h"
+#include "lightningbolt.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -21,6 +24,7 @@
 
 #include <gui/component.h>
 
+#include <random>
 #include <string>
 
 class GameGraphic {
@@ -42,7 +46,7 @@ public:
 	}
 
 	void draw(float deltaTime, const BoardShader& shader);
-	
+
 	void setMiddleMessage(const mw::Text& text);
 
 	inline void showPoints() {
@@ -78,6 +82,7 @@ private:
 	float lowX_;
 	float lowY_;
 	mw::Sound removeRowSound_;;
+	LightningBoltPtr lightningBolt_;
 
 	DynamicBuffer buffer_;
 	DrawBlockPtr currentBlockPtr_;

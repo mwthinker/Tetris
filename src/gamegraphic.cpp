@@ -3,6 +3,7 @@
 #include "player.h"
 
 #include <sstream>
+#include <iostream>
 
 GameGraphic::~GameGraphic() {
 	connection_.disconnect();
@@ -37,11 +38,11 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();	
 
-	const mw::Color c1 = windowEntry.getDeepChildEntry("tetrisBoard outerSquareColor").getColor();
-	const mw::Color c2 = windowEntry.getDeepChildEntry("tetrisBoard innerSquareColor").getColor();
-	const mw::Color c3 = windowEntry.getDeepChildEntry("tetrisBoard startAreaColor").getColor();
-	const mw::Color c4 = windowEntry.getDeepChildEntry("tetrisBoard playerAreaColor").getColor();
-	const mw::Color borderColor = windowEntry.getDeepChildEntry("tetrisBoard borderColor").getColor();
+	const Color c1 = windowEntry.getDeepChildEntry("tetrisBoard outerSquareColor").getColor();
+	const Color c2 = windowEntry.getDeepChildEntry("tetrisBoard innerSquareColor").getColor();
+	const Color c3 = windowEntry.getDeepChildEntry("tetrisBoard startAreaColor").getColor();
+	const Color c4 = windowEntry.getDeepChildEntry("tetrisBoard playerAreaColor").getColor();
+	const Color borderColor = windowEntry.getDeepChildEntry("tetrisBoard borderColor").getColor();
 
 	auto spriteEntry = windowEntry.getDeepChildEntry("tetrisBoard sprites");
 	const mw::Sprite borderHorizontal = spriteEntry.getChildEntry("borderHorizontal").getSprite();
@@ -91,6 +92,12 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 		squareSize_ * columns, squareSize_ * (rows - 2),
 		c1);
 
+	staticVertexData_->addSquareTRIANGLES(
+		-100, lowY,
+		500, 500,
+		borderVertical,
+		Color(0, 0, 0));
+
 	// Draw the inner squares.
 	for (int row = 0; row < rows - 2; ++row) {
 		for (int column = 0; column < columns; ++column) {
@@ -133,8 +140,6 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 
 	textClearedRows_ = std::make_shared<DrawText>(buffer_, "10", font_, x, y - 60);
 	textClearedRows_->update("1", 10);
-
-	
 
 	// Add border.
 	// Left-up corner.
@@ -207,17 +212,21 @@ void GameGraphic::initStaticBackground(float lowX, float lowY,
 		x, y,
 		borderSize_, height_ - 2 * borderSize_,
 		borderVertical,
-		borderColor);
+		borderColor);	
 	
-	staticVertexData_->end();	
+	staticVertexData_->end();
 	staticBuffer.init();
 
 	rows_.clear();
+
 	currentBlockPtr_ = std::make_shared<DrawBlock>(spriteEntry, tetrisBoard.getBlock(), buffer_, tetrisBoard.getRows(), squareSize_, lowX, lowY, false);
 
 	for (int row = 0; row < rows; ++row) {
 		rows_.push_back(std::make_shared<DrawRow>(spriteEntry, buffer_, row, tetrisBoard, squareSize_, lowX, lowY));
 	}
+
+	lightningBolt_ = std::make_shared<LightningBolt>(buffer_, spriteEntry, Vec2(50, 50), Vec2(100, 100));
+	
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -311,13 +320,19 @@ void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
 	if (nextBlockPtr_) {
 		nextBlockPtr_->draw(shader);
 	}
+
 	for (DrawRowPtr rowPtr : rows_) {
 		rowPtr->draw(deltaTime, shader);
+	}
+
+	if (lightningBolt_) {
+		lightningBolt_->draw(deltaTime, shader);
 	}
 
 	if (name_) {
 		name_->draw(deltaTime, shader);
 	}
+
 	if (textLevel_) {
 		textLevel_->draw(deltaTime, shader);
 	}

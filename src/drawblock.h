@@ -12,7 +12,7 @@ using DrawBlockPtr = std::shared_ptr<DrawBlock>;
 
 class DrawBlock {
 public:
-	DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center);
+	DrawBlock(const TetrisEntry& spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);
 

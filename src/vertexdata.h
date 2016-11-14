@@ -2,6 +2,7 @@
 #define VERTEXDATA_H
 
 #include "boardshader.h"
+#include "color.h"
 
 #include <mw/vertexbufferobject.h>
 
@@ -35,11 +36,17 @@ public:
 	void addSquareTRIANGLES(
 		float x, float y,
 		float w, float h,
-		const mw::Color& color);
+		const Color& color);
 
-	void addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const mw::Color& color = mw::Color(1, 1, 1));
+	void addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const Color& color = Color(1, 1, 1));
 
-	void addVertex(float x, float y, float xTex, float yTex, bool isTex, const mw::Color& color);
+	void addSquareTRIANGLES(float x1, float y1,
+		float x2, float y2,
+		float x3, float y3,
+		float x4, float y4, 
+		const mw::Sprite& sprite, const Color& color = Color(1, 1, 1));
+
+	void addVertex(float x, float y, float xTex, float yTex, bool isTex, const Color& color);
 	void updateVertex(float x, float y);
 
 	void addTriangleTRIANGLES(
@@ -50,7 +57,7 @@ public:
 		float xTex2, float yTex2,
 		float xTex3, float yTex3,
 		bool isTex,
-		const mw::Color& color);
+		const Color& color);
 
 	void end();
 

@@ -26,15 +26,32 @@
 #include <sstream>
 
 TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
-	gui::Frame(2, 1, false,
-		e.getDeepChildEntry("window positionX").getInt(),
+	gui::Frame(e.getDeepChildEntry("window positionX").getInt(),
         e.getDeepChildEntry("window positionY").getInt(),
         e.getDeepChildEntry("window width").getInt(),
         e.getDeepChildEntry("window height").getInt(),
         true,
         "MWetris",
         e.getDeepChildEntry("window icon").getString(),
-        !e.getDeepChildEntry("window border").getBool()),
+		!e.getDeepChildEntry("window border").getBool(), []() {
+
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
+	
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	const int MAJOR_VERSION = 2;
+	const int MINOR_VERSION = 1;
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, MAJOR_VERSION);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, MINOR_VERSION);
+
+	if (SDL_GL_LoadLibrary(0) != 0) {
+		std::cerr << "SDL_GL_LoadLibrary failed: " << SDL_GetError() << std::endl;
+		std::cerr << "Failed to OpenGL version" << MAJOR_VERSION << "." << MINOR_VERSION << std::endl;
+		std::exit(1);
+	}
+}),
 
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
 	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0) {
@@ -275,7 +292,7 @@ void TetrisWindow::initHighscorePanel() {
 	});
 
     // The component is reused in callbacks.
-	highscore_ = add<Highscore>(gui::BorderLayout::CENTER, 10, mw::Color(1, 1, 1), getDefaultFont(18));
+	highscore_ = add<Highscore>(gui::BorderLayout::CENTER, 10, Color(1, 1, 1), getDefaultFont(18));
 }
 
 void TetrisWindow::initNewHighscorePanel() {

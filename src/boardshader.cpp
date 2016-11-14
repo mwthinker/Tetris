@@ -84,6 +84,6 @@ void BoardShader::setGlColorA(GLint size, GLsizei stride, const GLvoid* data) co
 
 // Uniforms. -------------------------------------------
 
-void BoardShader::setGlMatrixU(const mw::Matrix44& matrix) const {
+void BoardShader::setGlMatrixU(const Mat44& matrix) const {
 	glUniformMatrix4fv(uMatrixIndex_, 1, false, matrix.data());
 }

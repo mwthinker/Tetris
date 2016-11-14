@@ -25,7 +25,7 @@ void VertexData::drawTRIANGLES(const BoardShader& shader) {
 void VertexData::addSquareTRIANGLES(
 	float x, float y,
 	float w, float h,
-	const mw::Color& color) {
+	const Color& color) {
 
 	// Left triangle |_
 	addTriangleTRIANGLES(
@@ -50,7 +50,7 @@ void VertexData::addSquareTRIANGLES(
 		color);
 }
 
-void VertexData::addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const mw::Color& color) {
+void VertexData::addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const Color& color) {
 	int textureW = sprite.getTexture().getWidth();
 	int textureH = sprite.getTexture().getHeight();
 
@@ -77,9 +77,40 @@ void VertexData::addSquareTRIANGLES(float x, float y, float w, float h, const mw
 		color);
 }
 
-void VertexData::addVertex(float x, float y, float xTex, float yTex, bool isTex, const mw::Color& color) {
+void VertexData::addSquareTRIANGLES(float x1, float y1,
+	float x2, float y2,
+	float x3, float y3,
+	float x4, float y4,
+	const mw::Sprite& sprite, const Color& color) {
+	int textureW = sprite.getTexture().getWidth();
+	int textureH = sprite.getTexture().getHeight();
+
+	// Left triangle |_
+	addTriangleTRIANGLES(
+		x1, y1,
+		x2, y2,
+		x4, y4,
+		sprite.getX() / textureW, sprite.getY() / textureH,
+		(sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH,
+		sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
+		true,
+		color);
+	//                _
+	// Right triangle  |
+	addTriangleTRIANGLES(
+		x4, y4,
+		x2, y2,
+		x3, y3,
+		sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
+		(sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH,
+		(sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH,
+		true,
+		color);
+}
+
+void VertexData::addVertex(float x, float y, float xTex, float yTex, bool isTex, const Color& color) {
 	if (dynamic_) {
-		if (data_.size() + BoardShader::vertexSizeInFloat() <= maxVertexes_) {
+		if (index_ + BoardShader::vertexSizeInFloat() <= maxVertexes_) {
 			if (index_ < data_.size()) {
 				data_[index_++] = x;
 				data_[index_++] = y;
@@ -146,7 +177,7 @@ void VertexData::addTriangleTRIANGLES(
 	float xTex2, float yTex2,
 	float xTex3, float yTex3,
 	bool isTex,
-	const mw::Color& color) {
+	const Color& color) {
 
 	addVertex(x1, y1, xTex1, yTex1, isTex, color);
 	addVertex(x2, y2, xTex2, yTex2, isTex, color);

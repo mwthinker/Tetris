@@ -56,7 +56,7 @@ private:
 	Uint32 accumulator_;
 
 	// Updated in initGame().
-	mw::Matrix44 matrix_;
+	Mat44 matrix_;
 	bool updateMatrix_;
 	int alivePlayers_;
 

@@ -1,6 +1,7 @@
 #include "drawblock.h"
+#include "color.h"
 
-DrawBlock::DrawBlock(TetrisEntry spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center) {
+DrawBlock::DrawBlock(const TetrisEntry& spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center) {
 	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
 	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
 	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
@@ -32,7 +33,7 @@ void DrawBlock::update(const Block& block) {
 
 	vd_->begin();
 	for (Square sq : block) {
-		mw::Color color(1, 1, 1);
+		Color color(1, 1, 1);
 		if (sq.row_ >= boardHeight_ - 2) {
 			color.alpha_ = 0;
 		}
