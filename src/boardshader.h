@@ -25,12 +25,10 @@ public:
 	void setVertexAttribPointer() const;
 
 	// Uniforms. -------------------------------------------
-
 	void setGlMatrixU(const Mat44& matrix) const;
 
 private:
 	// Vertex buffer Attributes. ---------------------------
-
 	void setGlPosA(GLint size, const GLvoid* data) const;
 	void setGlPosA(GLint size, GLsizei stride, const GLvoid* data) const;
 

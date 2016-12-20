@@ -6,15 +6,16 @@
 #include "player.h"
 #include "drawrow.h"
 #include "vertexdata.h"
-#include "dynamicbuffer.h"
+#include "boardvertexdata.h"
 #include "tetrisboard.h"
 #include "boardshader.h"
-#include "staticbuffer.h"
+#include "buffer.h"
 #include "drawblock.h"
 #include "drawtext.h"
 #include "mat44.h"
 #include "lightningvertexdata.h"
 #include "lightningbolt.h"
+#include "lightningshader.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -29,9 +30,17 @@
 
 class GameGraphic {
 public:
+	enum GraphicMode {
+		LIGHTNING_SHADER,
+		BOARD_SHADER,
+		BOARD_SHADER_TEXT
+	};
+
+	GameGraphic();
+
 	~GameGraphic();
 
-	void restart(Player& player, float x, float y, const TetrisEntry& boardEntry);
+	void restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y, const TetrisEntry& boardEntry);
 
 	void update(int clearedRows, int points, int level);
 
@@ -45,7 +54,7 @@ public:
 		return height_;
 	}
 
-	void draw(float deltaTime, const BoardShader& shader);
+	void draw(float deltaTime, GraphicMode mode);
 
 	void setMiddleMessage(const mw::Text& text);
 
@@ -62,11 +71,11 @@ public:
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
 private:
-	void initStaticBackground(float lowX, float lowY, const TetrisEntry& windowEntry, Player& player);
+	void initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, const TetrisEntry& windowEntry, Player& player);
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
-	VertexDataPtr staticVertexData_;
+	BoardVertexDataPtr staticVertexData_;
 	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	int level_, points_, clearedRows_;
 
@@ -78,13 +87,16 @@ private:
 	bool showPoints_;
 
 	std::list<DrawRowPtr> rows_;
+	std::list<DrawRowPtr> freeRows_;
+
 	float squareSize_;
 	float lowX_;
 	float lowY_;
 	mw::Sound removeRowSound_;;
 	LightningBoltPtr lightningBolt_;
 
-	DynamicBuffer buffer_;
+	Buffer dynamicBuffer_;
+	Buffer dynamicBufferLightning_;
 	DrawBlockPtr currentBlockPtr_;
 	DrawBlockPtr nextBlockPtr_;
 };

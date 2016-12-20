@@ -1,27 +1,19 @@
 #include "drawtext.h"
 
-DrawText::DrawText(DynamicBuffer& buffer, std::string text, mw::Font& font, float lowX, float lowY) : lowX_(lowX), lowY_(lowY) {
-	vd_ = buffer.pollFirstFree();
+DrawText::DrawText(const BoardShader& shader, std::string text, mw::Font& font, float lowX, float lowY, float scale) : BoardVertexData(shader), lowX_(lowX), lowY_(lowY) {
+	text_ = mw::Text(text, font, scale);
 
-	text_ = mw::Text(text, font);
-
-	update(text, (float) font.getCharacterSize());
-}
-
-void DrawText::update(std::string text, float scale) {
-	text_.setText(text);
-	text_.setCharacterSize(scale);
-	vd_->begin();
-	vd_->addSquareTRIANGLES(lowX_, lowY_, text_.getWidth(), text_.getHeight(), mw::Sprite(text_.getTexture()));
-	vd_->end();
+	update(text);
 }
 
 void DrawText::update(std::string text) {
-	update(text, text_.getCharacterSize());
+	text_.setText(text);
+	begin();
+	addSquareTRIANGLES(lowX_, lowY_, text_.getWidth(), text_.getHeight(), mw::Sprite(text_.getTexture()));
+	end();
 }
 
-void DrawText::draw(float deltaTime, const BoardShader& shader) {
+void DrawText::draw(float deltaTime) {
 	text_.bindTexture();
-	vd_->drawTRIANGLES(shader);
+	BoardVertexData::draw(GL_TRIANGLES);
 }
-

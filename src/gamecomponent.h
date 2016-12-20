@@ -4,6 +4,7 @@
 #include "gamegraphic.h"
 #include "tetrisentry.h"
 #include "boardshader.h"
+#include "lightningshader.h"
 
 #include <gui/component.h>
 
@@ -41,6 +42,7 @@ private:
 
 	std::map<int, GameGraphic> graphicPlayers_;
 	BoardShader boardShader_;
+	LightningShader lightningShader_;
 	
 	TetrisEntry tetrisEntry_;
 	TetrisGame& tetrisGame_;
@@ -50,6 +52,8 @@ private:
 	mw::Sound soundTetris_;
 
 	mw::signals::Connection eventConnection_;
+	Buffer buffer_;
+	BoardVertexDataPtr vd_;
 
 	// Fix time step.
 	Uint32 timeStep_;

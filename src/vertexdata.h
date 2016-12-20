@@ -1,81 +1,105 @@
 #ifndef VERTEXDATA_H
 #define VERTEXDATA_H
 
-#include "boardshader.h"
-#include "color.h"
-
 #include <mw/vertexbufferobject.h>
 
 #include <vector>
+#include <array>
 
-class BoardShader;
+#include <cassert>
 
 class VertexData;
 using VertexDataPtr = std::shared_ptr<VertexData>;
 
 class VertexData {
 public:
-	friend class DynamicBuffer;
-	friend class StaticBuffer;
+	friend class Buffer;
 
-	VertexData(int maxVertexes, int offsetInBytes, bool dynamic, const mw::VertexBufferObject& vbo);
+	VertexData();
 
-	inline int getOffsetInBytes() const {
+	inline virtual ~VertexData() {
+	}
+
+	inline unsigned int getOffsetInBytes() const {
 		return offsetInBytes_;
 	}
 
-	inline int getMaxVertexes() const {
+	inline unsigned int getMaxVertexes() const {
 		return maxVertexes_;
 	}
 
-	void drawTRIANGLES(const BoardShader& shader);
+	virtual unsigned int vertexSizeInFloat() const = 0;
+
+	unsigned int vertexSizeInBytes() const {
+		return vertexSizeInFloat() * sizeof(GLfloat);
+	}
+
+	virtual void setVertexAttribPointer() const = 0;
+
+	void draw(GLenum mode);
 
 	void begin();
-
-	// Add two triangles, GL_TRIANGLES, i.e. 6 vertices.
-	void addSquareTRIANGLES(
-		float x, float y,
-		float w, float h,
-		const Color& color);
-
-	void addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const Color& color = Color(1, 1, 1));
-
-	void addSquareTRIANGLES(float x1, float y1,
-		float x2, float y2,
-		float x3, float y3,
-		float x4, float y4, 
-		const mw::Sprite& sprite, const Color& color = Color(1, 1, 1));
-
-	void addVertex(float x, float y, float xTex, float yTex, bool isTex, const Color& color);
-	void updateVertex(float x, float y);
-
-	void addTriangleTRIANGLES(
-		float x1, float y1,
-		float x2, float y2,
-		float x3, float y3,
-		float xTex1, float yTex1,
-		float xTex2, float yTex2,
-		float xTex3, float yTex3,
-		bool isTex,
-		const Color& color);
-
 	void end();
-
-	void updateSquareTRIANGLES(float x, float y, float w, float h);
-
-	void updateTriangleTRIANGLES(float x1, float y1,
-		float x2, float y2,
-		float x3, float y3);
 
 	inline bool isDynamic() const {
 		return dynamic_;
 	}
 
+	template <unsigned int N>
+	void addVertex(const std::array<float, N>& vertex) {
+		// Vertex size must equal the provided vertex size.
+		assert(vertex.size() == vertexSizeInFloat());
+		if (dynamic_) {
+			if (vbo_.getSize() == 0) {
+				if (index_ + vertex.size() <= data_.size()) {
+					for (float value : vertex) {
+						data_[index_++] = value;
+					}
+				} else {
+					for (float value : vertex) {
+						data_.push_back(value);
+					}
+					index_ += vertexSizeInFloat();
+				}
+			} else if (index_ + vertexSizeInFloat() <= maxVertexes_ * vertexSizeInFloat()) {
+				if (index_ < data_.size()) {
+					for (float value : vertex) {
+						data_[index_++] = value;
+					}
+				} else {
+					for (float value : vertex) {
+						data_.push_back(value);
+					}
+					index_ += vertexSizeInFloat();
+				}
+			}
+		} else {
+			for (float value : vertex) {
+				data_.push_back(value);
+			}
+			index_ += vertexSizeInFloat();
+		}
+	}
+
+	bool isAddedToBuffer() const {
+		return addedToBuffer_;
+	}
+
+protected:
+	inline void nextVertex() {
+		index_ += vertexSizeInFloat();
+	}
+
+	inline void updateVertex(unsigned int index, float value) {
+		data_[index_ + index] = value;
+	}
+
 private:
+	bool addedToBuffer_;
 	bool dynamic_;
 	int offsetInBytes_;
-	int maxVertexes_;
-	int index_;
+	unsigned int maxVertexes_;
+	unsigned int index_;
 
 	std::vector<GLfloat> data_;
 	mw::VertexBufferObject vbo_;

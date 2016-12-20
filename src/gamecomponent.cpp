@@ -25,6 +25,16 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
 	
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
+	lightningShader_ = LightningShader("lightning.ver.glsl", "lightning.fra.glsl");
+
+	vd_ = std::make_shared<BoardVertexData>(boardShader_);
+
+	vd_->addSquareTRIANGLES(
+		50, 50,
+		100, 100,
+		Color(1,0,0));
+	buffer_.addVertexData(vd_);
+	buffer_.uploadToGraphicCard();
 }
 
 GameComponent::~GameComponent() {
@@ -37,7 +47,6 @@ void GameComponent::validate() {
 
 void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 	boardShader_.useProgram();
-
 	const gui::Dimension dim = getSize();
 	if (updateMatrix_) {
 		float width = 0;
@@ -68,6 +77,10 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		mw::scale2D(model, scale_, scale_);
 
 		boardShader_.setGlMatrixU(graphic.getProjectionMatrix() * model);
+		lightningShader_.useProgram();
+		lightningShader_.setUMat(graphic.getProjectionMatrix() * model);
+		lightningShader_.setUColor(Color(1, 1, 1));
+		boardShader_.useProgram();
 
 		fontSize_ = scale_ * 12.f;
 		if (font_.getCharacterSize() != fontSize_) {
@@ -75,26 +88,50 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 			// Update the font!
 			for (auto& pair : graphicPlayers_) {
 				GameGraphic& graphic = pair.second;
-				graphic.updateTextSize(fontSize_, font_);
+				//graphic.updateTextSize(fontSize_, font_);
 			}
 		}
 		updateMatrix_ = false;
 	}
 
 	mw::Text text; // Used to update the "Pause".
-
+	
 	// Draw boards.
+	boardShader_.useProgram();
+	//boardShader_.setVertexAttribPointer();
+	tetrisEntry_.bindTextureFromAtlas();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	for (auto& pair : graphicPlayers_) {
 		GameGraphic& graphic = pair.second;
-
-		if (tetrisGame_.isPaused()) {
-			text = mw::Text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
-			graphic.setMiddleMessage(text);
-		}
-		tetrisEntry_.bindTextureFromAtlas();
-		graphic.draw((float) deltaTime, boardShader_);
+		graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER);
 	}
 
+	// Draw text.
+	for (auto& pair : graphicPlayers_) {
+		//GameGraphic& graphic = pair.second;
+		//graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER_TEXT);
+	}
+
+	//boardShader_.unsetVertexAttribPointer();
+	//boardShader_.useProgram();
+	//vd_->draw(GL_TRIANGLES);
+
+	//boardShader_.setVertexAttribPointer();
+	lightningShader_.useProgram();
+	//lightningShader_.setVertexAttribPointer();
+	for (auto& pair : graphicPlayers_) {
+		GameGraphic& graphic = pair.second;
+		graphic.draw((float) deltaTime, GameGraphic::LIGHTNING_SHADER);
+	}
+
+
+
+	//graphic.setColor(1, 1, 0);
+	//graphic.drawSquare(10, 10, 100, 100);
+	
+	glDisable(GL_BLEND);
 	mw::checkGlError();
 }
 
@@ -109,7 +146,7 @@ void GameComponent::initGame(std::vector<std::shared_ptr<Player>>& players) {
 	float w = 0;
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player->getId()];
-		graphic.restart(*player, w, 0, tetrisEntry_.getDeepChildEntry("window"));
+		graphic.restart(lightningShader_, boardShader_, *player, w, 0, tetrisEntry_.getDeepChildEntry("window"));
 		w += graphic.getWidth();
 	}
 

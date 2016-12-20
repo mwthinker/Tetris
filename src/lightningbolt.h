@@ -4,7 +4,7 @@
 #include "mat44.h"
 #include "vertexdata.h"
 #include "tetrisentry.h"
-#include "dynamicbuffer.h"
+#include "lightningvertexdata.h"
 
 #include <mw/vec2.h>
 
@@ -18,13 +18,13 @@ inline Vec2 operator*(const Mat44& m, Vec2 p) {
 class LightningBolt;
 using LightningBoltPtr = std::shared_ptr<LightningBolt>;
 
-class LightningBolt {
+class LightningBolt : public LightningVertexData {
 public:
-	LightningBolt(DynamicBuffer& buffer, TetrisEntry spriteEntry, Vec2 source, Vec2 dest);
+	LightningBolt(const LightningShader& lightShader, TetrisEntry spriteEntry, Vec2 source, Vec2 dest);
 
-	LightningBolt(DynamicBuffer& buffer, TetrisEntry spriteEntry, Vec2 source, Vec2 dest, Color color);
+	LightningBolt(const LightningShader& lightShader, TetrisEntry spriteEntry, Vec2 source, Vec2 dest, Color color);
 
-	void draw(float deltaTime, const BoardShader& boardShader);
+	void draw(float deltaTime);
 private:
 	class Line {
 	public:

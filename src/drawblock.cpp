@@ -1,7 +1,7 @@
 #include "drawblock.h"
 #include "color.h"
 
-DrawBlock::DrawBlock(const TetrisEntry& spriteEntry, const Block& block, DynamicBuffer& buffer, int boardHeight, float squareSize, float lowX, float lowY, bool center) {
+DrawBlock::DrawBlock(const BoardShader& boardShader, const TetrisEntry& spriteEntry, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
 	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
 	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
 	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
@@ -12,7 +12,6 @@ DrawBlock::DrawBlock(const TetrisEntry& spriteEntry, const Block& block, Dynamic
 	lowX_ = lowX;
 	lowY_ = lowY;
 	squareSize_ = squareSize;
-	vd_ = buffer.pollFirstFree();
 	center_ = center;
 	boardHeight_ = boardHeight;
 	update(block);
@@ -31,26 +30,20 @@ void DrawBlock::update(const Block& block) {
 		deltaY_ = (-1.5f - deltaY_) * squareSize_;
 	}
 
-	vd_->begin();
+	begin();
 	for (Square sq : block) {
 		Color color(1, 1, 1);
 		if (sq.row_ >= boardHeight_ - 2) {
 			color.alpha_ = 0;
 		}
-		vd_->addSquareTRIANGLES(
+		addSquareTRIANGLES(
 			lowX_ + (sq.column_ + 1)* squareSize_ + deltaX_, lowY_ + (sq.row_ + 1)* squareSize_ + deltaY_,
 			squareSize_, squareSize_,
 			sprite,
 			color
 		);
 	}
-	vd_->end();
-}
-
-void DrawBlock::draw(const BoardShader& shader) {
-	if (vd_) {
-		vd_->drawTRIANGLES(shader);
-	}
+	end();
 }
 
 void DrawBlock::calculateCenterOfMass(const Block& block, float& x, float& y) {

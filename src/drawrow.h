@@ -1,19 +1,19 @@
 #ifndef DRAWROW_H
 #define DRAWROW_H
 
-#include "dynamicbuffer.h"
+#include "boardvertexdata.h"
 #include "tetrisentry.h"
 #include "player.h"
+#include "boardshader.h"
 
 #include <mw/vertexbufferobject.h>
 
 class DrawRow;
 using DrawRowPtr = std::shared_ptr<DrawRow>;
 
-class DrawRow {
+class DrawRow : public BoardVertexData {
 public:
-	DrawRow(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
-	DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
+	DrawRow(TetrisEntry spriteEntry, const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 	inline int getRow() const {
 		return row_;
@@ -21,7 +21,7 @@ public:
 
 	void handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
-	void draw(float deltaTime, const BoardShader& shader);
+	void draw(float deltaTime);
 
 	bool isAlive() const;
 
@@ -35,13 +35,9 @@ public:
 		spriteZ_ = spriteZ;
 	}
 
-	VertexDataPtr getVertexData() const {
-		return vd_;
-	}
+	void init(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 private:
-	void init(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
-
 	void updateVertexData(const TetrisBoard& tetrisBoard);
 	void updateVertexData();
 
@@ -56,7 +52,6 @@ private:
 	float timeLeft_;
 
 	float movingTime_;
-	VertexDataPtr vd_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 };
 

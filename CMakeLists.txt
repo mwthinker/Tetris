@@ -21,6 +21,10 @@ set(SOURCES
 	src/boardshader.h
 	src/boardsizebutton.cpp
 	src/boardsizebutton.h
+	src/boardvertexdata.cpp
+	src/boardvertexdata.h
+	src/buffer.cpp
+	src/buffer.h
 	src/color.h
 	src/computer.cpp
 	src/computer.h
@@ -32,8 +36,6 @@ set(SOURCES
 	src/drawrow.h
 	src/drawtext.cpp
 	src/drawtext.h
-	src/dynamicbuffer.cpp
-	src/dynamicbuffer.h
 	src/gamecomponent.cpp
 	src/gamecomponent.h
 	src/gamegraphic.cpp
@@ -49,6 +51,8 @@ set(SOURCES
 	src/lightningbolt.h
 	src/lightningboltcluster.cpp
 	src/lightningboltcluster.h
+	src/lightningshader.cpp
+	src/lightningshader.h
 	src/lightningvertexdata.cpp
 	src/lightningvertexdata.h
 	src/localconnection.h
@@ -60,13 +64,13 @@ set(SOURCES
 	src/mat44.h
 	src/player.cpp
 	src/player.h
+	src/program.cpp
+	src/program.h
 	src/protocol.cpp
 	src/protocol.h
 	src/remoteconnection.h
 	src/remoteplayer.cpp
 	src/remoteplayer.h
-	src/staticbuffer.cpp
-	src/staticbuffer.h
 	src/tetrisentry.cpp
 	src/tetrisentry.h
 	src/tetrisgame.cpp
@@ -98,6 +102,7 @@ add_subdirectory(SdlGui)
 add_subdirectory(Calculator)
 add_subdirectory(SimpleNetwork)
 add_subdirectory(TetrisEngine)
+add_subdirectory(rlutil)
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
@@ -116,6 +121,7 @@ include_directories(
 	DataEntry/TinyXML2/src
 	Calculator/src
 	TetrisEngine/src
+	rlutil/src
 )
 
 add_executable(MWetris ${SOURCES})
@@ -129,6 +135,7 @@ target_link_libraries(MWetris
 	Calculator
 	TinyXML2
 	DataEntry
+	rlutil
 	SimpleNetwork
 	MwLibrary2
 	Signal

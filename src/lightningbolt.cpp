@@ -1,9 +1,9 @@
 #include "lightningbolt.h"
 
-LightningBolt::LightningBolt(DynamicBuffer& buffer, TetrisEntry spriteEntry, Vec2 source, Vec2 dest) : LightningBolt(buffer, spriteEntry, source, dest, Color(1, 1, 1)) {
+LightningBolt::LightningBolt(const LightningShader& lightShader, TetrisEntry spriteEntry, Vec2 source, Vec2 dest) : LightningBolt(lightShader, spriteEntry, source, dest, Color(1, 1, 1)) {
 }
 
-LightningBolt::LightningBolt(DynamicBuffer& buffer, TetrisEntry spriteEntry, Vec2 source, Vec2 dest, Color color) : generator_(rd_()),
+LightningBolt::LightningBolt(const LightningShader& lightShader, TetrisEntry spriteEntry, Vec2 source, Vec2 dest, Color color) : LightningVertexData(lightShader), generator_(rd_()),
 	Tint_(color),
 	alpha_(1.f),
 	alphaMultiplier_(0.8f),
@@ -12,69 +12,37 @@ LightningBolt::LightningBolt(DynamicBuffer& buffer, TetrisEntry spriteEntry, Vec
 
 	halfCircle_ = spriteEntry.getChildEntry("halfCircle").getSprite();
 	lineSegment_ = spriteEntry.getChildEntry("lineSegment").getSprite();
-	vd_ = buffer.pollFirstFree();
 
 	segments_ = createBolt(source, dest);
+
+	begin();
+	for (auto& line : segments_) {
+		addSegmentTRIANGLES(line.start_, line.end_, thickness_, halfCircle_, lineSegment_, halfCircle_);
+	}
+	end();
 }
 
 void LightningBolt::addLine(Vec2 start, Vec2 end, const Color& color) {
-	Vec2 tangent = end - start;
-	float segmentLength = tangent.magnitude();
-
-	Vec2 leftMiddle = -thickness_ * 0.5f * tangent / segmentLength + start;
-	Vec2 middle = start + tangent * 0.5f;
-	Vec2 rightMiddle = thickness_ * 0.5f * tangent / segmentLength + end;
-
-	float angle = tangent.angle();
-	addSquare(halfCircle_, color, leftMiddle, 0.f + angle, Vec2(thickness_, thickness_));
-	addSquare(lineSegment_, color, middle, 0.f + angle, Vec2(segmentLength, thickness_));
-	addSquare(halfCircle_, color, rightMiddle, 3.1416f + angle, Vec2(thickness_, thickness_));
+	addSegmentTRIANGLES(start, end, thickness_, halfCircle_, lineSegment_, halfCircle_);
 }
 
-void LightningBolt::addSquare(const mw::Sprite& sprite, const Color& color, Vec2 position, float angle, Vec2 scale) {
-	Mat44 m = Mat44::I;
-
-	mw::translate2D(m, position.x_, position.y_);
-	mw::rotate2D(m, angle);
-	mw::scale2D(m, scale.x_, scale.y_);
-
-	Vec2 p1 = m * Vec2(-0.5f, -0.5f);
-	Vec2 p2 = m * Vec2(0.5f, -0.5f);
-	Vec2 p3 = m * Vec2(0.5f, 0.5f);
-	Vec2 p4 = m * Vec2(-0.5f, 0.5f);
-
-	vd_->addSquareTRIANGLES(p1.x_, p1.y_,
-		p2.x_, p2.y_,
-		p3.x_, p3.y_,
-		p4.x_, p4.y_,
-		sprite,
-		color);
-}
-
-void LightningBolt::draw(float deltaTime, const BoardShader& boardShader) {
-	if (alpha_ <= 0)
-		return;
+void LightningBolt::draw(float deltaTime) {
+	//if (alpha_ <= 0)
+//		return;
 
 	glEnable(GL_MULTISAMPLE);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
 
 	halfCircle_.bindTexture();
-	vd_->begin();
-
+	
 	alpha_ -= fadeOutRate_;
 
-	for (Line& segment : segments_) {
-		Color color = Tint_ * (alpha_ * alphaMultiplier_);
-		addLine(segment.start_, segment.end_, color);
-	}
-
-	//update();
-
-	vd_->end();
-
+	Color color = Tint_ * (alpha_ * alphaMultiplier_);
+	//setColor(color);
+	
 	lineSegment_.bindTexture();
-	vd_->drawTRIANGLES(boardShader);
+	LightningVertexData::draw(GL_TRIANGLES);
 }
 
 std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest) {

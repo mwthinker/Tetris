@@ -9,7 +9,7 @@ namespace {
 
 }
 
-DrawRow::DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
+DrawRow::DrawRow(TetrisEntry spriteEntry, const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) : BoardVertexData(boardShader) {
 	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
 	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
 	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
@@ -17,24 +17,21 @@ DrawRow::DrawRow(TetrisEntry spriteEntry, DynamicBuffer& buffer, int row, const 
 	spriteL_ = spriteEntry.getChildEntry("squareL").getSprite();
 	spriteT_ = spriteEntry.getChildEntry("squareT").getSprite();
 	spriteO_ = spriteEntry.getChildEntry("squareO").getSprite();
-	init(buffer, row, board, squareSize, lowX, lowY);
+	init(row, board, squareSize, lowX, lowY);
 }
 
-DrawRow::DrawRow(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
-	init(buffer, row, board, squareSize, lowX, lowY);
-}
-
-void DrawRow::init(DynamicBuffer& buffer, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
+void DrawRow::init(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
 	lowX_ = lowX;
 	lowY_ = lowY;
 	row_ = row;
 	oldRow_ = row;
 	graphicRow_ = (float) row;
-	vd_ = buffer.pollFirstFree();
 	squareSize_ = squareSize;
 	columns_ = board.getColumns();
 	timeLeft_ = 0.f;
 	movingTime_ = 0.05f;
+
+	updateVertexData(board);
 }
 
 void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -61,7 +58,7 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 	}
 }
 
-void DrawRow::draw(float deltaTime, const BoardShader& shader) {	
+void DrawRow::draw(float deltaTime) {	
 	if (oldRow_ != row_ && row_ >= 0) {
 		timeLeft_ += -deltaTime;
 		graphicRow_ += deltaTime * 1 / movingTime_ * sign(row_ - oldRow_);
@@ -75,10 +72,8 @@ void DrawRow::draw(float deltaTime, const BoardShader& shader) {
 	}
 	
 
-	if (vd_ && isAlive()) {
-		vd_->drawTRIANGLES(shader);
-	} else {
-		int a = 0;
+	if (isAlive()) {
+		BoardVertexData::draw(GL_TRIANGLES);
 	}
 }
 
@@ -88,7 +83,7 @@ bool DrawRow::isAlive() const {
 
 
 void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
-	vd_->begin();
+	begin();
 	for (int column = 0; column < columns_; ++column) {
 		BlockType type = tetrisBoard.getBlockType(row_, column);
 
@@ -96,26 +91,25 @@ void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
 		if (type == BlockType::EMPTY) {
 			color = Color(1, 1, 1, 0);
 		}
-
-		vd_->addSquareTRIANGLES(
+		addSquareTRIANGLES(
 			lowX_ + (column + 1) * squareSize_, lowY_ + (graphicRow_ + 1)* squareSize_,
 			squareSize_, squareSize_,
 			getSprite(type),
 			color
 		);
 	}
-	vd_->end();
+	end();
 }
 
 void DrawRow::updateVertexData() {
-	vd_->begin();
+	begin();
 	for (int column = 0; column < columns_; ++column) {
-		vd_->updateSquareTRIANGLES(
+		updateSquareTRIANGLES(
 			(column + 1) * squareSize_, (graphicRow_ + 1) * squareSize_,
 			squareSize_, squareSize_
 		);
 	}
-	vd_->end();
+	end();
 }
 
 mw::Sprite DrawRow::getSprite(BlockType blockType) const {
