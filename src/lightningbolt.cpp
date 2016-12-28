@@ -1,17 +1,15 @@
 #include "lightningbolt.h"
 
-LightningBolt::LightningBolt(const LightningShader& lightShader, TetrisEntry spriteEntry, Vec2 source, Vec2 dest) : LightningBolt(lightShader, spriteEntry, source, dest, Color(1, 1, 1)) {
-}
-
-LightningBolt::LightningBolt(const LightningShader& lightShader, TetrisEntry spriteEntry, Vec2 source, Vec2 dest, Color color) : LightningVertexData(lightShader), generator_(rd_()),
-	Tint_(color),
+LightningBolt::LightningBolt(const LightningShader& lightShader, Vec2 source, Vec2 dest, mw::Sprite halfCircle, mw::Sprite  lineSegment, Color tInt, float alphaMultiplier, float fadeOutRate, float thickness) :
+	LightningVertexData(lightShader),
+	generator_(rd_()),
+	Tint_(tInt),
 	alpha_(1.f),
-	alphaMultiplier_(0.8f),
-	fadeOutRate_(0.05f),
-	thickness_(8) {
-
-	halfCircle_ = spriteEntry.getChildEntry("halfCircle").getSprite();
-	lineSegment_ = spriteEntry.getChildEntry("lineSegment").getSprite();
+	alphaMultiplier_(alphaMultiplier),
+	fadeOutRate_(fadeOutRate),
+	thickness_(thickness),
+	halfCircle_(halfCircle),
+	lineSegment_(lineSegment) {
 
 	segments_ = createBolt(source, dest);
 
@@ -22,13 +20,17 @@ LightningBolt::LightningBolt(const LightningShader& lightShader, TetrisEntry spr
 	end();
 }
 
+LightningBolt::LightningBolt(const LightningShader& lightShader, Vec2 source, Vec2 dest, mw::Sprite halfCircle, mw::Sprite lineSegment)
+	: LightningBolt(lightShader, source, dest, halfCircle, lineSegment, Color(1,1,1), 0.8f, 0.005f, 8) {
+}
+
 void LightningBolt::addLine(Vec2 start, Vec2 end, const Color& color) {
 	addSegmentTRIANGLES(start, end, thickness_, halfCircle_, lineSegment_, halfCircle_);
 }
 
 void LightningBolt::draw(float deltaTime) {
-	//if (alpha_ <= 0)
-//		return;
+	if (alpha_ <= 0)
+		return;
 
 	glEnable(GL_MULTISAMPLE);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -39,7 +41,7 @@ void LightningBolt::draw(float deltaTime) {
 	alpha_ -= fadeOutRate_;
 
 	Color color = Tint_ * (alpha_ * alphaMultiplier_);
-	//setColor(color);
+	setColor(color);
 	
 	lineSegment_.bindTexture();
 	LightningVertexData::draw(GL_TRIANGLES);

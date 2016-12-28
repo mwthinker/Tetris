@@ -13,6 +13,7 @@ void VertexData::draw(GLenum mode) {
 	}
 
 	if (vbo_.getSize() > 0) {
+		useProgram();
 		vbo_.bindBuffer();
 		setVertexAttribPointer();
 		glDrawArrays(mode, offsetInBytes_ / vertexSizeInBytes(), vertexes);

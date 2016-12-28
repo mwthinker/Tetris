@@ -87,6 +87,10 @@ public:
 		return lightningShader_.vertexSizeInFloat();
 	}
 
+	void useProgram() const override {
+		lightningShader_.useProgram();
+	}
+
 private:
 	LightningShader lightningShader_;
 };

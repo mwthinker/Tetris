@@ -36,6 +36,8 @@ public:
 
 	virtual void setVertexAttribPointer() const = 0;
 
+	virtual void useProgram() const = 0;
+
 	void draw(GLenum mode);
 
 	void begin();

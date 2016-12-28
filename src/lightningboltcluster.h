@@ -9,7 +9,9 @@
 
 class LightningBoltCluster {
 public:
-	LightningBoltCluster(Buffer& buffer, TetrisEntry spriteEntry, Vec2 source, Vec2 dest) : generator_(std::random_device()()) {
+	LightningBoltCluster(TetrisEntry spriteEntry, Vec2 source, Vec2 dest) : generator_(std::random_device()()) {
+		mw::Sprite sprite = spriteEntry.getChildEntry("halfCircle").getSprite();
+		mw::Sprite sprite2 = spriteEntry.getChildEntry("lineSegment").getSprite();		
 	}
 
 	void restart(const std::vector<Vec2>& points, int lightBoltsNbr, int randomNbr) {
@@ -43,7 +45,7 @@ private:
 	}
 
 	int rand(unsigned int min, unsigned int max) const {
-		//std::uniform_int_distribution<> dist(min, max);
+		std::uniform_int_distribution<> dist(min, max);
 		//return dist(generator_);
 		return 0;
 	}

@@ -26,15 +26,6 @@ GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
 	lightningShader_ = LightningShader("lightning.ver.glsl", "lightning.fra.glsl");
-
-	vd_ = std::make_shared<BoardVertexData>(boardShader_);
-
-	vd_->addSquareTRIANGLES(
-		50, 50,
-		100, 100,
-		Color(1,0,0));
-	buffer_.addVertexData(vd_);
-	buffer_.uploadToGraphicCard();
 }
 
 GameComponent::~GameComponent() {
@@ -97,8 +88,6 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 	mw::Text text; // Used to update the "Pause".
 	
 	// Draw boards.
-	boardShader_.useProgram();
-	//boardShader_.setVertexAttribPointer();
 	tetrisEntry_.bindTextureFromAtlas();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -110,28 +99,15 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 
 	// Draw text.
 	for (auto& pair : graphicPlayers_) {
-		//GameGraphic& graphic = pair.second;
-		//graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER_TEXT);
-	}
+		GameGraphic& graphic = pair.second;
+		graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER_TEXT);
+	}	
 
-	//boardShader_.unsetVertexAttribPointer();
-	//boardShader_.useProgram();
-	//vd_->draw(GL_TRIANGLES);
-
-	//boardShader_.setVertexAttribPointer();
-	lightningShader_.useProgram();
-	//lightningShader_.setVertexAttribPointer();
 	for (auto& pair : graphicPlayers_) {
 		GameGraphic& graphic = pair.second;
 		graphic.draw((float) deltaTime, GameGraphic::LIGHTNING_SHADER);
 	}
-
-
-
-	//graphic.setColor(1, 1, 0);
-	//graphic.drawSquare(10, 10, 100, 100);
 	
-	glDisable(GL_BLEND);
 	mw::checkGlError();
 }
 

@@ -237,7 +237,10 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	dynamicBuffer_.clearBuffer();
 
 	lightningShader.useProgram();
-	lightningBolt_ = std::make_shared<LightningBolt>(lightningShader, spriteEntry, Vec2(50, 50), Vec2(100, 200));
+	lightningBolt_ = std::make_shared<LightningBolt>(lightningShader, Vec2(50, 50), Vec2(100, 200),
+		spriteEntry.getChildEntry("halfCircle").getSprite(),
+		spriteEntry.getChildEntry("lineSegment").getSprite());
+
 	dynamicBufferLightning_.addVertexData(lightningBolt_);
 	dynamicBufferLightning_.uploadToGraphicCard();
 	dynamicBufferLightning_.clearBuffer();

@@ -59,6 +59,10 @@ public:
 		boardShader_.setVertexAttribPointer();
 	}
 
+	void useProgram() const override {
+		boardShader_.useProgram();
+	}
+
 	unsigned int vertexSizeInFloat() const override {
 		return boardShader_.vertexSizeInFloat();
 	}

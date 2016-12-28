@@ -53,7 +53,6 @@ private:
 
 	mw::signals::Connection eventConnection_;
 	Buffer buffer_;
-	BoardVertexDataPtr vd_;
 
 	// Fix time step.
 	Uint32 timeStep_;
