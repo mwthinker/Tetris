@@ -95,7 +95,7 @@ public:
 	}
 
 	// Return the blocktype for a given position.
-	inline BlockType getBlockType(int row, int column) const;
+	BlockType getBlockType(int row, int column) const;
 
 	// Return true if the block is outside or on an already occupied square on the board.
 	// Otherwise it return false.

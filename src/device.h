@@ -46,9 +46,6 @@ public:
 	virtual void update(const TetrisBoard& board) {
 	}
 
-	virtual void eventUpdate(const SDL_Event& windowEvent) {
-	}
-
 	inline bool isAi() const {
 		return ai_;
 	}

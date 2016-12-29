@@ -154,7 +154,7 @@ mw::Font TetrisWindow::getDefaultFont(int size) {
 }
 
 void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent) {
-	for (DevicePtr& device : devices_) {
+	for (SdlDevicePtr& device : devices_) {
 		device->eventUpdate(windowEvent);
 	}
 }

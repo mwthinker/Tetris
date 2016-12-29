@@ -1,11 +1,11 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
-#include "device.h"
+#include "sdldevice.h"
 
 #include <mw/joystick.h>
 
-class Joystick : public Device {
+class Joystick : public SdlDevice {
 public:
 	Joystick(mw::JoystickPtr joystick, int rotateButton = 0, int downButton = 1);
 	~Joystick();

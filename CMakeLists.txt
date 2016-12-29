@@ -7,9 +7,10 @@ if (MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc")
 	
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32 -D_WINSOCKAPI_)
+	# D_WINSOCKAPI_ makes redefinition warnings disappear.
 else ()
-	set(CMAKE_CXX_FLAGS "-std=c++14")
+	set(CMAKE_CXX_FLAGS "-std=c++1y")
 	set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
@@ -28,6 +29,8 @@ set(SOURCES
 	src/color.h
 	src/computer.cpp
 	src/computer.h
+	src/consoletetris.cpp
+	src/consoletetris.h
 	src/definitions.h
 	src/device.h
 	src/drawblock.cpp
@@ -69,6 +72,7 @@ set(SOURCES
 	src/remoteconnection.h
 	src/remoteplayer.cpp
 	src/remoteplayer.h
+	src/sdldevice.h
 	src/tetrisentry.cpp
 	src/tetrisentry.h
 	src/tetrisgame.cpp

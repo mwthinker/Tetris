@@ -1,12 +1,12 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include "device.h"
+#include "sdldevice.h"
 
 #include <SDL.h>
 #include <SDL.h>
 
-class Keyboard : public Device {
+class Keyboard : public SdlDevice {
 public:
 	Keyboard(std::string name, SDL_Keycode down, SDL_Keycode left, SDL_Keycode right, SDL_Keycode rotate, SDL_Keycode downGround);
 

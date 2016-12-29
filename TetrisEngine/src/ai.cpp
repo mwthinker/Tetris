@@ -127,7 +127,7 @@ namespace {
 				if (board.getBlockType(row, column) != BlockType::EMPTY) {
 					aggregateHeight += row + 1;
 					if (column > 0) { // Ignore first column.
-						bumpiness += std::abs(lastHeight - aggregateHeight);
+						//bumpiness += std::abs(lastHeight - aggregateHeight);
 					}
 					lastHeight = aggregateHeight;
 					continue;

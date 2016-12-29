@@ -1,7 +1,7 @@
 #ifndef TETRISWINDOW_H
 #define TETRISWINDOW_H
 
-#include "device.h"
+#include "sdldevice.h"
 #include "ai.h"
 #include "tetrisgame.h"
 #include "tetrisentry.h"
@@ -81,7 +81,7 @@ private:
 	std::vector<Ai> ais_;
 
 	// Devices.
-	std::vector<DevicePtr> devices_;
+	std::vector<SdlDevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
 
 	// All panels.

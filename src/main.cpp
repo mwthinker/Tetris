@@ -1,7 +1,9 @@
 #include "tetriswindow.h"
 #include "tetrisentry.h"
+#include "consoletetris.h"
 
 #include <sstream>
+#include <iostream>
 
 int main (int argc, char** argv) {	
 	TetrisEntry tetrisEntry("tetris.xml");
@@ -9,6 +11,26 @@ int main (int argc, char** argv) {
 	if (tetrisEntry.isError()) {
 		tetrisEntry.printError();
 		return 1;
+	}
+
+	if (argc >= 2) {
+		std::string programName = *argv;
+		std::string code(*(argv + 1));		
+		if (code == "-h" || code == "--help") {
+			std::cout << "Usage: " << programName << " OPTIONS \n\n";
+			std::cout << "OPTIONS:\n";
+			std::cout << "\t-h --help                show this help\n";
+			std::cout << "\t-n --no-window           no window and only in the terminal\n\n";
+			std::cout << "Starts a tetris game.\n\n";
+			std::cout << "Example: \n";
+			std::cout << "\t" << "Starts a tetrig game without a window. \n";
+			std::cout << "\t" << programName << " -n" << std::endl;
+			return 0;
+		} else if (code == "-n" || code == "--no-window") {
+			ConsoleTetris game(tetrisEntry.getChildEntry("tetris"));
+			game.startLoop();
+			return 0;
+		}
 	}
 
 	int menuIndex = 0;

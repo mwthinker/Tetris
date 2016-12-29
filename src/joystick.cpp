@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include <iostream>
 
-Joystick::Joystick(mw::JoystickPtr joystick, int rotateButton, int downButton) : Device(false) {
+Joystick::Joystick(mw::JoystickPtr joystick, int rotateButton, int downButton) : SdlDevice(false) {
 	joystick_ = joystick;
 	joystick->setActive(true);
 	rotateButton_ = rotateButton;
