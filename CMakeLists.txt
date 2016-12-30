@@ -29,6 +29,10 @@ set(SOURCES
 	src/color.h
 	src/computer.cpp
 	src/computer.h
+	src/consolegraphic.cpp
+	src/consolegraphic.h
+	src/consolekeyboard.cpp
+	src/consolekeyboard.h
 	src/consoletetris.cpp
 	src/consoletetris.h
 	src/definitions.h
