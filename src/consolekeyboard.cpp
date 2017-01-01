@@ -9,16 +9,10 @@ ConsoleKeyboard::ConsoleKeyboard(std::string name, char down, char left, char ri
 	downGround_(downGround) {
 }
 
-void ConsoleKeyboard::eventUpdate(char key) {
-	if (key == down_) {
-		input_.down_ = true;
-	} else if (key == left_) {
-		input_.left_ = true;
-	} else if (key == right_) {
-		input_.right_ = true;
-	} else if (key == rotate_) {
-		input_.rotate_ = true;
-	} else if (key == downGround_) {
-		input_.downGround_ = true;
-	}
+void ConsoleKeyboard::eventUpdate(char key, double time) {
+	input_.down_ = down_.isPressed(key, time);
+	input_.right_ = left_.isPressed(key, time);
+	input_.left_ = right_.isPressed(key, time);
+	input_.rotate_ = rotate_.isPressed(key, time);
+	input_.downGround_ = downGround_.isPressed(key, time);
 }

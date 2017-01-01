@@ -20,7 +20,11 @@ void ConsoleGraphic::restart(Player& player, TetrisEntry tetrisEntry) {
 }
 
 int ConsoleGraphic::getWidth() const {
-	return 25;
+	return tetrisBoard_.getColumns() + 14;
+}
+
+int ConsoleGraphic::getHeight() const {
+	return tetrisBoard_.getRows() + 5;
 }
 
 void ConsoleGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -75,35 +79,35 @@ void ConsoleGraphic::draw(double time, int x, int y) {
 }
 
 void ConsoleGraphic::drawSquare(int x, int y, BlockType blockType) {
-	rlutil::locate(x * 2, y);
+	rlutil::locate(x, y);
 	switch (blockType) {
 		case BlockType::I:
 			rlutil::setColor(rlutil::CYAN);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		case BlockType::J:
 			rlutil::setColor(rlutil::BLUE);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		case BlockType::L:
 			rlutil::setColor(rlutil::LIGHTRED);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		case BlockType::O:
 			rlutil::setColor(rlutil::YELLOW);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		case BlockType::S:
 			rlutil::setColor(rlutil::RED);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		case BlockType::T:
 			rlutil::setColor(rlutil::MAGENTA);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		case BlockType::Z:
 			rlutil::setColor(rlutil::GREEN);
-			std::cout << SQUARE << SQUARE;
+			std::cout << SQUARE;
 			break;
 		default:
 			break;
@@ -111,16 +115,16 @@ void ConsoleGraphic::drawSquare(int x, int y, BlockType blockType) {
 }
 
 void ConsoleGraphic::draw(int x, int y, char key) {
-	rlutil::locate(x * 2, y);
-	std::cout << key << key;
+	rlutil::locate(x, y);
+	std::cout << key;
 }
 
 void ConsoleGraphic::draw(int x, int y, std::string text) {
-	rlutil::locate(x * 2, y);
+	rlutil::locate(x, y);
 	std::cout << text;
 }
 
 void ConsoleGraphic::draw(int x, int y, std::string text, int number) {
-	rlutil::locate(x * 2, y);
+	rlutil::locate(x, y);
 	std::cout << text << number;
 }

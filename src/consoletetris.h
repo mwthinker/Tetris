@@ -20,13 +20,20 @@ public:
 	void startLoop();
 
 private:
+	enum Mode {MENU, GAME, QUIT};
+
+	void printMenu();
+
+	static void draw(int x, int y, std::string text);
+
 	void handleConnectionEvent(TetrisGameEvent& tetrisEvent);
 
-	void update(double deltaTime);
+	void update(double deltaTime, double time);
 
 	TetrisGame tetrisGame_;
 	TetrisEntry tetrisEntry_;
-	std::shared_ptr<ConsoleKeyboard> keyboard1_, keyboard2_;
+	Mode mode_;
+	std::shared_ptr<ConsoleKeyboard> keyboard1_;
 	std::map<int, ConsoleGraphic> graphicPlayers_;	
 };
 

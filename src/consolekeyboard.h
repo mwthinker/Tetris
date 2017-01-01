@@ -25,11 +25,33 @@ public:
 		playerName_ = playerName;
 	}
 
-	void eventUpdate(char key);
+	void eventUpdate(char key, double time);
 
 private:
+	class Key {
+	public:
+		Key(char key) : key_(key), pressedUntilTime_(0) {
+		}
+
+		bool isPressed(char key, double time) {
+			if (key == key_) {
+				pressedUntilTime_ = time + 0.02;
+			}
+
+			if (time < pressedUntilTime_) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+	private:
+		char key_;
+		double pressedUntilTime_;
+	};
+
 	std::string name_, playerName_;
-	char down_, right_, left_, rotate_, downGround_;
+	Key down_, right_, left_, rotate_, downGround_;
 	Input input_;
 };
 

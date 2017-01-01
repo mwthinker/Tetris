@@ -15,6 +15,8 @@ public:
 
 	int getWidth() const;
 
+	int getHeight() const;
+
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
 	void draw(double time, int x, int y);
@@ -28,7 +30,7 @@ private:
 
 	void draw(int x, int y, std::string text, int number);
 
-	static const char SQUARE = (char) 219;
+	static const char SQUARE = 'X';
 
 	mw::signals::Connection connection_;
 	RawTetrisBoard tetrisBoard_;
