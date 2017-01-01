@@ -25,7 +25,7 @@ public:
 	~TetrisGame();
 
 	// Updates everything. Should be called each frame.
-	void update(Uint32 msDeltaTime);
+	void update(double deltaTime);
 	
 	// Uses the same settings as last call.
 	void createLocalGame();

@@ -238,7 +238,7 @@ void TetrisGame::receiveAndSendNetworkData() {
 	}
 }
 
-void TetrisGame::update(Uint32 deltaTime) {
+void TetrisGame::update(double deltaTime) {
 	if (status_ != Status::WAITING_TO_CONNECT) {
 		receiveAndSendNetworkData();
 	

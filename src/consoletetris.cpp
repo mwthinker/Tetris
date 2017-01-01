@@ -125,7 +125,7 @@ void ConsoleTetris::update(double deltaTime, double time) {
 					delta += graphic.getWidth();
 				}
 			}
-			tetrisGame_.update((int) (deltaTime * 1000));
+			tetrisGame_.update(deltaTime);
 
 			if (kbhit()) {
 				char key = rlutil::getkey();

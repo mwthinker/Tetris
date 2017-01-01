@@ -11,7 +11,7 @@ class LocalConnection {
 public:
 	LocalConnection(PacketSender& packetSender) :
 		packetSender_(packetSender),
-		timeStep_(17),
+		timeStep_(1.0/60),
 		accumulator_(0),
 		id_(UNDEFINED_CONNECTION_ID) {
 
@@ -64,18 +64,18 @@ public:
         return players_.end();
     }
 
-	void updateGame(Uint32 msDeltaTime) {
+	void updateGame(double deltaTime) {
 		// DeltaTime to big?
-		if (msDeltaTime > 250) {
+		if (deltaTime > 0.250) {
 			// To avoid spiral of death.
-			msDeltaTime = 250;
+			deltaTime = 0.250;
 		}
 
-		accumulator_ += msDeltaTime;
+		accumulator_ += deltaTime;
 		while (accumulator_ >= timeStep_) {
 			accumulator_ -= timeStep_;
 			for (auto& player : players_) {
-				player->update(timeStep_ / 1000.0);
+				player->update(timeStep_);
 			}
 		}
 	}
@@ -133,8 +133,8 @@ private:
 	int id_;
 
 	// Fix timestep.
-	const Uint32 timeStep_;
-	Uint32 accumulator_;
+	const double timeStep_;
+	double accumulator_;
 };
 
 #endif // LOCALCONNECTION_H
