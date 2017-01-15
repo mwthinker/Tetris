@@ -4,6 +4,7 @@
 		<fullscreenOnDoubleClick>0</fullscreenOnDoubleClick>
 		<border>0</border>
 		<moveWindowByHoldingDownMouse>0</moveWindowByHoldingDownMouse>
+		<vsync>1</vsync>
         <bar>
             <height>35</height>
             <color>(.5 0 0 .30)</color>
@@ -108,15 +109,15 @@
         <ais>
             <player>
                 <name>Default2</name>
-                <valueFunction>~5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight</valueFunction>
+                <valueFunction>-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight</valueFunction>
             </player>
             <player>
                 <name>Defensive</name>
-                <valueFunction>~5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
+                <valueFunction>-5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
             </player>
             <player>
                 <name>Worthless</name>
-                <valueFunction>~10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
+                <valueFunction>-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight</valueFunction>
             </player>
         </ais>
     </players>

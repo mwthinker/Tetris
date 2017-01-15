@@ -21,8 +21,7 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	device_->update(getTetrisBoard());
 	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
 	name_ = device_->getPlayerName();
-	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener,
-		this, std::placeholders::_1, std::placeholders::_2));
+	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
 	watingTime_ = 0;
 }
 

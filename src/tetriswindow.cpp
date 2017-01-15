@@ -60,6 +60,9 @@ void TetrisWindow::initPreLoop() {
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());
 	}
 
+	bool vsync = tetrisEntry_.getDeepChildEntry("window vsync").getBool();
+	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
+
 	// Initializes default keyboard devices for two players.
 	devices_.push_back(std::make_shared<Keyboard>("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_RCTRL));
 	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w, SDLK_LCTRL));
@@ -250,7 +253,7 @@ void TetrisWindow::initPlayPanel() {
 	
 	addDrawListener([&](gui::Frame& frame, double deltaTime) {
 		SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_); // Update last window position.
-		tetrisGame_.update((int) (deltaTime * 1000));
+		tetrisGame_.update(deltaTime);
 	});
 	
     // Add the game component, already created in the constructor.
@@ -363,6 +366,7 @@ void TetrisWindow::initSettingsPanel() {
 	checkBox1->setSelected(tetrisEntry_.getDeepChildEntry("window border").getBool());
 	checkBox1->addActionListener([&](gui::Component& c) {
         auto& check = static_cast<CheckBox&>(c);
+		bool test = check.isSelected();
 		tetrisEntry_.getDeepChildEntry("window border").setBool(check.isSelected());
 		tetrisEntry_.save();
 		setBordered(check.isSelected());
@@ -381,6 +385,15 @@ void TetrisWindow::initSettingsPanel() {
         auto& check =  static_cast<CheckBox&>(c);
 		tetrisEntry_.getDeepChildEntry("window moveWindowByHoldingDownMouse").setBool(check.isSelected());
 		tetrisEntry_.save();
+	});
+
+	auto checkBox4 = p->addDefault<CheckBox>("Vsync", getDefaultFont(18), tetrisEntry_);
+	checkBox4->setSelected(tetrisEntry_.getDeepChildEntry("window vsync").getBool());
+	checkBox4->addActionListener([&](gui::Component& c) {
+		auto& check = static_cast<CheckBox&>(c);
+		tetrisEntry_.getDeepChildEntry("window vsync").setBool(check.isSelected());
+		tetrisEntry_.save();
+		SDL_GL_SetSwapInterval(check.isSelected() ? 1 : 0);
 	});
 }
 
