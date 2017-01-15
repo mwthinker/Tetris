@@ -52,7 +52,7 @@ private:
 	mw::Sound soundTetris_;
 
 	mw::signals::Connection eventConnection_;
-	Buffer buffer_;
+	mw::Buffer buffer_;
 
 	// Fix time step.
 	Uint32 timeStep_;

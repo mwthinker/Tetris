@@ -73,7 +73,7 @@ void DrawRow::draw(float deltaTime) {
 	
 
 	if (isAlive()) {
-		BoardVertexData::draw(GL_TRIANGLES);
+		BoardVertexData::drawTRIANGLES();
 	}
 }
 

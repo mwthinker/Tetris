@@ -15,5 +15,5 @@ void DrawText::update(std::string text) {
 
 void DrawText::draw(float deltaTime) {
 	text_.bindTexture();
-	BoardVertexData::draw(GL_TRIANGLES);
+	BoardVertexData::drawTRIANGLES();
 }

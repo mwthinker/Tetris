@@ -24,8 +24,6 @@ set(SOURCES
 	src/boardsizebutton.h
 	src/boardvertexdata.cpp
 	src/boardvertexdata.h
-	src/buffer.cpp
-	src/buffer.h
 	src/color.h
 	src/computer.cpp
 	src/computer.h
@@ -85,8 +83,6 @@ set(SOURCES
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h
-	src/vertexdata.cpp
-	src/vertexdata.h
 )
 	
 # End of source files.

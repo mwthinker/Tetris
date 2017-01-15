@@ -44,7 +44,7 @@ void LightningBolt::draw(float deltaTime) {
 	setColor(color);
 	
 	lineSegment_.bindTexture();
-	LightningVertexData::draw(GL_TRIANGLES);
+	LightningVertexData::drawTRIANGLES();
 }
 
 std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest) {

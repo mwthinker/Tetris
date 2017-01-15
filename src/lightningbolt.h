@@ -2,11 +2,11 @@
 #define LIGHTNINGBOLT_H
 
 #include "mat44.h"
-#include "vertexdata.h"
 #include "tetrisentry.h"
 #include "lightningvertexdata.h"
 
 #include <mw/vec2.h>
+#include <mw/vertexdata.h>
 
 #include <memory>
 #include <random>
@@ -51,7 +51,7 @@ private:
 	void addLine(Vec2 start, Vec2 end, const Color& color);
 
 	mw::Sprite halfCircle_, lineSegment_;
-	VertexDataPtr vd_;
+	mw::VertexDataPtr vd_;
 
 	std::random_device rd_;
 	std::default_random_engine generator_;

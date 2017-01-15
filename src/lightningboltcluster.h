@@ -2,7 +2,6 @@
 #define LIGHTNINGBOLTCLUSTER_H
 
 #include "lightningbolt.h"
-#include "vertexdata.h"
 #include "tetrisentry.h"
 
 #include <vector>
@@ -18,7 +17,7 @@ public:
 		if (points.size() > 0) {
 			points_ = points;
 			std::vector<int> indexes(points.size(), 0);
-			for (int i = 0; i < indexes.size(); ++i) {
+			for (unsigned int i = 0; i < indexes.size(); ++i) {
 				indexes[i] = i;
 			}
 		}

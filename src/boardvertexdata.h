@@ -1,19 +1,17 @@
 #ifndef BOARDVERTEXDATA_H
 #define BOARDVERTEXDATA_H
 
-#include "vertexdata.h"
-
 #include "boardshader.h"
 #include "color.h"
 
-#include <mw/vertexbufferobject.h>
+#include <mw/vertexdata.h>
 
 #include <vector>
 
 class BoardVertexData;
 using BoardVertexDataPtr = std::shared_ptr<BoardVertexData>;
 
-class BoardVertexData : public VertexData {
+class BoardVertexData : public mw::VertexData {
 public:
 	BoardVertexData(const BoardShader& boardShader) : boardShader_(boardShader) {
 	}
@@ -55,20 +53,21 @@ public:
 		float x2, float y2,
 		float x3, float y3);
 
-	void setVertexAttribPointer() const override {
+	inline void setVertexAttribPointer() const override {
 		boardShader_.setVertexAttribPointer();
 	}
 
-	void useProgram() const override {
+	inline void useProgram() const override {
 		boardShader_.useProgram();
 	}
 
-	unsigned int vertexSizeInFloat() const override {
+	inline unsigned int vertexSizeInFloat() const override {
 		return boardShader_.vertexSizeInFloat();
 	}
 
-protected:
-	int vertexSizeInFloats_;
+	inline void drawTRIANGLES() {
+		drawMode(GL_TRIANGLES);
+	}
 
 private:
 	BoardShader boardShader_;

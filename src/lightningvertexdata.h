@@ -2,14 +2,13 @@
 #define LIGHTNINGVERTEXDATA_H
 
 #include "lightningshader.h"
-#include "vertexdata.h"
-
 #include "mat44.h"
 #include "color.h"
 
 #include <mw/sprite.h>
+#include <mw/vertexdata.h>
 
-class LightningVertexData : public VertexData {
+class LightningVertexData : public mw::VertexData {
 public:
 	LightningVertexData(const LightningShader& lightningShader) : lightningShader_(lightningShader) {
 	}
@@ -89,6 +88,10 @@ public:
 
 	void useProgram() const override {
 		lightningShader_.useProgram();
+	}
+
+	inline void drawTRIANGLES() {
+		drawMode(GL_TRIANGLES);
 	}
 
 private:

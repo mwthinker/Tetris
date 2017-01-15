@@ -33,6 +33,10 @@ public:
 	~TetrisWindow();
 
 private:
+	void initOpenGl() override;
+
+	void initPreLoop() override;
+
 	mw::Font getDefaultFont(int size);
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
@@ -114,6 +118,7 @@ private:
 
 	int lastX_, lastY_;
 	int lastWidth_, lastHeight_;
+	int startFrame_;
 };
 
 #endif // TETRISWINDOW_H

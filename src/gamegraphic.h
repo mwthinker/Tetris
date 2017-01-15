@@ -5,11 +5,9 @@
 #include "boardshader.h"
 #include "player.h"
 #include "drawrow.h"
-#include "vertexdata.h"
 #include "boardvertexdata.h"
 #include "tetrisboard.h"
 #include "boardshader.h"
-#include "buffer.h"
 #include "drawblock.h"
 #include "drawtext.h"
 #include "mat44.h"
@@ -22,6 +20,7 @@
 #include <mw/sprite.h>
 #include <mw/vertexbufferobject.h>
 #include <mw/signal.h>
+#include <mw/buffer.h>
 
 #include <gui/component.h>
 
@@ -95,8 +94,8 @@ private:
 	mw::Sound removeRowSound_;;
 	LightningBoltPtr lightningBolt_;
 
-	Buffer dynamicBuffer_;
-	Buffer dynamicBufferLightning_;
+	mw::Buffer dynamicBuffer_;
+	mw::Buffer dynamicBufferLightning_;
 	DrawBlockPtr currentBlockPtr_;
 	DrawBlockPtr nextBlockPtr_;
 };

@@ -75,7 +75,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	width_ = squareSize_ * columns + infoSize + borderSize_ * 2;
 	height_ = squareSize_ * (rows - 2) + borderSize_ * 2;
 
-	Buffer staticBuffer(true);
+	mw::Buffer staticBuffer(true);
 	staticVertexData_ = std::make_shared<BoardVertexData>(boardShader);
 	staticBuffer.addVertexData(staticVertexData_);
 	staticVertexData_->begin();
@@ -333,13 +333,13 @@ void GameGraphic::draw(float deltaTime, GraphicMode mode) {
 	switch (mode) {
 		case GraphicMode::BOARD_SHADER:
 			if (staticVertexData_) {
-				staticVertexData_->draw(GL_TRIANGLES);
+				staticVertexData_->drawTRIANGLES();
 			}
 			if (currentBlockPtr_) {
-				currentBlockPtr_->draw(GL_TRIANGLES);
+				currentBlockPtr_->drawTRIANGLES();
 			}
 			if (nextBlockPtr_) {
-				nextBlockPtr_->draw(GL_TRIANGLES);
+				nextBlockPtr_->drawTRIANGLES();
 			}
 			for (DrawRowPtr rowPtr : rows_) {
 				rowPtr->draw(deltaTime);

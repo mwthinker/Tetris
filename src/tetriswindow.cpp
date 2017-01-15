@@ -26,35 +26,31 @@
 #include <sstream>
 
 TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
-	gui::Frame(e.getDeepChildEntry("window positionX").getInt(),
-        e.getDeepChildEntry("window positionY").getInt(),
-        e.getDeepChildEntry("window width").getInt(),
-        e.getDeepChildEntry("window height").getInt(),
-        true,
-        "MWetris",
-        e.getDeepChildEntry("window icon").getString(),
-		!e.getDeepChildEntry("window border").getBool(), []() {
+	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
+	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(frame) {
 
+	Frame::setPosition(e.getDeepChildEntry("window positionX").getInt(), e.getDeepChildEntry("window positionY").getInt());
+	Frame::setWindowSize(e.getDeepChildEntry("window width").getInt(), e.getDeepChildEntry("window height").getInt());
+	Frame::setResizeable(true);
+	Frame::setTitle("MWetris");
+	Frame::setIcon(e.getDeepChildEntry("window icon").getString());
+	Frame::setBordered(e.getDeepChildEntry("window border").getBool());
+	Frame::setDefaultClosing(true);
+}
+
+void TetrisWindow::initOpenGl() {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
-	
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	Window::setOpenGlVersion(2, 1);
+	Frame::initOpenGl();
+}
 
-	const int MAJOR_VERSION = 2;
-	const int MINOR_VERSION = 1;
+void TetrisWindow::initPreLoop() {
+	Frame::initPreLoop();
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, MAJOR_VERSION);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, MINOR_VERSION);
-
-	if (SDL_GL_LoadLibrary(0) != 0) {
-		std::cerr << "SDL_GL_LoadLibrary failed: " << SDL_GetError() << std::endl;
-		std::cerr << "Failed to OpenGL version" << MAJOR_VERSION << "." << MINOR_VERSION << std::endl;
-		std::exit(1);
-	}
-}),
-
-	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
-	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0) {
+	SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_);
+	SDL_GetWindowSize(getSdlWindow(), &lastWidth_, &lastHeight_);
 
 	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(),
 		tetrisEntry_.getDeepChildEntry("window minWidth").getInt(),
@@ -63,16 +59,6 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	if (tetrisEntry_.getDeepChildEntry("window maximized").getBool()) {
 		SDL_MaximizeWindow(mw::Window::getSdlWindow());
 	}
-
-	SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_);
-	SDL_GetWindowSize(getSdlWindow(), &lastWidth_, &lastHeight_);
-
-	setDefaultClosing(true);
-
-	// Saves the last window position. And makes the window movable by holding down left mouse button.
-	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));
-
-	tetrisGame_.addCallback(std::bind(&TetrisWindow::handleConnectionEvent, this, std::placeholders::_1));
 
 	// Initializes default keyboard devices for two players.
 	devices_.push_back(std::make_shared<Keyboard>("Keyboard 1", SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_RCTRL));
@@ -86,6 +72,11 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	}
 
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));
+
+	// Saves the last window position. And makes the window movable by holding down left mouse button.
+	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));
+
+	tetrisGame_.addCallback(std::bind(&TetrisWindow::handleConnectionEvent, this, std::placeholders::_1));
 
 	// Create all frames.
 	auto background = tetrisEntry_.getDeepChildEntry("window sprites background").getSprite();
@@ -110,12 +101,12 @@ TetrisWindow::TetrisWindow(TetrisEntry e, int frame) : tetrisEntry_(e),
 	initCreateClientPanel();
 	initWaitToConnectPanel();
 
-	if (frame >= 0 && frame <= waitToConnectIndex_) {
-		if (frame == playIndex_) {
+	if (startFrame_ >= 0 && startFrame_ <= waitToConnectIndex_) {
+		if (startFrame_ == playIndex_) {
 			// Initialization local game settings.
 			tetrisGame_.createLocalGame();
 		}
-		setCurrentPanel(frame);
+		setCurrentPanel(startFrame_);
 	}
 
 	loadHighscore();
@@ -374,6 +365,7 @@ void TetrisWindow::initSettingsPanel() {
         auto& check = static_cast<CheckBox&>(c);
 		tetrisEntry_.getDeepChildEntry("window border").setBool(check.isSelected());
 		tetrisEntry_.save();
+		setBordered(check.isSelected());
 	});
 	auto checkBox2 = p->addDefault<CheckBox>("Fullscreen on double click", getDefaultFont(18), tetrisEntry_);
 	checkBox2->setSelected(tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").getBool());

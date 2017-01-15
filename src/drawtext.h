@@ -2,7 +2,6 @@
 #define DRAWTEXT_H
 
 #include "boardvertexdata.h"
-#include "vertexdata.h"
 #include "boardshader.h"
 
 #include <mw/text.h>
