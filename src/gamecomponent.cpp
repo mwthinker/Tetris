@@ -15,7 +15,7 @@
 
 GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
 	: tetrisGame_(tetrisGame), tetrisEntry_(tetrisEntry), alivePlayers_(0),
-	updateMatrix_(true) {
+	updateMatrix_(true), buffer_(mw::Buffer::STATIC) {
 
 	setGrabFocus(true);
 	eventConnection_ = tetrisGame_.addGameEventHandler(std::bind(&GameComponent::eventHandler, this, std::placeholders::_1));

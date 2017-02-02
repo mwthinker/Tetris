@@ -12,7 +12,7 @@ attribute vec2 aLocalPos;
 varying vec2 vTex;
 
 void main() {
-	vec4 localPos = vec4(aLocalPos, 0, 1);
+	vec4 localPos = vec4(aLocalPos, 0, 0);
 	vec4 pos = vec4(aPos, 0, 1);
 	mat4 rot = mat4(cos(aAngle), sin(aAngle), 0, 0,
 				   -sin(aAngle), cos(aAngle), 0, 0,

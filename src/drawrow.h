@@ -35,7 +35,7 @@ public:
 		spriteZ_ = spriteZ;
 	}
 
-	void init(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
+	void init(int row, const TetrisBoard& board);
 
 private:
 	void updateVertexData(const TetrisBoard& tetrisBoard);

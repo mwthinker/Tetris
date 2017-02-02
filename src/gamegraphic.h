@@ -13,6 +13,7 @@
 #include "mat44.h"
 #include "lightningvertexdata.h"
 #include "lightningbolt.h"
+#include "lightningboltcluster.h"
 #include "lightningshader.h"
 
 #include <mw/font.h>
@@ -26,6 +27,7 @@
 
 #include <random>
 #include <string>
+#include <array>
 
 class GameGraphic {
 public:
@@ -74,30 +76,20 @@ private:
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
-	BoardVertexDataPtr staticVertexData_;
-	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
-	int level_, points_, clearedRows_;
-
-	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
-	mw::Font font_;
-	mw::signals::Connection connection_;
-
-	float borderSize_, boardWidth_, width_, height_;
-	bool showPoints_;
-
 	std::list<DrawRowPtr> rows_;
 	std::list<DrawRowPtr> freeRows_;
-
-	float squareSize_;
-	float lowX_;
-	float lowY_;
-	mw::Sound removeRowSound_;;
-	LightningBoltPtr lightningBolt_;
-
-	mw::Buffer dynamicBuffer_;
-	mw::Buffer dynamicBufferLightning_;
-	DrawBlockPtr currentBlockPtr_;
-	DrawBlockPtr nextBlockPtr_;
+	BoardVertexDataPtr staticVertexData_;
+	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	DrawBlockPtr currentBlockPtr_, nextBlockPtr_;
+	int level_, points_, clearedRows_;
+	//std::array<int, 4> re
+	
+	mw::signals::Connection connection_;
+	float width_, height_;
+	bool showPoints_;	
+	
+	mw::Sound removeRowSound_;
+	LightningBoltCluster lightningBoltCluster_;
 };
 
 #endif // GRAPHICBOARD_H

@@ -17,16 +17,16 @@ DrawRow::DrawRow(TetrisEntry spriteEntry, const BoardShader& boardShader, int ro
 	spriteL_ = spriteEntry.getChildEntry("squareL").getSprite();
 	spriteT_ = spriteEntry.getChildEntry("squareT").getSprite();
 	spriteO_ = spriteEntry.getChildEntry("squareO").getSprite();
-	init(row, board, squareSize, lowX, lowY);
-}
-
-void DrawRow::init(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
 	lowX_ = lowX;
 	lowY_ = lowY;
+	squareSize_ = squareSize;
+	init(row, board);
+}
+
+void DrawRow::init(int row, const TetrisBoard& board) {
 	row_ = row;
 	oldRow_ = row;
 	graphicRow_ = (float) row;
-	squareSize_ = squareSize;
 	columns_ = board.getColumns();
 	timeLeft_ = 0.f;
 	movingTime_ = 0.05f;
@@ -38,10 +38,10 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 	int rowTobeRemoved = tetrisBoard.getRowToBeRemoved();
 	switch (gameEvent) {
 		case GameEvent::ROW_TO_BE_REMOVED:
-			if (tetrisBoard.getRowToBeRemoved() < row_) {
+			if (rowTobeRemoved < row_) {
 				--row_;
 				timeLeft_ += movingTime_;
-			} else if (tetrisBoard.getRowToBeRemoved() == row_) {
+			} else if (rowTobeRemoved == row_) {
 				row_ = -1;
 			}
 			break;
@@ -58,7 +58,7 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 	}
 }
 
-void DrawRow::draw(float deltaTime) {	
+void DrawRow::draw(float deltaTime) {
 	if (oldRow_ != row_ && row_ >= 0) {
 		timeLeft_ += -deltaTime;
 		graphicRow_ += deltaTime * 1 / movingTime_ * sign(row_ - oldRow_);
@@ -69,8 +69,7 @@ void DrawRow::draw(float deltaTime) {
 			graphicRow_ = (float) row_;
 		}
 		updateVertexData();
-	}
-	
+	}	
 
 	if (isAlive()) {
 		BoardVertexData::drawTRIANGLES();
@@ -105,7 +104,7 @@ void DrawRow::updateVertexData() {
 	begin();
 	for (int column = 0; column < columns_; ++column) {
 		updateSquareTRIANGLES(
-			(column + 1) * squareSize_, (graphicRow_ + 1) * squareSize_,
+			lowX_ + (column + 1) * squareSize_, lowY_ + (graphicRow_ + 1) * squareSize_,
 			squareSize_, squareSize_
 		);
 	}

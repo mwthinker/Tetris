@@ -63,6 +63,16 @@ public:
 			(sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH);
 	}
 
+	void addEmptySegmentTRIANGLES() {
+		VertexData::addEmptyVertexes<7>(6);
+		VertexData::addEmptyVertexes<7>(6);
+		VertexData::addEmptyVertexes<7>(6);
+	}
+
+	void addEmptySquareTRIANGLES() {
+		VertexData::addEmptyVertexes<7>(6);
+	}
+
 	void addTriangleTRIANGLES(
 		float angle,
 		float x, float y,

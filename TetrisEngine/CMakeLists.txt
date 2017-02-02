@@ -15,11 +15,13 @@ set(SOURCES
 	src/ai.h
 	src/block.cpp
 	src/block.h	
+	src/random.h
 	src/rawtetrisboard.cpp
 	src/rawtetrisboard.h
 	src/square.h
 	src/tetrisboard.cpp
-	src/tetrisboard.h)
+	src/tetrisboard.h
+)
 
 include_directories(
 	../SdlGui/Signal/src

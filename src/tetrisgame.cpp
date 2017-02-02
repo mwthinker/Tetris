@@ -359,6 +359,7 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 							std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
 							blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
 						}
+						local->addExternalRows(blockTypes);
 						if (sender_.isActive()) {
 							net::Packet packet;
 							packet << PacketType::PLAYER_TETRIS;

@@ -1,8 +1,10 @@
 #include "lightningbolt.h"
 
-LightningBolt::LightningBolt(const LightningShader& lightShader, Vec2 source, Vec2 dest, mw::Sprite halfCircle, mw::Sprite  lineSegment, Color tInt, float alphaMultiplier, float fadeOutRate, float thickness) :
+#include <random>
+#include "random.h"
+
+LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment, Color tInt, float alphaMultiplier, float fadeOutRate, float thickness) :
 	LightningVertexData(lightShader),
-	generator_(rd_()),
 	Tint_(tInt),
 	alpha_(1.f),
 	alphaMultiplier_(alphaMultiplier),
@@ -11,8 +13,24 @@ LightningBolt::LightningBolt(const LightningShader& lightShader, Vec2 source, Ve
 	halfCircle_(halfCircle),
 	lineSegment_(lineSegment) {
 
-	segments_ = createBolt(source, dest);
+	alpha_ = 1.f;
+	begin();
+	for (int i = 0; i < 15; ++i) {
+		addEmptySegmentTRIANGLES();
+	}
+	end();
+}
 
+LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite lineSegment)
+	: LightningBolt(lightShader, halfCircle, lineSegment, Color(1,1,1), 0.8f, 1/0.5f, 12) {
+}
+
+void LightningBolt::addLine(Vec2 start, Vec2 end, const Color& color) {
+	addSegmentTRIANGLES(start, end, thickness_, halfCircle_, lineSegment_, halfCircle_);
+}
+
+void LightningBolt::restart() {
+	alpha_ = 1.f;
 	begin();
 	for (auto& line : segments_) {
 		addSegmentTRIANGLES(line.start_, line.end_, thickness_, halfCircle_, lineSegment_, halfCircle_);
@@ -20,44 +38,49 @@ LightningBolt::LightningBolt(const LightningShader& lightShader, Vec2 source, Ve
 	end();
 }
 
-LightningBolt::LightningBolt(const LightningShader& lightShader, Vec2 source, Vec2 dest, mw::Sprite halfCircle, mw::Sprite lineSegment)
-	: LightningBolt(lightShader, source, dest, halfCircle, lineSegment, Color(1,1,1), 0.8f, 0.005f, 8) {
+void LightningBolt::restart(Vec2 source, Vec2 dest) {
+	segments_ = createBolt(source, dest);
+	restart();
 }
 
-void LightningBolt::addLine(Vec2 start, Vec2 end, const Color& color) {
-	addSegmentTRIANGLES(start, end, thickness_, halfCircle_, lineSegment_, halfCircle_);
-}
-
-void LightningBolt::draw(float deltaTime) {
-	if (alpha_ <= 0)
-		return;
-
+void LightningBolt::setOpenGlStates() {
 	glEnable(GL_MULTISAMPLE);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
-
 	halfCircle_.bindTexture();
-	
-	alpha_ -= fadeOutRate_;
+}
+
+void LightningBolt::draw(float deltaTime) {
+	setOpenGlStates();
+	drawWithoutOpenGlStates(deltaTime);
+}
+
+void LightningBolt::drawWithoutOpenGlStates(float deltaTime) {
+	if (alpha_ <= 0)
+		return;
+
+	alpha_ -= fadeOutRate_ * deltaTime;
 
 	Color color = Tint_ * (alpha_ * alphaMultiplier_);
 	setColor(color);
 	
-	lineSegment_.bindTexture();
 	LightningVertexData::drawTRIANGLES();
 }
 
-std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest) {
-	std::list<Line> results;
+std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest) const {
+	if ((source - dest).magnitudeSquared() < 1) {
+		return std::list<Line>();
+	}
+
 	Vec2 tangent = dest - source;
 	Vec2 normal = Vec2(tangent.y_, -tangent.x_).normalize();
 	float length = tangent.magnitude();
 
-	std::vector<float> positions;
-	positions.push_back(0);
+	std::vector<float> positions = {0};
 
-	for (int i = 0; i < length / 4; i++)
-		positions.push_back(rand(0, 1));
+	for (int i = 0; i < length / 4; i++) {
+		positions.push_back(random_.generateFloat(0.f, 1.f));
+	}
 
 	std::sort(positions.begin(), positions.end(), [](float a, float b) {
 		return a < b;
@@ -68,6 +91,7 @@ std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest)
 
 	Vec2 prevPoint = source;
 	float prevDisplacement = 0;
+	std::list<Line> results;
 	for (unsigned int i = 1; i < positions.size(); ++i) {
 		float pos = positions[i];
 
@@ -77,7 +101,7 @@ std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest)
 		// defines an envelope. Points near the middle of the bolt can be further from the central line.
 		float envelope = pos > 0.95f ? 20 * (1 - pos) : 1;
 
-		float displacement = rand(-sway, sway);
+		float displacement = random_.generateFloat(-sway, sway);
 		displacement -= (displacement - prevDisplacement) * (1 - scale);
 		displacement *= envelope;
 
@@ -88,6 +112,10 @@ std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest)
 	}
 
 	results.push_back(Line(prevPoint, dest, thickness_));
+
+	if (results.size() > 100) {
+		int a = 0;
+	}
 
 	return results;
 }
@@ -109,14 +137,8 @@ Vec2 LightningBolt::getPoint(float position) {
 	return lerp(line.start_, line.end_, linePos);
 }
 
-
 Vec2 LightningBolt::lerp(Vec2 p1, Vec2 p2, float value) {
 	return p1 + (p2 - p1) * value;
-}
-
-float LightningBolt::rand(float min, float max) {
-	std::uniform_real_distribution<float> dist_(min, max);
-	return dist_(generator_);
 }
 
 LightningBolt::Line LightningBolt::findSegmentLargerThan(float position, Vec2 dir) const {

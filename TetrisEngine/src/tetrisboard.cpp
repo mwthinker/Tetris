@@ -2,30 +2,28 @@
 
 #include "square.h"
 #include "block.h"
+#include "block.h"
 
 #include <vector>
 #include <queue>
 #include <random>
 
 BlockType randomBlockType() {
-	static std::random_device rd;
-	static std::default_random_engine generator(rd());
-	static std::uniform_int_distribution<int> distribution(0, 6);
-	static_assert((int) BlockType::EMPTY > 6 && (int) BlockType::WALL > 6, "BlockType::EMPTY should not be generated");
+	Random random_;
+	const int BLOCK_TYPE_MIN = 0;
+	const int BLOCK_TYPE_MAX = 6;
+	static_assert((int) BlockType::EMPTY > BLOCK_TYPE_MAX && (int) BlockType::WALL > BLOCK_TYPE_MAX, "BlockType::EMPTY should not be generated");
 	// Generate a block type.
-	return static_cast<BlockType>(distribution(generator));
+	return static_cast<BlockType>(random_.generateInt(BLOCK_TYPE_MIN, BLOCK_TYPE_MAX));
 }
 
 std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPerLength) {
 	const unsigned int size = board.getColumns();
 
-	static std::random_device rd;
-	static std::default_random_engine generator(rd());
-	std::uniform_int_distribution<int> distribution(0, size - 1);
-
+	Random random_;
 	std::vector<bool> row(size);
 	for (unsigned int i = 0; i < size * squaresPerLength; ++i) {
-		int index = distribution(generator);
+		int index = random_.generateInt(0, size - 1);
 		unsigned int nbr = 0;
 		while (nbr < size) {
 			if (!row[(index + nbr) % size]) {
@@ -52,15 +50,12 @@ std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPe
 	return rows;
 }
 
-TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next)
-	: RawTetrisBoard(nbrRows, nbrColumns, current, next) {
-	
+TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next) : RawTetrisBoard(nbrRows, nbrColumns, current, next) {
 	nbrOfUpdates_ = 0;
 }
 
-TetrisBoard::TetrisBoard(const TetrisBoard& board)
-	: RawTetrisBoard(board) {
-	
+TetrisBoard::TetrisBoard(const TetrisBoard& board) : RawTetrisBoard(board) {
+
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
@@ -72,9 +67,9 @@ void TetrisBoard::restart(BlockType current, BlockType next) {
 void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 	listener_(gameEvent, *this);
 	switch (gameEvent) {
-	case GameEvent::BLOCK_COLLISION:
-		++nbrOfUpdates_;
-		break;
+		case GameEvent::BLOCK_COLLISION:
+			++nbrOfUpdates_;
+			break;
 	}
 }
 

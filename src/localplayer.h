@@ -44,6 +44,8 @@ public:
 	}
 
 	void endGame();
+
+	void addExternalRows(const std::vector<BlockType>& blockTypes);
 	
 private:
 	void update(Move move);

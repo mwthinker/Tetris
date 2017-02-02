@@ -3,6 +3,7 @@
 
 #include "block.h"
 #include "rawtetrisboard.h"
+#include "random.h"
 
 #include <mw/signal.h>
 
@@ -42,6 +43,7 @@ private:
 	mw::Signal<GameEvent, const TetrisBoard&> listener_;
 	
 	int nbrOfUpdates_;
+	Random random_;
 };
 
 #endif // TETRISBOARD_H

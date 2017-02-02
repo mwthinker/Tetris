@@ -130,3 +130,7 @@ void LocalPlayer::resizeBoard(int width, int height) {
 	level_ = 1;
 	points_ = 0;
 }
+
+void LocalPlayer::addExternalRows(const std::vector<BlockType>& blockTypes) {
+	tetrisBoard_.addRows(blockTypes);
+}

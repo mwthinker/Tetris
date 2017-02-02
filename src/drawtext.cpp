@@ -13,6 +13,18 @@ void DrawText::update(std::string text) {
 	end();
 }
 
+void DrawText::update(std::string text, float x, float y) {
+	lowX_ = x;
+	lowY_ = x;
+	update(text);
+}
+
+void DrawText::update(float x, float y) {
+	lowX_ = x;
+	lowY_ = x;
+	update(text_.getText(), x, y);
+}
+
 void DrawText::draw(float deltaTime) {
 	text_.bindTexture();
 	BoardVertexData::drawTRIANGLES();
