@@ -8,7 +8,8 @@
 class Block {
 public:
     Block();
-	Block(BlockType blockType, int bottomRow, int leftColumn);
+	Block(BlockType blockType, int lowestRow, int leftColumn);
+	Block(BlockType blockType, int lowestRow, int leftColumn, int rotations);
 	
 	void moveLeft();
 	void moveRight();
@@ -17,14 +18,26 @@ public:
 	void rotateLeft();
 	void rotateRight();
 	
-	Square operator[](int index) const;
-	int nbrOfSquares() const;
+	inline Square Block::operator[](int index) const {
+		return squares_[index];
+	}
 
-	Square getRotationSquare() const;
-	BlockType blockType() const;
-	
+	inline int Block::nbrOfSquares() const {
+		return squares_.size();
+	}
+
+	inline Square Block::getRotationSquare() const {
+		return squares_[rotationSquareIndex_];
+	}
+
+	inline BlockType Block::getBlockType() const {
+		return blockType_;
+	}
+
 	// Returns the lowest possible row for the block when rotating.
-	int getLowestRow() const;
+	inline int Block::getLowestRow() const {
+		return lowestRow_;
+	}	
 
 	inline std::array<Square, 4>::const_iterator begin() const {
 		return squares_.begin();
@@ -42,12 +55,17 @@ public:
 		return currentRotation_;
 	}
 
+	inline int getLeftColumn() const {
+		return leftColumn_;
+	}
+
 private:
 	int rotationSquareIndex_;
 	std::array<Square, 4> squares_;
 	int maxRotations_, currentRotation_;
 	BlockType blockType_;
 	int lowestRow_;
+	int leftColumn_;
 };
 
 #endif	// BLOCK_H

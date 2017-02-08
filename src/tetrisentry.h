@@ -3,6 +3,7 @@
 
 #include "ai.h"
 #include "color.h"
+#include "block.h"
 
 #include <mw/sound.h>
 #include <mw/sprite.h>
@@ -13,6 +14,11 @@
 #include <xml/dataentry.h>
 
 #include <map>
+#include <ostream>
+
+std::ostream& operator<<(std::ostream &out, BlockType type);
+
+std::ostream& operator<<(std::ostream &out, const std::vector<BlockType>& vector);
 
 class TetrisEntry : public xml::DataEntry {
 public:
@@ -30,6 +36,8 @@ public:
 	mw::Sprite getSprite() const;
 	Color getColor() const;
 	Ai getAi() const;
+	BlockType getBlockType() const;
+	std::vector<BlockType> getBlockTypes() const;
 
 	void bindTextureFromAtlas() const;
 

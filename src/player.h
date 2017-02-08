@@ -11,6 +11,8 @@
 class Player {
 public:
 	Player(int id, int width, int height, BlockType current, BlockType next);
+
+	Player(int id, int width, int height, int points, int level, Block current, BlockType next, const std::vector<BlockType>& board);
 	
 	inline virtual ~Player() {
 	}

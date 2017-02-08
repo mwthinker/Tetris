@@ -33,6 +33,10 @@ public:
 	~TetrisWindow();
 
 private:
+	void resumeGame();
+
+	void saveCurrentGame();
+
 	void initOpenGl() override;
 
 	void initPreLoop() override;

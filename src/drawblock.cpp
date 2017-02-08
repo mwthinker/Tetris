@@ -19,7 +19,7 @@ DrawBlock::DrawBlock(const BoardShader& boardShader, const TetrisEntry& spriteEn
 
 void DrawBlock::update(const Block& block) {
 	block_ = block;
-	mw::Sprite sprite = getSprite(block.blockType());
+	mw::Sprite sprite = getSprite(block.getBlockType());
 
 	deltaX_ = 0.f;
 	deltaY_ = 0.f;

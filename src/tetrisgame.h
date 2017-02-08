@@ -17,6 +17,19 @@
 class TetrisGameEvent;
 class Player;
 
+class PlayerData {
+public:
+	PlayerData() : device_(nullptr), name_(""), points_(0), level_(0), levelUpCounter_(0) {
+	}
+
+	DevicePtr device_;
+	std::string name_;
+	int points_, level_, levelUpCounter_;
+	Block current_;
+	BlockType next_;
+	std::vector<BlockType> board_;
+};
+
 class TetrisGame {
 public:
 	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
@@ -33,6 +46,8 @@ public:
 	void createServerGame(int port);
 	
 	void createClientGame(int port, std::string ip);
+
+	void resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData);
 	
 	void closeGame();
 	
@@ -55,6 +70,14 @@ public:
 
 	void resizeBoard(int width, int height);
 
+	int getRows() const {
+		return height_;
+	}
+
+	int getColumns() const {
+		return width_;
+	}
+
 	void setPlayers(const std::vector<DevicePtr>& devices);
 
 	inline Status getStatus() const {
@@ -64,6 +87,8 @@ public:
 	inline mw::signals::Connection addGameEventHandler(const std::function<void (TetrisGameEvent&)>& handler) {
 		return eventHandler_.connect(handler);
 	}
+
+	std::vector<PlayerData> getPlayerData() const;
 
 private:
 	class Sender : public PacketSender {

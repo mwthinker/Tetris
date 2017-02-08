@@ -173,4 +173,25 @@
             <points>0</points>
         </item>
     </highscore>
+	<activeGames>
+		<localGame>
+			<rows>24</rows>
+			<columns>10</columns>
+			<player>
+				<name>Marcus</name>
+				<level>2</level>
+				<points>12455</points>
+				<ai>0</ai>
+				<levelUpCounter>3</levelUpCounter>
+				<currentBlock>
+					<bottomRow>10</bottomRow>
+					<leftColumn>4</leftColumn>
+					<blockType>S</blockType>
+					<currentRotation>1</currentRotation>
+				</currentBlock>
+				<nextBlockType>O</nextBlockType>
+				<board>SSSELLLLLL</board>
+			</player>
+		</localGame>
+	</activeGames>
 </tetris>

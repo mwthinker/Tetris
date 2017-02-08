@@ -2,19 +2,20 @@
 
 #include <algorithm>
 
-Block::Block() {
-	maxRotations_ = 0;
-	currentRotation_ = 0;
-	rotationSquareIndex_ = 0;
-	blockType_ = BlockType::EMPTY;
-	lowestRow_ = 0;
+Block::Block() : maxRotations_(0), currentRotation_(0), rotationSquareIndex_(0),
+blockType_(BlockType::EMPTY), lowestRow_(0), leftColumn_(0) {
+
 }
 
-Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
-    maxRotations_ = 4;
-	currentRotation_ = 0;
-	rotationSquareIndex_ = 0;
-	blockType_ = blockType;
+Block::Block(BlockType blockType, int bottomRow, int leftColumn, int currentRotation) : Block(blockType, bottomRow, leftColumn) {
+	for (int i = 0; i < currentRotation; ++i) {
+		rotateLeft();
+	}
+}
+
+Block::Block(BlockType blockType, int bottomRow, int leftColumn) : maxRotations_(4),
+currentRotation_(0), rotationSquareIndex_(0), blockType_(blockType), leftColumn_(leftColumn) {
+
 	int nbrOfSquares = 0;
     switch (blockType) {
 	case BlockType::EMPTY:
@@ -83,29 +84,31 @@ Block::Block(BlockType blockType, int bottomRow, int leftColumn) {
 }
 
 void Block::moveLeft() {
+	--leftColumn_;
 	for (Square& sq : squares_) {
 		--sq.column_;
 	}
 }
 
 void Block::moveRight() {
+	++leftColumn_;
 	for (Square& sq : squares_) {
 		++sq.column_;
 	}
 }
 
 void Block::moveUp() {
+	++lowestRow_;
 	for (Square& sq : squares_) {
 		++sq.row_;
 	}
-	++lowestRow_;
 }
 
 void Block::moveDown() {
+	--lowestRow_;
 	for (Square& sq : squares_) {
 		--sq.row_;
 	}
-	--lowestRow_;
 }
 
 void Block::rotateLeft() {
@@ -139,24 +142,4 @@ void Block::rotateRight() {
 		tmp.row_ = column + row - sq.column_;
 		sq = tmp;
 	}
-}
-
-Square Block::operator[](int index) const {
-	return squares_[index];
-}
-
-int Block::nbrOfSquares() const {
-	return squares_.size();
-}
-
-Square Block::getRotationSquare() const {
-	return squares_[rotationSquareIndex_];
-}
-
-BlockType Block::blockType() const {
-	return blockType_;
-}
-
-int Block::getLowestRow() const {
-	return lowestRow_;
 }

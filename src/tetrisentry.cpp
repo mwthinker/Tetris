@@ -46,7 +46,117 @@ namespace xml {
         return color;
     }
 
+	BlockType charToBlockType(char key) {
+		switch (key) {
+			case 'z':
+				// Fall through.
+			case 'Z':
+				return BlockType::Z;
+			case 'w':
+				// Fall through.
+			case 'W':
+				return BlockType::WALL;
+			case 't':
+				// Fall through.
+			case 'T':
+				return BlockType::T;
+			case 's':
+				// Fall through.
+			case 'S':
+				return BlockType::S;
+			case 'o':
+				// Fall through.
+			case 'O':
+				return BlockType::O;
+			case 'l':
+				// Fall through.
+			case 'L':
+				return BlockType::L;
+			case 'j':
+				// Fall through.
+			case 'J':
+				return BlockType::J;
+			case 'I':
+				// Fall through.
+			case 'i':
+				return BlockType::I;
+			default:
+				return BlockType::EMPTY;
+		}
+	}
+
+	template <>
+	BlockType extract(tinyxml2::XMLHandle handle) {
+		const tinyxml2::XMLElement* element = handle.ToElement();
+		if (element == nullptr) {
+			throw std::runtime_error("Missing element!");
+		}
+		const char* str = element->GetText();
+
+		if (str == nullptr) {
+			throw std::runtime_error("Missing text!");
+		}
+
+		std::stringstream stream(str);
+		char chr = ' ';
+		stream >> chr;
+		return charToBlockType(chr);
+	}
+
+	template <>
+	std::vector<BlockType> extract(tinyxml2::XMLHandle handle) {
+		const tinyxml2::XMLElement* element = handle.ToElement();
+		if (element == nullptr) {
+			throw std::runtime_error("Missing element!");
+		}
+		const char* str = element->GetText();
+
+		if (str == nullptr) {
+			throw std::runtime_error("Missing text!");
+		}
+		std::string text = str;
+
+		std::vector<BlockType> blockTypes_;
+		for (char key : text) {
+			blockTypes_.push_back(charToBlockType(key));
+		}
+		return blockTypes_;
+	}
+
 }
+
+std::ostream & operator<<(std::ostream &out, BlockType type) {
+	switch (type) {
+		case BlockType::Z:
+			return out << 'Z';
+		case BlockType::WALL:
+			return out << 'W';
+		case BlockType::T:
+			return out << 'T';
+		case BlockType::S:
+			return out << 'S';
+		case BlockType::O:
+			return out << 'O';
+		case BlockType::L:
+			return out << 'L';
+		case BlockType::J:
+			return out << 'J';
+		case BlockType::I:
+			return out << 'I';
+		case BlockType::EMPTY:
+			return out << 'E';
+		default:
+			return out << 'E';
+	}
+}
+
+std::ostream & operator<<(std::ostream &out, const std::vector<BlockType>& vector) {
+	for (BlockType type : vector) {
+		out << type;
+	}
+	return out;
+}
+
 
 TetrisEntry::TetrisEntry(std::string fileName) : xml::DataEntry(fileName), data_(std::make_shared<Data>()) {
 }
@@ -90,6 +200,14 @@ Color TetrisEntry::getColor() const {
 Ai TetrisEntry::getAi() const {
 	Ai ai(getChildEntry("name").getString(), getChildEntry("valueFunction").getString());
 	return ai;
+}
+
+BlockType TetrisEntry::getBlockType() const {
+	return get<BlockType>();
+}
+
+std::vector<BlockType> TetrisEntry::getBlockTypes() const {
+	return get<std::vector<BlockType>>();
 }
 
 void TetrisEntry::bindTextureFromAtlas() const {

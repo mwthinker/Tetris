@@ -42,6 +42,7 @@ enum class Move {
 class RawTetrisBoard {
 public:
 	RawTetrisBoard(int rows, int columns, BlockType current, BlockType next);
+	RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next);
 	
 	inline virtual ~RawTetrisBoard() {
 	}
@@ -86,7 +87,7 @@ public:
 
 	// Return the type of the moving block.
 	inline BlockType getBlockType() const {
-		return current_.blockType();
+		return current_.getBlockType();
 	}
 
 	// Return the type of the next block.

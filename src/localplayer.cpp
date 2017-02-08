@@ -25,6 +25,27 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	watingTime_ = 0;
 }
 
+LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height, const std::vector<BlockType>& board, int levelUpCounter, int points, int level,
+	Block current, BlockType next, const DevicePtr& device, PacketSender& sender) :
+	Player(playerId, width, height, points, level, current, next, board),
+	sender_(sender),
+	leftHandler_(0.09, false),
+	rightHandler_(0.09, false),
+	rotateHandler_(0.0, true),
+	downGroundHandler_(0.0, true),
+	gravityMove_(1, false),				// Value doesn't matter! Changes every frame.
+	downHandler_(0.04, false),
+	device_(device),
+	connectionId_(connectionId),
+	levelUpCounter_(0) {
+
+	device_->update(getTetrisBoard());
+	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
+	name_ = device_->getPlayerName();
+	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
+	watingTime_ = 0;
+}
+
 void LocalPlayer::endGame() {
 	if (!tetrisBoard_.isGameOver()) {
 		update(Move::GAME_OVER);

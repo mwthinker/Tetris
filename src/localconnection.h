@@ -9,6 +9,9 @@
 // Hold information about all local players.
 class LocalConnection {
 public:
+	using iterator = std::vector<std::shared_ptr<LocalPlayer>>::iterator;
+	using const_iterator = std::vector<std::shared_ptr<LocalPlayer>>::const_iterator;
+
 	LocalConnection(PacketSender& packetSender) :
 		packetSender_(packetSender),
 		timeStep_(1.0/60),
@@ -28,6 +31,19 @@ public:
 		if (packetSender_.isActive()) {
 			packetSender_.sendToAll(getClientInfo());
 		}
+	}
+
+	void removeAllPlayers() {
+		players_.clear();
+	}
+
+	void addPlayer(const DevicePtr& device, int width, int height, int levelUpCounter,
+		int points, int level,
+		Block current, BlockType next, const std::vector<BlockType>& board) {
+		
+		auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height, board, levelUpCounter, points, level,
+			current, next, device, packetSender_);
+		players_.push_back(player);
 	}
 
 	void restart() {
@@ -56,13 +72,21 @@ public:
 		return players_.size();
 	}
 
-	std::vector<std::shared_ptr<LocalPlayer>>::iterator begin() {
+	iterator begin() {
         return players_.begin();
     }
 
-	std::vector<std::shared_ptr<LocalPlayer>>::iterator end() {
+	iterator end() {
         return players_.end();
     }
+
+	const_iterator begin() const {
+		return players_.begin();
+	}
+
+	const_iterator end() const {
+		return players_.end();
+	}
 
 	void updateGame(double deltaTime) {
 		// DeltaTime to big?

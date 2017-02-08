@@ -18,6 +18,8 @@ class TetrisBoard : public RawTetrisBoard {
 public:
     TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next);
 
+	TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next);
+
 	TetrisBoard(const TetrisBoard&);
 
 	// Restarts the board. Resets all states. Current and next represents the two starting blocks.

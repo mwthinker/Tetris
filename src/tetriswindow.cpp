@@ -114,12 +114,67 @@ void TetrisWindow::initPreLoop() {
 
 	loadHighscore();
 
-	auto aiEntry = tetrisEntry_.getDeepChildEntry("players ais player");
+	auto aiEntry = tetrisEntry_.getDeepChildEntry("activeGames ais player");
 	ais_.clear();
 	while (aiEntry.hasData()) {
 		ais_.push_back(aiEntry.getAi());
 		aiEntry = aiEntry.getSibling("player");
 	}
+}
+
+void TetrisWindow::resumeGame() {
+	int rows = tetrisEntry_.getDeepChildEntry("activeGames localGame rows").getInt();
+	int columns = tetrisEntry_.getDeepChildEntry("activeGames localGame columns").getInt();
+
+	auto playerEntry = tetrisEntry_.getDeepChildEntry("activeGames localGame player");
+	std::vector<PlayerData> playerData;
+	while (playerEntry.hasData()) {
+		BlockType currentBlockType = playerEntry.getDeepChildEntry("currentBlock blockType").getBlockType();
+		int bottomRow = playerEntry.getDeepChildEntry("currentBlock bottomRow").getInt();
+		int leftColumn = playerEntry.getDeepChildEntry("currentBlock leftColumn").getInt();
+		int currentRotation = playerEntry.getDeepChildEntry("currentBlock currentRotation").getInt();
+		bool ai = playerEntry.getDeepChildEntry("ai").getBool();
+
+		playerData.emplace_back();
+		PlayerData& data = playerData.back();
+		data.device_ = devices_[0];
+		data.name_ = playerEntry.getDeepChildEntry("name").getString();
+		data.points_ = playerEntry.getDeepChildEntry("points").getInt();
+		data.level_ = playerEntry.getDeepChildEntry("level").getInt();
+		data.levelUpCounter_ = playerEntry.getDeepChildEntry("levelUpCounter").getInt();
+		data.current_ = Block(currentBlockType, bottomRow, leftColumn, currentRotation);
+		data.next_ = playerEntry.getDeepChildEntry("nextBlockType").getBlockType();
+		data.board_ = playerEntry.getDeepChildEntry("board").getBlockTypes();
+
+		//tetrisGame_.addPlayer(devices_[0], name, points, level, levelUpCounter, currentBlock, nextBlockType, board);
+		playerEntry = playerEntry.getSibling("player");
+	}
+	tetrisGame_.resumeGame(rows, columns, playerData);
+}
+
+void TetrisWindow::saveCurrentGame() {
+	tetrisEntry_.getDeepChildEntry("activeGames localGame").remove();
+	auto localGameTag = tetrisEntry_.getDeepChildEntry("activeGames").addTag("localGame");
+	
+	localGameTag.addTag("rows", tetrisGame_.getRows());
+	localGameTag.addTag("columns", tetrisGame_.getColumns());
+	std::vector<PlayerData> dataVector = tetrisGame_.getPlayerData();
+	for (PlayerData& data : dataVector) {
+		auto playerTag = localGameTag.addTag("player");
+		playerTag.addTag("name", data.name_);
+		playerTag.addTag("nextBlockType", data.next_);
+		playerTag.addTag("levelUpCounter", data.levelUpCounter_);
+		playerTag.addTag("ai", false);
+		playerTag.addTag("level", data.level_);
+		playerTag.addTag("points", data.points_);
+		auto blockTag = playerTag.addTag("currentBlock");
+		blockTag.addTag("bottomRow", data.current_.getLowestRow());
+		blockTag.addTag("blockType", data.current_.getBlockType());
+		blockTag.addTag("leftColumn", data.current_.getLeftColumn());
+		blockTag.addTag("currentRotation", data.current_.getCurrentRotation());
+		playerTag.addTag("board", data.board_);
+	}
+	localGameTag.save();
 }
 
 void TetrisWindow::startServer(int port) {
@@ -166,8 +221,9 @@ void TetrisWindow::initMenuPanel() {
 	
 	auto bar = add<Bar>(gui::BorderLayout::NORTH, tetrisEntry_);
 	resume_ = bar->addDefault<Button>("Resume", getDefaultFont(30), tetrisEntry_);
-	resume_->setVisible(false);
+	resume_->setVisible(true);
 	resume_->addActionListener([&](gui::Component&) {
+		resumeGame();
 		setCurrentPanel(playIndex_);
 	});
 
@@ -598,6 +654,11 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 			break;
 		case SDL_MOUSEBUTTONUP:
 			windowFollowMouse_ = false;
+			break;
+		case SDL_KEYDOWN:
+			if (e.key.keysym.sym == SDLK_ESCAPE) {
+				saveCurrentGame();
+			}
 			break;
 	}
 }

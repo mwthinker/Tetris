@@ -2,8 +2,7 @@
 #include "square.h"
 #include "block.h"
 
-RawTetrisBoard::RawTetrisBoard(int rows, int columns,
-	BlockType current, BlockType next) :
+RawTetrisBoard::RawTetrisBoard(int rows, int columns, BlockType current, BlockType next) :
 	gameboard_(rows * columns, BlockType::EMPTY),
 	next_(next),
 	rows_(rows), columns_(columns),
@@ -11,6 +10,38 @@ RawTetrisBoard::RawTetrisBoard(int rows, int columns,
 	rowsRemoved_(0) {
 	
 	current_ = createBlock(current);
+}
+
+RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) :
+	RawTetrisBoard(rows, columns, current.getBlockType(), next) {
+
+	current_ = current;
+
+	gameboard_.insert(gameboard_.begin(), board.begin(), board.end());
+
+	int calcRows = gameboard_.size() / columns_;
+	int nbr = gameboard_.size() - calcRows * columns_;
+
+	// To make all rows filled. Remove unfilled row.
+	for (int i = 0; i < nbr; ++i) {
+		gameboard_.pop_back();
+	}
+
+	// Remove unneeded rows.
+	for (int row = calcRows - 1; row >= rows_; --row) {
+		bool empty = true;
+		for (int column = 0; column < columns_; ++column) {
+			if (gameboard_[row * columns_] != BlockType::EMPTY) {
+				empty = false;
+				break;
+			} 
+		}
+		if (empty) {
+			for (int column = 0; column < columns_; ++column) {
+				gameboard_.pop_back();
+			}
+		}
+	}
 }
 
 void RawTetrisBoard::update(Move move) {

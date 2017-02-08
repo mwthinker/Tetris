@@ -25,6 +25,36 @@ TetrisGame::~TetrisGame() {
 	closeGame();
 }
 
+void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData) {
+	width_ = columns;
+	height_ = rows;
+	status_ = LOCAL;
+	localConnection_.removeAllPlayers();
+	for (const PlayerData& data : playersData) {
+		localConnection_.addPlayer(data.device_, width_, height_, data.levelUpCounter_, data.points_, data.level_, data.current_, data.next_, data.board_);		
+	}
+	nbrOfPlayers_ = localConnection_.getNbrOfPlayers();
+	initGame();
+}
+
+std::vector<PlayerData> TetrisGame::getPlayerData() const {
+	std::vector<PlayerData> playerData;
+	for (const std::shared_ptr<LocalPlayer>& player : localConnection_) {
+		playerData.emplace_back();
+		const TetrisBoard& tetrisBoard = player->getTetrisBoard();
+		playerData.back().current_ = tetrisBoard.getBlock();
+		playerData.back().next_ = tetrisBoard.getNextBlockType();
+		playerData.back().board_ = tetrisBoard.getBoardVector();
+		playerData.back().levelUpCounter_ = player->getLevelUpCounter();
+		playerData.back().level_ = player->getLevel();
+		playerData.back().name_ = player->getName();
+		playerData.back().points_ = player->getPoints();
+		playerData.back().device_ = player->getDevice();
+	}
+
+	return playerData;
+}
+
 void TetrisGame::createLocalGame() {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
