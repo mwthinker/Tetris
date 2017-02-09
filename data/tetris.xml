@@ -175,23 +175,46 @@
     </highscore>
 	<activeGames>
 		<localGame>
-			<rows>24</rows>
-			<columns>10</columns>
-			<player>
-				<name>Marcus</name>
-				<level>2</level>
-				<points>12455</points>
-				<ai>0</ai>
-				<levelUpCounter>3</levelUpCounter>
-				<currentBlock>
-					<bottomRow>10</bottomRow>
-					<leftColumn>4</leftColumn>
-					<blockType>S</blockType>
-					<currentRotation>1</currentRotation>
-				</currentBlock>
-				<nextBlockType>O</nextBlockType>
-				<board>SSSELLLLLL</board>
-			</player>
+            <rows>24</rows>
+            <columns>10</columns>
+            <player>
+                <name/>
+                <nextBlockType>S</nextBlockType>
+                <levelUpCounter>0</levelUpCounter>
+                <ai>0</ai>
+                <level>1</level>
+                <points>10</points>
+                <currentBlock>
+                    <bottomRow>6</bottomRow>
+                    <blockType>J</blockType>
+                    <leftColumn>6</leftColumn>
+                    <currentRotation>2</currentRotation>
+                </currentBlock>
+                <board>IZZZZZZEOOZZZZZZZEOOEEEZZZZEEIEEEEZZEEEIEEEEEEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE</board>
+                <device>
+                    <name>Keyboard 1</name>
+                    <ai>0</ai>
+                </device>
+            </player>
+            <player>
+                <name>DefaultAi</name>
+                <nextBlockType>T</nextBlockType>
+                <levelUpCounter>0</levelUpCounter>
+                <ai>0</ai>
+                <level>1</level>
+                <points>16</points>
+                <currentBlock>
+                    <bottomRow>17</bottomRow>
+                    <blockType>O</blockType>
+                    <leftColumn>7</leftColumn>
+                    <currentRotation>0</currentRotation>
+                </currentBlock>
+                <board>LOOTSJTEOOLOOSSTTEOOIOOSEETSOOIOOSSESSOOIETTTTZZZLEOOIZEZJJJESSSZZLSSIZZSZZLLJEEIZSJJJIJJEISSJZZIEEEISEZZEIEEEIEEELLIEEEEEEELEEEEEEEEELEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE</board>
+                <device>
+                    <name>Computer</name>
+                    <ai>1</ai>
+                </device>
+            </player>
 		</localGame>
 	</activeGames>
 </tetris>

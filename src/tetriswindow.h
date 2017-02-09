@@ -52,6 +52,9 @@ private:
 
 	void setPlayers();
 
+	DevicePtr findHumanDevice(std::string name) const;
+	DevicePtr findAiDevice(std::string name) const;
+
 	TetrisGame tetrisGame_;
 
 	// initMenuPanel

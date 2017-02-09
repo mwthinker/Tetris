@@ -48,7 +48,7 @@ void TetrisWindow::initOpenGl() {
 
 void TetrisWindow::initPreLoop() {
 	Frame::initPreLoop();
-
+	
 	SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_);
 	SDL_GetWindowSize(getSdlWindow(), &lastWidth_, &lastHeight_);
 
@@ -137,7 +137,6 @@ void TetrisWindow::resumeGame() {
 
 		playerData.emplace_back();
 		PlayerData& data = playerData.back();
-		data.device_ = devices_[0];
 		data.name_ = playerEntry.getDeepChildEntry("name").getString();
 		data.points_ = playerEntry.getDeepChildEntry("points").getInt();
 		data.level_ = playerEntry.getDeepChildEntry("level").getInt();
@@ -145,8 +144,13 @@ void TetrisWindow::resumeGame() {
 		data.current_ = Block(currentBlockType, bottomRow, leftColumn, currentRotation);
 		data.next_ = playerEntry.getDeepChildEntry("nextBlockType").getBlockType();
 		data.board_ = playerEntry.getDeepChildEntry("board").getBlockTypes();
-
-		//tetrisGame_.addPlayer(devices_[0], name, points, level, levelUpCounter, currentBlock, nextBlockType, board);
+		std::string deviceName = playerEntry.getDeepChildEntry("device name").getString();
+		bool deviceAi = playerEntry.getDeepChildEntry("device ai").getBool();
+		if (deviceAi) {
+			data.device_ = findAiDevice(deviceName);
+		} else {
+			data.device_ = findHumanDevice(deviceName);
+		}
 		playerEntry = playerEntry.getSibling("player");
 	}
 	tetrisGame_.resumeGame(rows, columns, playerData);
@@ -173,6 +177,9 @@ void TetrisWindow::saveCurrentGame() {
 		blockTag.addTag("leftColumn", data.current_.getLeftColumn());
 		blockTag.addTag("currentRotation", data.current_.getCurrentRotation());
 		playerTag.addTag("board", data.board_);
+		auto deviceTag = playerTag.addTag("device");
+		deviceTag.addTag("name", data.device_->getName());
+		deviceTag.addTag("ai", data.device_->isAi());
 	}
 	localGameTag.save();
 }
@@ -604,6 +611,24 @@ void TetrisWindow::setPlayers() {
 	}
 	
 	tetrisGame_.setPlayers(playerDevices);
+}
+
+DevicePtr TetrisWindow::findHumanDevice(std::string name) const {
+	for (const DevicePtr& device: devices_) {
+		if (device->getName() == name) {
+			return device;
+		}
+	}
+	return devices_[0];
+}
+
+DevicePtr TetrisWindow::findAiDevice(std::string name) const {
+	for (const Ai& ai : ais_) {
+		if (ai.getName() == name) {
+			return std::make_shared<Computer>(ai);
+		}
+	}
+	return std::make_shared<Computer>(activeAis_[0]);
 }
 
 void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
