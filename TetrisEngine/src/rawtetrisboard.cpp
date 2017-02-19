@@ -75,6 +75,7 @@ void RawTetrisBoard::update(Move move) {
 				}
 				break;
 			case Move::DOWN_GROUND:
+				triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND);
 				do {
 					current_ = block;
 					block.moveDown();

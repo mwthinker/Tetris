@@ -20,17 +20,11 @@ public:
 		halfCircle_(halfCircle),
 		lineSegment_(lineSegment),
 		boltRate_(boltRate),
-		maxBolts_(maxBolts)	{
-
-		halfCircle_ = halfCircle;
-		lineSegment_ = lineSegment;
-		boltRate_ = boltRate;
-		maxBolts_ = maxBolts;
-
-		time_ = 0.0;
-		nearestNbr_ = 10;
-		nbrbolts_ = 0.0;
-		usedBolts_ = 0;
+		maxBolts_(maxBolts),
+		time_(0.0),
+		nearestNbr_(1),
+		nbrbolts_(0.0),
+		usedBolts_(0) {
 
 		points_ = points;
 		mw::Buffer buffer(mw::Buffer::DYNAMIC);

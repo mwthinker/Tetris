@@ -48,8 +48,8 @@ set(SOURCES
 	src/guiclasses.h
 	src/highscore.cpp
 	src/highscore.h
-	src/joystick.cpp
-	src/joystick.h
+	src/gamecontroller.cpp
+	src/gamecontroller.h
 	src/keyboard.cpp
 	src/keyboard.h
 	src/lightningbolt.cpp

@@ -33,7 +33,7 @@ public:
 
 	void restart();
 
-	bool isAlive() const {
+	inline bool isAlive() const {
 		return alpha_ >= 0;
 	}
 	

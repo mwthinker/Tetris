@@ -8,8 +8,8 @@
 class Block {
 public:
     Block();
-	Block(BlockType blockType, int lowestRow, int leftColumn);
-	Block(BlockType blockType, int lowestRow, int leftColumn, int rotations);
+	Block(BlockType blockType, int lowestRow, int startColumn);
+	Block(BlockType blockType, int lowestRow, int startColumn, int rotations);
 	
 	void moveLeft();
 	void moveRight();
@@ -55,8 +55,12 @@ public:
 		return currentRotation_;
 	}
 
-	inline int getLeftColumn() const {
-		return leftColumn_;
+	inline int getStartColumn() const {
+		return startColumn_;
+	}
+
+	inline int getSize() const {
+		return squares_.size();
 	}
 
 private:
@@ -65,7 +69,7 @@ private:
 	int maxRotations_, currentRotation_;
 	BlockType blockType_;
 	int lowestRow_;
-	int leftColumn_;
+	int startColumn_;
 };
 
 #endif	// BLOCK_H

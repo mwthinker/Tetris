@@ -1,13 +1,12 @@
 #include "tetriswindow.h"
 #include "tetrisparameters.h"
 #include "tetrisgame.h"
-#include "joystick.h"
+#include "gamecontroller.h"
 #include "keyboard.h"
 #include "computer.h"
 #include "manbutton.h"
 #include "highscore.h"
 #include "gamecomponent.h"
-#include "joystick.h"
 #include "tetrisentry.h"
 #include "guiclasses.h"
 #include "tetrisgameevent.h"
@@ -19,7 +18,6 @@
 
 #include <mw/sprite.h>
 #include <mw/color.h>
-#include <mw/joystick.h>
 
 #include <ctime>
 #include <iostream>
@@ -50,7 +48,6 @@ void TetrisWindow::initPreLoop() {
 	Frame::initPreLoop();
 	
 	SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_);
-	SDL_GetWindowSize(getSdlWindow(), &lastWidth_, &lastHeight_);
 
 	SDL_SetWindowMinimumSize(mw::Window::getSdlWindow(),
 		tetrisEntry_.getDeepChildEntry("window minWidth").getInt(),
@@ -68,11 +65,8 @@ void TetrisWindow::initPreLoop() {
 	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w, SDLK_LCTRL));
 
 	// Initialization of all joysticks!
-	const std::vector<mw::JoystickPtr>& joystics = mw::Joystick::getJoystics();
-	for (auto& joystick : joystics) {
-		std::cout << joystick->getName() << std::endl;
-		devices_.push_back(std::make_shared<Joystick>(joystick, 0, 1));
-	}
+	
+	mw::GameController::loadAddGameControllerMappings("gamecontrollerdb.txt");
 
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -131,7 +125,7 @@ void TetrisWindow::resumeGame() {
 	while (playerEntry.hasData()) {
 		BlockType currentBlockType = playerEntry.getDeepChildEntry("currentBlock blockType").getBlockType();
 		int bottomRow = playerEntry.getDeepChildEntry("currentBlock bottomRow").getInt();
-		int leftColumn = playerEntry.getDeepChildEntry("currentBlock leftColumn").getInt();
+		int startColumn = playerEntry.getDeepChildEntry("currentBlock startColumn").getInt();
 		int currentRotation = playerEntry.getDeepChildEntry("currentBlock currentRotation").getInt();
 		bool ai = playerEntry.getDeepChildEntry("ai").getBool();
 
@@ -141,7 +135,7 @@ void TetrisWindow::resumeGame() {
 		data.points_ = playerEntry.getDeepChildEntry("points").getInt();
 		data.level_ = playerEntry.getDeepChildEntry("level").getInt();
 		data.levelUpCounter_ = playerEntry.getDeepChildEntry("levelUpCounter").getInt();
-		data.current_ = Block(currentBlockType, bottomRow, leftColumn, currentRotation);
+		data.current_ = Block(currentBlockType, bottomRow, startColumn, currentRotation);
 		data.next_ = playerEntry.getDeepChildEntry("nextBlockType").getBlockType();
 		data.board_ = playerEntry.getDeepChildEntry("board").getBlockTypes();
 		std::string deviceName = playerEntry.getDeepChildEntry("device name").getString();
@@ -174,7 +168,7 @@ void TetrisWindow::saveCurrentGame() {
 		auto blockTag = playerTag.addTag("currentBlock");
 		blockTag.addTag("bottomRow", data.current_.getLowestRow());
 		blockTag.addTag("blockType", data.current_.getBlockType());
-		blockTag.addTag("leftColumn", data.current_.getLeftColumn());
+		blockTag.addTag("startColumn", data.current_.getStartColumn());
 		blockTag.addTag("currentRotation", data.current_.getCurrentRotation());
 		playerTag.addTag("board", data.board_);
 		auto deviceTag = playerTag.addTag("device");
@@ -216,10 +210,6 @@ void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent
 }
 
 TetrisWindow::~TetrisWindow() {
-	tetrisEntry_.getDeepChildEntry("window positionX").setInt(lastX_);
-	tetrisEntry_.getDeepChildEntry("window positionY").setInt(lastY_);
-	tetrisEntry_.getDeepChildEntry("window width").setInt(lastWidth_);
-	tetrisEntry_.getDeepChildEntry("window height").setInt(lastHeight_);
 	tetrisEntry_.save();
 }
 
@@ -638,17 +628,15 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 				case SDL_WINDOWEVENT_RESIZED:
 					if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
 						// The Window's is not maximized. Save size!
-						lastWidth_ = e.window.data1;
-						lastHeight_ = e.window.data2;
+						tetrisEntry_.getDeepChildEntry("window width").setInt(e.window.data1);
+						tetrisEntry_.getDeepChildEntry("window height").setInt(e.window.data2);
 					}
 					break;
 				case SDL_WINDOWEVENT_MOVED:
 					if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
 						// The Window's is not maximized. Save position!
-						int x, y;
-						SDL_GetWindowPosition(mw::Window::getSdlWindow(), &x, &y);
-						lastX_ = x;
-						lastY_ = y;
+						tetrisEntry_.getDeepChildEntry("window positionX").setInt(e.window.data1);
+						tetrisEntry_.getDeepChildEntry("window positionY").setInt(e.window.data2);
 					}
 					break;
 				case SDL_WINDOWEVENT_MAXIMIZED:
@@ -659,18 +647,42 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 					break;
 			}
 			break;
+		case SDL_CONTROLLERDEVICEADDED:
+		{
+			auto gameControllerPtr = mw::GameController::addController(e.cdevice.which);
+			if (gameControllerPtr) {
+				std::cout << gameControllerPtr->getName() << std::endl;
+				devices_.push_back(std::make_shared<GameController>(gameControllerPtr));
+				nbrHumans_->setMax(devices_.size());
+			}
+		}
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+		{
+			int instanceId = e.cdevice.which;
+			auto it = std::find_if(devices_.begin(), devices_.end(), [instanceId](const SdlDevicePtr& device) {
+				auto gameController = std::dynamic_pointer_cast<GameController>(device);
+				return gameController && gameController->getInstanceId() == instanceId;
+			});
+			if (it != devices_.end()) {
+				devices_.erase(it);
+				nbrHumans_->setMax(devices_.size());
+			}
+		}
+			break;
 		case SDL_MOUSEMOTION:
 			if (windowFollowMouse_ && tetrisEntry_.getDeepChildEntry("window moveWindowByHoldingDownMouse").getBool()) {
-				auto w = TetrisWindow::getSdlWindow();
-				SDL_SetWindowPosition(w, lastX_ + e.motion.x - followMouseX_,
-					lastY_ + e.motion.y - followMouseY_);
+				int mouseX, mouseY;
+				SDL_GetGlobalMouseState(&mouseX, &mouseY);
+				SDL_SetWindowPosition(TetrisWindow::getSdlWindow(), lastX_ + mouseX - followMouseX_, lastY_ + mouseY - followMouseY_);
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				windowFollowMouse_ = true;
-				followMouseX_ = e.button.x;
-				followMouseY_ = e.button.y;
+				SDL_GetWindowPosition(mw::Window::getSdlWindow(), &lastX_, &lastY_);
+				SDL_GetGlobalMouseState(&followMouseX_, &followMouseY_);
+				
 				if (e.button.clicks == 2 && tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").getBool()) {
 					TetrisWindow::setFullScreen(!TetrisWindow::isFullScreen());
 					windowFollowMouse_ = false;
@@ -684,6 +696,8 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 			if (e.key.keysym.sym == SDLK_ESCAPE) {
 				saveCurrentGame();
 			}
+			break;
+		default:
 			break;
 	}
 }

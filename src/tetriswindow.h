@@ -124,7 +124,6 @@ private:
 	int followMouseX_, followMouseY_;
 
 	int lastX_, lastY_;
-	int lastWidth_, lastHeight_;
 	int startFrame_;
 };
 

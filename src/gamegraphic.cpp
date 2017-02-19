@@ -50,14 +50,14 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	const mw::Sprite borderDownLeft = spriteEntry.getChildEntry("borderDownLeft").getSprite();
 	const mw::Sprite borderDownRight = spriteEntry.getChildEntry("borderDownRight").getSprite();
 
-	float squareSize = windowEntry.getDeepChildEntry("tetrisBoard squareSize").getFloat();
-	float borderSize = windowEntry.getDeepChildEntry("tetrisBoard borderSize").getFloat();
+	const float squareSize = windowEntry.getDeepChildEntry("tetrisBoard squareSize").getFloat();
+	const float borderSize = windowEntry.getDeepChildEntry("tetrisBoard borderSize").getFloat();
 
 	const int columns = tetrisBoard.getColumns();
 	const int rows = tetrisBoard.getRows();
 
 	const float infoSize = 70;
-	float boardWidth = squareSize * columns;
+	const float boardWidth = squareSize * columns;
 
 	width_ = squareSize * columns + infoSize + borderSize * 2;
 	height_ = squareSize * (rows - 2) + borderSize * 2;
@@ -66,6 +66,9 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	staticVertexData_ = std::make_shared<BoardVertexData>(boardShader);
 	staticBuffer.addVertexData(staticVertexData_);
 	staticVertexData_->begin();
+
+	lowX_ = lowX;
+	lowY_ = lowY;
 	
 	// Draw the player area.
 	float x = lowX + borderSize;
@@ -233,7 +236,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	mw::Sprite halfCircle = spriteEntry.getChildEntry("halfCircle").getSprite();
 	mw::Sprite lineSegment = spriteEntry.getChildEntry("lineSegment").getSprite();
 
-	lightningBoltCluster_ = LightningBoltCluster(lightningShader, halfCircle, lineSegment, points_, 400, 800, 400);
+	lightningBoltCluster_ = LightningBoltCluster(lightningShader, halfCircle, lineSegment, points_, 50, 100, 100);
 	//lightningBoltCluster_.restart(points_, 1);
 
 	/*
@@ -244,6 +247,44 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	}
 	lightningBoltCluster_.restart(points, 5);
 	*/
+}
+
+namespace {
+
+	int calculateWitdh(const Block& block) {
+		int min = 1000;
+		int max = 0;
+		for (const Square& sq : block) {
+			if (sq.column_ > max) {
+				max = sq.column_;
+			}
+			if (sq.column_ < min) {
+				min = sq.column_;
+			}
+		}
+		return max - min + 1;
+	}
+
+	int calculateHighest(const Block& block) {
+		int max = 0;
+		for (const Square& sq : block) {
+			if (sq.row_ > max) {
+				max = sq.row_;
+			}
+		}
+		return max;
+	}
+
+	int calculateLeftColumn(const Block& block) {
+		int min = 1000;
+		for (const Square& sq : block) {
+			if (sq.column_ < min) {
+				min = sq.column_;
+			}
+		}
+		return min;
+	}
+
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -291,7 +332,36 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 				currentBlockPtr_->update(tetrisBoard.getBlock());
 			}
 			break;
+		case GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND:
+			blockDownGround_ = true;
+			latestBlockDownGround_ = tetrisBoard.getBlock();
+			if (latestBlockDownGround_.getBlockType() == BlockType::EMPTY) {
+				int a = 0;
+			}
+			break;
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
+			if (blockDownGround_) {
+				int w = calculateWitdh(latestBlockDownGround_) + 1;
+				int h = calculateHighest(latestBlockDownGround_);
+				int lowest = tetrisBoard.getBlock().getLowestRow();
+				int leftColumn = calculateLeftColumn(tetrisBoard.getBlock());
+
+				std::vector<Vec2> points;
+				//for (int row = lowest; row < h; ++row) {
+				int row = lowest;
+				for (int column = leftColumn; column < w + leftColumn; ++column) {
+					Vec2 point(10 * (column + 1) + lowX_, 10 * (row + 2) + lowY_);
+					points.push_back(point);
+				}
+				row = h;
+				for (int column = leftColumn; column < w + leftColumn; ++column) {
+					Vec2 point(10 * (column + 1) + lowX_, 10 * (row + 2) + lowY_);
+					points.push_back(point);
+				}
+				//}
+				lightningBoltCluster_.restart(points);
+				blockDownGround_ = false;
+			}
 			// Fall through!
 		case GameEvent::GRAVITY_MOVES_BLOCK:
 			if (currentBlockPtr_) {
@@ -299,18 +369,6 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			}
 			break;
 		case GameEvent::ROW_TO_BE_REMOVED:
-			std::cout << tetrisBoard.getRowToBeRemoved() << std::endl;
-			{
-				std::vector<Vec2> points;
-				int columns = tetrisBoard.getColumns();
-				int row = tetrisBoard.getRowToBeRemoved();
-				for (float x = 0; x < columns; x += 0.5f) {
-					for (float y = 0; y < 4.01; y += 0.25f) {
-						points.push_back(Vec2((x + 1) * 10.f, (row + 1 + y) * 10.f));
-					}
-				}
-				lightningBoltCluster_.restart(points);
-			}
 			break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);

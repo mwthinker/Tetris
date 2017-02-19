@@ -12,6 +12,10 @@ public:
 	unsigned int getNbr() const;
 	void setNbr(unsigned int nbr);
 
+	inline void setMax(unsigned int max) {
+		max_ = max;
+	}
+
 	inline unsigned int getMax() const {
 		return max_;
 	}

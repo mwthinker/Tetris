@@ -72,16 +72,6 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		lightningShader_.setUMat(graphic.getProjectionMatrix() * model);
 		lightningShader_.setUColor(Color(1, 1, 1));
 		boardShader_.useProgram();
-
-		fontSize_ = scale_ * 12.f;
-		if (font_.getCharacterSize() != fontSize_) {
-			font_ = tetrisEntry_.getDeepChildEntry("window font").getFont((int) fontSize_);
-			// Update the font!
-			for (auto& pair : graphicPlayers_) {
-				GameGraphic& graphic = pair.second;
-				//graphic.updateTextSize(fontSize_, font_);
-			}
-		}
 		updateMatrix_ = false;
 	}
 
@@ -101,7 +91,7 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 	for (auto& pair : graphicPlayers_) {
 		GameGraphic& graphic = pair.second;
 		graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER_TEXT);
-	}	
+	}
 
 	for (auto& pair : graphicPlayers_) {
 		GameGraphic& graphic = pair.second;

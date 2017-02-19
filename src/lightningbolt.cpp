@@ -15,14 +15,14 @@ LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite half
 
 	alpha_ = 1.f;
 	begin();
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < 40; ++i) {
 		addEmptySegmentTRIANGLES();
 	}
 	end();
 }
 
 LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite lineSegment)
-	: LightningBolt(lightShader, halfCircle, lineSegment, Color(1,1,1), 0.8f, 1/0.5f, 12) {
+	: LightningBolt(lightShader, halfCircle, lineSegment, Color(1,1,1,1.f), 0.8f, 1/0.5f, 8) {
 }
 
 void LightningBolt::addLine(Vec2 start, Vec2 end, const Color& color) {
@@ -112,10 +112,6 @@ std::list<LightningBolt::Line> LightningBolt::createBolt(Vec2 source, Vec2 dest)
 	}
 
 	results.push_back(Line(prevPoint, dest, thickness_));
-
-	if (results.size() > 100) {
-		int a = 0;
-	}
 
 	return results;
 }

@@ -82,7 +82,9 @@ private:
 	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	DrawBlockPtr currentBlockPtr_, nextBlockPtr_;
 	int level_, points_, clearedRows_;
-	//std::array<int, 4> re
+	float lowX_, lowY_;
+	Block latestBlockDownGround_;
+	bool blockDownGround_;
 	
 	mw::signals::Connection connection_;
 	float width_, height_;
