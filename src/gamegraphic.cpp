@@ -5,6 +5,44 @@
 #include <sstream>
 #include <iostream>
 
+namespace {
+
+	int calculateWitdh(const Block& block) {
+		int min = 1000;
+		int max = 0;
+		for (const Square& sq : block) {
+			if (sq.column_ > max) {
+				max = sq.column_;
+			}
+			if (sq.column_ < min) {
+				min = sq.column_;
+			}
+		}
+		return max - min + 1;
+	}
+
+	int calculateHighest(const Block& block) {
+		int max = 0;
+		for (const Square& sq : block) {
+			if (sq.row_ > max) {
+				max = sq.row_;
+			}
+		}
+		return max;
+	}
+
+	int calculateLeftColumn(const Block& block) {
+		int min = 1000;
+		for (const Square& sq : block) {
+			if (sq.column_ < min) {
+				min = sq.column_;
+			}
+		}
+		return min;
+	}
+
+}
+
 GameGraphic::GameGraphic() {
 }
 
@@ -56,10 +94,12 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	const int columns = tetrisBoard.getColumns();
 	const int rows = tetrisBoard.getRows();
 
-	const float infoSize = 70;
+	const float middleDistance = 5;
+	const float rightDistance = 5;
+	const float infoSize = squareSize * 5;
 	const float boardWidth = squareSize * columns;
 
-	width_ = squareSize * columns + infoSize + borderSize * 2;
+	width_ = squareSize * columns + infoSize + borderSize * 2 + middleDistance + rightDistance;
 	height_ = squareSize * (rows - 2) + borderSize * 2;
 
 	mw::Buffer staticBuffer(mw::Buffer::STATIC);
@@ -75,7 +115,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	float y = lowY * 0.5f + borderSize;
 	staticVertexData_->addSquareTRIANGLES(
 		x, y,
-		boardWidth + infoSize, squareSize * (rows - 2),
+		boardWidth + infoSize + middleDistance + rightDistance, squareSize * (rows - 2),
 		c4);
 
 	// Draw the outer square.
@@ -107,11 +147,11 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 		c3);
 
 	// Draw the preview block area.
-	x = lowX + borderSize + boardWidth + 5;
-	y = lowY + borderSize + squareSize * (rows - 4) - (squareSize * 5 + 5);
+	x = lowX + borderSize + boardWidth + middleDistance;
+	y = lowY + borderSize + squareSize * (rows - 4) - (squareSize * 5 + middleDistance);
 	staticVertexData_->addSquareTRIANGLES(
 		x, y,
-		squareSize * 5, squareSize * 5,
+		infoSize, infoSize,
 		c3);
 	
 	nextBlockPtr_ = std::make_shared<DrawBlock>(boardShader, spriteEntry, Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
@@ -211,19 +251,13 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	
 	rows_.clear();
 	
-	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, spriteEntry, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX, lowY, false);
+	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, spriteEntry, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
 	dynamicBuffer.addVertexData(currentBlockPtr_);
 
 	for (int row = 0; row < rows; ++row) {
-		auto drawRow = std::make_shared<DrawRow>(spriteEntry, boardShader, row, tetrisBoard, squareSize, lowX, lowY);
+		auto drawRow = std::make_shared<DrawRow>(spriteEntry, boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
 		dynamicBuffer.addVertexData(drawRow);
 		rows_.push_back(drawRow);
-	}
-
-	for (int row = 0; row < rows; ++row) {
-		auto drawRow = std::make_shared<DrawRow>(spriteEntry, boardShader, row, tetrisBoard, squareSize, lowX, lowY);
-		dynamicBuffer.addVertexData(drawRow);
-		freeRows_.push_back(drawRow);
 	}
 	
 	dynamicBuffer.uploadToGraphicCard();
@@ -247,44 +281,6 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	}
 	lightningBoltCluster_.restart(points, 5);
 	*/
-}
-
-namespace {
-
-	int calculateWitdh(const Block& block) {
-		int min = 1000;
-		int max = 0;
-		for (const Square& sq : block) {
-			if (sq.column_ > max) {
-				max = sq.column_;
-			}
-			if (sq.column_ < min) {
-				min = sq.column_;
-			}
-		}
-		return max - min + 1;
-	}
-
-	int calculateHighest(const Block& block) {
-		int max = 0;
-		for (const Square& sq : block) {
-			if (sq.row_ > max) {
-				max = sq.row_;
-			}
-		}
-		return max;
-	}
-
-	int calculateLeftColumn(const Block& block) {
-		int min = 1000;
-		for (const Square& sq : block) {
-			if (sq.column_ < min) {
-				min = sq.column_;
-			}
-		}
-		return min;
-	}
-
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -335,12 +331,10 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND:
 			blockDownGround_ = true;
 			latestBlockDownGround_ = tetrisBoard.getBlock();
-			if (latestBlockDownGround_.getBlockType() == BlockType::EMPTY) {
-				int a = 0;
-			}
 			break;
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
 			if (blockDownGround_) {
+				currentBlockPtr_->updateDown(tetrisBoard.getBlock());
 				int w = calculateWitdh(latestBlockDownGround_) + 1;
 				int h = calculateHighest(latestBlockDownGround_);
 				int lowest = tetrisBoard.getBlock().getLowestRow();
@@ -406,6 +400,7 @@ void GameGraphic::draw(float deltaTime, GraphicMode mode) {
 				staticVertexData_->drawTRIANGLES();
 			}
 			if (currentBlockPtr_) {
+				currentBlockPtr_->update(deltaTime);
 				currentBlockPtr_->drawTRIANGLES();
 			}
 			if (nextBlockPtr_) {
@@ -430,7 +425,7 @@ void GameGraphic::draw(float deltaTime, GraphicMode mode) {
 			}
 			break;
 		case GraphicMode::LIGHTNING_SHADER:
-			lightningBoltCluster_.draw(deltaTime);
+			//lightningBoltCluster_.draw(deltaTime);
 			break;
 	}
 }

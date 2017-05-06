@@ -157,7 +157,6 @@ std::ostream & operator<<(std::ostream &out, const std::vector<BlockType>& vecto
 	return out;
 }
 
-
 TetrisEntry::TetrisEntry(std::string fileName) : xml::DataEntry(fileName), data_(std::make_shared<Data>()) {
 }
 

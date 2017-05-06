@@ -8,6 +8,9 @@
 #include <string>
 #include <memory>
 
+class Player;
+using PlayerPtr = std::shared_ptr<Player>;
+
 class Player {
 public:
 	Player(int id, int width, int height, BlockType current, BlockType next);

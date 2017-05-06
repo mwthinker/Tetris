@@ -7,6 +7,8 @@
 
 class Block {
 public:
+	using const_iterator = std::array<Square, 4>::const_iterator;
+
     Block();
 	Block(BlockType blockType, int lowestRow, int startColumn);
 	Block(BlockType blockType, int lowestRow, int startColumn, int rotations);
@@ -18,32 +20,32 @@ public:
 	void rotateLeft();
 	void rotateRight();
 	
-	inline Square Block::operator[](int index) const {
+	inline Square operator[](int index) const {
 		return squares_[index];
 	}
 
-	inline int Block::nbrOfSquares() const {
+	inline int getSize() const {
 		return squares_.size();
 	}
 
-	inline Square Block::getRotationSquare() const {
+	inline Square getRotationSquare() const {
 		return squares_[rotationSquareIndex_];
 	}
 
-	inline BlockType Block::getBlockType() const {
+	inline BlockType getBlockType() const {
 		return blockType_;
 	}
 
 	// Returns the lowest possible row for the block when rotating.
-	inline int Block::getLowestRow() const {
+	inline int getLowestRow() const {
 		return lowestRow_;
 	}	
 
-	inline std::array<Square, 4>::const_iterator begin() const {
+	inline const_iterator begin() const {
 		return squares_.begin();
 	}
 
-	inline std::array<Square, 4>::const_iterator end() const {
+	inline const_iterator end() const {
 		return squares_.end();
 	}
 
@@ -57,10 +59,6 @@ public:
 
 	inline int getStartColumn() const {
 		return startColumn_;
-	}
-
-	inline int getSize() const {
-		return squares_.size();
 	}
 
 private:

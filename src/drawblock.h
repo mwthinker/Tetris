@@ -17,15 +17,23 @@ public:
 	
 	void update(const Block& block);
 
+	void updateDown(const Block& block);
+
+	void update(float deltaTime);
+
 private:
 	void calculateCenterOfMass(const Block& block, float& x, float& y);
 	mw::Sprite getSprite(BlockType blockType) const;
 
+	void updateVertexData();
+	
 	bool center_;
 	float squareSize_;
 	float lowX_, lowY_;
 	int boardHeight_;
 	Block block_;
+	int row_;
+	float movingTime_, timeLeft_;
 	float deltaX_, deltaY_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
 };

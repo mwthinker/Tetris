@@ -55,7 +55,7 @@
 		<tetrisBoard>
 			<font>fonts/Ubuntu-B.ttf</font>
 			<squareSize>10</squareSize>
-			<borderSize>10</borderSize>
+			<borderSize>5</borderSize>
 			<sprites>
 				<halfCircle>images/half_circle.png</halfCircle>
 				<lineSegment>images/lightning_segment.png</lineSegment>

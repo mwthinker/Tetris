@@ -61,7 +61,7 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 void DrawRow::draw(float deltaTime) {
 	if (oldRow_ != row_ && row_ >= 0) {
 		timeLeft_ += -deltaTime;
-		graphicRow_ += deltaTime * 1 / movingTime_ * sign(row_ - oldRow_);
+		graphicRow_ += deltaTime / movingTime_ * sign(row_ - oldRow_);
 
 		if (timeLeft_ < 0) {
 			oldRow_ = row_;
@@ -69,7 +69,7 @@ void DrawRow::draw(float deltaTime) {
 			graphicRow_ = (float) row_;
 		}
 		updateVertexData();
-	}	
+	}
 
 	if (isAlive()) {
 		BoardVertexData::drawTRIANGLES();
@@ -91,7 +91,7 @@ void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
 			color = Color(1, 1, 1, 0);
 		}
 		addSquareTRIANGLES(
-			lowX_ + (column + 1) * squareSize_, lowY_ + (graphicRow_ + 1)* squareSize_,
+			lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,
 			squareSize_, squareSize_,
 			getSprite(type),
 			color
@@ -104,7 +104,7 @@ void DrawRow::updateVertexData() {
 	begin();
 	for (int column = 0; column < columns_; ++column) {
 		updateSquareTRIANGLES(
-			lowX_ + (column + 1) * squareSize_, lowY_ + (graphicRow_ + 1) * squareSize_,
+			lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,
 			squareSize_, squareSize_
 		);
 	}

@@ -27,7 +27,7 @@ public:
 	// @gui::Component
 	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
-	void initGame(std::vector<std::shared_ptr<Player>>& player);
+	void initGame(std::vector<PlayerPtr>& player);
 
 	void countDown(int msCountDown);
 

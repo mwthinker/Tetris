@@ -223,7 +223,7 @@ void RawTetrisBoard::clearBoard() {
 int RawTetrisBoard::removeFilledRows(const Block& block) {
 	int row = block.getLowestRow();
 	int nbr = 0; // Number of rows filled.
-	const int nbrOfSquares = current_.nbrOfSquares();
+	const int nbrOfSquares = current_.getSize();
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = true;
 		if (row >= 0) {

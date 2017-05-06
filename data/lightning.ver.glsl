@@ -3,6 +3,7 @@
 precision mediump float;
 
 uniform mat4 uMat;
+uniform float time;
 
 attribute float aAngle;
 attribute vec2 aPos;

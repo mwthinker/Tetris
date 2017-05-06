@@ -101,7 +101,7 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 	mw::checkGlError();
 }
 
-void GameComponent::initGame(std::vector<std::shared_ptr<Player>>& players) {
+void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	bool showPoints = false;
 	if (players.size() == 1) {
 		showPoints = true;

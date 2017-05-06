@@ -14,10 +14,14 @@ DrawBlock::DrawBlock(const BoardShader& boardShader, const TetrisEntry& spriteEn
 	squareSize_ = squareSize;
 	center_ = center;
 	boardHeight_ = boardHeight;
+	timeLeft_ = -0.001f;
+	movingTime_ = 1.5f;
 	update(block);
 }
 
 void DrawBlock::update(const Block& block) {
+	row_ = block.getLowestRow();
+	timeLeft_ = -1;
 	block_ = block;
 	mw::Sprite sprite = getSprite(block.getBlockType());
 
@@ -26,8 +30,8 @@ void DrawBlock::update(const Block& block) {
 
 	if (center_) {
 		calculateCenterOfMass(block, deltaX_, deltaY_);
-		deltaX_ = (-1.5f - deltaX_) * squareSize_;
-		deltaY_ = (-1.5f - deltaY_) * squareSize_;
+		deltaX_ = (-0.5f - deltaX_) * squareSize_;
+		deltaY_ = (-0.5f - deltaY_) * squareSize_;
 	}
 
 	begin();
@@ -37,7 +41,7 @@ void DrawBlock::update(const Block& block) {
 			color.alpha_ = 0;
 		}
 		addSquareTRIANGLES(
-			lowX_ + (sq.column_ + 1)* squareSize_ + deltaX_, lowY_ + (sq.row_ + 1)* squareSize_ + deltaY_,
+			lowX_ + sq.column_ * squareSize_ + deltaX_, lowY_ + sq.row_ * squareSize_ + deltaY_,
 			squareSize_, squareSize_,
 			sprite,
 			color
@@ -46,15 +50,63 @@ void DrawBlock::update(const Block& block) {
 	end();
 }
 
-void DrawBlock::calculateCenterOfMass(const Block& block, float& x, float& y) {
+void DrawBlock::updateDown(const Block& block) {
+	row_ = block_.getLowestRow();
+	block_ = block;
+	timeLeft_ = movingTime_;
+}
+
+void DrawBlock::update(float deltaTime) {
+	if (timeLeft_ >= 0) {
+		timeLeft_ += -deltaTime;
+
+		if (timeLeft_ < 0) {
+			row_ = block_.getLowestRow();
+			timeLeft_ = -0.1f;
+		}
+		updateVertexData();
+	}
+}
+
+void DrawBlock::updateVertexData() {
+	begin();
+	for (Square sq : block_) {
+		Color color(1, 1, 1);
+		if (sq.row_ >= boardHeight_ - 2) {
+			color.alpha_ = 0;
+		}
+		
+		updateSquareTRIANGLES(
+			lowX_ + sq.column_ * squareSize_, lowY_ + (row_ - sq.row_) * timeLeft_ / movingTime_ * squareSize_  + sq.row_ *  squareSize_,
+			squareSize_, squareSize_
+		);
+	}
+	end();
+}
+
+void handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
+	switch (gameEvent) {
+		case GameEvent::ROW_TO_BE_REMOVED:
+			break;
+		case GameEvent::FOUR_ROW_REMOVED:
+		case GameEvent::THREE_ROW_REMOVED:
+		case GameEvent::TWO_ROW_REMOVED:
+		case GameEvent::ONE_ROW_REMOVED:
+			break;
+		case GameEvent::BLOCK_COLLISION:
+			break;
+	}
+}
+
+void DrawBlock::calculateCenterOfMass(const Block& block, float& x, float& y) {	
 	x = 0;
 	y = 0;
-	for (Square sq : block) {
+	for (const Square& sq : block) {
 		x += sq.column_;
 		y += sq.row_;
 	}
-	x = x / block.nbrOfSquares();
-	y = y / block.nbrOfSquares();
+	x = x / block.getSize();
+	y = y / block.getSize();
 }
 
 mw::Sprite DrawBlock::getSprite(BlockType blockType) const {
