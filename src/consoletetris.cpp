@@ -15,7 +15,7 @@
 ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
 	tetrisEntry_(tetrisEntry),
 	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", rlutil::KEY_DOWN, rlutil::KEY_LEFT, rlutil::KEY_RIGHT, rlutil::KEY_UP, '-')),
-	mode_(MENU) {
+	mode_(MENU), option_(GAME) {
 
 	tetrisGame_.addCallback(std::bind(&ConsoleTetris::handleConnectionEvent, this, std::placeholders::_1));
 }
@@ -36,12 +36,13 @@ void ConsoleTetris::startLoop() {
 
 	double gameTime = 0;
 
+	printMenu(option_);
 	while (mode_ != QUIT) {
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> delta = currentTime - time;
 		gameTime += delta.count();
 
-		rlutil::cls();
+		//rlutil::cls();
 		update(delta.count(), gameTime);
 		time = currentTime;
 
@@ -53,21 +54,38 @@ void ConsoleTetris::startLoop() {
 	rlutil::showcursor();
 }
 
-void ConsoleTetris::printMenu() {
-	rlutil::setColor(rlutil::WHITE);
-
-	draw(2, 2, "MWetris");
-	draw(5, 7, "Play [1]");
-	draw(5, 8, "Custom play [2]");
-	draw(5, 9, "Network game [3]");
-	draw(5, 10, "Highscore [4]");
-	draw(5, 11, "Exit [ESQ]");
+void ConsoleTetris::printMenu(Mode option) {
+	draw(2, 2, "MWetris", rlutil::WHITE);
+	draw(5, 7, "Play [1]", GAME == option_ ? rlutil::RED : rlutil::WHITE);
+	draw(5, 8, "Custom play [2]", CUSTOM_GAME == option_ ? rlutil::RED : rlutil::WHITE);
+	draw(5, 9, "Network game [3]", NETWORK_GAME == option_ ? rlutil::RED : rlutil::WHITE);
+	draw(5, 10, "Highscore [4]", HIGHSCORE == option_ ? rlutil::RED : rlutil::WHITE);
+	draw(5, 11, "Exit [ESQ]", QUIT == option_ ? rlutil::RED : rlutil::WHITE);
 }
 
 void ConsoleTetris::draw(int x, int y, std::string text) {
 	rlutil::locate(x, y);
 	std::cout << text;
 }
+
+void ConsoleTetris::draw(int x, int y, std::string text, int color) {
+	rlutil::setColor(color);
+	rlutil::locate(x, y);
+	std::cout << text;
+}
+
+void ConsoleTetris::drawClear(int x, int y, std::string text, int color) {
+	std::string remove;
+	for (char key : text) {
+		remove += " ";
+	}
+	rlutil::setColor(color);
+	rlutil::locate(x, y);
+	std::cout << remove;
+	rlutil::locate(x, y);
+	std::cout << text;
+}
+
 
 void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
@@ -129,7 +147,6 @@ void ConsoleTetris::update(double deltaTime, double time) {
 
 			if (kbhit()) {
 				char key = rlutil::getkey();
-				
 				keyboard1_->eventUpdate(key, time);
 
 				if (key == rlutil::KEY_ESCAPE) {
@@ -138,14 +155,18 @@ void ConsoleTetris::update(double deltaTime, double time) {
 			}
 			break;
 		case MENU:
-			printMenu();
-
 			if (kbhit()) {
 				char key = rlutil::getkey();
 
 				switch (key) {
-					case '1':
-						mode_ = GAME;
+					case rlutil::KEY_DOWN:
+						moveMenuDown();
+						break;
+					case rlutil::KEY_UP:
+						moveMenuUp();
+						break;
+					case rlutil::KEY_ENTER:
+						execute(option_);
 						break;
 					case rlutil::KEY_ESCAPE:
 						mode_ = QUIT;
@@ -155,5 +176,41 @@ void ConsoleTetris::update(double deltaTime, double time) {
 				}
 			}
 			break;
+	}
+}
+
+void ConsoleTetris::moveMenuDown() {
+	int nbr = (int) option_;
+	++nbr;
+	if (nbr >= Mode::SIZE) {
+		option_ = (Mode) 1;
+	} else {
+		option_ = (Mode) nbr;
+	}
+	printMenu(option_);
+}
+
+void ConsoleTetris::moveMenuUp () {
+	int nbr = (int)option_;
+	--nbr;
+	if (nbr <= 0) {
+		option_ = (Mode) (Mode::SIZE - 1);
+	} else {
+		option_ = (Mode) nbr;
+	}
+	printMenu(option_);
+}
+
+void ConsoleTetris::execute(Mode option) {
+	rlutil::cls();
+	switch (option) {
+	case GAME:
+		mode_ = Mode::GAME;
+		break;
+	case QUIT:
+		mode_ = QUIT;
+		break;
+	default:
+		break;
 	}
 }

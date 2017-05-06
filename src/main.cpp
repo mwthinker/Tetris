@@ -23,7 +23,7 @@ int main (int argc, char** argv) {
 			std::cout << "\t-n --no-window           no window and only in the terminal\n\n";
 			std::cout << "Starts a tetris game.\n\n";
 			std::cout << "Example: \n";
-			std::cout << "\t" << "Starts a tetrig game without a window. \n";
+			std::cout << "\t" << "Starts a tetris game without a window. \n";
 			std::cout << "\t" << programName << " -n" << std::endl;
 			return 0;
 		} else if (code == "-n" || code == "--no-window") {
