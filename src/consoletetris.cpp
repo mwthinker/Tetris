@@ -27,13 +27,6 @@ void ConsoleTetris::startLoop() {
 	printf("MWetris, Use arrow to move, ESC to quit.\n");
 
 	auto time = std::chrono::high_resolution_clock::now();
-	
-
-	// Initialization local game settings.
-	std::vector<DevicePtr> devices_ = {keyboard1_, std::make_shared<Computer>()};
-	tetrisGame_.setPlayers(devices_);
-	tetrisGame_.createLocalGame();
-
 	double gameTime = 0;
 
 	printMenu(option_);
@@ -86,7 +79,6 @@ void ConsoleTetris::drawClear(int x, int y, std::string text, int color) {
 	std::cout << text;
 }
 
-
 void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
@@ -109,10 +101,14 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
 		graphicPlayers_.clear();
+		rlutil::cls();
 
+		int delta = 2;
 		for (auto& player : initGameVar.players_) {
 			auto& graphic = graphicPlayers_[player->getId()];
-			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"));
+			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2);
+			graphic.drawStatic();
+			delta += graphic.getWidth();
 		}
 
 		return;
@@ -135,12 +131,10 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 void ConsoleTetris::update(double deltaTime, double time) {
 	switch (mode_) {
 		case GAME:
-			{
-				int delta = 2;
+			{				
 				for (auto& pair : graphicPlayers_) {
 					ConsoleGraphic& graphic = pair.second;
-					graphic.draw(deltaTime, delta, 2);
-					delta += graphic.getWidth();
+					//graphic.draw(deltaTime);
 				}
 			}
 			tetrisGame_.update(deltaTime);
@@ -205,7 +199,13 @@ void ConsoleTetris::execute(Mode option) {
 	rlutil::cls();
 	switch (option) {
 	case GAME:
+	{
 		mode_ = Mode::GAME;
+		// Initialization local game settings.	
+		std::vector<DevicePtr> devices = { keyboard1_, std::make_shared<Computer>() };
+		tetrisGame_.setPlayers(devices);
+		tetrisGame_.createLocalGame();
+	}
 		break;
 	case QUIT:
 		mode_ = QUIT;
