@@ -11,30 +11,33 @@
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
 
-#include <rlutil.h>
+#include <console.h>
 
 #include <array>
 
-class ConsoleTetris {
+class ConsoleTetris : public console::Console {
 public:
 	ConsoleTetris(TetrisEntry tetrisEntry);
 
-	void startLoop();
+protected:
+	void initPreLoop() override;
 
 private:
 	enum Mode {MENU = 0, GAME = 1, CUSTOM_GAME = 2, NETWORK_GAME = 3, HIGHSCORE = 4, QUIT = 5, SIZE = 6};
 
+	void update(double deltaTime) override;
+	
+	void eventUpdate(console::ConsoleEvent& consoleEvent) override;
+
 	void printMenu(Mode option);	
 
-	static void draw(int x, int y, std::string text);
+	void draw(int x, int y, std::string text);
 
-	static void draw(int x, int y, std::string text, int color);
+	void draw(int x, int y, std::string text, console::Color color);
 
-	static void drawClear(int x, int y, std::string text, int color);
+	void drawClear(int x, int y, std::string text, console::Color color);
 
 	void handleConnectionEvent(TetrisGameEvent& tetrisEvent);
-
-	void update(double deltaTime, double time);
 
 	void moveMenuUp();
 	void moveMenuDown();

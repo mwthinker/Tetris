@@ -10,73 +10,98 @@
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
 
-#include <rlutil.h>
+using namespace console;
 
 ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
 	tetrisEntry_(tetrisEntry),
-	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", rlutil::KEY_DOWN, rlutil::KEY_LEFT, rlutil::KEY_RIGHT, rlutil::KEY_UP, '-')),
+	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::PAGEDOWN)),
 	mode_(MENU), option_(GAME) {
 
 	tetrisGame_.addCallback(std::bind(&ConsoleTetris::handleConnectionEvent, this, std::placeholders::_1));
 }
 
-void ConsoleTetris::startLoop() {
-	rlutil::hidecursor();
-	rlutil::saveDefaultColor();
-	rlutil::setColor(2);
+void ConsoleTetris::initPreLoop() {
+	Console::setTextColor(console::Color::RED);
+	Console::setCursorVisibility(false);
 	printf("MWetris, Use arrow to move, ESC to quit.\n");
-
-	auto time = std::chrono::high_resolution_clock::now();
-	double gameTime = 0;
-
 	printMenu(option_);
-	while (mode_ != QUIT) {
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> delta = currentTime - time;
-		gameTime += delta.count();
+}
 
-		//rlutil::cls();
-		update(delta.count(), gameTime);
-		time = currentTime;
+void ConsoleTetris::update(double deltaTime) {
+	switch (mode_) {
+		case GAME:
+			tetrisGame_.update(deltaTime);
+			break;
+	}
+	sleep(1.0 / 60.0);
+}
 
-		rlutil::msleep(10);
+void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
+	switch (consoleEvent.type) {
+		case console::ConsoleEventType::KEYDOWN:
+			switch (consoleEvent.keyEvent.key) {
+				case console::Key::ESCAPE: // Fall through.
+				case console::Key::SPACE:
+					quit();
+					break;
+			}
+			break;
 	}
 
-	rlutil::cls();
-	rlutil::resetColor();
-	rlutil::showcursor();
+	switch (mode_) {
+		case GAME:			
+			keyboard1_->eventUpdate(consoleEvent);
+			break;
+		case MENU:
+			switch (consoleEvent.type) {
+				case console::ConsoleEventType::KEYDOWN:
+					switch (consoleEvent.keyEvent.key) {
+						case console::Key::DOWN:
+							moveMenuDown();
+							break;
+						case console::Key::UP:
+							moveMenuUp();
+							break;
+						case console::Key::RETURN:
+							execute(option_);
+							break;
+					}
+					break;
+			}
+			break;
+	}
 }
 
 void ConsoleTetris::printMenu(Mode option) {
-	draw(2, 2, "MWetris", rlutil::WHITE);
-	draw(5, 7, "Play [1]", GAME == option_ ? rlutil::RED : rlutil::WHITE);
-	draw(5, 8, "Custom play [2]", CUSTOM_GAME == option_ ? rlutil::RED : rlutil::WHITE);
-	draw(5, 9, "Network game [3]", NETWORK_GAME == option_ ? rlutil::RED : rlutil::WHITE);
-	draw(5, 10, "Highscore [4]", HIGHSCORE == option_ ? rlutil::RED : rlutil::WHITE);
-	draw(5, 11, "Exit [ESQ]", QUIT == option_ ? rlutil::RED : rlutil::WHITE);
+	draw(2, 2, "MWetris", console::Color::WHITE);
+	draw(5, 7, "Play [1]", GAME == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 8, "Custom play [2]", CUSTOM_GAME == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 9, "Network game [3]", NETWORK_GAME == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 10, "Highscore [4]", HIGHSCORE == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 11, "Exit [ESQ]", QUIT == option_ ? console::Color::RED : console::Color::WHITE);
 }
 
 void ConsoleTetris::draw(int x, int y, std::string text) {
-	rlutil::locate(x, y);
-	std::cout << text;
+	setCursorPosition(x, y);
+	*this << text;
 }
 
-void ConsoleTetris::draw(int x, int y, std::string text, int color) {
-	rlutil::setColor(color);
-	rlutil::locate(x, y);
-	std::cout << text;
+void ConsoleTetris::draw(int x, int y, std::string text, console::Color color) {
+	setTextColor(color);
+	setCursorPosition(x, y);
+	*this << text;
 }
 
-void ConsoleTetris::drawClear(int x, int y, std::string text, int color) {
+void ConsoleTetris::drawClear(int x, int y, std::string text, console::Color color) {
 	std::string remove;
 	for (char key : text) {
 		remove += " ";
 	}
-	rlutil::setColor(color);
-	rlutil::locate(x, y);
-	std::cout << remove;
-	rlutil::locate(x, y);
-	std::cout << text;
+	setTextColor(color);
+	setCursorPosition(x, y);
+	*this << remove;
+	setCursorPosition(x, y);
+	*this << text;
 }
 
 void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
@@ -101,12 +126,12 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
 		graphicPlayers_.clear();
-		rlutil::cls();
+		clear();
 
 		int delta = 2;
 		for (auto& player : initGameVar.players_) {
 			auto& graphic = graphicPlayers_[player->getId()];
-			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2);
+			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2, this);
 			graphic.drawStatic();
 			delta += graphic.getWidth();
 		}
@@ -126,51 +151,6 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		}
 		return;
 	} catch (std::bad_cast exp) {}
-}
-
-void ConsoleTetris::update(double deltaTime, double time) {
-	switch (mode_) {
-		case GAME:
-			{				
-				for (auto& pair : graphicPlayers_) {
-					ConsoleGraphic& graphic = pair.second;
-					//graphic.draw(deltaTime);
-				}
-			}
-			tetrisGame_.update(deltaTime);
-
-			if (kbhit()) {
-				char key = rlutil::getkey();
-				keyboard1_->eventUpdate(key, time);
-
-				if (key == rlutil::KEY_ESCAPE) {
-					mode_ = QUIT;
-				}
-			}
-			break;
-		case MENU:
-			if (kbhit()) {
-				char key = rlutil::getkey();
-
-				switch (key) {
-					case rlutil::KEY_DOWN:
-						moveMenuDown();
-						break;
-					case rlutil::KEY_UP:
-						moveMenuUp();
-						break;
-					case rlutil::KEY_ENTER:
-						execute(option_);
-						break;
-					case rlutil::KEY_ESCAPE:
-						mode_ = QUIT;
-						break;
-					default:
-						break;
-				}
-			}
-			break;
-	}
 }
 
 void ConsoleTetris::moveMenuDown() {
@@ -196,7 +176,7 @@ void ConsoleTetris::moveMenuUp () {
 }
 
 void ConsoleTetris::execute(Mode option) {
-	rlutil::cls();
+	clear();
 	switch (option) {
 	case GAME:
 	{

@@ -5,13 +5,15 @@
 #include "tetrisgameevent.h"
 #include "tetrisboard.h"
 
+#include <console.h>
+
 class ConsoleGraphic {
 public:
 	ConsoleGraphic();
 
 	~ConsoleGraphic();
 
-	void restart(Player& player, TetrisEntry tetrisEntry, int x, int y);
+	void restart(Player& player, TetrisEntry tetrisEntry, int x, int y, console::Console* console);
 
 	int getWidth() const;
 
@@ -41,6 +43,7 @@ private:
 	RawTetrisBoard tetrisBoard_;
 	std::string playerName_;
 	int x_, y_;
+	console::Console* console_;
 };
 
 #endif // CONSOLEGRAPHIC_H
