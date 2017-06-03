@@ -59,7 +59,6 @@ TetrisBoard::TetrisBoard(const std::vector<BlockType>& board, int rows, int colu
 }
 
 TetrisBoard::TetrisBoard(const TetrisBoard& board) : RawTetrisBoard(board) {
-
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {

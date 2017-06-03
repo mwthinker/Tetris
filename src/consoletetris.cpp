@@ -14,8 +14,10 @@ using namespace console;
 
 ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
 	tetrisEntry_(tetrisEntry),
-	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::PAGEDOWN)),
-	mode_(MENU), option_(GAME) {
+	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::KEY_DELETE)),
+	keyboard2_(std::make_shared<ConsoleKeyboard>("Keyboard 2", console::Key::KEY_S, console::Key::KEY_A, console::Key::KEY_D, console::Key::KEY_W, console::Key::KEY_Q)),
+	mode_(MENU), option_(GAME),
+	humanPlayers_(1) {
 
 	tetrisGame_.addCallback(std::bind(&ConsoleTetris::handleConnectionEvent, this, std::placeholders::_1));
 }
@@ -49,7 +51,28 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 	}
 
 	switch (mode_) {
-		case GAME:			
+		case GAME:
+			switch (consoleEvent.type) {
+				case console::ConsoleEventType::KEYDOWN:
+					switch (consoleEvent.keyEvent.key) {
+						case console::Key::F1:
+							mode_ = MENU;
+							break;
+						case console::Key::F2:
+							restartCurrentGame();
+							break;
+						case console::Key::F3:
+							humanPlayers_ = (humanPlayers_ + 2) % 3; // Remove one human player.
+							restartCurrentGame();
+							break;
+						case console::Key::F4:
+							humanPlayers_ = (humanPlayers_ + 1) % 3; // Add a human player by one.
+							restartCurrentGame();
+							break;
+					}
+					break;
+			}
+
 			keyboard1_->eventUpdate(consoleEvent);
 			break;
 		case MENU:
@@ -70,6 +93,18 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 			}
 			break;
 	}
+}
+
+void ConsoleTetris::restartCurrentGame() {
+	// Initialization local game settings.	
+	std::vector<DevicePtr> devices;
+	if (humanPlayers_ == 1) {
+		devices.push_back(keyboard1_);
+	} else if (humanPlayers_ == 2) {
+		devices.push_back(keyboard2_);
+	}
+	tetrisGame_.setPlayers(devices);
+	tetrisGame_.createLocalGame();
 }
 
 void ConsoleTetris::printMenu(Mode option) {
@@ -132,7 +167,6 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		for (auto& player : initGameVar.players_) {
 			auto& graphic = graphicPlayers_[player->getId()];
 			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2, this);
-			graphic.drawStatic();
 			delta += graphic.getWidth();
 		}
 
@@ -156,7 +190,7 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 void ConsoleTetris::moveMenuDown() {
 	int nbr = (int) option_;
 	++nbr;
-	if (nbr >= Mode::SIZE) {
+	if (nbr >= ENUM_SIZE) {
 		option_ = (Mode) 1;
 	} else {
 		option_ = (Mode) nbr;
@@ -168,7 +202,7 @@ void ConsoleTetris::moveMenuUp () {
 	int nbr = (int)option_;
 	--nbr;
 	if (nbr <= 0) {
-		option_ = (Mode) (Mode::SIZE - 1);
+		option_ = (Mode) (ENUM_SIZE - 1);
 	} else {
 		option_ = (Mode) nbr;
 	}
@@ -179,13 +213,8 @@ void ConsoleTetris::execute(Mode option) {
 	clear();
 	switch (option) {
 	case GAME:
-	{
-		mode_ = Mode::GAME;
-		// Initialization local game settings.	
-		std::vector<DevicePtr> devices = { keyboard1_, std::make_shared<Computer>() };
-		tetrisGame_.setPlayers(devices);
-		tetrisGame_.createLocalGame();
-	}
+		mode_ = GAME;
+		restartCurrentGame();
 		break;
 	case QUIT:
 		mode_ = QUIT;

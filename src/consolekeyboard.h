@@ -2,7 +2,8 @@
 #define CONSOLEKEYBOARD_H
 
 #include "device.h"
-#include "console.h"
+
+#include <console/console.h>
 
 #include <string>
 

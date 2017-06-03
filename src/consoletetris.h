@@ -10,8 +10,9 @@
 #include "computer.h"
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
+#include "device.h"
 
-#include <console.h>
+#include <console/console.h>
 
 #include <array>
 
@@ -23,7 +24,7 @@ protected:
 	void initPreLoop() override;
 
 private:
-	enum Mode {MENU = 0, GAME = 1, CUSTOM_GAME = 2, NETWORK_GAME = 3, HIGHSCORE = 4, QUIT = 5, SIZE = 6};
+	enum Mode {MENU = 0, GAME = 1, CUSTOM_GAME = 2, NETWORK_GAME = 3, HIGHSCORE = 4, QUIT = 5, ENUM_SIZE = 6};
 
 	void update(double deltaTime) override;
 	
@@ -42,13 +43,17 @@ private:
 	void moveMenuUp();
 	void moveMenuDown();
 
+	void restartCurrentGame();
+
 	void execute(Mode option);
 
 	TetrisGame tetrisGame_;
 	TetrisEntry tetrisEntry_;
 	Mode mode_;
 	Mode option_;
-	std::shared_ptr<ConsoleKeyboard> keyboard1_;
+	std::shared_ptr<ConsoleKeyboard> keyboard1_, keyboard2_;
+	int humanPlayers_;
+	std::vector<DevicePtr> activePlayers_;
 	std::map<int, ConsoleGraphic> graphicPlayers_;
 	std::array<char, 100 * 100> screen_;
 };

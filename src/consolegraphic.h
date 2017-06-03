@@ -5,7 +5,7 @@
 #include "tetrisgameevent.h"
 #include "tetrisboard.h"
 
-#include <console.h>
+#include <console/console.h>
 
 class ConsoleGraphic {
 public:
@@ -37,7 +37,7 @@ private:
 	void drawCurrentBlock() const;
 	void drawBoard() const;
 
-	static const char SQUARE = 'X';
+	static const std::string SQUARE;
 
 	mw::signals::Connection connection_;
 	RawTetrisBoard tetrisBoard_;
