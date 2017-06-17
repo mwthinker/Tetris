@@ -10,6 +10,8 @@
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
 
+#include <algorithm>
+
 using namespace console;
 
 ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
@@ -23,10 +25,29 @@ ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
 }
 
 void ConsoleTetris::initPreLoop() {
-	Console::setTextColor(console::Color::RED);
+	auto aiEntry = tetrisEntry_.getDeepChildEntry("activeGames ais player");
+	ais_.clear();
+	while (aiEntry.hasData()) {
+		ais_.push_back(aiEntry.getAi());
+		aiEntry = aiEntry.getSibling("player");
+	}
+
 	Console::setCursorVisibility(false);
-	printf("MWetris, Use arrow to move, ESC to quit.\n");
-	printMenu(option_);
+	printMainMenu();
+}
+
+void ConsoleTetris::printGameMenu() {
+	Console::setTextColor(console::Color::RED);
+	Console::setBackgroundColor(console::Color::BLACK);
+	print("Menu [Key 1]    Restart [Key 2]    Human -/+ [Key 3/4]    AI -/+ [Key 5/6]    Pause [P]");
+}
+
+void ConsoleTetris::printGame() {
+	clear();
+	printGameMenu();
+	for (auto& player : graphicPlayers_) {
+		player.second.drawStatic();
+	}
 }
 
 void ConsoleTetris::update(double deltaTime) {
@@ -43,7 +64,7 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 		case console::ConsoleEventType::KEYDOWN:
 			switch (consoleEvent.keyEvent.key) {
 				case console::Key::ESCAPE: // Fall through.
-				case console::Key::SPACE:
+					mode_ = QUIT;
 					quit();
 					break;
 			}
@@ -55,30 +76,65 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 			switch (consoleEvent.type) {
 				case console::ConsoleEventType::KEYDOWN:
 					switch (consoleEvent.keyEvent.key) {
-						case console::Key::F1:
+						case console::Key::KEY_1:
 							mode_ = MENU;
+							printMainMenu();
 							break;
-						case console::Key::F2:
+						case console::Key::KEY_2:
 							restartCurrentGame();
 							break;
-						case console::Key::F3:
+						case console::Key::KEY_3:
 							humanPlayers_ = (humanPlayers_ + 2) % 3; // Remove one human player.
 							restartCurrentGame();
 							break;
-						case console::Key::F4:
+						case console::Key::KEY_4:
 							humanPlayers_ = (humanPlayers_ + 1) % 3; // Add a human player by one.
 							restartCurrentGame();
+							break;
+						case console::Key::KEY_P:
+							tetrisGame_.pause();
+							break;
+					}
+					break;
+				case console::ConsoleEventType::CONSOLERESIZE:
+					switch (mode_) {
+						case MENU:
+							printMainMenu();
+							break;
+						case GAME:
+							printGame();
+							break;
+						case QUIT:
+							break;
+						default:
 							break;
 					}
 					break;
 			}
 
 			keyboard1_->eventUpdate(consoleEvent);
+			keyboard2_->eventUpdate(consoleEvent);
 			break;
 		case MENU:
 			switch (consoleEvent.type) {
 				case console::ConsoleEventType::KEYDOWN:
 					switch (consoleEvent.keyEvent.key) {
+						case console::Key::KEY_1:
+							option_ = GAME;
+							execute(option_);
+							break;
+						case console::Key::KEY_2:
+							option_ = CUSTOM_GAME;
+							execute(option_);
+							break;
+						case console::Key::KEY_3:
+							option_ = NETWORK_GAME;
+							execute(option_);
+							break;
+						case console::Key::KEY_4:
+							option_ = HIGHSCORE;
+							execute(option_);
+							break;
 						case console::Key::DOWN:
 							moveMenuDown();
 							break;
@@ -101,13 +157,18 @@ void ConsoleTetris::restartCurrentGame() {
 	if (humanPlayers_ == 1) {
 		devices.push_back(keyboard1_);
 	} else if (humanPlayers_ == 2) {
+		devices.push_back(keyboard1_);
 		devices.push_back(keyboard2_);
 	}
 	tetrisGame_.setPlayers(devices);
 	tetrisGame_.createLocalGame();
 }
 
-void ConsoleTetris::printMenu(Mode option) {
+void ConsoleTetris::printMainMenu() {
+	clear();
+	Console::setTextColor(console::Color::RED);
+	Console::setBackgroundColor(console::Color::BLACK);
+	print("MWetris, Use arrow to move, ESC to quit.");
 	draw(2, 2, "MWetris", console::Color::WHITE);
 	draw(5, 7, "Play [1]", GAME == option_ ? console::Color::RED : console::Color::WHITE);
 	draw(5, 8, "Custom play [2]", CUSTOM_GAME == option_ ? console::Color::RED : console::Color::WHITE);
@@ -118,13 +179,14 @@ void ConsoleTetris::printMenu(Mode option) {
 
 void ConsoleTetris::draw(int x, int y, std::string text) {
 	setCursorPosition(x, y);
-	*this << text;
+	print(text);
 }
 
 void ConsoleTetris::draw(int x, int y, std::string text, console::Color color) {
 	setTextColor(color);
+	setBackgroundColor(console::Color::BLACK);
 	setCursorPosition(x, y);
-	*this << text;
+	print(text);
 }
 
 void ConsoleTetris::drawClear(int x, int y, std::string text, console::Color color) {
@@ -134,18 +196,24 @@ void ConsoleTetris::drawClear(int x, int y, std::string text, console::Color col
 	}
 	setTextColor(color);
 	setCursorPosition(x, y);
-	*this << remove;
+	print(remove);
 	setCursorPosition(x, y);
-	*this << text;
+	print(text);
 }
 
 void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
+	try {
+		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
+		graphicPlayers_[levelChange.player_->getId()].updateLevel(levelChange.newLevel_);
+		return;
+	} catch (std::bad_cast exp) {}
+
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 
 		return;
 	} catch (std::bad_cast exp) {}
-
+	
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
 
@@ -161,7 +229,6 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
 		graphicPlayers_.clear();
-		clear();
 
 		int delta = 2;
 		for (auto& player : initGameVar.players_) {
@@ -169,6 +236,7 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2, this);
 			delta += graphic.getWidth();
 		}
+		printGame();
 
 		return;
 	} catch (std::bad_cast exp) {}
@@ -195,18 +263,18 @@ void ConsoleTetris::moveMenuDown() {
 	} else {
 		option_ = (Mode) nbr;
 	}
-	printMenu(option_);
+	printMainMenu();
 }
 
 void ConsoleTetris::moveMenuUp () {
-	int nbr = (int)option_;
+	int nbr = (int) option_;
 	--nbr;
 	if (nbr <= 0) {
 		option_ = (Mode) (ENUM_SIZE - 1);
 	} else {
 		option_ = (Mode) nbr;
 	}
-	printMenu(option_);
+	printMainMenu();
 }
 
 void ConsoleTetris::execute(Mode option) {
@@ -218,6 +286,7 @@ void ConsoleTetris::execute(Mode option) {
 		break;
 	case QUIT:
 		mode_ = QUIT;
+		quit();
 		break;
 	default:
 		break;

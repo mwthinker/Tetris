@@ -11,6 +11,7 @@
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
 #include "device.h"
+#include "ai.h"
 
 #include <console/console.h>
 
@@ -22,7 +23,6 @@ public:
 
 protected:
 	void initPreLoop() override;
-
 private:
 	enum Mode {MENU = 0, GAME = 1, CUSTOM_GAME = 2, NETWORK_GAME = 3, HIGHSCORE = 4, QUIT = 5, ENUM_SIZE = 6};
 
@@ -30,7 +30,11 @@ private:
 	
 	void eventUpdate(console::ConsoleEvent& consoleEvent) override;
 
-	void printMenu(Mode option);	
+	void printMainMenu();
+
+	void printGameMenu();
+
+	void printGame();
 
 	void draw(int x, int y, std::string text);
 
@@ -49,6 +53,11 @@ private:
 
 	TetrisGame tetrisGame_;
 	TetrisEntry tetrisEntry_;
+
+	// All ai:s.
+	std::array<Ai, 4> activeAis_;
+	std::vector<Ai> ais_;
+
 	Mode mode_;
 	Mode option_;
 	std::shared_ptr<ConsoleKeyboard> keyboard1_, keyboard2_;

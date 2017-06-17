@@ -18,9 +18,11 @@ int main (int argc, char** argv) {
 
 	if (argc >= 2) {
 		std::string programName = *argv;
-		std::string code(*(argv + 1));		
+		std::string code(*(argv + 1));
 		if (code == "-h" || code == "--help") {
+#if CONSOLE_TETRIS
 			std::cout << "Usage: " << programName << "\n";
+#endif // D_CONSOLE_TETRIS
 			std::cout << "\t" << programName << " -n" << "\n";
 			std::cout << "\t" << programName << " -m [ <MENU_INDEX> ] " << "\n";
 			std::cout << "\t" << programName << " -s [ <HOST> [ <PORT> ] ] " << "\n";
@@ -36,10 +38,11 @@ int main (int argc, char** argv) {
 			std::cout << "\t-c --client              connect to a host game immediately\n";
 
 			std::cout << "Example: \n";
-			std::cout << "\t" << "Starts a tetris game without a window. \n";
+#if CONSOLE_TETRIS
+			std::cout << "\t" << "Starts a tetris game without a window. \n\n";
 			std::cout << "\t" << programName << " -n\n\n";
+#endif // D_CONSOLE_TETRIS
 			std::cout << "Starts a client game.\n\n";
-			std::cout << "Example: \n";
 			std::cout << "\t" << programName << " -c 192.168.1.1 11155" << std::endl;
 			return 0;
 		}
@@ -84,8 +87,7 @@ int main (int argc, char** argv) {
 			TetrisWindow game(tetrisEntry.getChildEntry("tetris"), menuIndex);
 			game.startLoop();
 		} else {
-			TetrisWindow game(tetrisEntry.getChildEntry("tetris"), 0);
-			game.startLoop();
+			std::cout << "Incorrect argument " << code << "\n";
 		}
 	} else {
 		TetrisWindow game(tetrisEntry.getChildEntry("tetris"), 0);

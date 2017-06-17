@@ -26,6 +26,10 @@ public:
 	void drawStatic() const;
 
 	void drawText() const;
+
+	void updatePoints(int points);
+
+	void updateLevel(int level);
 private:
 	void draw(int x, int y, char key) const;
 
@@ -43,6 +47,7 @@ private:
 	RawTetrisBoard tetrisBoard_;
 	std::string playerName_;
 	int x_, y_;
+	int points_, level_;
 	console::Console* console_;
 };
 
