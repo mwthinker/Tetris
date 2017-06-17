@@ -672,17 +672,20 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 			break;
 		case SDL_MOUSEMOTION:
 			if (windowFollowMouse_ && tetrisEntry_.getDeepChildEntry("window moveWindowByHoldingDownMouse").getBool()) {
+#if SDL_VERSION_ATLEAST(2,0,5)
 				int mouseX, mouseY;
 				SDL_GetGlobalMouseState(&mouseX, &mouseY);
 				SDL_SetWindowPosition(TetrisWindow::getSdlWindow(), lastX_ + mouseX - followMouseX_, lastY_ + mouseY - followMouseY_);
+#endif
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			if (e.button.button == SDL_BUTTON_LEFT) {
 				windowFollowMouse_ = true;
+#if SDL_VERSION_ATLEAST(2,0,5)
 				SDL_GetWindowPosition(mw::Window::getSdlWindow(), &lastX_, &lastY_);
 				SDL_GetGlobalMouseState(&followMouseX_, &followMouseY_);
-				
+#endif
 				if (e.button.clicks == 2 && tetrisEntry_.getDeepChildEntry("window fullscreenOnDoubleClick").getBool()) {
 					TetrisWindow::setFullScreen(!TetrisWindow::isFullScreen());
 					windowFollowMouse_ = false;

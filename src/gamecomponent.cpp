@@ -204,7 +204,7 @@ void GameComponent::soundEffects(GameEvent gameEvent) const {
 		case GameEvent::BLOCK_COLLISION:
 			sound = soundBlockCollision_;
 			break;
-		case GameEvent::PLAYER_ROTATES_BLOCK:
+		case GameEvent::PLAYER_MOVES_BLOCK_ROTATE:
 			break;
 		case GameEvent::ONE_ROW_REMOVED:
 			// Fall through

@@ -93,14 +93,14 @@ void RawTetrisBoard::update(Move move) {
 				block.rotateRight();
 				if (!collision(block)) {
 					current_ = block;
-					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
+					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_ROTATE);
 				}
 				break;
 			case Move::ROTATE_LEFT:
 				block.rotateLeft();
 				if (!collision(block)) {
 					current_ = block;
-					triggerEvent(GameEvent::PLAYER_ROTATES_BLOCK);
+					triggerEvent(GameEvent::PLAYER_MOVES_BLOCK_ROTATE);
 				}
 				break;
 			case Move::DOWN_GRAVITY:

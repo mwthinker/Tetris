@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(MWetris)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SdlGui/MwLibrary2/cmake/Modules/)
-
 if (MSVC)
 	# Exception handler model.
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
@@ -27,12 +26,6 @@ set(SOURCES
 	src/color.h
 	src/computer.cpp
 	src/computer.h
-	src/consolegraphic.cpp
-	src/consolegraphic.h
-	src/consolekeyboard.cpp
-	src/consolekeyboard.h
-	src/consoletetris.cpp
-	src/consoletetris.h
 	src/definitions.h
 	src/device.h
 	src/drawblock.cpp
@@ -84,7 +77,16 @@ set(SOURCES
 	src/tetriswindow.cpp
 	src/tetriswindow.h
 )
-	
+
+set(SOURCES_CONSOLE
+	src/consolegraphic.cpp
+	src/consolegraphic.h
+	src/consolekeyboard.cpp
+	src/consolekeyboard.h
+	src/consoletetris.cpp
+	src/consoletetris.h
+)
+
 # End of source files.
 
 find_package(SDL2 REQUIRED)
@@ -104,7 +106,13 @@ add_subdirectory(SdlGui)
 add_subdirectory(Calculator)
 add_subdirectory(SimpleNetwork)
 add_subdirectory(TetrisEngine)
-add_subdirectory(rlutil)
+
+option(ConsoleTetris "Console tetris is added" ON)
+
+if (ConsoleTetris)
+	add_definitions(-DCONSOLE_TETRIS)
+	add_subdirectory(CppConsole)
+endif ()
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
@@ -123,10 +131,25 @@ include_directories(
 	DataEntry/TinyXML2/src
 	Calculator/src
 	TetrisEngine/src
-	rlutil/src
 )
 
-add_executable(MWetris ${SOURCES})
+if (ConsoleTetris)
+	if (MSVC)
+		set(CONSOLE_LIB Console)
+	else ()
+		find_package(Curses REQUIRED)
+		set(CONSOLE_LIB Console ${CURSES_LIBRARIES})
+		include_directories(${CURSES_INCLUDE_DIR})
+	endif ()
+
+	include_directories(
+		CppConsole/src
+	)
+	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE})
+else ()
+	set(ConsoleTest OFF)
+	add_executable(MWetris ${SOURCES})
+endif ()
 
 if (MSVC)
 	set_target_properties(MWetris PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt")
@@ -137,7 +160,7 @@ target_link_libraries(MWetris
 	Calculator
 	TinyXML2
 	DataEntry
-	rlutil
+	${CONSOLE_LIB}
 	SimpleNetwork
 	MwLibrary2
 	Signal

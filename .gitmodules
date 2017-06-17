@@ -13,3 +13,6 @@
 [submodule "SimpleNetwork"]
 	path = SimpleNetwork
 	url = https://github.com/mwthinker/SimpleNetwork.git
+[submodule "CppConsole"]
+	path = CppConsole
+	url = https://github.com/mwthinker/CppConsole.git

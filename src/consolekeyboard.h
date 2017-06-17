@@ -3,11 +3,13 @@
 
 #include "device.h"
 
+#include <console/console.h>
+
 #include <string>
 
 class ConsoleKeyboard : public Device {
 public:
-	ConsoleKeyboard(std::string name, char down, char left, char right, char rotate, char downGround);
+	ConsoleKeyboard(std::string name, console::Key down, console::Key left, console::Key right, console::Key rotate, console::Key downGround);
 
 	inline Input currentInput() override {
 		return input_;
@@ -25,33 +27,12 @@ public:
 		playerName_ = playerName;
 	}
 
-	void eventUpdate(char key, double time);
+	void eventUpdate(const console::ConsoleEvent& consoleEvent);
 
 private:
-	class Key {
-	public:
-		Key(char key) : key_(key), pressedUntilTime_(0) {
-		}
+	std::string name_, playerName_;	
+	console::Key down_, right_, left_, rotate_, downGround_;
 
-		bool isPressed(char key, double time) {
-			if (key == key_) {
-				pressedUntilTime_ = time + 0.02;
-			}
-
-			if (time < pressedUntilTime_) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-	private:
-		char key_;
-		double pressedUntilTime_;
-	};
-
-	std::string name_, playerName_;
-	Key down_, right_, left_, rotate_, downGround_;
 	Input input_;
 };
 

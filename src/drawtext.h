@@ -26,4 +26,5 @@ private:
 
 	float lowX_, lowY_;
 };
+
 #endif // DRAWTEXT_H

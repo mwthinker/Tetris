@@ -319,7 +319,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
 			// Fall through!
-		case GameEvent::PLAYER_ROTATES_BLOCK:
+		case GameEvent::PLAYER_MOVES_BLOCK_ROTATE:
 			// Fall through!		
 		case GameEvent::PLAYER_MOVES_BLOCK_LEFT:
 			// Fall through!

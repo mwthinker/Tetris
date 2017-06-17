@@ -10,72 +10,210 @@
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
 
-#include <rlutil.h>
+#include <algorithm>
+
+using namespace console;
 
 ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
 	tetrisEntry_(tetrisEntry),
-	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", rlutil::KEY_DOWN, rlutil::KEY_LEFT, rlutil::KEY_RIGHT, rlutil::KEY_UP, '-')),
-	mode_(MENU) {
+	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::KEY_DELETE)),
+	keyboard2_(std::make_shared<ConsoleKeyboard>("Keyboard 2", console::Key::KEY_S, console::Key::KEY_A, console::Key::KEY_D, console::Key::KEY_W, console::Key::KEY_Q)),
+	mode_(MENU), option_(GAME),
+	humanPlayers_(1) {
 
 	tetrisGame_.addCallback(std::bind(&ConsoleTetris::handleConnectionEvent, this, std::placeholders::_1));
 }
 
-void ConsoleTetris::startLoop() {
-	rlutil::hidecursor();
-	rlutil::saveDefaultColor();
-	rlutil::setColor(2);
-	printf("MWetris, Use arrow to move, ESC to quit.\n");
-
-	auto time = std::chrono::high_resolution_clock::now();
-	
-
-	// Initialization local game settings.
-	std::vector<DevicePtr> devices_ = {keyboard1_, std::make_shared<Computer>()};
-	tetrisGame_.setPlayers(devices_);
-	tetrisGame_.createLocalGame();
-
-	double gameTime = 0;
-
-	while (mode_ != QUIT) {
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> delta = currentTime - time;
-		gameTime += delta.count();
-
-		rlutil::cls();
-		update(delta.count(), gameTime);
-		time = currentTime;
-
-		rlutil::msleep(10);
+void ConsoleTetris::initPreLoop() {
+	auto aiEntry = tetrisEntry_.getDeepChildEntry("activeGames ais player");
+	ais_.clear();
+	while (aiEntry.hasData()) {
+		ais_.push_back(aiEntry.getAi());
+		aiEntry = aiEntry.getSibling("player");
 	}
 
-	rlutil::cls();
-	rlutil::resetColor();
-	rlutil::showcursor();
+	Console::setCursorVisibility(false);
+	printMainMenu();
 }
 
-void ConsoleTetris::printMenu() {
-	rlutil::setColor(rlutil::WHITE);
+void ConsoleTetris::printGameMenu() {
+	Console::setTextColor(console::Color::RED);
+	Console::setBackgroundColor(console::Color::BLACK);
+	print("Menu [Key 1]    Restart [Key 2]    Human -/+ [Key 3/4]    AI -/+ [Key 5/6]    Pause [P]");
+}
 
-	draw(2, 2, "MWetris");
-	draw(5, 7, "Play [1]");
-	draw(5, 8, "Custom play [2]");
-	draw(5, 9, "Network game [3]");
-	draw(5, 10, "Highscore [4]");
-	draw(5, 11, "Exit [ESQ]");
+void ConsoleTetris::printGame() {
+	clear();
+	printGameMenu();
+	for (auto& player : graphicPlayers_) {
+		player.second.drawStatic();
+	}
+}
+
+void ConsoleTetris::update(double deltaTime) {
+	switch (mode_) {
+		case GAME:
+			tetrisGame_.update(deltaTime);
+			break;
+	}
+	sleep(1.0 / 60.0);
+}
+
+void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
+	switch (consoleEvent.type) {
+		case console::ConsoleEventType::KEYDOWN:
+			switch (consoleEvent.keyEvent.key) {
+				case console::Key::ESCAPE: // Fall through.
+					mode_ = QUIT;
+					quit();
+					break;
+			}
+			break;
+	}
+
+	switch (mode_) {
+		case GAME:
+			switch (consoleEvent.type) {
+				case console::ConsoleEventType::KEYDOWN:
+					switch (consoleEvent.keyEvent.key) {
+						case console::Key::KEY_1:
+							mode_ = MENU;
+							printMainMenu();
+							break;
+						case console::Key::KEY_2:
+							restartCurrentGame();
+							break;
+						case console::Key::KEY_3:
+							humanPlayers_ = (humanPlayers_ + 2) % 3; // Remove one human player.
+							restartCurrentGame();
+							break;
+						case console::Key::KEY_4:
+							humanPlayers_ = (humanPlayers_ + 1) % 3; // Add a human player by one.
+							restartCurrentGame();
+							break;
+						case console::Key::KEY_P:
+							tetrisGame_.pause();
+							break;
+					}
+					break;
+				case console::ConsoleEventType::CONSOLERESIZE:
+					switch (mode_) {
+						case MENU:
+							printMainMenu();
+							break;
+						case GAME:
+							printGame();
+							break;
+						case QUIT:
+							break;
+						default:
+							break;
+					}
+					break;
+			}
+
+			keyboard1_->eventUpdate(consoleEvent);
+			keyboard2_->eventUpdate(consoleEvent);
+			break;
+		case MENU:
+			switch (consoleEvent.type) {
+				case console::ConsoleEventType::KEYDOWN:
+					switch (consoleEvent.keyEvent.key) {
+						case console::Key::KEY_1:
+							option_ = GAME;
+							execute(option_);
+							break;
+						case console::Key::KEY_2:
+							option_ = CUSTOM_GAME;
+							execute(option_);
+							break;
+						case console::Key::KEY_3:
+							option_ = NETWORK_GAME;
+							execute(option_);
+							break;
+						case console::Key::KEY_4:
+							option_ = HIGHSCORE;
+							execute(option_);
+							break;
+						case console::Key::DOWN:
+							moveMenuDown();
+							break;
+						case console::Key::UP:
+							moveMenuUp();
+							break;
+						case console::Key::RETURN:
+							execute(option_);
+							break;
+					}
+					break;
+			}
+			break;
+	}
+}
+
+void ConsoleTetris::restartCurrentGame() {
+	// Initialization local game settings.	
+	std::vector<DevicePtr> devices;
+	if (humanPlayers_ == 1) {
+		devices.push_back(keyboard1_);
+	} else if (humanPlayers_ == 2) {
+		devices.push_back(keyboard1_);
+		devices.push_back(keyboard2_);
+	}
+	tetrisGame_.setPlayers(devices);
+	tetrisGame_.createLocalGame();
+}
+
+void ConsoleTetris::printMainMenu() {
+	clear();
+	Console::setTextColor(console::Color::RED);
+	Console::setBackgroundColor(console::Color::BLACK);
+	print("MWetris, Use arrow to move, ESC to quit.");
+	draw(2, 2, "MWetris", console::Color::WHITE);
+	draw(5, 7, "Play [1]", GAME == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 8, "Custom play [2]", CUSTOM_GAME == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 9, "Network game [3]", NETWORK_GAME == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 10, "Highscore [4]", HIGHSCORE == option_ ? console::Color::RED : console::Color::WHITE);
+	draw(5, 11, "Exit [ESQ]", QUIT == option_ ? console::Color::RED : console::Color::WHITE);
 }
 
 void ConsoleTetris::draw(int x, int y, std::string text) {
-	rlutil::locate(x, y);
-	std::cout << text;
+	setCursorPosition(x, y);
+	print(text);
+}
+
+void ConsoleTetris::draw(int x, int y, std::string text, console::Color color) {
+	setTextColor(color);
+	setBackgroundColor(console::Color::BLACK);
+	setCursorPosition(x, y);
+	print(text);
+}
+
+void ConsoleTetris::drawClear(int x, int y, std::string text, console::Color color) {
+	std::string remove;
+	for (char key : text) {
+		remove += " ";
+	}
+	setTextColor(color);
+	setCursorPosition(x, y);
+	print(remove);
+	setCursorPosition(x, y);
+	print(text);
 }
 
 void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
+	try {
+		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
+		graphicPlayers_[levelChange.player_->getId()].updateLevel(levelChange.newLevel_);
+		return;
+	} catch (std::bad_cast exp) {}
+
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 
 		return;
 	} catch (std::bad_cast exp) {}
-
+	
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
 
@@ -92,10 +230,13 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
 		graphicPlayers_.clear();
 
+		int delta = 2;
 		for (auto& player : initGameVar.players_) {
 			auto& graphic = graphicPlayers_[player->getId()];
-			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"));
+			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2, this);
+			delta += graphic.getWidth();
 		}
+		printGame();
 
 		return;
 	} catch (std::bad_cast exp) {}
@@ -114,46 +255,40 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	} catch (std::bad_cast exp) {}
 }
 
-void ConsoleTetris::update(double deltaTime, double time) {
-	switch (mode_) {
-		case GAME:
-			{
-				int delta = 2;
-				for (auto& pair : graphicPlayers_) {
-					ConsoleGraphic& graphic = pair.second;
-					graphic.draw(deltaTime, delta, 2);
-					delta += graphic.getWidth();
-				}
-			}
-			tetrisGame_.update(deltaTime);
+void ConsoleTetris::moveMenuDown() {
+	int nbr = (int) option_;
+	++nbr;
+	if (nbr >= ENUM_SIZE) {
+		option_ = (Mode) 1;
+	} else {
+		option_ = (Mode) nbr;
+	}
+	printMainMenu();
+}
 
-			if (kbhit()) {
-				char key = rlutil::getkey();
-				
-				keyboard1_->eventUpdate(key, time);
+void ConsoleTetris::moveMenuUp () {
+	int nbr = (int) option_;
+	--nbr;
+	if (nbr <= 0) {
+		option_ = (Mode) (ENUM_SIZE - 1);
+	} else {
+		option_ = (Mode) nbr;
+	}
+	printMainMenu();
+}
 
-				if (key == rlutil::KEY_ESCAPE) {
-					mode_ = QUIT;
-				}
-			}
-			break;
-		case MENU:
-			printMenu();
-
-			if (kbhit()) {
-				char key = rlutil::getkey();
-
-				switch (key) {
-					case '1':
-						mode_ = GAME;
-						break;
-					case rlutil::KEY_ESCAPE:
-						mode_ = QUIT;
-						break;
-					default:
-						break;
-				}
-			}
-			break;
+void ConsoleTetris::execute(Mode option) {
+	clear();
+	switch (option) {
+	case GAME:
+		mode_ = GAME;
+		restartCurrentGame();
+		break;
+	case QUIT:
+		mode_ = QUIT;
+		quit();
+		break;
+	default:
+		break;
 	}
 }
