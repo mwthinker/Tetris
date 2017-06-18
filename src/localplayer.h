@@ -42,6 +42,10 @@ public:
 		level_ = level;
 	}
 
+	inline void setPoints(int points) {
+		points_ = points;
+	}
+
 	inline void setConnectionId(int connectionId) {
 		connectionId_ = connectionId;
 	}
@@ -55,14 +59,14 @@ private:
 
 	void boardListener(GameEvent, const TetrisBoard&);
 
-    // Objects controling how the moving block is moved.
+    // Objects controlling how the moving block is moved.
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_, downGroundHandler_;
 	int nbrOfUpdates_;
     DevicePtr device_;
 	PacketSender& sender_;
 	int levelUpCounter_;
 	int connectionId_;
-	float watingTime_;
+	double watingTime_;
 };
 
 #endif // LOCALPLAYER_H

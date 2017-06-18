@@ -209,20 +209,23 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	} catch (std::bad_cast exp) {}
 
 	try {
-		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
+		auto& pointsChange = dynamic_cast<PointsChange&>(tetrisEvent);
+		graphicPlayers_[pointsChange.player_->getId()].updateLevel(pointsChange.newPoints_);
+		return;
+	} catch (std::bad_cast exp) {}
 
+	try {
+		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 		return;
 	} catch (std::bad_cast exp) {}
 	
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
-
 		return;
 	} catch (std::bad_cast exp) {}
 
 	try {
 		auto& newConnection = dynamic_cast<NewConnection&>(tetrisEvent);
-
 		return;
 	} catch (std::bad_cast exp) {}
 
@@ -237,7 +240,6 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			delta += graphic.getWidth();
 		}
 		printGame();
-
 		return;
 	} catch (std::bad_cast exp) {}
 

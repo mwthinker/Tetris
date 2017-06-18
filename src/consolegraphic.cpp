@@ -47,7 +47,6 @@ void ConsoleGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoar
 	case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
 	case GameEvent::GRAVITY_MOVES_BLOCK:
 		drawBoard();
-		drawText();
 		break;
 	case GameEvent::NEXT_BLOCK_UPDATED:
 		drawNextBlock();

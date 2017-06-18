@@ -1,5 +1,5 @@
-#ifndef CUMPUTER_H
-#define CUMPUTER_H
+#ifndef COMPUTER_H
+#define COMPUTER_H
 
 #include "device.h"
 #include "block.h"
@@ -44,4 +44,4 @@ private:
 	std::string playerName_;
 };
 
-#endif // CUMPUTER_H
+#endif // COMPUTER_H

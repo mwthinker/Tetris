@@ -11,8 +11,6 @@ Player::Player(int id, int width, int height, int points, int level, Block curre
 
 }
 
-mw::signals::Connection Player::addGameEventListener(
-	const std::function<void(GameEvent, const TetrisBoard&)>& callback) {
-
+mw::signals::Connection Player::addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback) {
 	return tetrisBoard_.addGameEventListener(callback);
 }

@@ -68,19 +68,15 @@ void LocalPlayer::update(Move move) {
 void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 	switch (gameEvent) {
 		case GameEvent::ONE_ROW_REMOVED:
-			points_ += level_;
 			watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::TWO_ROW_REMOVED:
-			points_ += level_ * 2 * 2;
 			watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::THREE_ROW_REMOVED:
-			points_ += level_ * 3 * 3;
 			watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
-			points_ += level_ * 4 * 4;
 			watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
