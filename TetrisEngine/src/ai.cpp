@@ -2,17 +2,14 @@
 
 namespace {
 
-	// Calculates and returns all possible states from the point of view from the block provided.
-	// The algorithm rotates and goes left or right with the block which then fall to the ground.
-	// I.e. The possible state.
+	// Calculate and return all possible states from the point of view from the block provided.
 	std::vector<Ai::State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block, int removeRows) {
 		std::vector<Ai::State> states;
+		
 		// Valid block position?
 		if (!board.collision(block)) {
-			Ai::State state;
-
 			// Go through all rotations for the block.
-			for (int rotations = 0; rotations <= block.getNumberOfRotations(); ++rotations, block.rotateLeft()) {
+			for (int rotationLeft = 0; rotationLeft <= block.getNumberOfRotations(); ++rotationLeft, block.rotateLeft()) {
 				// Go left.
 				Block horizontal = block;
 				horizontal.moveLeft();
@@ -27,7 +24,7 @@ namespace {
 						++stepsDown;
 						vertical.moveDown();
 					}
-					states.push_back(Ai::State(stepsDown, stepsLeft, rotations));
+					states.emplace_back(stepsLeft, rotationLeft);
 
 					++stepsLeft;
 					horizontal.moveLeft();
@@ -45,7 +42,7 @@ namespace {
 						++stepsDown;
 						vertical.moveDown();
 					}
-					states.push_back(Ai::State(stepsDown, stepsLeft, rotations));
+					states.emplace_back(stepsLeft, rotationLeft);
 
 					--stepsLeft;
 					horizontal.moveRight();
@@ -111,129 +108,6 @@ namespace {
 		return calculator.excecute(cache);
 	}
 
-	float calculateValue(RawTetrisBoard& board, const Block& block, int removeRows) {
-		int lowestRow = board.getRows();
-		int columns = board.getColumns();
-		float meanHeight = 0;
-		int nbrOfSquares = 0;
-
-		// Aggregate Height and bumpiness.
-		float aggregateHeight = 0.0;
-		float bumpiness = 0.0;
-		for (int column = 0; column < columns; ++column) {
-			int lastHeight = 0;
-			for (int row = lowestRow - 1; row >= 0; --row) {
-				bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
-				if (board.getBlockType(row, column) != BlockType::EMPTY) {
-					aggregateHeight += row + 1;
-					if (column > 0) { // Ignore first column.
-						//bumpiness += std::abs(lastHeight - aggregateHeight);
-					}
-					lastHeight = aggregateHeight;
-					continue;
-				}
-			}
-		}
-
-		// Complete lines.
-		float completeLines = removeRows;
-		if (completeLines > 0) {
-			//std::cout << "\n------------------------ " << completeLines << " ------------------------------------\n";
-
-		}
-		/*for (int row = lowestRow - 1; row >= 0; --row) {
-		int nbr = 0;
-		for (int column = 0; column < columns; ++column) {
-		if (board.getBlockType(row, column) != BlockType::EMPTY) {
-		++nbr;
-		if (nbr == columns) {
-		completeLines += 1;
-		}
-		continue;
-		}
-		}
-		}*/
-
-		// Holes.
-		float holes = 0;
-		for (int column = 0; column < columns && completeLines < 4; ++column) {
-			bool upperSquare = false;
-			for (int row = lowestRow - 1; row >= 0; --row) {
-				if (board.getBlockType(row, column) != BlockType::EMPTY) {
-					upperSquare = true;
-				} else if (upperSquare) {
-					++holes;
-				}
-			}
-		}
-
-		//return -100 * aggregateHeight + 0.760666f * completeLines - 10 * holes - 1 * bumpiness;
-		return -0.510066f * aggregateHeight + 0.760666f * completeLines - 0.35663f * holes - 0.184483f * bumpiness;
-	}
-
-	
-
-	/*
-	// Find the best state for the block to move.
-	Ai::State calculateBestState(RawTetrisBoard board, int depth, int removeRows) {
-		if (depth != 0) {
-			std::vector<Ai::State> states = calculateAllPossibleStates(board, board.getBlock(), removeRows);
-
-			float highestValue = -100000;
-			int hIndex = -1;
-			for (unsigned int index = 0; index < states.size(); ++index) {
-				Ai::State state = states[index];
-				RawTetrisBoard childBoard = board;
-
-				for (int i = 0; i < state.rotations_; ++i) {
-					childBoard.update(Move::ROTATE_LEFT);
-				}
-
-				while (state.left_ != 0) {
-					if (state.left_ < 0) {
-						childBoard.update(Move::RIGHT);
-						++state.left_;
-					} else if (state.left_ > 0) {
-						childBoard.update(Move::LEFT);
-						--state.left_;
-					}
-				}
-
-				// Move down the block and stop just before impact.
-				for (int i = 0; i < state.down_ - 1; ++i) {
-					childBoard.update(Move::DOWN_GRAVITY);
-				}
-				// Save the current block before impact.
-				Block block = childBoard.getBlock();
-				// Impact, the block is now a part of the board.
-				childBoard.update(Move::DOWN_GRAVITY);
-
-				if (depth > 1) {
-					calculateBestState(childBoard, depth - 1, childBoard.getRemovedRows() - board.getRemovedRows() + removeRows);
-					float value = calculateValue(childBoard, block, childBoard.getRemovedRows() - board.getRemovedRows() + removeRows);
-
-					if (value > highestValue) {
-						hIndex = index;
-						highestValue = value;
-					}
-				} else {
-					float value = calculateValue(childBoard, block, childBoard.getRemovedRows() - board.getRemovedRows() + removeRows);
-
-					if (value > highestValue) {
-						hIndex = index;
-						highestValue = value;
-					}
-				}
-			}
-
-			if (hIndex >= 0) {
-				return states[hIndex];
-			}
-		}
-		return Ai::State();
-	}
-	*/
-
 } // Anonymous namespace.
 
 Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
@@ -242,61 +116,54 @@ Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
 
 // Find the best state for the block to move.
 Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth, int removeRows) {
+	Ai::State bestState;
+
 	if (depth != 0) {
 		std::vector<Ai::State> states = calculateAllPossibleStates(board, board.getBlock(), removeRows);
 
-		double highestValue = -100000;
-		int hIndex = -1;
-		for (unsigned int index = 0; index < states.size(); ++index) {
-			Ai::State state = states[index];
+		for (const Ai::State state : states) {
 			RawTetrisBoard childBoard = board;
 
-			for (int i = 0; i < state.rotations_; ++i) {
+			// Rotate.
+			for (int i = 0; i < state.rotationLeft_; ++i) {
 				childBoard.update(Move::ROTATE_LEFT);
 			}
-
-			while (state.left_ != 0) {
-				if (state.left_ < 0) {
-					childBoard.update(Move::RIGHT);
-					++state.left_;
-				} else if (state.left_ > 0) {
-					childBoard.update(Move::LEFT);
-					--state.left_;
-				}
+			
+			// Move left if is is possible.
+			for (int i = 0; i < state.left_; ++i) {
+				childBoard.update(Move::LEFT);
+			}
+			// Move right if is is possible.
+			for (int i = 0; i < -1 * state.left_; ++i) {
+				childBoard.update(Move::RIGHT);
 			}
 
 			// Move down the block and stop just before impact.
-			for (int i = 0; i < state.down_ - 1; ++i) {
-				childBoard.update(Move::DOWN_GRAVITY);
-			}
+			childBoard.update(Move::DOWN_GROUND);
 			// Save the current block before impact.
 			Block block = childBoard.getBlock();
 			// Impact, the block is now a part of the board.
 			childBoard.update(Move::DOWN_GRAVITY);
 
 			if (depth > 1) {
-				calculateBestState(childBoard, depth - 1, removeRows);
-				double value = calculateValue(calculator_, cache_, childBoard, block);
+				State childState = calculateBestState(childBoard, depth - 1, removeRows);
 
-				if (value > highestValue) {
-					hIndex = index;
-					highestValue = value;
+				if (childState.value_ > bestState.value_) {
+					bestState = state;
+					// Only updating the value from the child.
+					bestState.value_ = childState.value_;
 				}
 			} else {
-				double value = calculateValue(calculator_, cache_, childBoard, block);
+				float value = calculateValue(calculator_, cache_, childBoard, block);
 
-				if (value > highestValue) {
-					hIndex = index;
-					highestValue = value;
+				if (value > bestState.value_) {
+					bestState = state;
+					bestState.value_ = value;
 				}
 			}
 		}
-
-		if (hIndex >= 0) {
-			return states[hIndex];
-		}
 	}
-	return Ai::State();
+	return bestState;
 }
 
 void Ai::initCalculator() {

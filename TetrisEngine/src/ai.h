@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 
 #include "calc/calculator.h"
 #include "rawtetrisboard.h"
@@ -10,7 +11,7 @@
 class Ai {
 public:
 	inline Ai() : name_("DefaultAi") {
-		valueFunction_ = "~5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight";
+		valueFunction_ = "-5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight";
 		initCalculator();
 	}
 
@@ -35,15 +36,15 @@ public:
 	}
 
 	struct State {
-		State() : down_(0), left_(0), rotations_(0) {
+		State() : left_(0), rotationLeft_(0), value_(std::numeric_limits<float>::lowest()){
 		}
 
-		State(int down, int left, int rotations) : down_(down), left_(left), rotations_(rotations) {
+		State(int left, int rotations) : left_(left), rotationLeft_(rotations), value_(std::numeric_limits<float>::lowest()) {
 		}
 
-		int down_;
 		int left_;
-		int rotations_;
+		int rotationLeft_;
+		float value_;
 	};
 
 	Ai::State calculateBestState(RawTetrisBoard board, int depth);

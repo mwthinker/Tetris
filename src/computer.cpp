@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <future>
-#include <iostream>
 
 namespace {
 
@@ -62,8 +61,8 @@ void Computer::update(const TetrisBoard& board) {
 			latestState_.left_ = 0;
 		}
 
-		if (latestState_.rotations_ == current.getCurrentRotation() - latestBlock_.getCurrentRotation()) {
-			latestState_.rotations_ = 0;
+		if (latestState_.rotationLeft_ == current.getCurrentRotation() - latestBlock_.getCurrentRotation()) {
+			latestState_.rotationLeft_ = 0;
 		}
 
 		input_ = calculateInput(latestState_);
@@ -73,7 +72,7 @@ void Computer::update(const TetrisBoard& board) {
 // Calculate and return the best input to achieve the current state.
 Input Computer::calculateInput(Ai::State state) const {
 	Input input;
-	if (state.rotations_ > 0) {
+	if (state.rotationLeft_ > 0) {
 		input.rotate_ = !input_.rotate_;
 	}
 	if (state.left_ > 0) {
@@ -81,7 +80,7 @@ Input Computer::calculateInput(Ai::State state) const {
 	} else if (state.left_ < 0) {
 		input.right_ = true;
 	}
-	if (state.left_ == 0 && state.rotations_ == 0) {
+	if (state.left_ == 0 && state.rotationLeft_ == 0) {
 		input.down_ = true;
 	}
 	return input;

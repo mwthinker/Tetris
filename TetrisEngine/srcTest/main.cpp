@@ -57,7 +57,6 @@ int main(int argc, char** argv) {
 		if (GameEvent::BLOCK_COLLISION == gameEvent) {
 			newBlock = true;
 			board.updateNextBlock(randomBlockType());
-			//std::this_thread::sleep_for(250ms);
 		}
 	});
 
@@ -68,7 +67,7 @@ int main(int argc, char** argv) {
 			std::cout << "Turns : " << board.getNbrOfUpdates() << "\n";
 			printBoard(board);
 
-			for (int i = 0; i < state.rotations_; ++i) {
+			for (int i = 0; i < state.rotationLeft_; ++i) {
 				board.update(Move::ROTATE_LEFT);
 			}
 
