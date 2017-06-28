@@ -2,7 +2,6 @@
 #include "tetrisgame.h"
 #include "gamegraphic.h"
 #include "tetrisparameters.h"
-#include "tetrisentry.h"
 #include "tetrisgameevent.h"
 #include "tetrisdata.h"
 

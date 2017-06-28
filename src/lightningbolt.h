@@ -2,7 +2,6 @@
 #define LIGHTNINGBOLT_H
 
 #include "mat44.h"
-#include "tetrisentry.h"
 #include "lightningvertexdata.h"
 #include "random.h"
 
@@ -10,6 +9,7 @@
 #include <mw/vertexdata.h>
 
 #include <memory>
+#include <list>
 
 inline Vec2 operator*(const Mat44& m, Vec2 p) {
 	return Vec2(p.x_ * m(0, 0) + p.y_ * m(0, 1) + m(0, 3), p.x_ * m(1, 0) + p.y_ * m(1, 1) + m(1, 3));

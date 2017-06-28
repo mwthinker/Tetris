@@ -2,7 +2,6 @@
 #define LIGHTNINGBOLTCLUSTER_H
 
 #include "lightningbolt.h"
-#include "tetrisentry.h"
 #include "random.h"
 
 #include <mw/buffer.h>

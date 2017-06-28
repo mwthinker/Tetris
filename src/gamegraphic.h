@@ -21,6 +21,7 @@
 #include <mw/vertexbufferobject.h>
 #include <mw/signal.h>
 #include <mw/buffer.h>
+#include <mw/sound.h>
 
 #include <gui/component.h>
 

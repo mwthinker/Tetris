@@ -1,7 +1,6 @@
 #ifndef DRAWBLOCK_H
 #define DRAWBLOCK_H
 
-#include "tetrisentry.h"
 #include "boardvertexdata.h"
 #include "tetrisboard.h"
 #include "boardshader.h"
