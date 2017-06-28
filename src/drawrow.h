@@ -2,7 +2,6 @@
 #define DRAWROW_H
 
 #include "boardvertexdata.h"
-#include "tetrisentry.h"
 #include "player.h"
 #include "boardshader.h"
 
@@ -13,7 +12,7 @@ using DrawRowPtr = std::shared_ptr<DrawRow>;
 
 class DrawRow : public BoardVertexData {
 public:
-	DrawRow(TetrisEntry spriteEntry, const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
+	DrawRow(const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 	inline int getRow() const {
 		return row_;

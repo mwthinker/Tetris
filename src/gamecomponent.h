@@ -2,7 +2,6 @@
 #define GAMECOMPONENT_H
 
 #include "gamegraphic.h"
-#include "tetrisentry.h"
 #include "boardshader.h"
 #include "lightningshader.h"
 
@@ -21,7 +20,7 @@ class TetrisGameEvent;
 
 class GameComponent : public gui::Component {
 public:
-	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
+	GameComponent(TetrisGame& tetrisGame);
 	~GameComponent();
 	
 	// @gui::Component
@@ -44,7 +43,6 @@ private:
 	BoardShader boardShader_;
 	LightningShader lightningShader_;
 	
-	TetrisEntry tetrisEntry_;
 	TetrisGame& tetrisGame_;
 
 	mw::Sound soundBlockCollision_;

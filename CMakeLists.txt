@@ -68,14 +68,14 @@ set(SOURCES
 	src/remoteplayer.cpp
 	src/remoteplayer.h
 	src/sdldevice.h
-	src/tetrisentry.cpp
-	src/tetrisentry.h
+	src/tetrisdata.cpp
+	src/tetrisdata.h
 	src/tetrisgame.cpp
 	src/tetrisgame.h
 	src/tetrisgameevent.h
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
-	src/tetriswindow.h
+	src/tetriswindow.h 
 )
 
 set(SOURCES_CONSOLE
@@ -131,6 +131,7 @@ include_directories(
 	DataEntry/TinyXML2/src
 	Calculator/src
 	TetrisEngine/src
+	nlohmann-json/src
 )
 
 if (ConsoleTetris)

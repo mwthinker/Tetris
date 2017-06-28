@@ -51,9 +51,7 @@ private:
 		}
 
 		mw::Sprite extractSprite(TetrisEntry entry) const;
-
 		mw::Sound extractSound(TetrisEntry entry) const;
-
 		mw::Music extractMusic(TetrisEntry entry) const;
 
 		mw::Font loadFont(std::string file, unsigned int fontSize) const;

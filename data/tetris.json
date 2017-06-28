@@ -1,0 +1,211 @@
+{
+	"window": {
+		"fullscreenOnDoubleClick": true,
+		"border": true,
+		"moveWindowByHoldingDownMouse": false,
+		"vsync": false,
+		"bar": {
+			"height": 35,
+			"color": "0.5 0 0 0.3)"
+		},
+		"label": {
+			"textColor": "1 1 1",
+			"backgroundColor": "1 1 1 0"
+		},
+		"checkBox": {
+			"textColor": "1 1 1",
+			"backgroundColor": "1 1 1 1",
+			"checkColor": "0 1 0 1",
+			"boxColor": "1 1 1 1",
+			"boxImage": "images/box.png",
+            "checkImage": "images/check.png"
+		},
+		"button": {
+            "focusColor": ".8 .1 0 .3",
+            "textColor": "1 0.1 0.1",
+            "hoverColor": ".6 .1 .1",
+            "pushColor": ".8 .0 0 .7",
+            "backgroundColor": "0 0 0 0",
+            "borderColor": "0 0 0 0"
+		},
+        "font": "fonts/Ubuntu-B.ttf",
+        "width": 450,
+        "height": 400,
+        "positionX": 796,
+        "positionY": 333,
+        "maximized": false,
+		"resizeable": true,
+		"minWidth": 480,
+        "minHeight": 480,
+        "icon": "images/icon.bmp",
+		"sounds": {
+            "buttonPush": "",
+            "blockCollision": "sounds/blockCollision.wav",
+            "rowRemoved": "sounds/puff.wav",
+            "tetris": "sounds/tetris.wav",
+            "highscore": ""
+		},
+        "sprites": {
+            "background": "images/background.png",
+            "computer": "images/computer.png",
+            "human": "images/human.png",
+            "cross": "images/cross.png",
+            "zoom": "images/signs.png"
+		},
+		"tetrisBoard": {
+			"font": "fonts/Ubuntu-B.ttf",
+			"squareSize": 10,
+			"borderSize": 5,
+			"sprites": {
+				"halfCircle": "images/half_circle.png",
+				"lineSegment": "images/lightning_segment.png",
+				"squareZ": "images/Z.png",
+				"squareS": "images/S.png",
+				"squareJ": "images/J.png",
+				"squareI": "images/I.png",
+				"squareL": "images/L.png",
+				"squareT": "images/T.png",
+				"squareO": "images/O.png",
+				"borderHorizontal": "images/border1.png",
+				"borderVertical": "images/border2.png",
+				"borderLeftUp": "images/border3.png",
+				"borderRightUp": "images/border4.png",
+				"borderDownRight": "images/border5.png",
+				"borderDownLeft": "images/border6.png"
+			},
+			"borderColor": "0.5 0 0 1",
+			"startAreaColor": "0.64 0.16 0.24 0.5",
+			"outerSquareColor": "0.64 0.04 0.09 0.6",
+			"innerSquareColor": "0.08 0.02 0.03 0.1",
+			"playerAreaColor": "0.4 0.1 0.15 0.5"
+		}
+	},
+	"game": {
+		"maxNbrAis": 4,
+		"maxNbrHumans":4
+	},
+	"players": {
+		"humans": [
+			{
+				"name": "Player 1",
+				"device": "Keyboard 1"
+			},
+			{
+				"name": "Player 2",
+				"device": "Keyboard 2"
+			}
+		],
+		"ais": [
+			{
+				"name": "Default2",
+				"valueFunction": "-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight"
+			},
+			{
+				"name": "Defensive",
+				"valueFunction": "5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
+			},
+			{
+				"name": "Worthless",
+				"valueFunction": "-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
+			}
+		]
+	},    
+    "highscore": [
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		},
+		{
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
+		}
+	],
+	"activeGames": {
+		"localGame": {
+			"rows": 24,
+			"columns": 10,
+			"players": [
+				{
+					"name": "",
+					"nextBlockType": "S",
+					"levelUpCounter": 0,
+					"ai": false,
+					"level": 1,
+					"points": 10,
+					"currentBlock": {
+						"bottomRow": 6,
+						"blockType": "J",
+						"leftColumn": 6,
+						"currentRotation": 2
+					},
+					"board": "IZZZZZZEOOZZZZZZZEOOEEEZZZZEEIEEEEZZEEEIEEEEEEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+					"device": {
+						"name": "Keyboard 1",
+						"ai": 0
+					}
+				},
+				{
+					"name": "DefaultAi",
+					"nextBlockType": "T",
+					"levelUpCounter": 0,
+					"ai": true,
+					"level": 1,
+					"points": 10,
+					"currentBlock": {
+						"bottomRow": 17,
+						"blockType": "O",
+						"leftColumn": 7,
+						"currentRotation": 0
+					},
+					"board": "IZZZZZZEOOZZZZZZZEOOEEEZZZZEEIEEEEZZEEEIEEEEEEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+					"device": {
+						"name": "Keyboard 1",
+						"ai": 1
+					}
+				}
+			]
+		}
+	} 
+}

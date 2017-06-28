@@ -13,7 +13,7 @@ public:
 
 	~ConsoleGraphic();
 
-	void restart(Player& player, TetrisEntry tetrisEntry, int x, int y, console::Console* console);
+	void restart(Player& player, int x, int y, console::Console* console);
 
 	int getWidth() const;
 

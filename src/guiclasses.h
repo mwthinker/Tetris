@@ -1,7 +1,7 @@
 #ifndef GUI_CLASSES_H
 #define GUI_CLASSES_H
 
-#include "tetrisentry.h"
+#include "tetrisdata.h"
 
 #include <gui/panel.h>
 #include <gui/label.h>
@@ -15,9 +15,9 @@ namespace {
 
     class Bar : public gui::Panel {
     public:
-        Bar(TetrisEntry entry) {
-            setPreferredSize(entry.getDeepChildEntry("window bar height").getFloat(), entry.getDeepChildEntry("window bar height").getFloat());
-            setBackgroundColor(entry.getDeepChildEntry("window bar color").getColor());
+        Bar() {
+            setPreferredSize(TetrisData::getInstance().getWindowBarHeight(), TetrisData::getInstance().getWindowBarHeight());
+            setBackgroundColor(TetrisData::getInstance().getWindowBarColor());
             setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
         }
     };
@@ -32,37 +32,38 @@ namespace {
 
     class Label : public gui::Label {
     public:
-        Label(std::string text, mw::Font font, TetrisEntry entry) : gui::Label(text, font) {
-            setTextColor(entry.getDeepChildEntry("window label textColor").getColor());
-            setBackgroundColor(entry.getDeepChildEntry("window label backgroundColor").getColor());
+        Label(std::string text, mw::Font font) : gui::Label(text, font) {
+			auto color = TetrisData::getInstance().getLabelTextColor();
+			auto color2 = TetrisData::getInstance().getLabelBackgroundColor();
+            setTextColor(TetrisData::getInstance().getLabelTextColor());
+            setBackgroundColor(TetrisData::getInstance().getLabelBackgroundColor());
         }
     };
 
     class Button : public gui::Button {
     public:
-        Button(std::string text, mw::Font font, TetrisEntry entry) : gui::Button(text, font) {
-            setFocusColor(entry.getDeepChildEntry("window button focusColor").getColor());
-            setTextColor(entry.getDeepChildEntry("window button textColor").getColor());
-            setHoverColor(entry.getDeepChildEntry("window button hoverColor").getColor());
-            setPushColor(entry.getDeepChildEntry("window button pushColor").getColor());
-            setBackgroundColor(entry.getDeepChildEntry("window button backgroundColor").getColor());
-            setBorderColor(entry.getDeepChildEntry("window button borderColor").getColor());
+        Button(std::string text, mw::Font font) : gui::Button(text, font) {
+			setFocusColor(TetrisData::getInstance().getButtonFocusColor());
+			setTextColor(TetrisData::getInstance().getButtonTextColor());
+			setHoverColor(TetrisData::getInstance().getButtonHoverColor());
+			setPushColor(TetrisData::getInstance().getButtonPushColor());
+			setBackgroundColor(TetrisData::getInstance().getButtonBackgroundColor());
+			setBorderColor(TetrisData::getInstance().getButtonBorderColor());
             setAutoSizeToFitText(true);
         }
     };
 
     class CheckBox : public gui::CheckBox {
     public:
-        CheckBox(std::string text, const mw::Font& font, TetrisEntry entry)
-            : gui::CheckBox(text,
-                font,
-                entry.getDeepChildEntry("window checkBox boxImage").getSprite(),
-                entry.getDeepChildEntry("window checkBox checkImage").getSprite()) {
+        CheckBox(std::string text, const mw::Font& font)
+            : gui::CheckBox(text, font,
+			TetrisData::getInstance().getCheckboxBoxSprite(),
+			TetrisData::getInstance().getCheckboxCheckSprite()) {
 
-            setTextColor(entry.getDeepChildEntry("window checkBox textColor").getColor());
-            setBackgroundColor(entry.getDeepChildEntry("window checkBox backgroundColor").getColor());
-            setBoxColor(entry.getDeepChildEntry("window checkBox boxColor").getColor());
-            setCheckColor(entry.getDeepChildEntry("window checkBox checkColor").getColor());
+			setTextColor(TetrisData::getInstance().getCheckboxTextColor());
+			setBackgroundColor(TetrisData::getInstance().getCheckboxBackgroundColor());
+			setBoxColor(TetrisData::getInstance().getCheckboxBoxColor());
+			setCheckColor(TetrisData::getInstance().getChecboxCheckColor());
         }
     };
 
