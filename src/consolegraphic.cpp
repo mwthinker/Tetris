@@ -15,7 +15,7 @@ ConsoleGraphic::~ConsoleGraphic() {
 	connection_.disconnect();
 }
 
-void ConsoleGraphic::restart(Player& player, TetrisEntry tetrisEntry, int x, int y, console::Console* console) {
+void ConsoleGraphic::restart(Player& player, int x, int y, console::Console* console) {
 	console_ = console;
 	x_ = x + 1;
 	y_ = y + 3;

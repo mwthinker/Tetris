@@ -2,8 +2,8 @@
 #include "tetrisgame.h"
 #include "gamegraphic.h"
 #include "tetrisparameters.h"
-#include "tetrisentry.h"
 #include "tetrisgameevent.h"
+#include "tetrisdata.h"
 
 #include <mw/opengl.h>
 #include <gui/component.h>
@@ -13,16 +13,16 @@
 #include <sstream>
 #include <cassert>
 
-GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
-	: tetrisGame_(tetrisGame), tetrisEntry_(tetrisEntry), alivePlayers_(0),
+GameComponent::GameComponent(TetrisGame& tetrisGame)
+	: tetrisGame_(tetrisGame), alivePlayers_(0),
 	updateMatrix_(true), buffer_(mw::Buffer::STATIC) {
 
 	setGrabFocus(true);
 	eventConnection_ = tetrisGame_.addGameEventHandler(std::bind(&GameComponent::eventHandler, this, std::placeholders::_1));
 
-	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
-	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
-	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
+	soundBlockCollision_ = TetrisData::getInstance().getBlockCollisionSound();
+	soundRowRemoved_ = TetrisData::getInstance().getRowRemovedSound();
+	soundTetris_ = TetrisData::getInstance().getBlockCollisionSound();
 	
 	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
 	lightningShader_ = LightningShader("lightning.ver.glsl", "lightning.fra.glsl");
@@ -78,7 +78,7 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 	mw::Text text; // Used to update the "Pause".
 	
 	// Draw boards.
-	tetrisEntry_.bindTextureFromAtlas();
+	TetrisData::getInstance().bindTextureFromAtlas();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -112,7 +112,7 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	float w = 0;
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player->getId()];
-		graphic.restart(lightningShader_, boardShader_, *player, w, 0, tetrisEntry_.getDeepChildEntry("window"));
+		graphic.restart(lightningShader_, boardShader_, *player, w, 0);
 		w += graphic.getWidth();
 	}
 
@@ -122,7 +122,7 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 
 
 void GameComponent::countDown(int msCountDown) {
-	mw::Text text("", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
+	mw::Text text("", TetrisData::getInstance().getInstance().getDefaultFont(30));
 	if (msCountDown > 0) {
 		std::stringstream stream;
 		stream << "Start in " << (int) (msCountDown / 1000) + 1;

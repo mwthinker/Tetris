@@ -1,7 +1,6 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
-#include "tetrisentry.h"
 #include "boardshader.h"
 #include "player.h"
 #include "drawrow.h"
@@ -22,6 +21,7 @@
 #include <mw/vertexbufferobject.h>
 #include <mw/signal.h>
 #include <mw/buffer.h>
+#include <mw/sound.h>
 
 #include <gui/component.h>
 
@@ -41,7 +41,7 @@ public:
 
 	~GameGraphic();
 
-	void restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y, const TetrisEntry& boardEntry);
+	void restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y);
 
 	void update(int clearedRows, int points, int level);
 
@@ -72,7 +72,7 @@ public:
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
 private:
-	void initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, const TetrisEntry& windowEntry, Player& player);
+	void initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, Player& player);
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 

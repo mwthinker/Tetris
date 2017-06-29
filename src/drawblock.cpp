@@ -1,14 +1,15 @@
 #include "drawblock.h"
 #include "color.h"
+#include "tetrisdata.h"
 
-DrawBlock::DrawBlock(const BoardShader& boardShader, const TetrisEntry& spriteEntry, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
-	spriteZ_ = spriteEntry.getChildEntry("squareZ").getSprite();
-	spriteS_ = spriteEntry.getChildEntry("squareS").getSprite();
-	spriteJ_ = spriteEntry.getChildEntry("squareJ").getSprite();
-	spriteI_ = spriteEntry.getChildEntry("squareI").getSprite();
-	spriteL_ = spriteEntry.getChildEntry("squareL").getSprite();
-	spriteT_ = spriteEntry.getChildEntry("squareT").getSprite();
-	spriteO_ = spriteEntry.getChildEntry("squareO").getSprite();
+DrawBlock::DrawBlock(const BoardShader& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
+	spriteZ_ = TetrisData::getInstance().getSprite(BlockType::Z);
+	spriteS_ = TetrisData::getInstance().getSprite(BlockType::S);
+	spriteJ_ = TetrisData::getInstance().getSprite(BlockType::J);
+	spriteI_ = TetrisData::getInstance().getSprite(BlockType::I);
+	spriteL_ = TetrisData::getInstance().getSprite(BlockType::L);
+	spriteT_ = TetrisData::getInstance().getSprite(BlockType::T);
+	spriteO_ = TetrisData::getInstance().getSprite(BlockType::O);
 	lowX_ = lowX;
 	lowY_ = lowY;
 	squareSize_ = squareSize;

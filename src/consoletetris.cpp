@@ -14,8 +14,7 @@
 
 using namespace console;
 
-ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
-	tetrisEntry_(tetrisEntry),
+ConsoleTetris::ConsoleTetris() :
 	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::KEY_DELETE)),
 	keyboard2_(std::make_shared<ConsoleKeyboard>("Keyboard 2", console::Key::KEY_S, console::Key::KEY_A, console::Key::KEY_D, console::Key::KEY_W, console::Key::KEY_Q)),
 	mode_(MENU), option_(GAME),
@@ -25,6 +24,7 @@ ConsoleTetris::ConsoleTetris(TetrisEntry tetrisEntry) :
 }
 
 void ConsoleTetris::initPreLoop() {
+	/*
 	auto aiEntry = tetrisEntry_.getDeepChildEntry("activeGames ais player");
 	ais_.clear();
 	while (aiEntry.hasData()) {
@@ -34,6 +34,7 @@ void ConsoleTetris::initPreLoop() {
 
 	Console::setCursorVisibility(false);
 	printMainMenu();
+	*/
 }
 
 void ConsoleTetris::printGameMenu() {
@@ -236,7 +237,7 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		int delta = 2;
 		for (auto& player : initGameVar.players_) {
 			auto& graphic = graphicPlayers_[player->getId()];
-			graphic.restart(*player, tetrisEntry_.getDeepChildEntry("window"), delta, 2, this);
+			graphic.restart(*player, delta, 2, this);
 			delta += graphic.getWidth();
 		}
 		printGame();

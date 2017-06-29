@@ -68,14 +68,14 @@ set(SOURCES
 	src/remoteplayer.cpp
 	src/remoteplayer.h
 	src/sdldevice.h
-	src/tetrisentry.cpp
-	src/tetrisentry.h
+	src/tetrisdata.cpp
+	src/tetrisdata.h
 	src/tetrisgame.cpp
 	src/tetrisgame.h
 	src/tetrisgameevent.h
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
-	src/tetriswindow.h
+	src/tetriswindow.h 
 )
 
 set(SOURCES_CONSOLE
@@ -101,7 +101,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	find_package(Threads REQUIRED) # Due to a bug, which forces the user to link to Threads when using #include <thread>.
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-add_subdirectory(DataEntry)
 add_subdirectory(SdlGui)
 add_subdirectory(Calculator)
 add_subdirectory(SimpleNetwork)
@@ -127,10 +126,9 @@ include_directories(
 	SdlGui/src
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
-	DataEntry/src
-	DataEntry/TinyXML2/src
 	Calculator/src
 	TetrisEngine/src
+	nlohmann-json/src
 )
 
 if (ConsoleTetris)
@@ -158,8 +156,6 @@ endif ()
 
 target_link_libraries(MWetris
 	Calculator
-	TinyXML2
-	DataEntry
 	${CONSOLE_LIB}
 	SimpleNetwork
 	MwLibrary2

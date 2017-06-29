@@ -1,14 +1,16 @@
 #include "gamegraphic.h"
 #include "tetrisboard.h"
 #include "player.h"
+#include "tetrisdata.h"
 
 #include <sstream>
 #include <iostream>
+#include <limits>
 
 namespace {
 
 	int calculateWitdh(const Block& block) {
-		int min = 1000;
+		int min = std::numeric_limits<int>::max();
 		int max = 0;
 		for (const Square& sq : block) {
 			if (sq.column_ > max) {
@@ -18,7 +20,7 @@ namespace {
 				min = sq.column_;
 			}
 		}
-		return max - min + 1;
+		return max + 1 - min;
 	}
 
 	int calculateHighest(const Block& block) {
@@ -32,7 +34,7 @@ namespace {
 	}
 
 	int calculateLeftColumn(const Block& block) {
-		int min = 1000;
+		int min = std::numeric_limits<int>::max();
 		for (const Square& sq : block) {
 			if (sq.column_ < min) {
 				min = sq.column_;
@@ -50,8 +52,7 @@ GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }
 
-void GameGraphic::restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y,
-	const TetrisEntry& boardEntry) {
+void GameGraphic::restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y) {
 
 	level_ = -1;
 	points_ = -1;
@@ -60,36 +61,33 @@ void GameGraphic::restart(const LightningShader& lightningShader, const BoardSha
 	connection_.disconnect();
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
-	initStaticBackground(lightningShader, boardShader, x, y, boardEntry, player);
+	initStaticBackground(lightningShader, boardShader, x, y, player);
 	
 	showPoints_ = true;
 
-	removeRowSound_ = boardEntry.getDeepChildEntry("sounds rowRemoved").getSound();
+	removeRowSound_ = TetrisData::getInstance().getRowRemovedSound();
 
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
-void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY,
-	const TetrisEntry& windowEntry, Player& player) {
+void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, Player& player) {
 
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
+	const Color c1 = TetrisData::getInstance().getOuterSquareColor();
+	const Color c2 = TetrisData::getInstance().getInnerSquareColor();
+	const Color c3 = TetrisData::getInstance().getStartAreaColor();
+	const Color c4 = TetrisData::getInstance().getPlayerAreaColor();
+	const Color borderColor = TetrisData::getInstance().getBorderColor();
+	
+	const mw::Sprite borderHorizontal = TetrisData::getInstance().getBorderHorizontalSprite();
+	const mw::Sprite borderVertical = TetrisData::getInstance().getBorderVerticalSprite();
+	const mw::Sprite borderLeftUp = TetrisData::getInstance().getBorderLeftUpSprite();
+	const mw::Sprite borderRightUp = TetrisData::getInstance().getBorderRightUpSprite();
+	const mw::Sprite borderDownLeft = TetrisData::getInstance().getBorderDownLeftSprite();
+	const mw::Sprite borderDownRight = TetrisData::getInstance().getBorderDownRightSprite();
 
-	const Color c1 = windowEntry.getDeepChildEntry("tetrisBoard outerSquareColor").getColor();
-	const Color c2 = windowEntry.getDeepChildEntry("tetrisBoard innerSquareColor").getColor();
-	const Color c3 = windowEntry.getDeepChildEntry("tetrisBoard startAreaColor").getColor();
-	const Color c4 = windowEntry.getDeepChildEntry("tetrisBoard playerAreaColor").getColor();
-	const Color borderColor = windowEntry.getDeepChildEntry("tetrisBoard borderColor").getColor();
-
-	auto spriteEntry = windowEntry.getDeepChildEntry("tetrisBoard sprites");
-	const mw::Sprite borderHorizontal = spriteEntry.getChildEntry("borderHorizontal").getSprite();
-	const mw::Sprite borderVertical = spriteEntry.getChildEntry("borderVertical").getSprite();
-	const mw::Sprite borderLeftUp = spriteEntry.getChildEntry("borderLeftUp").getSprite();
-	const mw::Sprite borderRightUp = spriteEntry.getChildEntry("borderRightUp").getSprite();
-	const mw::Sprite borderDownLeft = spriteEntry.getChildEntry("borderDownLeft").getSprite();
-	const mw::Sprite borderDownRight = spriteEntry.getChildEntry("borderDownRight").getSprite();
-
-	const float squareSize = windowEntry.getDeepChildEntry("tetrisBoard squareSize").getFloat();
-	const float borderSize = windowEntry.getDeepChildEntry("tetrisBoard borderSize").getFloat();
+	const float squareSize = TetrisData::getInstance().getTetrisSquareSize();
+	const float borderSize = TetrisData::getInstance().getTetrisBorderSize();
 
 	const int columns = tetrisBoard.getColumns();
 	const int rows = tetrisBoard.getRows();
@@ -154,11 +152,11 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 		infoSize, infoSize,
 		c3);
 	
-	nextBlockPtr_ = std::make_shared<DrawBlock>(boardShader, spriteEntry, Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
+	nextBlockPtr_ = std::make_shared<DrawBlock>(boardShader, Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
 	mw::Buffer dynamicBuffer(mw::Buffer::DYNAMIC);
 	dynamicBuffer.addVertexData(nextBlockPtr_);
 		
-	mw::Font font = windowEntry.getChildEntry("font").getFont(30);
+	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 
 	name_ = std::make_shared<DrawText>(boardShader, player.getName(), font, x, y + squareSize * 5, 10.f);
 	name_->update("Marcus");
@@ -251,11 +249,11 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	
 	rows_.clear();
 	
-	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, spriteEntry, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
+	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
 	dynamicBuffer.addVertexData(currentBlockPtr_);
 
 	for (int row = 0; row < rows; ++row) {
-		auto drawRow = std::make_shared<DrawRow>(spriteEntry, boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
+		auto drawRow = std::make_shared<DrawRow>(boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
 		dynamicBuffer.addVertexData(drawRow);
 		rows_.push_back(drawRow);
 	}
@@ -267,8 +265,8 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 		points_.push_back(Vec2(lowX+ (i + 1) * squareSize, 20 * squareSize));
 	}
 
-	mw::Sprite halfCircle = spriteEntry.getChildEntry("halfCircle").getSprite();
-	mw::Sprite lineSegment = spriteEntry.getChildEntry("lineSegment").getSprite();
+	mw::Sprite halfCircle = TetrisData::getInstance().getHalfCircleSprite();
+	mw::Sprite lineSegment = TetrisData::getInstance().getLineSegmentSprite();
 
 	lightningBoltCluster_ = LightningBoltCluster(lightningShader, halfCircle, lineSegment, points_, 50, 100, 100);
 	//lightningBoltCluster_.restart(points_, 1);

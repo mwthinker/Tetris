@@ -2,7 +2,6 @@
 #define CONSOLETETRIS_H
 
 #include "tetrisparameters.h"
-#include "tetrisentry.h"
 #include "tetrisgameevent.h"
 #include "device.h"
 #include "tetrisgame.h"
@@ -19,7 +18,7 @@
 
 class ConsoleTetris : public console::Console {
 public:
-	ConsoleTetris(TetrisEntry tetrisEntry);
+	ConsoleTetris();
 
 protected:
 	void initPreLoop() override;
@@ -52,7 +51,6 @@ private:
 	void execute(Mode option);
 
 	TetrisGame tetrisGame_;
-	TetrisEntry tetrisEntry_;
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;

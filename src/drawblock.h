@@ -1,7 +1,6 @@
 #ifndef DRAWBLOCK_H
 #define DRAWBLOCK_H
 
-#include "tetrisentry.h"
 #include "boardvertexdata.h"
 #include "tetrisboard.h"
 #include "boardshader.h"
@@ -13,7 +12,7 @@ using DrawBlockPtr = std::shared_ptr<DrawBlock>;
 
 class DrawBlock : public BoardVertexData {
 public:
-	DrawBlock(const BoardShader& boardShader, const TetrisEntry& spriteEntry, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
+	DrawBlock(const BoardShader& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);
 

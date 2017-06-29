@@ -4,7 +4,6 @@
 #include "sdldevice.h"
 #include "ai.h"
 #include "tetrisgame.h"
-#include "tetrisentry.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
@@ -24,7 +23,7 @@ class GameData;
 
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow(TetrisEntry tetrisEntry, int frame);
+	TetrisWindow(int frame);
 
 	void startServer(int port);
 
@@ -40,8 +39,6 @@ private:
 	void initOpenGl() override;
 
 	void initPreLoop() override;
-
-	mw::Font getDefaultFont(int size);
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
 
@@ -89,7 +86,6 @@ private:
 
 	// All ai:s.
 	std::array<Ai, 4> activeAis_;
-	std::vector<Ai> ais_;
 
 	// Devices.
 	std::vector<SdlDevicePtr> devices_;
@@ -119,7 +115,6 @@ private:
 		createServerIndex_,
 		waitToConnectIndex_;
 
-	TetrisEntry tetrisEntry_;
 	bool windowFollowMouse_;
 	int followMouseX_, followMouseY_;
 

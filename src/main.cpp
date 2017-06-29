@@ -1,5 +1,4 @@
 #include "tetriswindow.h"
-#include "tetrisentry.h"
 
 #if CONSOLE_TETRIS
 #include "consoletetris.h"
@@ -9,13 +8,6 @@
 #include <iostream>
 
 int main (int argc, char** argv) {
-	TetrisEntry tetrisEntry("tetris.xml");
-
-	if (tetrisEntry.isError()) {
-		tetrisEntry.printError();
-		return 1;
-	}
-
 	if (argc >= 2) {
 		std::string programName = *argv;
 		std::string code(*(argv + 1));
@@ -48,7 +40,7 @@ int main (int argc, char** argv) {
 		}
 #if CONSOLE_TETRIS
 		else if (code == "-n" || code == "--no-window") {
-			ConsoleTetris game(tetrisEntry.getChildEntry("tetris"));
+			ConsoleTetris game;
 			game.startLoop();
 			return 0;
 		}
@@ -59,7 +51,7 @@ int main (int argc, char** argv) {
 				std::stringstream stream(*(argv + 2));
 				stream >> port;
 			}
-			TetrisWindow game(tetrisEntry.getChildEntry("tetris"), 0);
+			TetrisWindow game(0);
 			game.startServer(port);
 			game.startLoop();
 			return 0;
@@ -73,7 +65,7 @@ int main (int argc, char** argv) {
 			if (argc >= 4) {
 				ip = *(argv + 2);
 			}
-			TetrisWindow game(tetrisEntry.getChildEntry("tetris"), 0);
+			TetrisWindow game(0);
 			game.startClient(port, ip);
 			game.startLoop();
 			return 0;
@@ -84,13 +76,13 @@ int main (int argc, char** argv) {
 				stream << *(argv + 1);
 				stream >> menuIndex;
 			}
-			TetrisWindow game(tetrisEntry.getChildEntry("tetris"), menuIndex);
+			TetrisWindow game(menuIndex);
 			game.startLoop();
 		} else {
 			std::cout << "Incorrect argument " << code << "\n";
 		}
 	} else {
-		TetrisWindow game(tetrisEntry.getChildEntry("tetris"), 0);
+		TetrisWindow game(0);
 		game.startLoop();
 	}
 
