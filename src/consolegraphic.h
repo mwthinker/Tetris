@@ -1,7 +1,6 @@
 #ifndef CONSOLEGRAPHIC_H
 #define CONSOLEGRAPHIC_H
 
-#include "tetrisentry.h"
 #include "tetrisgameevent.h"
 #include "tetrisboard.h"
 

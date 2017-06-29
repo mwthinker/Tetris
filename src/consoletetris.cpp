@@ -1,7 +1,6 @@
 #include "consoletetris.h"
 
 #include "tetrisparameters.h"
-#include "tetrisentry.h"
 #include "tetrisgameevent.h"
 #include "device.h"
 #include "tetrisgame.h"
