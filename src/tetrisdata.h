@@ -12,7 +12,6 @@
 #include <mw/music.h>
 #include <mw/textureatlas.h>
 
-
 #include <json.hpp>
 
 #include <map>
