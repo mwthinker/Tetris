@@ -496,6 +496,34 @@ Color TetrisData::getButtonBorderColor() {
 	return jsonObject_["window"]["button"]["borderColor"].get<Color>();
 }
 
+Color TetrisData::getComboBoxFocusColor() {
+	return jsonObject_["window"]["comboBox"]["focusColor"].get<Color>();
+}
+
+Color TetrisData::getComboBoxTextColor() {
+	return jsonObject_["window"]["comboBox"]["textColor"].get<Color>();
+}
+
+Color TetrisData::getComboBoxSelectedTextColor() {
+	return jsonObject_["window"]["comboBox"]["selectedTextColor"].get<Color>();
+}
+
+Color TetrisData::getComboBoxSelectedBackgroundColor() {
+	return jsonObject_["window"]["comboBox"]["selectedBackgroundColor"].get<Color>();
+}
+
+Color TetrisData::getComboBoxBackgroundColor() {
+	return jsonObject_["window"]["comboBox"]["backgroundColor"].get<Color>();
+}
+
+Color TetrisData::getComboBoxBorderColor() {
+	return jsonObject_["window"]["comboBox"]["borderColor"].get<Color>();
+}
+
+mw::Sprite TetrisData::getComboBoxShowDropDownSprite() {
+	return loadSprite(jsonObject_["window"]["comboBox"]["showDropDownSprite"].get<std::string>());
+}
+
 mw::Sprite TetrisData::getHumanSprite() {
 	return loadSprite(jsonObject_["window"]["sprites"]["human"].get<std::string>());
 }

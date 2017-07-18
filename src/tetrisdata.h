@@ -137,6 +137,14 @@ public:
 	Color getButtonBackgroundColor();
 	Color getButtonBorderColor();
 
+	Color getComboBoxFocusColor();
+	Color getComboBoxTextColor();
+	Color getComboBoxSelectedTextColor();
+	Color getComboBoxSelectedBackgroundColor();
+	Color getComboBoxBackgroundColor();
+	Color getComboBoxBorderColor();
+	mw::Sprite getComboBoxShowDropDownSprite();
+
 	mw::Sprite getHumanSprite();
 	mw::Sprite getComputerSprite();
 	mw::Sprite getCrossSprite();

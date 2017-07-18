@@ -10,6 +10,7 @@
 #include <gui/checkbox.h>
 #include <gui/flowlayout.h>
 #include <gui/borderlayout.h>
+#include <gui/combobox.h>
 
 namespace {
 
@@ -76,6 +77,18 @@ namespace {
     };
 
     using TextField = gui::TextField;
+
+	class ComboBox : public gui::ComboBox {
+	public:
+		ComboBox(mw::Font font) : gui::ComboBox(font, TetrisData::getInstance().getComboBoxShowDropDownSprite()) {
+			setFocusColor(TetrisData::getInstance().getComboBoxFocusColor());
+			setTextColor(TetrisData::getInstance().getComboBoxTextColor());
+			setSelectedBackgroundColor(TetrisData::getInstance().getComboBoxSelectedBackgroundColor());
+			setSelectedTextColor(TetrisData::getInstance().getComboBoxSelectedTextColor());
+			setBackgroundColor(TetrisData::getInstance().getComboBoxBackgroundColor());
+			setBorderColor(TetrisData::getInstance().getComboBoxBorderColor());
+		}
+	};
 
 } // Namespace anonymous.
 

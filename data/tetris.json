@@ -28,6 +28,14 @@
             "backgroundColor": "0 0 0 0",
             "borderColor": "0 0 0 0"
 		},
+		"comboBox": {
+			"textColor": "1 1 1",
+			"backgroundColor": "1 1 1 0",
+			"selectedTextColor": "1 1 1 0",
+			"selectedBackgroundColor": "1 1 1 0",
+			"borderColor": "0 0 0 0",
+            "showDropDownSprite": "images/triangle.png"
+		},
         "font": "fonts/Ubuntu-B.ttf",
         "width": 450,
         "height": 400,
