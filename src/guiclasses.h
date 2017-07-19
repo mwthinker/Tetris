@@ -74,6 +74,9 @@ namespace {
             setBackgroundColor(1, 1, 1, 0);
             setPreferredSize(preferredWidth, preferredHeight);
         }
+
+		virtual ~TransparentPanel() = default;
+
     };
 
     using TextField = gui::TextField;
@@ -85,6 +88,7 @@ namespace {
 			setTextColor(TetrisData::getInstance().getComboBoxTextColor());
 			setSelectedBackgroundColor(TetrisData::getInstance().getComboBoxSelectedBackgroundColor());
 			setSelectedTextColor(TetrisData::getInstance().getComboBoxSelectedTextColor());
+			setShowDropDownColor(TetrisData::getInstance().getComboBoxShowDropDownColor());
 			setBackgroundColor(TetrisData::getInstance().getComboBoxBackgroundColor());
 			setBorderColor(TetrisData::getInstance().getComboBoxBorderColor());
 		}

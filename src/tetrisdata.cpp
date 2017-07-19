@@ -520,6 +520,10 @@ Color TetrisData::getComboBoxBorderColor() {
 	return jsonObject_["window"]["comboBox"]["borderColor"].get<Color>();
 }
 
+Color TetrisData::getComboBoxShowDropDownColor() {
+	return jsonObject_["window"]["comboBox"]["showDropDownColor"].get<Color>();
+}
+
 mw::Sprite TetrisData::getComboBoxShowDropDownSprite() {
 	return loadSprite(jsonObject_["window"]["comboBox"]["showDropDownSprite"].get<std::string>());
 }

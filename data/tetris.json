@@ -29,12 +29,14 @@
             "borderColor": "0 0 0 0"
 		},
 		"comboBox": {
+			"focusColor": ".8 .1 0 .3",
 			"textColor": "1 1 1",
 			"backgroundColor": "1 1 1 0",
-			"selectedTextColor": "1 1 1 0",
-			"selectedBackgroundColor": "1 1 1 0",
+			"selectedTextColor": "1 1 1",
+			"selectedBackgroundColor": ".8 .1 0 .3",
 			"borderColor": "0 0 0 0",
-            "showDropDownSprite": "images/triangle.png"
+			"showDropDownColor": "1 1 1",
+			"showDropDownSprite": "images/triangle.png"
 		},
         "font": "fonts/Ubuntu-B.ttf",
         "width": 450,
