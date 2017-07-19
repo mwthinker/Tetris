@@ -16,7 +16,7 @@
 
 class ManButton;
 class Highscore;
-class GameComponent;
+class GamePanel;
 
 class TetrisGameEvent;
 class GameData;
@@ -25,11 +25,11 @@ class TetrisWindow : public gui::Frame {
 public:
 	TetrisWindow(int frame);
 
+	~TetrisWindow();
+
 	void startServer(int port);
 
 	void startClient(int port, std::string ip);
-
-	~TetrisWindow();
 
 private:
 	void resumeGame();
@@ -58,7 +58,7 @@ private:
 	std::shared_ptr<gui::Button> resume_;
 
 	// initPlayPanel
-	std::shared_ptr<GameComponent> game_;
+	std::shared_ptr<GamePanel> game_;
 	std::shared_ptr<ManButton> nbrHumans_;
 	std::shared_ptr<ManButton> nbrAis_;
 	std::shared_ptr<gui::Button> pauseButton_;

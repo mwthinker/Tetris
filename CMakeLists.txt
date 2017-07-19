@@ -34,21 +34,25 @@ set(SOURCES
 	src/drawrow.h
 	src/drawtext.cpp
 	src/drawtext.h
+	src/gameboardcomponent.cpp
+	src/gameboardcomponent.h
 	src/gamecomponent.cpp
 	src/gamecomponent.h
+	src/gamecontroller.cpp
+	src/gamecontroller.h
 	src/gamegraphic.cpp
 	src/gamegraphic.h
+	src/gamepanel.cpp
+	src/gamepanel.h
 	src/guiclasses.h
 	src/highscore.cpp
 	src/highscore.h
-	src/gamecontroller.cpp
-	src/gamecontroller.h
 	src/keyboard.cpp
 	src/keyboard.h
-	src/lightningbolt.cpp
-	src/lightningbolt.h
 	src/lightningboltcluster.cpp
 	src/lightningboltcluster.h
+	src/lightningbolt.cpp
+	src/lightningbolt.h
 	src/lightningshader.cpp
 	src/lightningshader.h
 	src/lightningvertexdata.cpp
@@ -71,11 +75,11 @@ set(SOURCES
 	src/tetrisdata.cpp
 	src/tetrisdata.h
 	src/tetrisgame.cpp
-	src/tetrisgame.h
 	src/tetrisgameevent.h
+	src/tetrisgame.h
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
-	src/tetriswindow.h 
+	src/tetriswindow.h
 )
 
 set(SOURCES_CONSOLE

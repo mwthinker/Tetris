@@ -10,6 +10,7 @@
 #include "guiclasses.h"
 #include "tetrisgameevent.h"
 #include "tetrisdata.h"
+#include "gamepanel.h"
 
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
@@ -258,7 +259,7 @@ void TetrisWindow::initPlayPanel() {
 	
     // Add the game component, already created in the constructor.
 	//game_ = add<GameComponent>(gui::BorderLayout::CENTER, tetrisGame_, tetrisEntry_);
-	game_ = std::make_shared<GameComponent>(tetrisGame_);
+	game_ = std::make_shared<GamePanel>(tetrisGame_);
 	add(gui::BorderLayout::CENTER, game_);
 		
 	addKeyListener([&](gui::Component& c, const SDL_Event& keyEvent) {
