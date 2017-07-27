@@ -18,49 +18,49 @@
 			"checkColor": "0 1 0 1",
 			"boxColor": "1 1 1 1",
 			"boxImage": "images/box.png",
-            "checkImage": "images/check.png"
+			"checkImage": "images/check.png"
 		},
 		"button": {
-            "focusColor": ".8 .1 0 .3",
-            "textColor": "1 0.1 0.1",
-            "hoverColor": ".6 .1 .1",
-            "pushColor": ".8 .0 0 .7",
-            "backgroundColor": "0 0 0 0",
-            "borderColor": "0 0 0 0"
+			"focusColor": ".8 .1 0 .3",
+			"textColor": "1 0.1 0.1",
+			"hoverColor": ".6 .1 .1",
+			"pushColor": ".8 .0 0 .7",
+			"backgroundColor": "0 0 0 0",
+			"borderColor": "0 0 0 0"
 		},
 		"comboBox": {
-			"focusColor": ".8 .1 0 .3",
 			"textColor": "1 1 1",
+			"focusColor": ".8 .1 0 .3",
 			"backgroundColor": "1 1 1 0",
-			"selectedTextColor": "1 1 1",
-			"selectedBackgroundColor": ".8 .1 0 .3",
+			"selectedTextColor": "1 1 1 1",
+			"selectedBackgroundColor": ".6 .1 .1",
 			"borderColor": "0 0 0 0",
 			"showDropDownColor": "1 1 1",
 			"showDropDownSprite": "images/triangle.png"
 		},
-        "font": "fonts/Ubuntu-B.ttf",
-        "width": 450,
-        "height": 400,
-        "positionX": 796,
-        "positionY": 333,
-        "maximized": false,
+		"font": "fonts/Ubuntu-B.ttf",
+		"width": 860,
+		"height": 1120,
+		"positionX": 1496,
+		"positionY": 224,
+		"maximized": false,
 		"resizeable": true,
 		"minWidth": 480,
-        "minHeight": 480,
-        "icon": "images/icon.bmp",
+		"minHeight": 480,
+		"icon": "images/icon.bmp",
 		"sounds": {
-            "buttonPush": "",
-            "blockCollision": "sounds/blockCollision.wav",
-            "rowRemoved": "sounds/puff.wav",
-            "tetris": "sounds/tetris.wav",
-            "highscore": ""
+			"buttonPush": "",
+			"blockCollision": "sounds/blockCollision.wav",
+			"rowRemoved": "sounds/puff.wav",
+			"tetris": "sounds/tetris.wav",
+			"highscore": ""
 		},
-        "sprites": {
-            "background": "images/background.png",
-            "computer": "images/computer.png",
-            "human": "images/human.png",
-            "cross": "images/cross.png",
-            "zoom": "images/signs.png"
+		"sprites": {
+			"background": "images/background.png",
+			"computer": "images/computer.png",
+			"human": "images/human.png",
+			"cross": "images/cross.png",
+			"zoom": "images/signs.png"
 		},
 		"tetrisBoard": {
 			"font": "fonts/Ubuntu-B.ttf",
@@ -92,7 +92,7 @@
 	},
 	"game": {
 		"maxNbrAis": 4,
-		"maxNbrHumans":4
+		"maxNbrHumans": 4
 	},
 	"players": {
 		"humans": [
@@ -119,8 +119,8 @@
 				"valueFunction": "-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
 			}
 		]
-	},    
-    "highscore": [
+	},
+	"highscore": [
 		{
 			"name": "EMPTY",
 			"date": "2014-01-01",
@@ -162,14 +162,14 @@
 			"points": 0
 		},
 		{
-			"name": "EMPTY",
-			"date": "2014-01-01",
-			"points": 0
+			"name": "MW",
+			"date": "2017-07-26",
+			"points": 5
 		},
 		{
-			"name": "EMPTY",
-			"date": "2014-01-01",
-			"points": 0
+			"name": "MW",
+			"date": "2017-07-26",
+			"points": 164
 		}
 	],
 	"activeGames": {
@@ -179,43 +179,24 @@
 			"players": [
 				{
 					"name": "",
-					"nextBlockType": "S",
-					"levelUpCounter": 0,
+					"nextBlockType": "Z",
+					"levelUpCounter": 65,
 					"ai": false,
-					"level": 1,
-					"points": 10,
+					"level": 7,
+					"points": 410,
 					"currentBlock": {
-						"bottomRow": 6,
+						"bottomRow": 15,
 						"blockType": "J",
-						"leftColumn": 6,
-						"currentRotation": 2
-					},
-					"board": "IZZZZZZEOOZZZZZZZEOOEEEZZZZEEIEEEEZZEEEIEEEEEEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
-					"device": {
-						"name": "Keyboard 1",
-						"ai": 0
-					}
-				},
-				{
-					"name": "DefaultAi",
-					"nextBlockType": "T",
-					"levelUpCounter": 0,
-					"ai": true,
-					"level": 1,
-					"points": 10,
-					"currentBlock": {
-						"bottomRow": 17,
-						"blockType": "O",
-						"leftColumn": 7,
+						"leftColumn": 4,
 						"currentRotation": 0
 					},
-					"board": "IZZZZZZEOOZZZZZZZEOOEEEZZZZEEIEEEEZZEEEIEEEEEEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+					"board": "IJTEZZIIIZZIESJSJJTIITLJZETEELILLZEZSSOOZZZZJLZZELIZZEJZZEEEIEEEJJEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
 					"device": {
 						"name": "Keyboard 1",
-						"ai": 1
+						"ai": false
 					}
 				}
 			]
 		}
-	} 
+	}
 }
