@@ -434,8 +434,10 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 	}
 
 	if (rows != 0) {
-		player->setPoints(player->getPoints() + player->getLevel() * rows * rows);
-		PointsChange pointsChange(player, player->getPoints(), player->getPoints() + player->getLevel() * rows * rows);
+		int newPoints = player->getPoints() + player->getLevel() * rows * rows;
+		PointsChange pointsChange(player, player->getPoints(), newPoints);
+		player->setPoints(newPoints);
+		eventHandler_(pointsChange);
 
 		// Multiplayer?
 		if (nbrOfPlayers_ > 1) {

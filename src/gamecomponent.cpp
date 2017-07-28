@@ -150,7 +150,14 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
 		GameGraphic& gg = graphicPlayers_[levelChange.player_->getId()];
-		gg.update(levelChange.player_->getPoints(), levelChange.player_->getPoints(), levelChange.newLevel_);
+		gg.update(levelChange.player_->getClearedRows(), levelChange.player_->getPoints(), levelChange.newLevel_);
+		return;
+	} catch (std::bad_cast exp) {}
+
+	try {
+		auto& pointsChange = dynamic_cast<PointsChange&>(tetrisEvent);
+		GameGraphic& gg = graphicPlayers_[pointsChange.player_->getId()];
+		gg.update(pointsChange.player_->getClearedRows(), pointsChange.player_->getPoints(), pointsChange.player_->getLevel());
 		return;
 	} catch (std::bad_cast exp) {}
 }

@@ -11,20 +11,12 @@ class ConsoleKeyboard : public Device {
 public:
 	ConsoleKeyboard(std::string name, console::Key down, console::Key left, console::Key right, console::Key rotate, console::Key downGround);
 
-	inline Input currentInput() override {
+	Input currentInput() override {
 		return input_;
 	}
 
-	inline std::string getName() const override {
+	std::string getName() const override {
 		return name_;
-	}
-
-	inline std::string getPlayerName() const override {
-		return playerName_;
-	}
-
-	inline void setPlayerName(std::string playerName) override {
-		playerName_ = playerName;
 	}
 
 	void eventUpdate(const console::ConsoleEvent& consoleEvent);

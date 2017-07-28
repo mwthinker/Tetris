@@ -13,13 +13,6 @@ public:
 	Input currentInput() override;
 	std::string getName() const override;
 
-	std::string getPlayerName() const override {
-		return playerName_;
-	}
-
-	void setPlayerName(std::string playerName) override {
-		playerName_ = playerName;
-	}
 private:
 	void eventUpdate(const SDL_Event& windowEvent) override;
 

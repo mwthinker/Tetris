@@ -53,7 +53,6 @@ GameGraphic::~GameGraphic() {
 }
 
 void GameGraphic::restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y) {
-
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
@@ -71,7 +70,6 @@ void GameGraphic::restart(const LightningShader& lightningShader, const BoardSha
 }
 
 void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, Player& player) {
-
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
 	const Color c1 = TetrisData::getInstance().getOuterSquareColor();
 	const Color c2 = TetrisData::getInstance().getInnerSquareColor();
@@ -158,18 +156,31 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 		
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 
-	name_ = std::make_shared<DrawText>(boardShader, player.getName(), font, x, y + squareSize * 5, 10.f);
-	name_->update("Marcus");
+	name_ = std::make_shared<DrawText>(boardShader, player.getName(), font, x, y + squareSize * 5, 8.f);
+	//name_->update("Marcus");
 	dynamicBuffer.addVertexData(name_);
 	
-	textLevel_ = std::make_shared<DrawText>(boardShader, "1", font, x, y - 20, 10.f);
-	dynamicBuffer.addVertexData(textLevel_);
-
-	textPoints_ = std::make_shared<DrawText>(boardShader, "0", font, x, y - 40, 10.f);
-	dynamicBuffer.addVertexData(textPoints_);
-		
-	textClearedRows_ = std::make_shared<DrawText>(boardShader, "0", font, x, y - 60, 10.f);
-	dynamicBuffer.addVertexData(textClearedRows_);
+	{
+		std::stringstream stream;
+		level_ = player.getLevel();
+		stream << "Level " << level_;
+		textLevel_ = std::make_shared<DrawText>(boardShader, stream.str(), font, x, y - 20, 8.f);
+		dynamicBuffer.addVertexData(textLevel_);
+	}
+	{
+		std::stringstream stream;
+		points_ = player.getPoints();
+		stream << "Points " << points_;
+		textPoints_ = std::make_shared<DrawText>(boardShader, stream.str(), font, x, y - 20 - 12, 8.f);
+		dynamicBuffer.addVertexData(textPoints_);
+	}
+	{
+		std::stringstream stream;
+		clearedRows_ = player.getClearedRows();
+		stream << "Rows " << clearedRows_;
+		textClearedRows_ = std::make_shared<DrawText>(boardShader, stream.str(), font, x, y - 20 - 12 * 2, 8.f);
+		dynamicBuffer.addVertexData(textClearedRows_);
+	}
 
 	// Add border.
 	// Left-up corner.
@@ -361,6 +372,11 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			}
 			break;
 		case GameEvent::ROW_TO_BE_REMOVED:
+		{
+			std::stringstream stream;
+			stream << "Rows " << tetrisBoard.getRemovedRows();
+			textClearedRows_->update(stream.str());
+		}
 			break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
@@ -440,7 +456,6 @@ void GameGraphic::setMiddleMessage(const mw::Text& text) {
 }
 
 void GameGraphic::update(int clearedRows, int points, int level) {
-	/*
 	if (clearedRows_ != clearedRows) {
 		std::stringstream stream;
 		clearedRows_ = clearedRows;
@@ -459,7 +474,6 @@ void GameGraphic::update(int clearedRows, int points, int level) {
 		stream << "Level " << level;
 		textLevel_->update(stream.str());
 	}
-	*/
 }
 
 void GameGraphic::setName(std::string name) {
