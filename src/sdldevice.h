@@ -12,13 +12,13 @@ typedef std::shared_ptr<SdlDevice> SdlDevicePtr;
 
 class SdlDevice : public Device {
 public:
-	inline SdlDevice(bool ai) : Device(ai) {
+	SdlDevice(bool ai) : Device(ai) {
 	}
 
-	inline virtual ~SdlDevice() {
+	virtual ~SdlDevice() {
 	}
 
-	inline virtual void eventUpdate(const SDL_Event& windowEvent) {
+	virtual void eventUpdate(const SDL_Event& windowEvent) {
 	}
 };
 

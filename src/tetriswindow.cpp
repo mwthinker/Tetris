@@ -106,6 +106,11 @@ void TetrisWindow::initPreLoop() {
 	}
 
 	loadHighscore();
+	// Init ai players.
+	activeAis_[0] = findAiDevice(TetrisData::getInstance().getAi1Name());
+	activeAis_[1] = findAiDevice(TetrisData::getInstance().getAi2Name());
+	activeAis_[2] = findAiDevice(TetrisData::getInstance().getAi3Name());
+	activeAis_[3] = findAiDevice(TetrisData::getInstance().getAi4Name());
 }
 
 void TetrisWindow::resumeGame() {
@@ -240,7 +245,7 @@ void TetrisWindow::initPlayPanel() {
 		setPlayers();
 	});
 
-	nbrAis_ = p1->addDefault<ManButton>(4, TetrisData::getInstance().getComputerSprite(), TetrisData::getInstance().getCrossSprite());
+	nbrAis_ = p1->addDefault<ManButton>(activeAis_.size(), TetrisData::getInstance().getComputerSprite(), TetrisData::getInstance().getCrossSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
 		setPlayers();
@@ -397,6 +402,68 @@ void TetrisWindow::initSettingsPanel() {
 		TetrisData::getInstance().save();
 		SDL_GL_SetSwapInterval(check.isSelected() ? 1 : 0);
 	});
+	
+	auto label = p->addDefault<Label>("Ai players", TetrisData::getInstance().getDefaultFont(30));
+	{
+		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto ais = TetrisData::getInstance().getAiVector();		
+		for (int i = 0; i < (int) ais.size(); ++i) {
+			comboBox->addItem(ais[i].getName());
+			if (ais[i].getName() == TetrisData::getInstance().getAi1Name()) {
+				comboBox->setSelectedItem(i);
+			}
+			comboBox->addActionListener([&](gui::Component& c) {
+				auto& box = static_cast<ComboBox&>(c);
+				activeAis_[0] = findAiDevice(box.getChosenItemText());
+				TetrisData::getInstance().setAi1Name(box.getChosenItemText());
+			});
+		}
+	}
+	{
+		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto ais = TetrisData::getInstance().getAiVector();
+		for (int i = 0; i < (int) ais.size(); ++i) {
+			comboBox->addItem(ais[i].getName());
+			if (ais[i].getName() == TetrisData::getInstance().getAi1Name()) {
+				comboBox->setSelectedItem(i);
+			}
+			comboBox->addActionListener([&](gui::Component& c) {
+				auto& box = static_cast<ComboBox&>(c);
+				activeAis_[1] = findAiDevice(box.getChosenItemText());
+				TetrisData::getInstance().setAi2Name(box.getChosenItemText());
+			});
+		}
+	}
+	{
+		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto ais = TetrisData::getInstance().getAiVector();
+		for (int i = 0; i < (int) ais.size(); ++i) {
+			comboBox->addItem(ais[i].getName());
+			if (ais[i].getName() == TetrisData::getInstance().getAi1Name()) {
+				comboBox->setSelectedItem(i);
+			}
+			comboBox->addActionListener([&](gui::Component& c) {
+				auto& box = static_cast<ComboBox&>(c);
+				activeAis_[2] = findAiDevice(box.getChosenItemText());
+				TetrisData::getInstance().setAi3Name(box.getChosenItemText());
+			});
+		}
+	}
+	{
+		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto ais = TetrisData::getInstance().getAiVector();
+		for (int i = 0; i < (int) ais.size(); ++i) {
+			comboBox->addItem(ais[i].getName());
+			if (ais[i].getName() == TetrisData::getInstance().getAi1Name()) {
+				comboBox->setSelectedItem(i);
+			}
+			comboBox->addActionListener([&](gui::Component& c) {
+				auto& box = static_cast<ComboBox&>(c);
+				activeAis_[3] = findAiDevice(box.getChosenItemText());
+				TetrisData::getInstance().setAi4Name(box.getChosenItemText());
+			});
+		}
+	}
 }
 
 void TetrisWindow::initCreateServerPanel() {
@@ -542,8 +609,11 @@ void TetrisWindow::saveHighscore() {
 
 void TetrisWindow::setPlayers() {
 	std::vector<DevicePtr> playerDevices(devices_.begin(), devices_.begin() + nbrHumans_->getNbr());
+
 	for (unsigned int i = 0; i < nbrAis_->getNbr(); ++i) {
-		playerDevices.push_back(std::make_shared<Computer>(activeAis_[i]));
+		if (activeAis_[i]) {
+			playerDevices.push_back(activeAis_[i]);
+		}
 	}
 	
 	tetrisGame_.setPlayers(playerDevices);
@@ -559,14 +629,15 @@ DevicePtr TetrisWindow::findHumanDevice(std::string name) const {
 }
 
 DevicePtr TetrisWindow::findAiDevice(std::string name) const {
-	const auto ais = TetrisData::getInstance().getAiVector();
+	auto ais = TetrisData::getInstance().getAiVector();
+	ais.push_back(Ai()); // Add default ai.
 
 	for (const Ai& ai : ais) {
 		if (ai.getName() == name) {
 			return std::make_shared<Computer>(ai);
 		}
 	}
-	return std::make_shared<Computer>(activeAis_[0]);
+	return std::make_shared<Computer>(ais.back());
 }
 
 void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
@@ -600,7 +671,8 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 			auto gameControllerPtr = mw::GameController::addController(e.cdevice.which);
 			if (gameControllerPtr) {
 				std::cout << gameControllerPtr->getName() << std::endl;
-				devices_.push_back(std::make_shared<GameController>(gameControllerPtr));
+				auto gameController = std::make_shared<GameController>(gameControllerPtr);
+				devices_.push_back(gameController);
 				nbrHumans_->setMax(devices_.size());
 			}
 		}
@@ -619,7 +691,6 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 		}
 			break;
 		case SDL_MOUSEMOTION:
-			
 			if (windowFollowMouse_ && TetrisData::getInstance().isMoveWindowByHoldingDownMouse()) {
 #if SDL_VERSION_ATLEAST(2,0,5)
 				int mouseX, mouseY;

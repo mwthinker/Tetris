@@ -90,36 +90,25 @@
 			"playerAreaColor": "0.4 0.1 0.15 0.5"
 		}
 	},
-	"game": {
-		"maxNbrAis": 4,
-		"maxNbrHumans": 4
-	},
-	"players": {
-		"humans": [
-			{
-				"name": "Player 1",
-				"device": "Keyboard 1"
-			},
-			{
-				"name": "Player 2",
-				"device": "Keyboard 2"
-			}
-		],
-		"ais": [
-			{
-				"name": "Default2",
-				"valueFunction": "-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight"
-			},
-			{
-				"name": "Defensive",
-				"valueFunction": "5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
-			},
-			{
-				"name": "Worthless",
-				"valueFunction": "-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
-			}
-		]
-	},
+	"ai1": "DefaultAi",
+	"ai2": "DefaultAi",
+	"ai3": "DefaultAi",
+	"ai4": "DefaultAi",
+	
+	"ais": [
+		{
+			"name": "Default2",
+			"valueFunction": "-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight"
+		},
+		{
+			"name": "Defensive",
+			"valueFunction": "5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
+		},
+		{
+			"name": "Worthless",
+			"valueFunction": "-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
+		}
+	],
 	"highscore": [
 		{
 			"name": "EMPTY",

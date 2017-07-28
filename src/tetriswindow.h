@@ -85,7 +85,7 @@ private:
 	std::shared_ptr<gui::TextField> portClient_;
 
 	// All ai:s.
-	std::array<Ai, 4> activeAis_;
+	std::array<DevicePtr, 4> activeAis_;
 
 	// Devices.
 	std::vector<SdlDevicePtr> devices_;

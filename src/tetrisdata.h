@@ -112,7 +112,18 @@ public:
 	
 	mw::Sprite getBackgroundSprite();
 
+	std::string getAi1Name() const;
+	std::string getAi2Name() const;
+	std::string getAi3Name() const;
+	std::string getAi4Name() const;
+
+	void setAi1Name(std::string name);
+	void setAi2Name(std::string name);
+	void setAi3Name(std::string name);
+	void setAi4Name(std::string name);
+
 	std::vector<Ai> getAiVector();
+	
 	std::vector<HighscoreRecord> getHighscoreRecordVector();
 	void setHighscoreRecordVector(const std::vector<HighscoreRecord>& highscoreVector);
 

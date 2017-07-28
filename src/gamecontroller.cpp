@@ -3,9 +3,8 @@
 #include <mw/gamecontroller.h>
 
 #include <SDL.h>
-#include <iostream>
 
-GameController::GameController(mw::GameControllerPtr gameController, int rotateButton, int downButton) : SdlDevice(false) {
+GameController::GameController(const mw::GameControllerPtr& gameController, int rotateButton, int downButton) : SdlDevice(false) {
 	gameController_ = gameController;
 	rotateButton_ = rotateButton;
 	downButton_ = downButton;

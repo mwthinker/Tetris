@@ -392,8 +392,37 @@ mw::Sprite TetrisData::getBackgroundSprite() {
 	return loadSprite(jsonObject_["window"]["sprites"]["background"].get<std::string>());
 }
 
+std::string TetrisData::getAi1Name() const {
+	return jsonObject_["ai1"].get<std::string>();
+}
+std::string TetrisData::getAi2Name() const {
+	return jsonObject_["ai2"].get<std::string>();
+}
+std::string TetrisData::getAi3Name() const {
+	return jsonObject_["ai3"].get<std::string>();
+}
+std::string TetrisData::getAi4Name() const {
+	return jsonObject_["ai4"].get<std::string>();
+}
+
+void TetrisData::setAi1Name(std::string name) {
+	jsonObject_["ai1"] = name;
+}
+
+void TetrisData::setAi2Name(std::string name) {
+	jsonObject_["ai2"] = name;
+}
+
+void TetrisData::setAi3Name(std::string name) {
+	jsonObject_["ai3"] = name;
+}
+
+void TetrisData::setAi4Name(std::string name) {
+	jsonObject_["ai4"] = name;
+}
+
 std::vector<Ai> TetrisData::getAiVector() {
-	return std::vector<Ai>(jsonObject_["players"]["ais"].begin(), jsonObject_["players"]["ais"].end());
+	return std::vector<Ai>(jsonObject_["ais"].begin(), jsonObject_["ais"].end());
 }
 
 std::vector<HighscoreRecord> TetrisData::getHighscoreRecordVector() {
