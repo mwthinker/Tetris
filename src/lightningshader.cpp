@@ -49,7 +49,7 @@ void LightningShader::setUMat(const Mat44& matrix) const {
 	glUniformMatrix4fv(uMat_, 1, false, matrix.data());
 }
 
-void LightningShader::setUColor(const Color& color) const {
+void LightningShader::setUColor(const mw::Color& color) const {
 	shader_.useProgram();
 	glUniform4f(uColor_, color.red_, color.green_, color.blue_, color.alpha_);
 }

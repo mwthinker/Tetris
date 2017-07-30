@@ -70,7 +70,7 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		boardShader_.setGlMatrixU(graphic.getProjectionMatrix() * model);
 		lightningShader_.useProgram();
 		lightningShader_.setUMat(graphic.getProjectionMatrix() * model);
-		lightningShader_.setUColor(Color(1, 1, 1));
+		lightningShader_.setUColor(mw::Color(1, 1, 1));
 		boardShader_.useProgram();
 		updateMatrix_ = false;
 	}

@@ -1,5 +1,4 @@
 #include "drawrow.h"
-#include "color.h"
 #include "tetrisdata.h"
 
 namespace {
@@ -87,9 +86,9 @@ void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
 	for (int column = 0; column < columns_; ++column) {
 		BlockType type = tetrisBoard.getBlockType(row_, column);
 
-		Color color(1, 1, 1, 1);
+		mw::Color color(1, 1, 1, 1);
 		if (type == BlockType::EMPTY) {
-			color = Color(1, 1, 1, 0);
+			color = mw::Color(1, 1, 1, 0);
 		}
 		addSquareTRIANGLES(
 			lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,

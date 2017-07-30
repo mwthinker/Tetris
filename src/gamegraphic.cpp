@@ -71,11 +71,11 @@ void GameGraphic::restart(const LightningShader& lightningShader, const BoardSha
 
 void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, Player& player) {
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
-	const Color c1 = TetrisData::getInstance().getOuterSquareColor();
-	const Color c2 = TetrisData::getInstance().getInnerSquareColor();
-	const Color c3 = TetrisData::getInstance().getStartAreaColor();
-	const Color c4 = TetrisData::getInstance().getPlayerAreaColor();
-	const Color borderColor = TetrisData::getInstance().getBorderColor();
+	const mw::Color c1 = TetrisData::getInstance().getOuterSquareColor();
+	const mw::Color c2 = TetrisData::getInstance().getInnerSquareColor();
+	const mw::Color c3 = TetrisData::getInstance().getStartAreaColor();
+	const mw::Color c4 = TetrisData::getInstance().getPlayerAreaColor();
+	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
 	
 	const mw::Sprite borderHorizontal = TetrisData::getInstance().getBorderHorizontalSprite();
 	const mw::Sprite borderVertical = TetrisData::getInstance().getBorderVerticalSprite();

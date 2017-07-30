@@ -291,7 +291,7 @@ void TetrisWindow::initHighscorePanel() {
 	});
 
     // The component is reused in callbacks.
-	highscore_ = add<Highscore>(gui::BorderLayout::CENTER, 10, Color(1, 1, 1), TetrisData::getInstance().getDefaultFont(18));
+	highscore_ = add<Highscore>(gui::BorderLayout::CENTER, 10, mw::Color(1, 1, 1), TetrisData::getInstance().getDefaultFont(18));
 }
 
 void TetrisWindow::initNewHighscorePanel() {

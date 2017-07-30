@@ -2,9 +2,9 @@
 #define LIGHTNINGSHADER_H
 
 #include "mat44.h"
-#include "color.h"
 
 #include <mw/shader.h>
+#include <mw/color.h>
 
 #include <string>
 
@@ -27,7 +27,7 @@ public:
 	void setVertexAttribPointer() const;
 
 	void setUMat(const Mat44& matrix) const;
-	void setUColor(const Color& color) const;
+	void setUColor(const mw::Color& color) const;
 	
 
 private:

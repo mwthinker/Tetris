@@ -3,7 +3,7 @@
 #include <random>
 #include "random.h"
 
-LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment, Color tInt, float alphaMultiplier, float fadeOutRate, float thickness) :
+LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment, mw::Color tInt, float alphaMultiplier, float fadeOutRate, float thickness) :
 	LightningVertexData(lightShader),
 	Tint_(tInt),
 	alpha_(1.f),
@@ -22,10 +22,10 @@ LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite half
 }
 
 LightningBolt::LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite lineSegment)
-	: LightningBolt(lightShader, halfCircle, lineSegment, Color(1,1,1,1.f), 0.8f, 1/0.5f, 8) {
+	: LightningBolt(lightShader, halfCircle, lineSegment, mw::Color(1,1,1,1.f), 0.8f, 1/0.5f, 8) {
 }
 
-void LightningBolt::addLine(Vec2 start, Vec2 end, const Color& color) {
+void LightningBolt::addLine(Vec2 start, Vec2 end, const mw::Color& color) {
 	addSegmentTRIANGLES(start, end, thickness_, halfCircle_, lineSegment_, halfCircle_);
 }
 
@@ -61,7 +61,7 @@ void LightningBolt::drawWithoutOpenGlStates(float deltaTime) {
 
 	alpha_ -= fadeOutRate_ * deltaTime;
 
-	Color color = Tint_ * (alpha_ * alphaMultiplier_);
+	mw::Color color = Tint_ * (alpha_ * alphaMultiplier_);
 	setColor(color);
 	
 	LightningVertexData::drawTRIANGLES();

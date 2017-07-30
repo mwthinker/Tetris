@@ -1,5 +1,4 @@
 #include "drawblock.h"
-#include "color.h"
 #include "tetrisdata.h"
 
 DrawBlock::DrawBlock(const BoardShader& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
@@ -37,7 +36,7 @@ void DrawBlock::update(const Block& block) {
 
 	begin();
 	for (Square sq : block) {
-		Color color(1, 1, 1);
+		mw::Color color(1, 1, 1);
 		if (sq.row_ >= boardHeight_ - 2) {
 			color.alpha_ = 0;
 		}
@@ -72,7 +71,7 @@ void DrawBlock::update(float deltaTime) {
 void DrawBlock::updateVertexData() {
 	begin();
 	for (Square sq : block_) {
-		Color color(1, 1, 1);
+		mw::Color color(1, 1, 1);
 		if (sq.row_ >= boardHeight_ - 2) {
 			color.alpha_ = 0;
 		}

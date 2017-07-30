@@ -20,7 +20,7 @@ using LightningBoltPtr = std::shared_ptr<LightningBolt>;
 
 class LightningBolt : public LightningVertexData {
 public:
-	LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment, Color tInt, float alphaMultiplier, float fadeOutRate, float thickness);
+	LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment, mw::Color tInt, float alphaMultiplier, float fadeOutRate, float thickness);
 	LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment);
 
 	void draw(float deltaTime);
@@ -59,14 +59,14 @@ private:
 
 	Line findSegmentLargerThan(float position, Vec2 dir) const;
 
-	void addLine(Vec2 start, Vec2 end, const Color& color);
+	void addLine(Vec2 start, Vec2 end, const mw::Color& color);
 
 	mw::Sprite halfCircle_, lineSegment_;
 	mw::VertexDataPtr vd_;
 
 	std::list<Line> segments_;
 
-	Color Tint_;
+	mw::Color Tint_;
 	Random random_;
 	float alphaMultiplier_;
 	float alpha_;

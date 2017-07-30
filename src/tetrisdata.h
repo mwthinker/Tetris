@@ -2,12 +2,12 @@
 #define TETRISDATA_H
 
 #include "block.h"
-#include "color.h"
 #include "ai.h"
 #include "tetrisgame.h"
 
 #include <mw/sound.h>
 #include <mw/sprite.h>
+#include <mw/color.h>
 #include <mw/font.h>
 #include <mw/music.h>
 #include <mw/textureatlas.h>
@@ -56,11 +56,11 @@ public:
 
 	mw::Font getDefaultFont(int size);
 
-	Color getOuterSquareColor();
-	Color getInnerSquareColor();
-	Color getStartAreaColor();
-	Color getPlayerAreaColor();
-	Color getBorderColor();
+	mw::Color getOuterSquareColor();
+	mw::Color getInnerSquareColor();
+	mw::Color getStartAreaColor();
+	mw::Color getPlayerAreaColor();
+	mw::Color getBorderColor();
 
 	mw::Sprite getBorderHorizontalSprite();
 	mw::Sprite getBorderVerticalSprite();
@@ -129,32 +129,32 @@ public:
 
 	float getWindowBarHeight();
 
-	Color getWindowBarColor();
+	mw::Color getWindowBarColor();
 
 	mw::Sprite getCheckboxBoxSprite();
 	mw::Sprite getCheckboxCheckSprite();
-	Color getCheckboxTextColor();
-	Color getCheckboxBackgroundColor();
-	Color getCheckboxBoxColor();
-	Color getChecboxCheckColor();
+	mw::Color getCheckboxTextColor();
+	mw::Color getCheckboxBackgroundColor();
+	mw::Color getCheckboxBoxColor();
+	mw::Color getChecboxCheckColor();
 
-	Color getLabelTextColor();
-	Color getLabelBackgroundColor();
+	mw::Color getLabelTextColor();
+	mw::Color getLabelBackgroundColor();
 
-	Color getButtonFocusColor();
-	Color getButtonTextColor();
-	Color getButtonHoverColor();
-	Color getButtonPushColor();
-	Color getButtonBackgroundColor();
-	Color getButtonBorderColor();
+	mw::Color getButtonFocusColor();
+	mw::Color getButtonTextColor();
+	mw::Color getButtonHoverColor();
+	mw::Color getButtonPushColor();
+	mw::Color getButtonBackgroundColor();
+	mw::Color getButtonBorderColor();
 
-	Color getComboBoxFocusColor();
-	Color getComboBoxTextColor();
-	Color getComboBoxSelectedTextColor();
-	Color getComboBoxSelectedBackgroundColor();
-	Color getComboBoxBackgroundColor();
-	Color getComboBoxBorderColor();
-	Color getComboBoxShowDropDownColor();
+	mw::Color getComboBoxFocusColor();
+	mw::Color getComboBoxTextColor();
+	mw::Color getComboBoxSelectedTextColor();
+	mw::Color getComboBoxSelectedBackgroundColor();
+	mw::Color getComboBoxBackgroundColor();
+	mw::Color getComboBoxBorderColor();
+	mw::Color getComboBoxShowDropDownColor();
 	mw::Sprite getComboBoxShowDropDownSprite();
 
 	mw::Sprite getHumanSprite();

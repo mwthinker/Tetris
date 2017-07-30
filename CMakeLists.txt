@@ -23,7 +23,6 @@ set(SOURCES
 	src/boardsizebutton.h
 	src/boardvertexdata.cpp
 	src/boardvertexdata.h
-	src/color.h
 	src/computer.cpp
 	src/computer.h
 	src/definitions.h

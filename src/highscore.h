@@ -1,8 +1,6 @@
 #ifndef HIGHSCORE_H
 #define HIGHSCORE_H
 
-#include "color.h"
-
 #include <gui/component.h>
 
 #include <mw/text.h>
@@ -22,7 +20,7 @@ public:
 		mw::Text points_, name_, date_;
 	};
 
-	Highscore(int nbr, const Color& color, const mw::Font& font);
+	Highscore(int nbr, const mw::Color& color, const mw::Font& font);
 
 	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
@@ -48,7 +46,7 @@ private:
 
 	std::vector<mw::Text> numbers_;
 	std::list<HighscoreElement> ascList_;
-	Color color_;
+	mw::Color color_;
 	int nextRecord_;
 	mw::Font font_;
 };

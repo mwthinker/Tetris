@@ -3,9 +3,9 @@
 
 #include "lightningshader.h"
 #include "mat44.h"
-#include "color.h"
 
 #include <mw/sprite.h>
+#include <mw/color.h>
 #include <mw/vertexdata.h>
 
 class LightningVertexData : public mw::VertexData {
@@ -13,7 +13,7 @@ public:
 	LightningVertexData(const LightningShader& lightningShader) : lightningShader_(lightningShader) {
 	}
 
-	void setColor(const Color& color) {
+	void setColor(const mw::Color& color) {
 		lightningShader_.setUColor(color);
 	}
 

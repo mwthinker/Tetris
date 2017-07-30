@@ -3,7 +3,7 @@
 void BoardVertexData::addSquareTRIANGLES(
 	float x, float y,
 	float w, float h,
-	const Color& color) {
+	const mw::Color& color) {
 
 	// Left triangle |_
 	addTriangleTRIANGLES(
@@ -28,7 +28,7 @@ void BoardVertexData::addSquareTRIANGLES(
 		color);
 }
 
-void BoardVertexData::addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const Color& color) {
+void BoardVertexData::addSquareTRIANGLES(float x, float y, float w, float h, const mw::Sprite& sprite, const mw::Color& color) {
 	int textureW = sprite.getTexture().getWidth();
 	int textureH = sprite.getTexture().getHeight();
 
@@ -59,7 +59,7 @@ void BoardVertexData::addSquareTRIANGLES(float x1, float y1,
 	float x2, float y2,
 	float x3, float y3,
 	float x4, float y4,
-	const mw::Sprite& sprite, const Color& color) {
+	const mw::Sprite& sprite, const mw::Color& color) {
 	int textureW = sprite.getTexture().getWidth();
 	int textureH = sprite.getTexture().getHeight();
 
@@ -86,7 +86,7 @@ void BoardVertexData::addSquareTRIANGLES(float x1, float y1,
 		color);
 }
 
-void BoardVertexData::addVertex(float x, float y, float xTex, float yTex, bool isTex, const Color& color) {
+void BoardVertexData::addVertex(float x, float y, float xTex, float yTex, bool isTex, const mw::Color& color) {
 	VertexData::addVertex<9>({x, y, xTex, yTex, (float) isTex, color.red_, color.green_, color.blue_, color.alpha_});
 }
 
@@ -104,7 +104,7 @@ void BoardVertexData::addTriangleTRIANGLES(
 	float xTex2, float yTex2,
 	float xTex3, float yTex3,
 	bool isTex,
-	const Color& color) {
+	const mw::Color& color) {
 
 	addVertex(x1, y1, xTex1, yTex1, isTex, color);
 	addVertex(x2, y2, xTex2, yTex2, isTex, color);

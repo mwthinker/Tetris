@@ -79,7 +79,7 @@ namespace {
 
 namespace mw { // Must use the namespace color origin from.
 
-	void from_json(const json& j, Color<float>& color) {
+	void from_json(const json& j, mw::Color& color) {
 		std::stringstream stream(j.get<std::string>());
 		if (!(stream >> color.red_)) {
 			throw std::runtime_error("Red value invalid");
@@ -252,24 +252,24 @@ void TetrisData::bindTextureFromAtlas() const {
 }
 
 
-Color TetrisData::getOuterSquareColor() {
-	return jsonObject_["window"]["tetrisBoard"]["outerSquareColor"].get<Color>();
+mw::Color TetrisData::getOuterSquareColor() {
+	return jsonObject_["window"]["tetrisBoard"]["outerSquareColor"].get<mw::Color>();
 }
 
-Color TetrisData::getInnerSquareColor() {
-	return jsonObject_["window"]["tetrisBoard"]["innerSquareColor"].get<Color>();
+mw::Color TetrisData::getInnerSquareColor() {
+	return jsonObject_["window"]["tetrisBoard"]["innerSquareColor"].get<mw::Color>();
 }
 
-Color TetrisData::getStartAreaColor() {
-	return jsonObject_["window"]["tetrisBoard"]["startAreaColor"].get<Color>();
+mw::Color TetrisData::getStartAreaColor() {
+	return jsonObject_["window"]["tetrisBoard"]["startAreaColor"].get<mw::Color>();
 }
 
-Color TetrisData::getPlayerAreaColor() {
-	return jsonObject_["window"]["tetrisBoard"]["playerAreaColor"].get<Color>();
+mw::Color TetrisData::getPlayerAreaColor() {
+	return jsonObject_["window"]["tetrisBoard"]["playerAreaColor"].get<mw::Color>();
 }
 
-Color TetrisData::getBorderColor() {
-	return jsonObject_["window"]["tetrisBoard"]["borderColor"].get<Color>();
+mw::Color TetrisData::getBorderColor() {
+	return jsonObject_["window"]["tetrisBoard"]["borderColor"].get<mw::Color>();
 }
 
 mw::Sprite TetrisData::getBorderHorizontalSprite() {
@@ -464,8 +464,8 @@ float TetrisData::getWindowBarHeight() {
 	return jsonObject_["window"]["bar"]["height"].get<float>();
 }
 
-Color TetrisData::getWindowBarColor() {
-	return jsonObject_["window"]["bar"]["color"].get<Color>();
+mw::Color TetrisData::getWindowBarColor() {
+	return jsonObject_["window"]["bar"]["color"].get<mw::Color>();
 }
 
 mw::Sprite TetrisData::getCheckboxBoxSprite() {
@@ -476,81 +476,81 @@ mw::Sprite TetrisData::getCheckboxCheckSprite() {
 	return loadSprite(jsonObject_["window"]["checkBox"]["checkImage"].get<std::string>());
 }
 
-Color TetrisData::getCheckboxTextColor() {
-	return jsonObject_["window"]["checkBox"]["textColor"].get<Color>();
+mw::Color TetrisData::getCheckboxTextColor() {
+	return jsonObject_["window"]["checkBox"]["textColor"].get<mw::Color>();
 }
 
-Color TetrisData::getCheckboxBackgroundColor() {
-	return jsonObject_["window"]["checkBox"]["backgroundColor"].get<Color>();
+mw::Color TetrisData::getCheckboxBackgroundColor() {
+	return jsonObject_["window"]["checkBox"]["backgroundColor"].get<mw::Color>();
 }
 
-Color TetrisData::getCheckboxBoxColor() {
-	return jsonObject_["window"]["checkBox"]["boxColor"].get<Color>();
+mw::Color TetrisData::getCheckboxBoxColor() {
+	return jsonObject_["window"]["checkBox"]["boxColor"].get<mw::Color>();
 }
 
-Color TetrisData::getChecboxCheckColor() {
-	return jsonObject_["window"]["checkBox"]["checkColor"].get<Color>();
+mw::Color TetrisData::getChecboxCheckColor() {
+	return jsonObject_["window"]["checkBox"]["checkColor"].get<mw::Color>();
 }
 
-Color TetrisData::getLabelTextColor() {
-	return jsonObject_["window"]["label"]["textColor"].get<Color>();
+mw::Color TetrisData::getLabelTextColor() {
+	return jsonObject_["window"]["label"]["textColor"].get<mw::Color>();
 }
 
-Color TetrisData::getLabelBackgroundColor() {
-	return jsonObject_["window"]["label"]["backgroundColor"].get<Color>();
+mw::Color TetrisData::getLabelBackgroundColor() {
+	return jsonObject_["window"]["label"]["backgroundColor"].get<mw::Color>();
 }
 
 
-Color TetrisData::getButtonFocusColor() {
-	return jsonObject_["window"]["button"]["focusColor"].get<Color>();
+mw::Color TetrisData::getButtonFocusColor() {
+	return jsonObject_["window"]["button"]["focusColor"].get<mw::Color>();
 }
 
-Color TetrisData::getButtonTextColor() {
-	return jsonObject_["window"]["button"]["textColor"].get<Color>();
+mw::Color TetrisData::getButtonTextColor() {
+	return jsonObject_["window"]["button"]["textColor"].get<mw::Color>();
 }
 
-Color TetrisData::getButtonHoverColor() {
-	return jsonObject_["window"]["button"]["hoverColor"].get<Color>();
+mw::Color TetrisData::getButtonHoverColor() {
+	return jsonObject_["window"]["button"]["hoverColor"].get<mw::Color>();
 }
 
-Color TetrisData::getButtonPushColor() {
-	return jsonObject_["window"]["button"]["pushColor"].get<Color>();
+mw::Color TetrisData::getButtonPushColor() {
+	return jsonObject_["window"]["button"]["pushColor"].get<mw::Color>();
 }
 
-Color TetrisData::getButtonBackgroundColor() {
-	return jsonObject_["window"]["button"]["backgroundColor"].get<Color>();
+mw::Color TetrisData::getButtonBackgroundColor() {
+	return jsonObject_["window"]["button"]["backgroundColor"].get<mw::Color>();
 }
 
-Color TetrisData::getButtonBorderColor() {
-	return jsonObject_["window"]["button"]["borderColor"].get<Color>();
+mw::Color TetrisData::getButtonBorderColor() {
+	return jsonObject_["window"]["button"]["borderColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxFocusColor() {
-	return jsonObject_["window"]["comboBox"]["focusColor"].get<Color>();
+mw::Color TetrisData::getComboBoxFocusColor() {
+	return jsonObject_["window"]["comboBox"]["focusColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxTextColor() {
-	return jsonObject_["window"]["comboBox"]["textColor"].get<Color>();
+mw::Color TetrisData::getComboBoxTextColor() {
+	return jsonObject_["window"]["comboBox"]["textColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxSelectedTextColor() {
-	return jsonObject_["window"]["comboBox"]["selectedTextColor"].get<Color>();
+mw::Color TetrisData::getComboBoxSelectedTextColor() {
+	return jsonObject_["window"]["comboBox"]["selectedTextColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxSelectedBackgroundColor() {
-	return jsonObject_["window"]["comboBox"]["selectedBackgroundColor"].get<Color>();
+mw::Color TetrisData::getComboBoxSelectedBackgroundColor() {
+	return jsonObject_["window"]["comboBox"]["selectedBackgroundColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxBackgroundColor() {
-	return jsonObject_["window"]["comboBox"]["backgroundColor"].get<Color>();
+mw::Color TetrisData::getComboBoxBackgroundColor() {
+	return jsonObject_["window"]["comboBox"]["backgroundColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxBorderColor() {
-	return jsonObject_["window"]["comboBox"]["borderColor"].get<Color>();
+mw::Color TetrisData::getComboBoxBorderColor() {
+	return jsonObject_["window"]["comboBox"]["borderColor"].get<mw::Color>();
 }
 
-Color TetrisData::getComboBoxShowDropDownColor() {
-	return jsonObject_["window"]["comboBox"]["showDropDownColor"].get<Color>();
+mw::Color TetrisData::getComboBoxShowDropDownColor() {
+	return jsonObject_["window"]["comboBox"]["showDropDownColor"].get<mw::Color>();
 }
 
 mw::Sprite TetrisData::getComboBoxShowDropDownSprite() {
