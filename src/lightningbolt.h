@@ -33,7 +33,7 @@ public:
 
 	void restart();
 
-	inline bool isAlive() const {
+	bool isAlive() const {
 		return alpha_ >= 0;
 	}
 	
@@ -42,10 +42,10 @@ private:
 	public:
 		Vec2 start_, end_;
 
-		inline Line() {
+		Line() {
 		}
 
-		inline Line(Vec2 start, Vec2 end, float thickness) : start_(start), end_(end) {
+		Line(Vec2 start, Vec2 end, float thickness) : start_(start), end_(end) {
 		}
 	};
 

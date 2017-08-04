@@ -42,7 +42,7 @@ public:
 	virtual void update(const TetrisBoard& board) {
 	}
 
-	inline bool isAi() const {
+	bool isAi() const {
 		return ai_;
 	}
 

@@ -12,7 +12,7 @@ public:
 	Input currentInput() override;
 	std::string getName() const override;
 
-	inline int getInstanceId() const {
+	int getInstanceId() const {
 		return gameController_->getInstanceId();
 	}
 

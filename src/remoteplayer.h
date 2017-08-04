@@ -13,7 +13,7 @@ public:
 	RemotePlayer(int id, int width, int height, BlockType current, BlockType next);
 
 	// @Player
-	inline void update(double deltaTime) override {
+	void update(double deltaTime) override {
 	}
 
 	void receive(net::Packet& packet);
@@ -22,15 +22,15 @@ public:
 
 	void restart(BlockType current, BlockType next);
 
-	inline void setName(std::string name) {
+	void setName(std::string name) {
 		name_ = name;
 	}
 
-	inline void setLevel(int level) {
+	void setLevel(int level) {
 		level_ = level;
 	}
 
-	inline void setPoints(int points) {
+	void setPoints(int points) {
 		points_ = points;
 	}
 };

@@ -22,7 +22,7 @@ public:
 	// @Player
     void update(double deltaTime) override;
 
-	inline const DevicePtr& getDevice() const {
+	const DevicePtr& getDevice() const {
 		return device_;
 	}
 
@@ -30,23 +30,23 @@ public:
 
 	void resizeBoard(int width, int height);
 
-	inline int getLevelUpCounter() const {
+	int getLevelUpCounter() const {
 		return levelUpCounter_;
 	}
 
-	inline void setLevelUpCounter(int levelUpCounter) {
+	void setLevelUpCounter(int levelUpCounter) {
 		levelUpCounter_ = levelUpCounter;
 	}
 
-	inline void setLevel(int level) {
+	void setLevel(int level) {
 		level_ = level;
 	}
 
-	inline void setPoints(int points) {
+	void setPoints(int points) {
 		points_ = points;
 	}
 
-	inline void setConnectionId(int connectionId) {
+	void setConnectionId(int connectionId) {
 		connectionId_ = connectionId;
 	}
 
@@ -61,8 +61,7 @@ private:
 
     // Objects controlling how the moving block is moved.
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_, downGroundHandler_;
-	int nbrOfUpdates_;
-    DevicePtr device_;
+	DevicePtr device_;
 	PacketSender& sender_;
 	int levelUpCounter_;
 	int connectionId_;

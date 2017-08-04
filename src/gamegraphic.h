@@ -47,11 +47,11 @@ public:
 
 	void updateTextSize(float size, const mw::Font& font);
 
-	inline float getWidth() const {
+	float getWidth() const {
 		return width_;
 	}
 
-	inline float getHeight() const {
+	float getHeight() const {
 		return height_;
 	}
 
@@ -59,11 +59,11 @@ public:
 
 	void setMiddleMessage(const mw::Text& text);
 
-	inline void showPoints() {
+	void showPoints() {
 		showPoints_ = true;
 	}
 
-	inline void hidePoints() {
+	void hidePoints() {
 		showPoints_ = false;
 	}
 

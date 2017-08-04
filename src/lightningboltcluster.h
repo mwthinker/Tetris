@@ -110,7 +110,7 @@ public:
 	}
 
 private:
-	static inline LightningBoltPtr removeFromVector(std::vector<LightningBoltPtr>& v, int unsigned index) {
+	static LightningBoltPtr removeFromVector(std::vector<LightningBoltPtr>& v, int unsigned index) {
 		auto element = v[index];
 		std::swap(v[index], v.back());
 		v.pop_back();

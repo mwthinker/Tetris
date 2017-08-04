@@ -53,19 +53,19 @@ public:
 		float x2, float y2,
 		float x3, float y3);
 
-	inline void setVertexAttribPointer() const override {
+	void setVertexAttribPointer() const override {
 		boardShader_.setVertexAttribPointer();
 	}
 
-	inline void useProgram() const override {
+	void useProgram() const override {
 		boardShader_.useProgram();
 	}
 
-	inline unsigned int vertexSizeInFloat() const override {
+	unsigned int vertexSizeInFloat() const override {
 		return boardShader_.vertexSizeInFloat();
 	}
 
-	inline void drawTRIANGLES() {
+	void drawTRIANGLES() {
 		drawMode(GL_TRIANGLES);
 	}
 

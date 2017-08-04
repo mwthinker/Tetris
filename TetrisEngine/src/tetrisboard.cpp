@@ -50,12 +50,10 @@ std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPe
 	return rows;
 }
 
-TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next) : RawTetrisBoard(nbrRows, nbrColumns, current, next) {
-	nbrOfUpdates_ = 0;
+TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next) : RawTetrisBoard(nbrRows, nbrColumns, current, next), turns_(0) {
 }
 
-TetrisBoard::TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) : RawTetrisBoard(board, rows, columns, current, next) {
-	nbrOfUpdates_ = 0;
+TetrisBoard::TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) : RawTetrisBoard(board, rows, columns, current, next), turns_(0) {
 }
 
 TetrisBoard::TetrisBoard(const TetrisBoard& board) : RawTetrisBoard(board) {
@@ -63,15 +61,16 @@ TetrisBoard::TetrisBoard(const TetrisBoard& board) : RawTetrisBoard(board) {
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
 	squaresToAdd_.clear();
-	nbrOfUpdates_ = 0;
+	turns_ = 0;
 	updateRestart(current, next);
 }
 
 void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 	listener_(gameEvent, *this);
 	switch (gameEvent) {
-		case GameEvent::BLOCK_COLLISION:
-			++nbrOfUpdates_;
+		case GameEvent::NEXT_BLOCK_UPDATED:
+			// Assumes a new turn.
+			++turns_;
 			break;
 	}
 }

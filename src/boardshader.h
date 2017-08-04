@@ -9,11 +9,11 @@
 
 class BoardShader {
 public:
-	inline static constexpr unsigned int vertexSizeInBytes() {
+	static constexpr unsigned int vertexSizeInBytes() {
 		return vertexSizeInFloat() * sizeof(GLfloat);
 	}
 
-	inline static constexpr unsigned int vertexSizeInFloat() {
+	static constexpr unsigned int vertexSizeInFloat() {
 		return 9;
 	}
 

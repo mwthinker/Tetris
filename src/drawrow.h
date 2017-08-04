@@ -14,7 +14,7 @@ class DrawRow : public BoardVertexData {
 public:
 	DrawRow(const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
-	inline int getRow() const {
+	int getRow() const {
 		return row_;
 	}
 
@@ -23,16 +23,6 @@ public:
 	void draw(float deltaTime);
 
 	bool isAlive() const;
-
-	inline void setSprites(mw::Sprite spriteI, mw::Sprite spriteJ, mw::Sprite spriteL, mw::Sprite spriteO, mw::Sprite spriteS, mw::Sprite spriteT, mw::Sprite spriteZ) {
-		spriteI_ = spriteI;
-		spriteJ_ = spriteJ;
-		spriteL_ = spriteL;
-		spriteO_ = spriteO;
-		spriteS_ = spriteS;
-		spriteT_ = spriteT;
-		spriteZ_ = spriteZ;
-	}
 
 	void init(int row, const TetrisBoard& board);
 

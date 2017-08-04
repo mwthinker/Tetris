@@ -20,44 +20,44 @@ public:
 	void rotateLeft();
 	void rotateRight();
 	
-	inline Square operator[](int index) const {
+	Square operator[](int index) const {
 		return squares_[index];
 	}
 
-	inline int getSize() const {
+	int getSize() const {
 		return squares_.size();
 	}
 
-	inline Square getRotationSquare() const {
+	Square getRotationSquare() const {
 		return squares_[rotationSquareIndex_];
 	}
 
-	inline BlockType getBlockType() const {
+	BlockType getBlockType() const {
 		return blockType_;
 	}
 
 	// Returns the lowest possible row for the block when rotating.
-	inline int getLowestRow() const {
+	int getLowestRow() const {
 		return lowestRow_;
 	}	
 
-	inline const_iterator begin() const {
+	const_iterator begin() const {
 		return squares_.begin();
 	}
 
-	inline const_iterator end() const {
+	const_iterator end() const {
 		return squares_.end();
 	}
 
-	inline int getNumberOfRotations() const {
+	int getNumberOfRotations() const {
 		return maxRotations_;
 	}
 
-	inline int getCurrentRotation() const {
+	int getCurrentRotation() const {
 		return currentRotation_;
 	}
 
-	inline int getStartColumn() const {
+	int getStartColumn() const {
 		return startColumn_;
 	}
 

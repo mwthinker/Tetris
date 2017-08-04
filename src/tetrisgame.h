@@ -66,7 +66,7 @@ public:
 
 	int getNbrOfPlayers() const;
 
-	inline int getMaxLevel() const {
+	int getMaxLevel() const {
 		return maxLevel_;
 	}
 
@@ -82,11 +82,11 @@ public:
 
 	void setPlayers(const std::vector<DevicePtr>& devices);
 
-	inline Status getStatus() const {
+	Status getStatus() const {
 		return status_;
 	}
 
-	inline mw::signals::Connection addGameEventHandler(const std::function<void (TetrisGameEvent&)>& handler) {
+	mw::signals::Connection addGameEventHandler(const std::function<void (TetrisGameEvent&)>& handler) {
 		return eventHandler_.connect(handler);
 	}
 
@@ -111,19 +111,19 @@ private:
 
 		void disconnect();
 				
-		inline std::vector<std::shared_ptr<RemoteConnection>>::iterator begin() {
+		std::vector<std::shared_ptr<RemoteConnection>>::iterator begin() {
 			return remoteConnections_.begin();
 		}
 
-		inline std::vector<std::shared_ptr<RemoteConnection>>::iterator end() {
+		std::vector<std::shared_ptr<RemoteConnection>>::iterator end() {
 			return remoteConnections_.end();
 		}
 
-		inline void setServerConnection(const net::ConnectionPtr& connectionToServer) {
+		void setServerConnection(const net::ConnectionPtr& connectionToServer) {
 			connectionToServer_ = connectionToServer;
 		}
 		
-		inline bool receivePacketFromServer(net::Packet& packet) {
+		bool receivePacketFromServer(net::Packet& packet) {
 			return connectionToServer_->receive(packet);
 		}
 

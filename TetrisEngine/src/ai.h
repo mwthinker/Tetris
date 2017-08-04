@@ -10,28 +10,28 @@
 
 class Ai {
 public:
-	inline Ai() : name_("DefaultAi") {
+	Ai() : name_("DefaultAi") {
 		valueFunction_ = "-5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight";
 		initCalculator();
 	}
 
-	inline Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {
+	Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {
 		initCalculator();
 	}
 
-	inline std::string getName() const {
+	std::string getName() const {
 		return name_;
 	}
 
-	inline std::string getValueFunction() const {
+	std::string getValueFunction() const {
 		return valueFunction_;
 	}
 
-	inline calc::Calculator& getCalculator() {
+	calc::Calculator& getCalculator() {
 		return calculator_;
 	}
 
-	inline const calc::Cache& getCache() {
+	const calc::Cache& getCache() {
 		return cache_;
 	}
 

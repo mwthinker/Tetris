@@ -32,7 +32,7 @@ public:
 
 class TetrisData {
 public:
-	inline static TetrisData& getInstance() {
+	static TetrisData& getInstance() {
 		static TetrisData instance;
 		return instance;
 	}

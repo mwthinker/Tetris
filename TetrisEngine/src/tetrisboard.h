@@ -28,8 +28,8 @@ public:
 	// Add rows to be added at the bottom of the board at the next change of the moving block.
 	void addRows(const std::vector<BlockType>& blockTypes);
 
-	inline int getNbrOfUpdates() const {
-		return nbrOfUpdates_;
+	int getTurns() const {
+		return turns_;
 	}
 
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
@@ -44,7 +44,7 @@ private:
 	std::vector<BlockType> squaresToAdd_;
 	mw::Signal<GameEvent, const TetrisBoard&> listener_;
 	
-	int nbrOfUpdates_;
+	int turns_;
 	Random random_;
 };
 

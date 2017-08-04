@@ -2,7 +2,7 @@
 
 namespace {
 
-	// Calculate and return all possible states from the point of view from the block provided.
+	// Calculate and return all possible states for the block provided.
 	std::vector<Ai::State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block, int removeRows) {
 		std::vector<Ai::State> states;
 		

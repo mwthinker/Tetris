@@ -7,9 +7,9 @@ RawTetrisBoard::RawTetrisBoard(int rows, int columns, BlockType current, BlockTy
 	next_(next),
 	rows_(rows), columns_(columns),
 	isGameOver_(false),
-	rowsRemoved_(0) {
+	rowsRemoved_(0),
+	current_(createBlock(current)) {
 	
-	current_ = createBlock(current);
 }
 
 RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) :
@@ -173,7 +173,6 @@ void RawTetrisBoard::updateRestart(int rows, int columns, BlockType current, Blo
 	rowToBeRemoved_ = -1;
 	externalRowsAdded_ = 0;
 	clearBoard();
-	gameboard_.resize(rows * columns, BlockType::EMPTY);
 	triggerEvent(GameEvent::RESTARTED);
 }
 
@@ -216,7 +215,7 @@ bool RawTetrisBoard::collision(const Block& block) const {
 }
 
 void RawTetrisBoard::clearBoard() {
-	gameboard_.assign(gameboard_.size(), BlockType::EMPTY);
+	gameboard_.assign(rows_ * columns_, BlockType::EMPTY);
 	isGameOver_ = false;
 }
 

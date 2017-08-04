@@ -41,7 +41,7 @@ void printBoard(const TetrisBoard& board) {
 	for (int i = 0; i < columns; ++i) {
 		std::cout << "--";
 	}
-	std::cout << "-\n" << "Turns : " << board.getNbrOfUpdates() << "\n\n";
+	std::cout << "-\n" << "Turns : " << board.getTurns() << "\n\n";
 }
 
 int main(int argc, char** argv) {
@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 		Ai::State state = defaultAi_.calculateBestState(board, 1);
 
 		if (newBlock) {
-			std::cout << "Turns : " << board.getNbrOfUpdates() << "\n";
+			std::cout << "Turns : " << board.getTurns() << "\n";
 			printBoard(board);
 
 			for (int i = 0; i < state.rotationLeft_; ++i) {

@@ -100,7 +100,7 @@ public:
 		lightningShader_.useProgram();
 	}
 
-	inline void drawTRIANGLES() {
+	void drawTRIANGLES() {
 		drawMode(GL_TRIANGLES);
 	}
 

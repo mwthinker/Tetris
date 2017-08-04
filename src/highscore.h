@@ -30,11 +30,11 @@ public:
 	void setNextRecord(int record);
 	int getNextRecord() const;
 
-	inline std::list<HighscoreElement>::const_iterator begin() const {
+	std::list<HighscoreElement>::const_iterator begin() const {
 		return ascList_.cbegin();
 	}
 
-	inline std::list<HighscoreElement>::const_iterator end() const {
+	std::list<HighscoreElement>::const_iterator end() const {
 		return ascList_.cend();
 	}
 

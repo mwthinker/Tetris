@@ -15,17 +15,17 @@ enum class BlockType {
 
 class Square {
 public:
-	inline Square() {
+	Square() {
 	}
 
-	inline Square(BlockType blockType, int row, int column) : blockType_(blockType), row_(row), column_(column) {
+	Square(BlockType blockType, int row, int column) : blockType_(blockType), row_(row), column_(column) {
 	}
 
-	inline bool operator==(const Square& square) const {
+	bool operator==(const Square& square) const {
 		return square.row_ == row_ && square.column_ == column_;
 	}
 
-	inline bool operator!=(const Square& square) const {
+	bool operator!=(const Square& square) const {
 		return square.row_ != row_ || square.column_ != column_;
 	}
 

@@ -17,13 +17,13 @@ public:
 
 	Player(int id, int width, int height, int points, int level, Block current, BlockType next, const std::vector<BlockType>& board);
 	
-	inline virtual ~Player() {
+	virtual ~Player() {
 	}
 	
 	// Update the player.
 	virtual void update(double deltaTime) = 0;
 	
-	inline int getId() const {
+	int getId() const {
 		return id_;
 	}
 	
@@ -31,15 +31,15 @@ public:
 		return name_;
 	}
 	
-	inline int getLevel() const {
+	int getLevel() const {
 		return level_;
 	}
 
-	inline int getPoints() const {
+	int getPoints() const {
 		return points_;
 	}
 
-	inline int getClearedRows() const {
+	int getClearedRows() const {
 		return tetrisBoard_.getRemovedRows();
 	}
 	
@@ -47,11 +47,11 @@ public:
 		return tetrisBoard_;
 	}
 
-	inline float getGravityDownSpeed() const {
+	float getGravityDownSpeed() const {
 		return 1 + level_ * 0.5f;
 	}
 
-	inline float getWaitingTime() const {
+	float getWaitingTime() const {
 		return 0.5f;
 	}
 

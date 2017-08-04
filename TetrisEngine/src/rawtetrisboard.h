@@ -44,8 +44,7 @@ public:
 	RawTetrisBoard(int rows, int columns, BlockType current, BlockType next);
 	RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next);
 	
-	inline virtual ~RawTetrisBoard() {
-	}
+	virtual ~RawTetrisBoard() = default;
 
 	// Move the block. The board will stay constant if game over is true.
     void update(Move move);
@@ -62,17 +61,17 @@ public:
 	void updateRestart(int rows, int columns, BlockType current, BlockType next);
     
 	// Return the number of rows.
-	inline int getRows() const {
+	int getRows() const {
 		return rows_;
 	}
 
 	// Return the number of columns.
-	inline int getColumns() const {
+	int getColumns() const {
 		return columns_;
 	}
 
 	// Return true if the game is over else false.
-	inline bool isGameOver() const {
+	bool isGameOver() const {
 		return isGameOver_;
 	}
 
@@ -81,17 +80,17 @@ public:
     const std::vector<BlockType>& getBoardVector() const;
 
 	// Return the moving block.
-	inline Block getBlock() const {
+	Block getBlock() const {
 		return current_;
 	}
 
 	// Return the type of the moving block.
-	inline BlockType getBlockType() const {
+	BlockType getBlockType() const {
 		return current_.getBlockType();
 	}
 
 	// Return the type of the next block.
-	inline BlockType getNextBlockType() const {
+	BlockType getNextBlockType() const {
 		return next_;
 	}
 
@@ -102,20 +101,20 @@ public:
 	// Otherwise it return false.
 	bool collision(const Block& block) const;
 
-	inline int getNbrExternalRowsAdded() const {
+	int getNbrExternalRowsAdded() const {
 		return externalRowsAdded_;
 	}
 
-	inline int getRemovedRows() const {
+	int getRemovedRows() const {
 		return rowsRemoved_;
 	}
 
-	inline int getRowToBeRemoved() const {
+	int getRowToBeRemoved() const {
 		return rowToBeRemoved_;
 	}
 
 private:
-	inline BlockType& blockType(int row, int column) {
+	BlockType& blockType(int row, int column) {
 		return gameboard_[row * columns_ + column];
 	}
 
@@ -131,7 +130,7 @@ private:
 	virtual void triggerEvent(GameEvent gameEvent) {
 	}
 
-	inline virtual std::vector<BlockType> addExternalRows() {
+	virtual std::vector<BlockType> addExternalRows() {
 		return std::vector<BlockType>(0); // A vector with no dynamic allocated size.
 	}
 

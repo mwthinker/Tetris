@@ -72,7 +72,6 @@ namespace {
 			default:
 				return "E";
 		}
-		
 	}
 
 }
