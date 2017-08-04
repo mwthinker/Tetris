@@ -15,12 +15,12 @@ namespace {
 }
 
 Computer::Computer() : Device(true) {
-	nbrOfUpdates_ = -1;
+	currentTurn_ = 0;
 	activeThread_ = false;
 }
 
 Computer::Computer(const Ai& ai) : Device(true) {
-	nbrOfUpdates_ = -1;
+	currentTurn_ = 0;
 	ai_ = ai;
 	activeThread_ = false;
 }
@@ -35,16 +35,15 @@ std::string Computer::getName() const {
 
 void Computer::update(const TetrisBoard& board) {
 	// New block appears?
-	if (nbrOfUpdates_ != board.getNbrOfUpdates() && !activeThread_) {
+	if (currentTurn_ != board.getTurns() && !activeThread_) {
 		activeThread_ = true;
 		input_ = Input();
-		nbrOfUpdates_ = board.getNbrOfUpdates();
+		currentTurn_ = board.getTurns();
 		handle_ = std::async(std::launch::async | std::launch::deferred, asyncCalculateBestState, board, ai_, 1);
 	} else {
 		if (handle_.valid()) {
 			latestState_ = handle_.get();
 			latestBlock_ = board.getBlock();
-			input_ = calculateInput(latestState_);
 			handle_ = std::future<Ai::State>();
 			activeThread_ = false;
 		}

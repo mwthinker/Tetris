@@ -19,7 +19,6 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	levelUpCounter_(0) {
 
 	device_->update(getTetrisBoard());
-	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
 	name_ = device_->getName();
 	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
 	watingTime_ = 0;
@@ -40,7 +39,6 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height, 
 	levelUpCounter_(0) {
 
 	device_->update(getTetrisBoard());
-	nbrOfUpdates_ = getTetrisBoard().getNbrOfUpdates();
 	name_ = device_->getName();
 	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
 	watingTime_ = 0;

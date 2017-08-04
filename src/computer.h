@@ -28,7 +28,7 @@ private:
 	// Calculate and return the best input to achieve the current state.
 	Input calculateInput(Ai::State state) const;
 
-	int nbrOfUpdates_;
+	int currentTurn_;
 	Input input_;
 	Ai::State latestState_;
 	Block latestBlock_;
