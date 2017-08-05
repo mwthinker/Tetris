@@ -86,8 +86,6 @@ void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 			downHandler_.reset();
 			break;
 	}
-
-	device_->update(board);
 }
 
 void LocalPlayer::update(double deltaTime) {
@@ -130,6 +128,8 @@ void LocalPlayer::update(double deltaTime) {
 			update(Move::DOWN_GROUND);
 		}
 	}
+	
+	device_->update(tetrisBoard_);
 }
 
 void LocalPlayer::restart(BlockType current, BlockType next) {

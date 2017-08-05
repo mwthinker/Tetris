@@ -32,8 +32,7 @@ public:
 	Device(bool ai) : ai_(ai) {
 	}
 
-	virtual ~Device() {
-	}
+	virtual ~Device() = default;
 
 	virtual Input currentInput() = 0;
 

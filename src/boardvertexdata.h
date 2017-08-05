@@ -16,8 +16,7 @@ public:
 	BoardVertexData(const BoardShader& boardShader) : boardShader_(boardShader) {
 	}
 
-	virtual ~BoardVertexData() {
-	}
+	virtual ~BoardVertexData() = default;
 
 	// Add two triangles, GL_TRIANGLES, i.e. 6 vertices.
 	void addSquareTRIANGLES(

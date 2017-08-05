@@ -7,9 +7,10 @@ RawTetrisBoard::RawTetrisBoard(int rows, int columns, BlockType current, BlockTy
 	next_(next),
 	rows_(rows), columns_(columns),
 	isGameOver_(false),
-	rowsRemoved_(0),
-	current_(createBlock(current)) {
-	
+	rowsRemoved_(0) {
+
+	// Uses the size of the board. I.e. rows_ and columns_.
+	current_ = createBlock(current);
 }
 
 RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) :

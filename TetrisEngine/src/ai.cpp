@@ -1,4 +1,5 @@
 #include "ai.h"
+#include <iostream>
 
 namespace {
 
@@ -52,33 +53,40 @@ namespace {
 		return states;
 	}
 
-	float calculateValue(calc::Calculator& calculator, const calc::Cache& cache, RawTetrisBoard& board, const Block& block) {
-		int lowestRow = board.getRows();
-		float meanHeight = 0;
-		int nbrOfSquares = 0;
+	struct RowRoughness {
+		RowRoughness() : roughness_(0), meanHeight_(0) {
+		}
 
-		float rowRoughness = 0;
-		for (int row = 0; row < lowestRow; ++row) {
-			bool lastHole = false;
-			for (int column = 0; column < board.getColumns(); ++column) {
+		float roughness_;
+		float meanHeight_;
+	};
+
+	RowRoughness calculateRowRoughness(const RawTetrisBoard& board, int highestUsedRow) {
+		RowRoughness rowRoughness;
+		int holes = 0;
+		for (int row = 0; row < highestUsedRow; ++row) {
+			bool lastHole = board.getBlockType(row, 0) == BlockType::EMPTY;
+			for (int column = 1; column < board.getColumns(); ++column) {
 				bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
 				if (lastHole != hole) {
-					rowRoughness += 1;
+					rowRoughness.roughness_ += 1;
 					lastHole = hole;
 				}
 				if (!hole) {
-					meanHeight += row;
-					++nbrOfSquares;
+					rowRoughness.meanHeight_ += row;
+					++holes;
 				}
 			}
 		}
+		rowRoughness.meanHeight_ /= holes;
+		return rowRoughness;
+	}
 
-		meanHeight /= nbrOfSquares;
-
+	float calculateColumnRoughness(const RawTetrisBoard& board, int highestUsedRow) {
 		float columnRoughness = 0;
 		for (int column = 0; column < board.getColumns(); ++column) {
-			bool lastHole = false;
-			for (int row = 0; row < lowestRow; ++row) {
+			bool lastHole = board.getBlockType(0, column) == BlockType::EMPTY;
+			for (int row = 1; row < highestUsedRow; ++row) {
 				bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
 				if (lastHole != hole) {
 					columnRoughness += 1;
@@ -86,24 +94,52 @@ namespace {
 				}
 			}
 		}
+		return columnRoughness;
+	}
 
+	int calculateHighestUsedRow(const RawTetrisBoard& board) {
+		auto v = board.getBoardVector();
+		int index = 0;
+		for (auto it = v.rbegin(); it != v.rend(); ++it) {
+			if (*it != BlockType::EMPTY) {
+				index = it - v.rbegin();
+				break;
+			}
+		}
+		return (v.size() - index - 1) / board.getColumns() + 2;
+	}
+
+	float calculateBlockMeanHeight(const Block& block) {
+		int blockMeanHeight = 0;
+		for (const Square& sq : block) {
+			blockMeanHeight += sq.row_;
+		}
+		return (float) blockMeanHeight / block.getSize();
+	}
+
+	int calculateBlockEdges(const RawTetrisBoard& board, const Block& block) {
 		int edges = 0;
-		float blockMeanHeight = 0;
 		for (const Square& sq : block) {
 			board.getBlockType(sq.row_, sq.column_ - 1) != BlockType::EMPTY ? ++edges : 0;
 			board.getBlockType(sq.row_ - 1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
 			board.getBlockType(sq.row_, sq.column_ + 1) != BlockType::EMPTY ? ++edges : 0;
-			blockMeanHeight += sq.row_;
 		}
-		blockMeanHeight /= 4;
+		return edges;
+	}
 
-		calculator.updateVariable("rowRoughness", rowRoughness);
+	float calculateValue(calc::Calculator& calculator, const calc::Cache& cache, const RawTetrisBoard& board, const Block& block) {
+		int highestUsedRow = calculateHighestUsedRow(board);
+		
+		RowRoughness rowRoughness = calculateRowRoughness(board, highestUsedRow);
+		float columnRoughness = calculateColumnRoughness(board, highestUsedRow);
+		int edges = calculateBlockEdges(board, block);
+		float blockMeanHeight = calculateBlockMeanHeight(block);
+		
+		calculator.updateVariable("rowRoughness", rowRoughness.roughness_);
 		calculator.updateVariable("columnRoughness", columnRoughness);
 		calculator.updateVariable("edges", (float) edges);
-		calculator.updateVariable("meanHeight", meanHeight);
+		calculator.updateVariable("meanHeight", rowRoughness.meanHeight_);
 		calculator.updateVariable("blockMeanHeight", blockMeanHeight);
-		calculator.updateVariable("rows", (float) board.getRows());
-		calculator.updateVariable("columns", (float) board.getColumns());
 
 		return calculator.excecute(cache);
 	}
@@ -111,6 +147,8 @@ namespace {
 } // Anonymous namespace.
 
 Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
+	calculator_.updateVariable("rows", (float) board.getRows());
+	calculator_.updateVariable("columns", (float) board.getColumns());
 	return calculateBestState(board, depth, 0);
 }
 
@@ -129,11 +167,11 @@ Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth, int removeRows
 				childBoard.update(Move::ROTATE_LEFT);
 			}
 			
-			// Move left if is is possible.
+			// Move left.
 			for (int i = 0; i < state.left_; ++i) {
 				childBoard.update(Move::LEFT);
 			}
-			// Move right if is is possible.
+			// Move right.
 			for (int i = 0; i < -1 * state.left_; ++i) {
 				childBoard.update(Move::RIGHT);
 			}
