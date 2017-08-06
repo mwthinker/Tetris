@@ -119,7 +119,7 @@ void RawTetrisBoard::update(Move move) {
 					// Add rows due to some external event.
 					std::vector<BlockType> squares = addExternalRows();
 					if (squares.size() > 0) {
-						externalRowsAdded_ = squares.size() % columns_;
+						externalRowsAdded_ = squares.size() / columns_;
 						gameboard_.insert(gameboard_.begin(), squares.begin(), squares.end());
 						triggerEvent(GameEvent::EXTERNAL_ROWS_ADDED);
 					}

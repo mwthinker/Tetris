@@ -10,14 +10,9 @@
 
 class Ai {
 public:
-	Ai() : name_("DefaultAi") {
-		valueFunction_ = "-5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight";
-		initCalculator();
-	}
+	Ai();
 
-	Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {
-		initCalculator();
-	}
+	Ai(std::string name, std::string valueFunction);
 
 	std::string getName() const {
 		return name_;

@@ -50,6 +50,9 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 		case GameEvent::TWO_ROW_REMOVED:
 		case GameEvent::ONE_ROW_REMOVED:
 			break;
+		case GameEvent::EXTERNAL_ROWS_ADDED:
+			row_ += tetrisBoard.getNbrExternalRowsAdded();
+			break;
 		case GameEvent::BLOCK_COLLISION:
 			if (row_ >= 0) {
 				updateVertexData(tetrisBoard);

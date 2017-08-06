@@ -76,6 +76,10 @@ private:
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
+	void addEmptyRowTop(const TetrisBoard& tetrisBoard);
+
+	void addDrawRowBottom(const TetrisBoard& tetrisBoard, int row);
+
 	std::list<DrawRowPtr> rows_;
 	std::list<DrawRowPtr> freeRows_;
 	BoardVertexDataPtr staticVertexData_;

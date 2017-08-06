@@ -120,7 +120,6 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	updateMatrix_ = true;
 }
 
-
 void GameComponent::countDown(int msCountDown) {
 	mw::Text text("", TetrisData::getInstance().getInstance().getDefaultFont(30));
 	if (msCountDown > 0) {

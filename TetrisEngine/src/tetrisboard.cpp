@@ -76,7 +76,9 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 }
 
 void TetrisBoard::addRows(const std::vector<BlockType>& blockTypes) {
-	squaresToAdd_.insert(squaresToAdd_.end(), blockTypes.begin(), blockTypes.end());
+	if (!isGameOver()) {
+		squaresToAdd_.insert(squaresToAdd_.end(), blockTypes.begin(), blockTypes.end());
+	}
 }
 
 std::vector<BlockType> TetrisBoard::addExternalRows() {

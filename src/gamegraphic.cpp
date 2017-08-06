@@ -263,10 +263,15 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
 	dynamicBuffer.addVertexData(currentBlockPtr_);
 
+	// Add rows to represent the board.
+	// Add free rows to represent potential rows, e.g. the board receives extrenal rows.
 	for (int row = 0; row < rows; ++row) {
 		auto drawRow = std::make_shared<DrawRow>(boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
+		auto freeRow = std::make_shared<DrawRow>(boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
 		dynamicBuffer.addVertexData(drawRow);
+		dynamicBuffer.addVertexData(freeRow);
 		rows_.push_back(drawRow);
+		freeRows_.push_back(freeRow);
 	}
 	
 	dynamicBuffer.uploadToGraphicCard();
@@ -314,10 +319,20 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		{
 			int rows = tetrisBoard.getNbrExternalRowsAdded();
 			for (int row = 0; row < rows; ++row) {
-				auto drawRow = freeRows_.front();
-				freeRows_.pop_front();
-				drawRow->init(row, tetrisBoard);
-				rows_.push_back(drawRow);
+				addDrawRowBottom(tetrisBoard, rows - row - 1);
+			}
+			int highestRow = tetrisBoard.getBoardVector().size() / tetrisBoard.getColumns();
+			assert(rows_.size() - highestRow >= 0); // Something is wrong. Should not be posssible.
+			for (int i = 0; i < (int) rows_.size() - highestRow; ++i) { // Remove unneeded empty rows at the top.
+				rows_.pop_back();
+			}
+
+			int row = 0;
+			for (auto it = rows_.begin(); it != rows_.end(); ++it) {
+				if (row != (*it)->getRow() ) {
+					int a = 0;
+				}
+				++row;
 			}
 		}
 			break;
@@ -400,10 +415,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
 	int highestRow = tetrisBoard.getBoardVector().size() / tetrisBoard.getColumns();
 	for (int i = 0; i < nbr; ++i) {
-		auto drawRow = freeRows_.front();
-		freeRows_.pop_front();
-		drawRow->init(highestRow - i - 1, tetrisBoard);
-		rows_.push_back(drawRow);
+		addEmptyRowTop(tetrisBoard); // Add them in ascending order.
 	}
 }
 
@@ -478,4 +490,25 @@ void GameGraphic::update(int clearedRows, int points, int level) {
 
 void GameGraphic::setName(std::string name) {
 	name_->update(name);
+}
+
+void GameGraphic::addEmptyRowTop(const TetrisBoard& tetrisBoard) {
+	assert(!freeRows_.empty()); // Should never be empty.
+	if (!freeRows_.empty()) {
+		// Just in case empty, but the game should be over anyway.
+		auto drawRow = freeRows_.front();
+		freeRows_.pop_front();
+		drawRow->init(rows_.size(), tetrisBoard);
+		rows_.push_back(drawRow);
+	}
+}
+
+void GameGraphic::addDrawRowBottom(const TetrisBoard& tetrisBoard, int row) {
+	assert(!freeRows_.empty()); // Should never be empty.
+	if (!freeRows_.empty()) {
+		auto drawRow = freeRows_.front();
+		freeRows_.pop_front();
+		drawRow->init(row, tetrisBoard);
+		rows_.push_front(drawRow); // Add as the lowest row, i.e. on the bottom.
+	}
 }

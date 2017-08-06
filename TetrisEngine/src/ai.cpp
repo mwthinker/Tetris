@@ -146,6 +146,13 @@ namespace {
 
 } // Anonymous namespace.
 
+Ai::Ai() : Ai("DefaultAi", "-2*rowRoughness - 5*columnRoughness - 1*meanHeight - 2*blockMeanHeight") {
+}
+
+Ai::Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {
+	initCalculator();
+}
+
 Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
 	calculator_.updateVariable("rows", (float) board.getRows());
 	calculator_.updateVariable("columns", (float) board.getColumns());

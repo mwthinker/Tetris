@@ -102,7 +102,9 @@ int main(int argc, char** argv) {
 	}
 	printBoard(board);
 	std::chrono::duration<double> delta = std::chrono::high_resolution_clock::now() - time;
-	std::cout << "Turns: " << board.getTurns() << " Time in seconds: " << delta.count() << std::endl;
+	std::cout << "Turns: " << board.getTurns() << std::endl;
+	std::cout << "Time in seconds: " << delta.count() << std::endl;
+	std::cout << "AI: " << defaultAi_.getValueFunction() << std::endl;
 
 	return 0;
 }

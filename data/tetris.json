@@ -98,7 +98,7 @@
 	"ais": [
 		{
 			"name": "Default2",
-			"valueFunction": "-5*rowRoughness -10*columnRoughness + 10*meanHeight - 10*blockMeanHeight"
+			"valueFunction": "-5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight"
 		},
 		{
 			"name": "Defensive",
