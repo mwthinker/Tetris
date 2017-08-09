@@ -27,7 +27,8 @@ set(SOURCES
 
 include_directories(
 	../SdlGui/Signal/src
-	../Calculator/src)
+	../Calculator/src
+)
 
 set(SOURCES_TEST
 	srcTest/main.cpp)
@@ -40,7 +41,7 @@ if (TetrisEngineTest)
 	add_executable(TetrisEngineTest ${SOURCES_TEST})
 	
 	target_link_libraries(TetrisEngineTest
-		Signal
+		Calculator
 		TetrisEngine
-		Calculator)
+	)
 endif ()

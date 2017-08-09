@@ -1,12 +1,12 @@
 #ifndef AI_H
 #define AI_H
 
+#include "rawtetrisboard.h"
+
+#include <calc/calculator.h>
+
 #include <string>
 #include <vector>
-#include <limits>
-
-#include "calc/calculator.h"
-#include "rawtetrisboard.h"
 
 class Ai {
 public:
@@ -21,7 +21,7 @@ public:
 	std::string getValueFunction() const {
 		return valueFunction_;
 	}
-
+	
 	calc::Calculator& getCalculator() {
 		return calculator_;
 	}
@@ -29,13 +29,11 @@ public:
 	const calc::Cache& getCache() {
 		return cache_;
 	}
-
+	
 	struct State {
-		State() : left_(0), rotationLeft_(0), value_(std::numeric_limits<float>::lowest()){
-		}
+		State();
 
-		State(int left, int rotations) : left_(left), rotationLeft_(rotations), value_(std::numeric_limits<float>::lowest()) {
-		}
+		State(int left, int rotations);
 
 		int left_;
 		int rotationLeft_;

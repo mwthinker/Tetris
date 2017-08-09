@@ -1,5 +1,8 @@
 #include "ai.h"
-#include <iostream>
+
+#include <limits>
+
+#include <calc/cache.h>
 
 namespace {
 
@@ -141,10 +144,17 @@ namespace {
 		calculator.updateVariable("meanHeight", rowRoughness.meanHeight_);
 		calculator.updateVariable("blockMeanHeight", blockMeanHeight);
 
-		return calculator.excecute(cache);
+		//return calculator.excecute(cache);
+		return 0.f;
 	}
 
 } // Anonymous namespace.
+
+Ai::State::State() : left_(0), rotationLeft_(0), value_(std::numeric_limits<float>::lowest()) {
+}
+
+Ai::State::State(int left, int rotations) : left_(left), rotationLeft_(rotations), value_(std::numeric_limits<float>::lowest()) {
+}
 
 Ai::Ai() : Ai("DefaultAi", "-2*rowRoughness - 5*columnRoughness - 1*meanHeight - 2*blockMeanHeight") {
 }
@@ -157,6 +167,7 @@ Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
 	calculator_.updateVariable("rows", (float) board.getRows());
 	calculator_.updateVariable("columns", (float) board.getColumns());
 	return calculateBestState(board, depth, 0);
+	return Ai::State();
 }
 
 // Find the best state for the block to move.
@@ -200,7 +211,6 @@ Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth, int removeRows
 				}
 			} else {
 				float value = calculateValue(calculator_, cache_, childBoard, block);
-
 				if (value > bestState.value_) {
 					bestState = state;
 					bestState.value_ = value;

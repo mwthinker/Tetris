@@ -154,13 +154,12 @@ if (MSVC)
 endif ()
 
 target_link_libraries(MWetris
-	Calculator
 	${CONSOLE_LIB}
 	SimpleNetwork
 	MwLibrary2
-	Signal
 	SdlGui
 	TetrisEngine
+	Calculator
 	${GLEW_LIBRARIES}
 	${OPENGL_LIBRARIES}
 	${SDL2_LIBRARIES}
