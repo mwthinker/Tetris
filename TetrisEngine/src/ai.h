@@ -45,7 +45,7 @@ public:
 private:
 	void initCalculator();
 	
-	Ai::State calculateBestState(RawTetrisBoard board, int depth, int removeRows);
+	Ai::State calculateBestStateRecursive(RawTetrisBoard board, int depth);
 
 	std::string name_;
 	std::string valueFunction_;

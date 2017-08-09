@@ -9,6 +9,8 @@
 #include "consolegraphic.h"
 #include "consolekeyboard.h"
 
+#include "tetrisdata.h"
+
 #include <algorithm>
 
 using namespace console;
@@ -17,23 +19,31 @@ ConsoleTetris::ConsoleTetris() :
 	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::KEY_DELETE)),
 	keyboard2_(std::make_shared<ConsoleKeyboard>("Keyboard 2", console::Key::KEY_S, console::Key::KEY_A, console::Key::KEY_D, console::Key::KEY_W, console::Key::KEY_Q)),
 	mode_(MENU), option_(GAME),
-	humanPlayers_(1) {
+	humanPlayers_(1), aiPlayers_(0) {
 
 	tetrisGame_.addCallback(std::bind(&ConsoleTetris::handleConnectionEvent, this, std::placeholders::_1));
 }
 
 void ConsoleTetris::initPreLoop() {
-	/*
-	auto aiEntry = tetrisEntry_.getDeepChildEntry("activeGames ais player");
-	ais_.clear();
-	while (aiEntry.hasData()) {
-		ais_.push_back(aiEntry.getAi());
-		aiEntry = aiEntry.getSibling("player");
-	}
+	// Init ai players.
+	activeAis_[0] = findAiDevice(TetrisData::getInstance().getAi1Name());
+	activeAis_[1] = findAiDevice(TetrisData::getInstance().getAi2Name());
+	activeAis_[2] = findAiDevice(TetrisData::getInstance().getAi3Name());
 
 	Console::setCursorVisibility(false);
 	printMainMenu();
-	*/
+}
+
+DevicePtr ConsoleTetris::findAiDevice(std::string name) const {
+	auto ais = TetrisData::getInstance().getAiVector();
+	ais.push_back(Ai()); // Add default ai.
+
+	for (const Ai& ai : ais) {
+		if (ai.getName() == name) {
+			return std::make_shared<Computer>(ai);
+		}
+	}
+	return std::make_shared<Computer>(ais.back());
 }
 
 void ConsoleTetris::printGameMenu() {
@@ -88,7 +98,15 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 							restartCurrentGame();
 							break;
 						case console::Key::KEY_4:
-							humanPlayers_ = (humanPlayers_ + 1) % 3; // Add a human player by one.
+							humanPlayers_ = (humanPlayers_ - 1) % 3; // Add a human player by one.
+							restartCurrentGame();
+							break;
+						case console::Key::KEY_5:
+							aiPlayers_ = (aiPlayers_ + activeAis_.size()) % (activeAis_.size() + 1); // Remove one ai player.
+							restartCurrentGame();
+							break;
+						case console::Key::KEY_6:
+							aiPlayers_ = (aiPlayers_ + 1) % (activeAis_.size() + 1); // Add a ai player by one.
 							restartCurrentGame();
 							break;
 						case console::Key::KEY_P:
@@ -160,6 +178,10 @@ void ConsoleTetris::restartCurrentGame() {
 		devices.push_back(keyboard1_);
 		devices.push_back(keyboard2_);
 	}
+	for (int i = 0; i < aiPlayers_; ++i) {
+		devices.push_back(activeAis_[i]);
+	}
+
 	tetrisGame_.setPlayers(devices);
 	tetrisGame_.createLocalGame();
 }

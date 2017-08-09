@@ -21,7 +21,7 @@ void ConsoleGraphic::restart(Player& player, int x, int y, console::Console* con
 	y_ = y + 3;
 	connection_.disconnect();
 	connection_ = player.addGameEventListener(std::bind(&ConsoleGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
-	playerName_ = "Player";
+	playerName_ = player.getName();
 	points_ = 0;
 	level_ = 1;
 }

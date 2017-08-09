@@ -7,7 +7,7 @@
 namespace {
 
 	// Calculate and return all possible states for the block provided.
-	std::vector<Ai::State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block, int removeRows) {
+	std::vector<Ai::State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block) {
 		std::vector<Ai::State> states;
 		
 		// Valid block position?
@@ -144,8 +144,7 @@ namespace {
 		calculator.updateVariable("meanHeight", rowRoughness.meanHeight_);
 		calculator.updateVariable("blockMeanHeight", blockMeanHeight);
 
-		//return calculator.excecute(cache);
-		return 0.f;
+		return calculator.excecute(cache);
 	}
 
 } // Anonymous namespace.
@@ -166,16 +165,15 @@ Ai::Ai(std::string name, std::string valueFunction) : name_(name), valueFunction
 Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
 	calculator_.updateVariable("rows", (float) board.getRows());
 	calculator_.updateVariable("columns", (float) board.getColumns());
-	return calculateBestState(board, depth, 0);
-	return Ai::State();
+	return calculateBestStateRecursive(board, depth);
 }
 
 // Find the best state for the block to move.
-Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth, int removeRows) {
+Ai::State Ai::calculateBestStateRecursive(RawTetrisBoard board, int depth) {
 	Ai::State bestState;
 
 	if (depth != 0) {
-		std::vector<Ai::State> states = calculateAllPossibleStates(board, board.getBlock(), removeRows);
+		std::vector<Ai::State> states = calculateAllPossibleStates(board, board.getBlock());
 
 		for (const Ai::State state : states) {
 			RawTetrisBoard childBoard = board;
@@ -202,7 +200,7 @@ Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth, int removeRows
 			childBoard.update(Move::DOWN_GRAVITY);
 
 			if (depth > 1) {
-				State childState = calculateBestState(childBoard, depth - 1, removeRows);
+				State childState = calculateBestState(childBoard, depth - 1);
 
 				if (childState.value_ > bestState.value_) {
 					bestState = state;

@@ -83,13 +83,11 @@ private:
 	// initCreateClientPanel
 	std::shared_ptr<gui::TextField> ipClient_;
 	std::shared_ptr<gui::TextField> portClient_;
-
-	// All ai:s.
-	std::array<DevicePtr, 4> activeAis_;
-
+	
 	// Devices.
 	std::vector<SdlDevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
+	std::array<DevicePtr, 4> activeAis_;
 
 	// All panels.
 	void initMenuPanel();
