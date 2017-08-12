@@ -26,6 +26,10 @@ public:
 		return calculator_;
 	}
 
+	const calc::Calculator& getCalculator() const {
+		return calculator_;
+	}
+
 	const calc::Cache& getCache() {
 		return cache_;
 	}
@@ -40,12 +44,12 @@ public:
 		float value_;
 	};
 
-	Ai::State calculateBestState(RawTetrisBoard board, int depth);
+	State calculateBestState(RawTetrisBoard board, int depth);
 	
 private:
 	void initCalculator();
 	
-	Ai::State calculateBestStateRecursive(RawTetrisBoard board, int depth);
+	State calculateBestStateRecursive(RawTetrisBoard board, int depth);
 
 	std::string name_;
 	std::string valueFunction_;
