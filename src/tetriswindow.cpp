@@ -64,7 +64,6 @@ void TetrisWindow::initPreLoop() {
 	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w, SDLK_LCTRL));
 
 	// Initialization of all joysticks!
-	
 	mw::GameController::loadAddGameControllerMappings("gamecontrollerdb.txt");
 
 	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));

@@ -21,10 +21,6 @@ public:
 	std::string getValueFunction() const {
 		return valueFunction_;
 	}
-	
-	calc::Calculator& getCalculator() {
-		return calculator_;
-	}
 
 	const calc::Calculator& getCalculator() const {
 		return calculator_;
