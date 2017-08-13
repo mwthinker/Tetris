@@ -10,7 +10,13 @@ if (MSVC)
 	# D_WINSOCKAPI_ makes redefinition warnings disappear.
 else ()
 	set(CMAKE_CXX_FLAGS "-std=c++1y")
-	set(CMAKE_BUILD_TYPE "Debug")
+	option(Debug "Set projects to debug mode.")
+	if (Debug)
+		set(CMAKE_BUILD_TYPE "Debug" CACHE INTERNAL "Build type.")
+		add_definitions(-D_DEBUG)
+	else ()
+		set(CMAKE_BUILD_TYPE "Release" CACHE INTERNAL "Build type.")
+	endif ()
 endif ()
 
 # Source files.
