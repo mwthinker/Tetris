@@ -1,6 +1,7 @@
 #include "ai.h"
 
 #include <limits>
+#include <cmath>
 
 #include <calc/cache.h>
 
@@ -54,7 +55,7 @@ namespace {
 			}
 		}
 		return states;
-	}
+	}	
 
 	struct RowRoughness {
 		RowRoughness() : holes_(0), rowSum_(0) {
@@ -81,24 +82,39 @@ namespace {
 				}
 			}
 		}
-		//rowRoughness.meanHeight_ /= holes;
-		//rowRoughness.meanHeight_ /= holes;
 		return rowRoughness;
 	}
 
-	int calculateColumnHoles(const RawTetrisBoard& board, int highestUsedRow) {
-		int columnHoles = 0;
+	struct ColumnRoughness {
+		ColumnRoughness() : holes_(0), bumpiness(0) {
+		}
+
+		int holes_;
+		int bumpiness;
+	};
+
+	ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUsedRow) {
+		ColumnRoughness roughness;
+		int lastColumnNbr;
 		for (int column = 0; column < board.getColumns(); ++column) {
 			bool lastHole = board.getBlockType(0, column) == BlockType::EMPTY;
+			int columnNbr = lastHole ? 0 : 1;
 			for (int row = 1; row < highestUsedRow; ++row) {
 				bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
 				if (lastHole != hole) {
-					columnHoles += 1;
+					roughness.holes_ += 1;
 					lastHole = hole;
 				}
+				if (!hole) {
+					++columnNbr;
+				}
 			}
+			if (column != 0) {
+				roughness.bumpiness += std::abs(lastColumnNbr - columnNbr);
+			}
+			lastColumnNbr = columnNbr;
 		}
-		return columnHoles;
+		return roughness;
 	}
 
 	int calculateHighestUsedRow(const RawTetrisBoard& board) {
@@ -133,18 +149,17 @@ namespace {
 
 	float calculateValue(calc::Calculator& calculator, const calc::Cache& cache, const RawTetrisBoard& board, const Block& block) {
 		int highestUsedRow = calculateHighestUsedRow(board);
-		
 		RowRoughness rowRoughness = calculateRowRoughness(board, highestUsedRow);
-		int columnHoles = calculateColumnHoles(board, highestUsedRow);
+		ColumnRoughness columnRoughness = calculateColumnHoles(board, highestUsedRow);
 		int edges = calculateBlockEdges(board, block);
 		float blockMeanHeight = calculateBlockMeanHeight(block);
 		
 		calculator.updateVariable("rowHoles", (float) rowRoughness.holes_);
-		calculator.updateVariable("columnHoles", (float) columnHoles);
+		calculator.updateVariable("columnHoles", (float) columnRoughness.holes_);
+		calculator.updateVariable("bumpiness", (float) columnRoughness.bumpiness);
 		calculator.updateVariable("edges", (float) edges);
 		calculator.updateVariable("rowSumHeight", (float) rowRoughness.rowSum_);
 		calculator.updateVariable("blockMeanHeight", blockMeanHeight);
-
 		return calculator.excecute(cache);
 	}
 
@@ -226,8 +241,9 @@ void Ai::initCalculator() {
 	calculator_.addVariable("edges", 0);
 	calculator_.addVariable("rowSumHeight", 0);
 	calculator_.addVariable("blockMeanHeight", 0);
+	calculator_.addVariable("bumpiness", 0);
+
 	calculator_.addVariable("rows", 0);
 	calculator_.addVariable("columns", 0);
-
 	cache_ = calculator_.preCalculate(valueFunction_);
 }

@@ -86,7 +86,7 @@ void printHelpFunction(std::string programName, const Ai& ai) {
 	std::cout << "\t" << "Simulate a tetris game, using a ai value-funtion.\n";
 	std::cout << "\t" << "Default ai value function is \"" << ai.getValueFunction() << "\".\n";
 	std::cout << "\t" << programName << " -d <DELAY>\n";
-	std::cout << "\t" << programName << " -ai <VALUE_FUNCTION>\n";
+	std::cout << "\t" << programName << " -a <VALUE_FUNCTION>\n";
 	std::cout << "\t" << programName << " -m <MAX_TURNS>\n";
 	std::cout << "\t" << programName << " -f <FILE>\n";
 	std::cout << "\t" << programName << " -s <WIDTH> <HEIGHT>\n\n";
