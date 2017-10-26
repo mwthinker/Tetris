@@ -1,7 +1,7 @@
 #include "drawblock.h"
 #include "tetrisdata.h"
 
-DrawBlock::DrawBlock(const BoardShader& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
+DrawBlock::DrawBlock(const BoardShaderPtr& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
 	spriteZ_ = TetrisData::getInstance().getSprite(BlockType::Z);
 	spriteS_ = TetrisData::getInstance().getSprite(BlockType::S);
 	spriteJ_ = TetrisData::getInstance().getSprite(BlockType::J);

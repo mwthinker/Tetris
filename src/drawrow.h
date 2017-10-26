@@ -12,7 +12,7 @@ using DrawRowPtr = std::shared_ptr<DrawRow>;
 
 class DrawRow : public BoardVertexData {
 public:
-	DrawRow(const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
+	DrawRow(const BoardShaderPtr& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 	int getRow() const {
 		return row_;

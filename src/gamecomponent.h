@@ -40,7 +40,7 @@ private:
 	void validate() override;
 
 	std::map<int, GameGraphic> graphicPlayers_;
-	BoardShader boardShader_;
+	BoardShaderPtr boardShader_;
 	LightningShader lightningShader_;
 	
 	TetrisGame& tetrisGame_;

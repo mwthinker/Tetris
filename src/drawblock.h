@@ -12,7 +12,7 @@ using DrawBlockPtr = std::shared_ptr<DrawBlock>;
 
 class DrawBlock : public BoardVertexData {
 public:
-	DrawBlock(const BoardShader& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
+	DrawBlock(const BoardShaderPtr& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);
 

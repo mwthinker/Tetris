@@ -9,7 +9,7 @@ namespace {
 
 }
 
-DrawRow::DrawRow(const BoardShader& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) : BoardVertexData(boardShader) {
+DrawRow::DrawRow(const BoardShaderPtr& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) : BoardVertexData(boardShader) {
 	spriteZ_ = TetrisData::getInstance().getSprite(BlockType::Z);
 	spriteS_ = TetrisData::getInstance().getSprite(BlockType::S);
 	spriteJ_ = TetrisData::getInstance().getSprite(BlockType::J);

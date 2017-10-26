@@ -11,7 +11,7 @@ using DrawTextPtr = std::shared_ptr<DrawText>;
 
 class DrawText : public BoardVertexData {
 public:
-	DrawText(const BoardShader& shader, std::string text, mw::Font& font, float lowX, float lowY, float scale);
+	DrawText(const BoardShaderPtr& shader, std::string text, mw::Font& font, float lowX, float lowY, float scale);
 
 	void update(std::string text);
 

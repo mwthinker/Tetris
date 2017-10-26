@@ -1,9 +1,11 @@
 #include "boardshader.h"
 
+#include <mw/window.h>
+
 BoardShader::BoardShader() {
 	aPosIndex_ = -1;
 	aTexIndex_ = -1;
-	aIsTexIndex_ = -1;
+	aTextureIndex_ = -1;
 	aColorIndex_ = -1;
 
 	// Collect the vertex buffer uniforms indexes.
@@ -13,8 +15,8 @@ BoardShader::BoardShader() {
 BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
 	shader_.bindAttribute("aPos");
 	shader_.bindAttribute("aTex");
-	shader_.bindAttribute("aIsTex");
 	shader_.bindAttribute("aColor");
+	shader_.bindAttribute("aIsTex");
 	shader_.loadAndLinkFromFile(vShaderFile, fShaderFile);
 
 	shader_.useProgram();
@@ -22,69 +24,41 @@ BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
 	// Collect the vertex buffer attributes indexes.
 	aPosIndex_ = shader_.getAttributeLocation("aPos");
 	aTexIndex_ = shader_.getAttributeLocation("aTex");
-	aIsTexIndex_ = shader_.getAttributeLocation("aIsTex");
 	aColorIndex_ = shader_.getAttributeLocation("aColor");
+	aTextureIndex_ = shader_.getAttributeLocation("aIsTex");
 
 	// Collect the vertex buffer uniforms indexes.
 	uMatrixIndex_ = shader_.getUniformLocation("uMat");
 }
 
 void BoardShader::setVertexAttribPointer() const {
-	setGlPosA(2, sizeof(GLfloat) * 9, (GLvoid*) 0);
-	setGlTexA(2, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 2));
-	setGlIsTexA(1, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 4));
-	setGlColorA(4, sizeof(GLfloat) * 9, (GLvoid*) (sizeof(GLfloat) * 5));
+	if (mw::Window::getOpenGlMajorVersion() >= 2) {
+		int size = 0;
+		glEnableVertexAttribArray(aPosIndex_);
+		glVertexAttribPointer(aPosIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		size += sizeof(Vertex::pos_);
+
+		glEnableVertexAttribArray(aTexIndex_);
+		glVertexAttribPointer(aTexIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		size += sizeof(Vertex::tex_);
+
+		glEnableVertexAttribArray(aTextureIndex_);
+		glVertexAttribPointer(aTextureIndex_, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		size += sizeof(Vertex::texture_);
+
+		glEnableVertexAttribArray(aColorIndex_);
+		glVertexAttribPointer(aColorIndex_, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		mw::checkGlError();
+	}
 }
 
 void BoardShader::useProgram() const {
 	shader_.useProgram();
 }
 
-// Vertex buffer Attributes. ---------------------------
-
-void BoardShader::setGlPosA(GLint size, const GLvoid* data) const {
-	glEnableVertexAttribArray(aPosIndex_);
-	glVertexAttribPointer(aPosIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
-}
-
-void BoardShader::setGlPosA(GLint size, GLsizei stride, const GLvoid* data) const {
-	glEnableVertexAttribArray(aPosIndex_);
-	glVertexAttribPointer(aPosIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
-}
-
-void BoardShader::setGlTexA(GLint size, const GLvoid* data) const {
-	glEnableVertexAttribArray(aTexIndex_);
-	glVertexAttribPointer(aTexIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
-}
-
-void BoardShader::setGlTexA(GLint size, GLsizei stride, const GLvoid* data) const {
-	glEnableVertexAttribArray(aTexIndex_);
-	glVertexAttribPointer(aTexIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
-}
-
-void BoardShader::setGlIsTexA(GLint size, const GLvoid* data) const {
-	glEnableVertexAttribArray(aIsTexIndex_);
-	glVertexAttribPointer(aIsTexIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
-}
-
-void BoardShader::setGlIsTexA(GLint size, GLsizei stride, const GLvoid* data) const {
-	glEnableVertexAttribArray(aIsTexIndex_);
-	glVertexAttribPointer(aIsTexIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
-}
-
-void BoardShader::setGlColorA(GLint size, const GLvoid* data) const {
-	glEnableVertexAttribArray(aColorIndex_);
-	glVertexAttribPointer(aColorIndex_, size, GL_FLOAT, GL_FALSE, 0, data);
-}
-
-void BoardShader::setGlColorA(GLint size, GLsizei stride, const GLvoid* data) const {
-	glEnableVertexAttribArray(aColorIndex_);
-	glVertexAttribPointer(aColorIndex_, size, GL_FLOAT, GL_FALSE, stride, data);
-}
-
 // Uniforms. -------------------------------------------
 
-void BoardShader::setGlMatrixU(const Mat44& matrix) const {
+void BoardShader::setMatrix(const Mat44& matrix) const {
 	shader_.useProgram();
 	glUniformMatrix4fv(uMatrixIndex_, 1, false, matrix.data());
 }

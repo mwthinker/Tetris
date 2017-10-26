@@ -7,14 +7,19 @@
 
 #include "mat44.h"
 
+#include <memory>
+
+class BoardShader;
+using BoardShaderPtr = std::shared_ptr<BoardShader>;
+
 class BoardShader {
 public:
 	static constexpr unsigned int vertexSizeInBytes() {
-		return vertexSizeInFloat() * sizeof(GLfloat);
+		return sizeof(Vertex);
 	}
 
 	static constexpr unsigned int vertexSizeInFloat() {
-		return 9;
+		return sizeof(Vertex) / sizeof(GLfloat);
 	}
 
 	BoardShader();
@@ -25,30 +30,45 @@ public:
 	void setVertexAttribPointer() const;
 
 	// Uniforms. -------------------------------------------
-	void setGlMatrixU(const Mat44& matrix) const;
+	void setMatrix(const Mat44& matrix) const;
+
+	class Vertex {
+	public:
+		Vertex() = default;
+
+		Vertex(GLfloat x, GLfloat y) : pos_(x, y), color_(1, 1, 1, 1), texture_(0) {
+		}
+
+		Vertex(GLfloat x, GLfloat y, const mw::Color& color) : pos_(x, y), color_(color), texture_(0) {
+		}
+
+		Vertex(GLfloat x, GLfloat y, GLfloat xTex, GLfloat yTex) : pos_(x, y), tex_(xTex, yTex), color_(1, 1, 1, 1), texture_(1.f) {
+		}
+
+		Vertex(GLfloat x, GLfloat y, GLfloat xTex, GLfloat yTex, const mw::Color& color) : pos_(x, y), tex_(xTex, yTex), color_(color), texture_(1.f) {
+		}
+
+		bool isTexture() const {
+			return texture_;
+		}
+
+		// The order is important for setVertexAttribPointer()
+		Vec2 pos_;
+		Vec2 tex_;
+		GLfloat texture_;
+		mw::Color color_;
+	};
 
 private:
-	// Vertex buffer Attributes. ---------------------------
-	void setGlPosA(GLint size, const GLvoid* data) const;
-	void setGlPosA(GLint size, GLsizei stride, const GLvoid* data) const;
-
-	void setGlTexA(GLint size, const GLvoid* data) const;
-	void setGlTexA(GLint size, GLsizei stride, const GLvoid* data) const;
-
-	void setGlIsTexA(GLint size, const GLvoid* data) const;
-	void setGlIsTexA(GLint size, GLsizei stride, const GLvoid* data) const;
-
-	void setGlColorA(GLint size, const GLvoid* data) const;
-	void setGlColorA(GLint size, GLsizei stride, const GLvoid* data) const;
-
 	mw::Shader shader_;
 
+	int uMatrixIndex_;
+
+	// Vertex buffer Attributes. ---------------------------
 	int aPosIndex_;
 	int aTexIndex_;
-	int aIsTexIndex_;
+	int aTextureIndex_;
 	int aColorIndex_;
-
-	int uMatrixIndex_;
 };
 
 #endif // BOARDSHADER_H

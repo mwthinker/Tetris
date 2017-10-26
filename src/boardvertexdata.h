@@ -13,7 +13,7 @@ using BoardVertexDataPtr = std::shared_ptr<BoardVertexData>;
 
 class BoardVertexData : public mw::VertexData {
 public:
-	BoardVertexData(const BoardShader& boardShader) : boardShader_(boardShader) {
+	BoardVertexData(const BoardShaderPtr& boardShaderPtr) : boardShaderPtr_(boardShaderPtr) {
 	}
 
 	virtual ~BoardVertexData() = default;
@@ -53,15 +53,15 @@ public:
 		float x3, float y3);
 
 	void setVertexAttribPointer() const override {
-		boardShader_.setVertexAttribPointer();
+		boardShaderPtr_->setVertexAttribPointer();
 	}
 
 	void useProgram() const override {
-		boardShader_.useProgram();
+		boardShaderPtr_->useProgram();
 	}
 
 	unsigned int vertexSizeInFloat() const override {
-		return boardShader_.vertexSizeInFloat();
+		return boardShaderPtr_->vertexSizeInFloat();
 	}
 
 	void drawTRIANGLES() {
@@ -69,7 +69,7 @@ public:
 	}
 
 private:
-	BoardShader boardShader_;
+	BoardShaderPtr boardShaderPtr_;
 };
 
 #endif // BOARDVERTEXDATA_H

@@ -24,7 +24,7 @@ GameComponent::GameComponent(TetrisGame& tetrisGame)
 	soundRowRemoved_ = TetrisData::getInstance().getRowRemovedSound();
 	soundTetris_ = TetrisData::getInstance().getBlockCollisionSound();
 	
-	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
+	boardShader_ = std::make_shared<BoardShader>("board.ver.glsl", "board.fra.glsl");
 	lightningShader_ = LightningShader("lightning.ver.glsl", "lightning.fra.glsl");
 }
 
@@ -37,7 +37,7 @@ void GameComponent::validate() {
 }
 
 void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
-	boardShader_.useProgram();
+	boardShader_->useProgram();
 	const gui::Dimension dim = getSize();
 	if (updateMatrix_) {
 		float width = 0;
@@ -67,11 +67,11 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		mw::translate2D(model, dx_, dy_);
 		mw::scale2D(model, scale_, scale_);
 
-		boardShader_.setGlMatrixU(graphic.getProjectionMatrix() * model);
+		boardShader_->setMatrix(graphic.getProjectionMatrix() * model);
 		lightningShader_.useProgram();
 		lightningShader_.setUMat(graphic.getProjectionMatrix() * model);
 		lightningShader_.setUColor(mw::Color(1, 1, 1));
-		boardShader_.useProgram();
+		boardShader_->useProgram();
 		updateMatrix_ = false;
 	}
 

@@ -52,7 +52,7 @@ GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }
 
-void GameGraphic::restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y) {
+void GameGraphic::restart(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, Player& player, float x, float y) {
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
@@ -69,7 +69,7 @@ void GameGraphic::restart(const LightningShader& lightningShader, const BoardSha
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
-void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, Player& player) {
+void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, float lowX, float lowY, Player& player) {
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
 	const mw::Color c1 = TetrisData::getInstance().getOuterSquareColor();
 	const mw::Color c2 = TetrisData::getInstance().getInnerSquareColor();
@@ -98,10 +98,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	width_ = squareSize * columns + infoSize + borderSize * 2 + middleDistance + rightDistance;
 	height_ = squareSize * (rows - 2) + borderSize * 2;
 
-	mw::Buffer staticBuffer(mw::Buffer::STATIC);
-	staticVertexData_ = std::make_shared<BoardVertexData>(boardShader);
-	staticBuffer.addVertexData(staticVertexData_);
-	staticVertexData_->begin();
+	staticBoardBatch_ = std::make_shared<BoardBatch>(boardShader);
 
 	lowX_ = lowX;
 	lowY_ = lowY;
@@ -109,7 +106,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the player area.
 	float x = lowX + borderSize;
 	float y = lowY * 0.5f + borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		boardWidth + infoSize + middleDistance + rightDistance, squareSize * (rows - 2),
 		c4);
@@ -117,7 +114,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the outer square.
 	x = lowX + borderSize;
 	y = lowY + borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		squareSize * columns, squareSize * (rows - 2),
 		c1);
@@ -127,7 +124,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 		for (int column = 0; column < columns; ++column) {
 			x = lowX + borderSize + squareSize * column + squareSize * 0.1f;
 			y = lowY + borderSize + squareSize * row + squareSize * 0.1f;
-			staticVertexData_->addSquareTRIANGLES(
+			staticBoardBatch_->addRectangle(
 				x, y,
 				squareSize * 0.8f, squareSize * 0.8f,
 				c2);
@@ -137,7 +134,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the block start area.
 	x = lowX + borderSize;
 	y = lowY + borderSize + squareSize * (rows - 4);
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		squareSize * columns, squareSize * 2,
 		c3);
@@ -145,7 +142,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the preview block area.
 	x = lowX + borderSize + boardWidth + middleDistance;
 	y = lowY + borderSize + squareSize * (rows - 4) - (squareSize * 5 + middleDistance);
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		infoSize, infoSize,
 		c3);
@@ -157,7 +154,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 
 	name_ = std::make_shared<DrawText>(boardShader, player.getName(), font, x, y + squareSize * 5, 8.f);
-	//name_->update("Marcus");
+	name_->update("Marcus");
 	dynamicBuffer.addVertexData(name_);
 	
 	{
@@ -186,43 +183,43 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Left-up corner.
 	x = lowX;
 	y = lowY + height_ - borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addSquare(
 		x, y,
-		borderSize, borderSize,
+		borderSize,
 		borderLeftUp,
 		borderColor);
 
 	// Right-up corner.
 	x = lowX + width_ - borderSize;
 	y = lowY + height_ - borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addSquare(
 		x, y,
-		borderSize, borderSize,
+		borderSize,
 		borderRightUp,
 		borderColor);
 
 	// Left-down corner.
 	x = lowX;
 	y = lowY;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addSquare(
 		x, y,
-		borderSize, borderSize,
+		borderSize,
 		borderDownLeft,
 		borderColor);
 
 	// Right-down corner.
 	x = lowX + width_ - borderSize;
 	y = lowY;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addSquare(
 		x, y,
-		borderSize, borderSize,
+		borderSize,
 		borderDownRight,
 		borderColor);
 
 	// Up.
 	x = lowX + borderSize;
 	y = lowY + height_ - borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		width_ - 2 * borderSize, borderSize,
 		borderHorizontal,
@@ -231,7 +228,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Down.
 	x = lowX + borderSize;
 	y = lowY;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		width_ - 2 * borderSize, borderSize,
 		borderHorizontal,
@@ -240,7 +237,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Left.
 	x = lowX;
 	y = lowY + borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		borderSize, height_ - 2 * borderSize,
 		borderVertical,
@@ -249,15 +246,14 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Right.
 	x = lowX + width_ - borderSize;
 	y = lowY + borderSize;
-	staticVertexData_->addSquareTRIANGLES(
+	staticBoardBatch_->addRectangle(
 		x, y,
 		borderSize, height_ - 2 * borderSize,
 		borderVertical,
-		borderColor);	
+		borderColor);
 	
-	staticVertexData_->end();
-	staticBuffer.uploadToGraphicCard();	
-	
+	staticBoardBatch_->uploadToGraphicCard();
+
 	rows_.clear();
 	
 	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
@@ -422,9 +418,7 @@ void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
 void GameGraphic::draw(float deltaTime, GraphicMode mode) {
 	switch (mode) {
 		case GraphicMode::BOARD_SHADER:
-			if (staticVertexData_) {
-				staticVertexData_->drawTRIANGLES();
-			}
+			staticBoardBatch_->draw();
 			if (currentBlockPtr_) {
 				currentBlockPtr_->update(deltaTime);
 				currentBlockPtr_->drawTRIANGLES();

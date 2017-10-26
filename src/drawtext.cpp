@@ -1,6 +1,6 @@
 #include "drawtext.h"
 
-DrawText::DrawText(const BoardShader& shader, std::string text, mw::Font& font, float lowX, float lowY, float scale) : BoardVertexData(shader), lowX_(lowX), lowY_(lowY) {
+DrawText::DrawText(const BoardShaderPtr& shader, std::string text, mw::Font& font, float lowX, float lowY, float scale) : BoardVertexData(shader), lowX_(lowX), lowY_(lowY) {
 	text_ = mw::Text(text, font, scale);
 
 	update(text);

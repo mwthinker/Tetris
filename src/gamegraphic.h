@@ -14,6 +14,7 @@
 #include "lightningbolt.h"
 #include "lightningboltcluster.h"
 #include "lightningshader.h"
+#include "boardbatch.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
@@ -41,7 +42,7 @@ public:
 
 	~GameGraphic();
 
-	void restart(const LightningShader& lightningShader, const BoardShader& boardShader, Player& player, float x, float y);
+	void restart(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, Player& player, float x, float y);
 
 	void update(int clearedRows, int points, int level);
 
@@ -72,7 +73,7 @@ public:
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
 private:
-	void initStaticBackground(const LightningShader& lightningShader, const BoardShader& boardShader, float lowX, float lowY, Player& player);
+	void initStaticBackground(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, float lowX, float lowY, Player& player);
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
@@ -82,7 +83,8 @@ private:
 
 	std::list<DrawRowPtr> rows_;
 	std::list<DrawRowPtr> freeRows_;
-	BoardVertexDataPtr staticVertexData_;
+	std::shared_ptr<BoardBatch> staticBoardBatch_;	
+	
 	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	DrawBlockPtr currentBlockPtr_, nextBlockPtr_;
 	int level_, points_, clearedRows_;

@@ -23,6 +23,7 @@ endif ()
 set(SOURCES
 	src/actionhandler.cpp
 	src/actionhandler.h
+	src/boardbatch.h
 	src/boardshader.cpp
 	src/boardshader.h
 	src/boardsizebutton.cpp
