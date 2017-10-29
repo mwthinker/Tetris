@@ -1,17 +1,17 @@
 #ifndef DRAWTEXT_H
 #define DRAWTEXT_H
 
-#include "boardvertexdata.h"
 #include "boardshader.h"
+#include "boardbatch.h"
 
 #include <mw/text.h>
 
 class DrawText;
 using DrawTextPtr = std::shared_ptr<DrawText>;
 
-class DrawText : public BoardVertexData {
+class DrawText {
 public:
-	DrawText(const BoardShaderPtr& shader, std::string text, mw::Font& font, float lowX, float lowY, float scale);
+	DrawText(std::string text, mw::Font& font, float lowX, float lowY, float scale);
 
 	void update(std::string text);
 
@@ -19,12 +19,17 @@ public:
 
 	void update(float x, float y);
 
-	void draw(float deltaTime);
+	void bindTexture();
+
+	const std::vector<BoardShader::Vertex>& getVertexes() {
+		return vertexes_;
+	}
 
 private:
 	mw::Text text_;
 
 	float lowX_, lowY_;
+	std::vector<BoardShader::Vertex> vertexes_;
 };
 
 #endif // DRAWTEXT_H

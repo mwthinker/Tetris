@@ -1,7 +1,7 @@
 #include "drawblock.h"
 #include "tetrisdata.h"
 
-DrawBlock::DrawBlock(const BoardShaderPtr& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) : BoardVertexData(boardShader) {
+DrawBlock::DrawBlock(const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center) {
 	spriteZ_ = TetrisData::getInstance().getSprite(BlockType::Z);
 	spriteS_ = TetrisData::getInstance().getSprite(BlockType::S);
 	spriteJ_ = TetrisData::getInstance().getSprite(BlockType::J);
@@ -34,20 +34,16 @@ void DrawBlock::update(const Block& block) {
 		deltaY_ = (-0.5f - deltaY_) * squareSize_;
 	}
 
-	begin();
+	vertexes_.clear();
 	for (Square sq : block) {
-		mw::Color color(1, 1, 1);
-		if (sq.row_ >= boardHeight_ - 2) {
-			color.alpha_ = 0;
+		if (sq.row_ < boardHeight_ - 2) {
+			addRectangle(vertexes_,
+				lowX_ + sq.column_ * squareSize_ + deltaX_, lowY_ + sq.row_ * squareSize_ + deltaY_,
+				squareSize_, squareSize_,
+				sprite
+			);
 		}
-		addSquareTRIANGLES(
-			lowX_ + sq.column_ * squareSize_ + deltaX_, lowY_ + sq.row_ * squareSize_ + deltaY_,
-			squareSize_, squareSize_,
-			sprite,
-			color
-		);
 	}
-	end();
 }
 
 void DrawBlock::updateDown(const Block& block) {
@@ -69,19 +65,15 @@ void DrawBlock::update(float deltaTime) {
 }
 
 void DrawBlock::updateVertexData() {
-	begin();
+	vertexes_.clear();
+	mw::Sprite sprite = getSprite(block_.getBlockType());
 	for (Square sq : block_) {
-		mw::Color color(1, 1, 1);
-		if (sq.row_ >= boardHeight_ - 2) {
-			color.alpha_ = 0;
-		}
-		
-		updateSquareTRIANGLES(
-			lowX_ + sq.column_ * squareSize_, lowY_ + (row_ - sq.row_) * timeLeft_ / movingTime_ * squareSize_  + sq.row_ *  squareSize_,
-			squareSize_, squareSize_
+		addRectangle(vertexes_,
+			lowX_ + sq.column_ * squareSize_, lowY_ + (row_ - sq.row_) * timeLeft_ / movingTime_ * squareSize_ + sq.row_ *  squareSize_,
+			squareSize_, squareSize_,
+			sprite
 		);
 	}
-	end();
 }
 
 void handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -98,7 +90,7 @@ void handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 	}
 }
 
-void DrawBlock::calculateCenterOfMass(const Block& block, float& x, float& y) {	
+void DrawBlock::calculateCenterOfMass(const Block& block, float& x, float& y) {
 	x = 0;
 	y = 0;
 	for (const Square& sq : block) {

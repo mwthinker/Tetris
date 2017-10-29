@@ -1,18 +1,16 @@
 #ifndef DRAWROW_H
 #define DRAWROW_H
 
-#include "boardvertexdata.h"
 #include "player.h"
 #include "boardshader.h"
-
-#include <mw/vertexbufferobject.h>
+#include "boardbatch.h"
 
 class DrawRow;
 using DrawRowPtr = std::shared_ptr<DrawRow>;
 
-class DrawRow : public BoardVertexData {
+class DrawRow {
 public:
-	DrawRow(const BoardShaderPtr& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
+	DrawRow(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY);
 
 	int getRow() const {
 		return row_;
@@ -20,11 +18,15 @@ public:
 
 	void handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
-	void draw(float deltaTime);
+	void update(float deltaTime);
 
 	bool isAlive() const;
 
 	void init(int row, const TetrisBoard& board);
+
+	const std::vector<BoardShader::Vertex>& getVertexes() {
+		return vertexes_;
+	}
 
 private:
 	void updateVertexData(const TetrisBoard& tetrisBoard);
@@ -32,6 +34,8 @@ private:
 
 	mw::Sprite getSprite(BlockType blockType) const;
 
+	std::vector<BoardShader::Vertex> vertexes_;
+	std::vector<BlockType> blockTypes_;
 	int columns_;
 	int row_;
 	int oldRow_;
@@ -39,6 +43,7 @@ private:
 	float squareSize_;
 	float lowX_, lowY_;
 	float timeLeft_;
+	int highestBoardRow_;
 
 	float movingTime_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;

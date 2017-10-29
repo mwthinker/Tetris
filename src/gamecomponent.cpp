@@ -23,9 +23,10 @@ GameComponent::GameComponent(TetrisGame& tetrisGame)
 	soundBlockCollision_ = TetrisData::getInstance().getBlockCollisionSound();
 	soundRowRemoved_ = TetrisData::getInstance().getRowRemovedSound();
 	soundTetris_ = TetrisData::getInstance().getBlockCollisionSound();
-	
+
 	boardShader_ = std::make_shared<BoardShader>("board.ver.glsl", "board.fra.glsl");
 	lightningShader_ = LightningShader("lightning.ver.glsl", "lightning.fra.glsl");
+	dynamicBoardBatch_ = std::make_shared<BoardBatch>(boardShader_, 10000);
 }
 
 GameComponent::~GameComponent() {
@@ -76,29 +77,38 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 	}
 
 	mw::Text text; // Used to update the "Pause".
-	
-	// Draw boards.
-	TetrisData::getInstance().bindTextureFromAtlas();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (auto& pair : graphicPlayers_) {
-		GameGraphic& graphic = pair.second;
-		graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER);
-	}
 
-	// Draw text.
-	for (auto& pair : graphicPlayers_) {
-		GameGraphic& graphic = pair.second;
-		graphic.draw((float) deltaTime, GameGraphic::BOARD_SHADER_TEXT);
-	}
+	if (!graphicPlayers_.empty()) {
+		// Draw boards.
+		TetrisData::getInstance().bindTextureFromAtlas();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (auto& pair : graphicPlayers_) {
-		GameGraphic& graphic = pair.second;
-		graphic.draw((float) deltaTime, GameGraphic::LIGHTNING_SHADER);
+		dynamicBoardBatch_->clear();
+
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;
+			graphic.update((float) deltaTime, *dynamicBoardBatch_);
+		}
+		dynamicBoardBatch_->uploadToGraphicCard();
+
+		staticBoardBatch_->draw();
+		dynamicBoardBatch_->draw();
+
+		// Draw text.
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;
+			graphic.drawText(*dynamicBoardBatch_);
+		}
+
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;
+			//graphic.draw((float) deltaTime, GameGraphic::LIGHTNING_SHADER);
+		}
+
+		mw::checkGlError();
 	}
-	
-	mw::checkGlError();
 }
 
 void GameComponent::initGame(std::vector<PlayerPtr>& players) {
@@ -107,14 +117,17 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 		showPoints = true;
 	}
 
+	staticBoardBatch_ = std::make_shared<BoardBatch>(boardShader_);
+
 	graphicPlayers_.clear();
 
 	float w = 0;
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player->getId()];
-		graphic.restart(lightningShader_, boardShader_, *player, w, 0);
+		graphic.restart(*staticBoardBatch_, lightningShader_, *player, w, 0);
 		w += graphic.getWidth();
 	}
+	staticBoardBatch_->uploadToGraphicCard();
 
 	alivePlayers_ = players.size();
 	updateMatrix_ = true;
@@ -164,7 +177,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 /*
 void GameComponent::eventHandler(const Player& player, PlayerEvent playerEvent) {
 	GameGraphic& graphic = graphicPlayers_[player.getId()];
-	
+
 	graphic.update(player.getClearedRows(), player.getPoints(), player.getLevel());
 
 	/*soundEffects(gameEvent);

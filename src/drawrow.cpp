@@ -9,7 +9,7 @@ namespace {
 
 }
 
-DrawRow::DrawRow(const BoardShaderPtr& boardShader, int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) : BoardVertexData(boardShader) {
+DrawRow::DrawRow(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
 	spriteZ_ = TetrisData::getInstance().getSprite(BlockType::Z);
 	spriteS_ = TetrisData::getInstance().getSprite(BlockType::S);
 	spriteJ_ = TetrisData::getInstance().getSprite(BlockType::J);
@@ -30,6 +30,7 @@ void DrawRow::init(int row, const TetrisBoard& board) {
 	columns_ = board.getColumns();
 	timeLeft_ = 0.f;
 	movingTime_ = 0.05f;
+	highestBoardRow_ = board.getRows();
 
 	updateVertexData(board);
 }
@@ -61,7 +62,7 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 	}
 }
 
-void DrawRow::draw(float deltaTime) {
+void DrawRow::update(float deltaTime) {
 	if (oldRow_ != row_ && row_ >= 0) {
 		timeLeft_ += -deltaTime;
 		graphicRow_ += deltaTime / movingTime_ * sign(row_ - oldRow_);
@@ -73,45 +74,34 @@ void DrawRow::draw(float deltaTime) {
 		}
 		updateVertexData();
 	}
-
-	if (isAlive()) {
-		BoardVertexData::drawTRIANGLES();
-	}
 }
 
 bool DrawRow::isAlive() const {
 	return row_ >= 0;
 }
 
-
 void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
-	begin();
+	blockTypes_.clear();
 	for (int column = 0; column < columns_; ++column) {
-		BlockType type = tetrisBoard.getBlockType(row_, column);
-
-		mw::Color color(1, 1, 1, 1);
-		if (type == BlockType::EMPTY) {
-			color = mw::Color(1, 1, 1, 0);
-		}
-		addSquareTRIANGLES(
-			lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,
-			squareSize_, squareSize_,
-			getSprite(type),
-			color
-		);
+		blockTypes_.push_back(tetrisBoard.getBlockType(row_, column));
 	}
-	end();
+	updateVertexData();
 }
 
 void DrawRow::updateVertexData() {
-	begin();
-	for (int column = 0; column < columns_; ++column) {
-		updateSquareTRIANGLES(
-			lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,
-			squareSize_, squareSize_
-		);
+	vertexes_.clear();
+	if (row_ < highestBoardRow_ - 2) {
+		for (int column = 0; column < columns_; ++column) {
+			BlockType type = blockTypes_[column];
+			if (type != BlockType::EMPTY) {
+				addRectangle(vertexes_,
+					lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,
+					squareSize_, squareSize_,
+					getSprite(blockTypes_[column])
+				);
+			}
+		}
 	}
-	end();
 }
 
 mw::Sprite DrawRow::getSprite(BlockType blockType) const {

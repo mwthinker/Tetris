@@ -7,6 +7,34 @@
 #include <mw/sprite.h>
 #include <mw/window.h>
 
+#include <vector>
+
+inline void addRectangle(std::vector<BoardShader::Vertex>& vertexes,
+	float x, float y, float w, float h, const mw::Color& color) {
+	
+	vertexes.push_back(BoardShader::Vertex(x, y, color));
+	vertexes.push_back(BoardShader::Vertex(x + w, y, color));
+	vertexes.push_back(BoardShader::Vertex(x, y + h, color));
+	vertexes.push_back(BoardShader::Vertex(x, y + h, color));
+	vertexes.push_back(BoardShader::Vertex(x + w, y, color));
+	vertexes.push_back(BoardShader::Vertex(x + w, y + h, color));
+}
+
+inline void addRectangle(std::vector<BoardShader::Vertex>& vertexes,
+	float x, float y, float w, float h, const mw::Sprite& sprite) {
+	
+	int textureW = sprite.getTexture().getWidth();
+	int textureH = sprite.getTexture().getHeight();
+	
+	vertexes.push_back(BoardShader::Vertex(x, y, sprite.getX() / textureW, sprite.getY() / textureH));
+	vertexes.push_back(BoardShader::Vertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH));
+	vertexes.push_back(BoardShader::Vertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH));
+
+	vertexes.push_back(BoardShader::Vertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH));
+	vertexes.push_back(BoardShader::Vertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH));
+	vertexes.push_back(BoardShader::Vertex(x + w, y + h, (sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH));
+}
+
 class BoardBatch : public mw::Batch<BoardShader> {
 public:
 	BoardBatch(const std::shared_ptr<BoardShader>& shader, int maxVertexes) : Batch(GL_TRIANGLES, GL_DYNAMIC_DRAW, shader, maxVertexes) {
@@ -32,7 +60,7 @@ public:
 	void addSquare(float x, float y, float size, const mw::Color& color) {
 		addRectangle(x, y, size, size, color);
 	}
-
+	 
 	void addRectangle(float x, float y, float w, float h, const mw::Sprite& sprite) {
 		int textureW = sprite.getTexture().getWidth();
 		int textureH = sprite.getTexture().getHeight();

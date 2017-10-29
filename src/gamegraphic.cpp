@@ -52,16 +52,16 @@ GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }
 
-void GameGraphic::restart(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, Player& player, float x, float y) {
+void GameGraphic::restart(BoardBatch& boardBatch, const LightningShader& lightningShader, Player& player, float x, float y) {
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
-	
+
 	connection_.disconnect();
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
-	initStaticBackground(lightningShader, boardShader, x, y, player);
-	
+	initStaticBackground(boardBatch, lightningShader, x, y, player);
+
 	showPoints_ = true;
 
 	removeRowSound_ = TetrisData::getInstance().getRowRemovedSound();
@@ -69,14 +69,14 @@ void GameGraphic::restart(const LightningShader& lightningShader, const BoardSha
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
-void GameGraphic::initStaticBackground(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, float lowX, float lowY, Player& player) {
+void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, const LightningShader& lightningShader, float lowX, float lowY, Player& player) {
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
 	const mw::Color c1 = TetrisData::getInstance().getOuterSquareColor();
 	const mw::Color c2 = TetrisData::getInstance().getInnerSquareColor();
 	const mw::Color c3 = TetrisData::getInstance().getStartAreaColor();
 	const mw::Color c4 = TetrisData::getInstance().getPlayerAreaColor();
 	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
-	
+
 	const mw::Sprite borderHorizontal = TetrisData::getInstance().getBorderHorizontalSprite();
 	const mw::Sprite borderVertical = TetrisData::getInstance().getBorderVerticalSprite();
 	const mw::Sprite borderLeftUp = TetrisData::getInstance().getBorderLeftUpSprite();
@@ -98,15 +98,13 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	width_ = squareSize * columns + infoSize + borderSize * 2 + middleDistance + rightDistance;
 	height_ = squareSize * (rows - 2) + borderSize * 2;
 
-	staticBoardBatch_ = std::make_shared<BoardBatch>(boardShader);
-
 	lowX_ = lowX;
 	lowY_ = lowY;
-	
+
 	// Draw the player area.
 	float x = lowX + borderSize;
 	float y = lowY * 0.5f + borderSize;
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		boardWidth + infoSize + middleDistance + rightDistance, squareSize * (rows - 2),
 		c4);
@@ -114,7 +112,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the outer square.
 	x = lowX + borderSize;
 	y = lowY + borderSize;
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		squareSize * columns, squareSize * (rows - 2),
 		c1);
@@ -124,7 +122,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 		for (int column = 0; column < columns; ++column) {
 			x = lowX + borderSize + squareSize * column + squareSize * 0.1f;
 			y = lowY + borderSize + squareSize * row + squareSize * 0.1f;
-			staticBoardBatch_->addRectangle(
+			staticBoardBatch.addRectangle(
 				x, y,
 				squareSize * 0.8f, squareSize * 0.8f,
 				c2);
@@ -134,7 +132,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the block start area.
 	x = lowX + borderSize;
 	y = lowY + borderSize + squareSize * (rows - 4);
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		squareSize * columns, squareSize * 2,
 		c3);
@@ -142,48 +140,40 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Draw the preview block area.
 	x = lowX + borderSize + boardWidth + middleDistance;
 	y = lowY + borderSize + squareSize * (rows - 4) - (squareSize * 5 + middleDistance);
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		infoSize, infoSize,
 		c3);
-	
-	nextBlockPtr_ = std::make_shared<DrawBlock>(boardShader, Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
-	mw::Buffer dynamicBuffer(mw::Buffer::DYNAMIC);
-	dynamicBuffer.addVertexData(nextBlockPtr_);
-		
-	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 
-	name_ = std::make_shared<DrawText>(boardShader, player.getName(), font, x, y + squareSize * 5, 8.f);
-	name_->update("Marcus");
-	dynamicBuffer.addVertexData(name_);
-	
+	nextBlockPtr_ = std::make_shared<DrawBlock>(Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
+
+
+	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
+	name_ = std::make_shared<DrawText>(player.getName(), font, x, y + squareSize * 5, 8.f);
 	{
 		std::stringstream stream;
 		level_ = player.getLevel();
 		stream << "Level " << level_;
-		textLevel_ = std::make_shared<DrawText>(boardShader, stream.str(), font, x, y - 20, 8.f);
-		dynamicBuffer.addVertexData(textLevel_);
+		textLevel_ = std::make_shared<DrawText>(stream.str(), font, x, y - 20, 8.f);
 	}
 	{
 		std::stringstream stream;
 		points_ = player.getPoints();
 		stream << "Points " << points_;
-		textPoints_ = std::make_shared<DrawText>(boardShader, stream.str(), font, x, y - 20 - 12, 8.f);
-		dynamicBuffer.addVertexData(textPoints_);
+		textPoints_ = std::make_shared<DrawText>(stream.str(), font, x, y - 20 - 12, 8.f);
 	}
 	{
 		std::stringstream stream;
 		clearedRows_ = player.getClearedRows();
 		stream << "Rows " << clearedRows_;
-		textClearedRows_ = std::make_shared<DrawText>(boardShader, stream.str(), font, x, y - 20 - 12 * 2, 8.f);
-		dynamicBuffer.addVertexData(textClearedRows_);
+		textClearedRows_ = std::make_shared<DrawText>(stream.str(), font, x, y - 20 - 12 * 2, 8.f);
 	}
 
 	// Add border.
 	// Left-up corner.
 	x = lowX;
 	y = lowY + height_ - borderSize;
-	staticBoardBatch_->addSquare(
+	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
 		borderLeftUp,
@@ -192,7 +182,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Right-up corner.
 	x = lowX + width_ - borderSize;
 	y = lowY + height_ - borderSize;
-	staticBoardBatch_->addSquare(
+	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
 		borderRightUp,
@@ -201,7 +191,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Left-down corner.
 	x = lowX;
 	y = lowY;
-	staticBoardBatch_->addSquare(
+	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
 		borderDownLeft,
@@ -210,7 +200,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Right-down corner.
 	x = lowX + width_ - borderSize;
 	y = lowY;
-	staticBoardBatch_->addSquare(
+	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
 		borderDownRight,
@@ -219,7 +209,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Up.
 	x = lowX + borderSize;
 	y = lowY + height_ - borderSize;
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		width_ - 2 * borderSize, borderSize,
 		borderHorizontal,
@@ -228,7 +218,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Down.
 	x = lowX + borderSize;
 	y = lowY;
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		width_ - 2 * borderSize, borderSize,
 		borderHorizontal,
@@ -237,7 +227,7 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Left.
 	x = lowX;
 	y = lowY + borderSize;
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		borderSize, height_ - 2 * borderSize,
 		borderVertical,
@@ -246,35 +236,28 @@ void GameGraphic::initStaticBackground(const LightningShader& lightningShader, c
 	// Right.
 	x = lowX + width_ - borderSize;
 	y = lowY + borderSize;
-	staticBoardBatch_->addRectangle(
+	staticBoardBatch.addRectangle(
 		x, y,
 		borderSize, height_ - 2 * borderSize,
 		borderVertical,
 		borderColor);
-	
-	staticBoardBatch_->uploadToGraphicCard();
 
 	rows_.clear();
-	
-	currentBlockPtr_ = std::make_shared<DrawBlock>(boardShader, tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
-	dynamicBuffer.addVertexData(currentBlockPtr_);
+
+	currentBlockPtr_ = std::make_shared<DrawBlock>(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
 
 	// Add rows to represent the board.
 	// Add free rows to represent potential rows, e.g. the board receives extrenal rows.
 	for (int row = 0; row < rows; ++row) {
-		auto drawRow = std::make_shared<DrawRow>(boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
-		auto freeRow = std::make_shared<DrawRow>(boardShader, row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
-		dynamicBuffer.addVertexData(drawRow);
-		dynamicBuffer.addVertexData(freeRow);
+		auto drawRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
+		auto freeRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
 		rows_.push_back(drawRow);
 		freeRows_.push_back(freeRow);
 	}
-	
-	dynamicBuffer.uploadToGraphicCard();
 
 	std::vector<Vec2> points_;
 	for (int i = 0; i < 11; ++i) {
-		points_.push_back(Vec2(lowX+ (i + 1) * squareSize, 20 * squareSize));
+		points_.push_back(Vec2(lowX + (i + 1) * squareSize, 20 * squareSize));
 	}
 
 	mw::Sprite halfCircle = TetrisData::getInstance().getHalfCircleSprite();
@@ -325,17 +308,15 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 
 			int row = 0;
 			for (auto it = rows_.begin(); it != rows_.end(); ++it) {
-				if (row != (*it)->getRow() ) {
+				if (row != (*it)->getRow()) {
 					int a = 0;
 				}
 				++row;
 			}
 		}
-			break;
+		break;
 		case GameEvent::NEXT_BLOCK_UPDATED:
-			if (nextBlockPtr_) {
-				nextBlockPtr_->update(Block(tetrisBoard.getNextBlockType(), 0, 0));
-			}
+			nextBlockPtr_->update(Block(tetrisBoard.getNextBlockType(), 0, 0));
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
 			// Fall through!
@@ -344,9 +325,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		case GameEvent::PLAYER_MOVES_BLOCK_LEFT:
 			// Fall through!
 		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
-			if (currentBlockPtr_) {
-				currentBlockPtr_->update(tetrisBoard.getBlock());
-			}
+			currentBlockPtr_->update(tetrisBoard.getBlock());
 			break;
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND:
 			blockDownGround_ = true;
@@ -388,7 +367,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			stream << "Rows " << tetrisBoard.getRemovedRows();
 			textClearedRows_->update(stream.str());
 		}
-			break;
+		break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
 			removeRowSound_.play();
@@ -415,46 +394,45 @@ void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
 	}
 }
 
-void GameGraphic::draw(float deltaTime, GraphicMode mode) {
-	switch (mode) {
-		case GraphicMode::BOARD_SHADER:
-			staticBoardBatch_->draw();
-			if (currentBlockPtr_) {
-				currentBlockPtr_->update(deltaTime);
-				currentBlockPtr_->drawTRIANGLES();
-			}
-			if (nextBlockPtr_) {
-				nextBlockPtr_->drawTRIANGLES();
-			}
-			for (auto& rowPtr : rows_) {
-				rowPtr->draw(deltaTime);
-			}
-			break;
-		case GraphicMode::BOARD_SHADER_TEXT:
-			if (name_) {
-				name_->draw(deltaTime);
-			}
-			if (textLevel_) {
-				textLevel_->draw(deltaTime);
-			}
-			if (textPoints_) {
-				textPoints_->draw(deltaTime);
-			}
-			if (textClearedRows_) {
-				textClearedRows_->draw(deltaTime);
-			}
-			break;
-		case GraphicMode::LIGHTNING_SHADER:
-			//lightningBoltCluster_.draw(deltaTime);
-			break;
+void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
+	currentBlockPtr_->update(deltaTime);
+	dynamicBoardBatch.add(currentBlockPtr_->getVertexes());
+	dynamicBoardBatch.add(nextBlockPtr_->getVertexes());
+
+	for (auto& rowPtr : rows_) {
+		if (rowPtr->isAlive()) {
+			rowPtr->update(deltaTime);
+			dynamicBoardBatch.add(rowPtr->getVertexes());
+		}
 	}
+
+	//lightningBoltCluster_.draw(deltaTime);
 }
 
-void GameGraphic::updateTextSize(float size, const mw::Font& font) {
-	//textPoints_ = mw::Text(textPoints_.getText(), font, size);
-	//name_ = mw::Text(name_.getText(), font, size);
-	//textLevel_ = mw::Text(textLevel_.getText(), font, size);
-	//textClearedRows_ = mw::Text(textClearedRows_.getText(), font, size);
+void GameGraphic::drawText(BoardBatch& batch) {
+	batch.clear();
+	name_->bindTexture();
+	batch.add(name_->getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+
+	batch.clear();
+	textPoints_->bindTexture();
+	batch.add(textPoints_->getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+
+	batch.clear();
+	textLevel_->bindTexture();
+	batch.add(textLevel_->getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+
+	batch.clear();
+	textClearedRows_->bindTexture();
+	batch.add(textClearedRows_->getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
 }
 
 void GameGraphic::setMiddleMessage(const mw::Text& text) {

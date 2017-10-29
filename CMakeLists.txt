@@ -28,8 +28,6 @@ set(SOURCES
 	src/boardshader.h
 	src/boardsizebutton.cpp
 	src/boardsizebutton.h
-	src/boardvertexdata.cpp
-	src/boardvertexdata.h
 	src/computer.cpp
 	src/computer.h
 	src/definitions.h

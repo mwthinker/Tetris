@@ -1,18 +1,19 @@
 #ifndef DRAWBLOCK_H
 #define DRAWBLOCK_H
 
-#include "boardvertexdata.h"
 #include "tetrisboard.h"
 #include "boardshader.h"
+#include "boardbatch.h"
 
 #include <memory>
+#include <vector>
 
 class DrawBlock;
 using DrawBlockPtr = std::shared_ptr<DrawBlock>;
 
-class DrawBlock : public BoardVertexData {
+class DrawBlock {
 public:
-	DrawBlock(const BoardShaderPtr& boardShader, const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
+	DrawBlock(const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);
 
@@ -20,12 +21,17 @@ public:
 
 	void update(float deltaTime);
 
+	const std::vector<BoardShader::Vertex>& getVertexes() {
+		return vertexes_;
+	}
+
 private:
 	void calculateCenterOfMass(const Block& block, float& x, float& y);
 	mw::Sprite getSprite(BlockType blockType) const;
 
 	void updateVertexData();
 	
+	std::vector<BoardShader::Vertex> vertexes_;
 	bool center_;
 	float squareSize_;
 	float lowX_, lowY_;

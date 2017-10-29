@@ -43,6 +43,9 @@ private:
 	BoardShaderPtr boardShader_;
 	LightningShader lightningShader_;
 	
+	std::shared_ptr<BoardBatch> staticBoardBatch_;
+	std::shared_ptr<BoardBatch> dynamicBoardBatch_;
+	
 	TetrisGame& tetrisGame_;
 
 	mw::Sound soundBlockCollision_;

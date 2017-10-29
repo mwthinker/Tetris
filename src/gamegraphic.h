@@ -4,7 +4,6 @@
 #include "boardshader.h"
 #include "player.h"
 #include "drawrow.h"
-#include "boardvertexdata.h"
 #include "tetrisboard.h"
 #include "boardshader.h"
 #include "drawblock.h"
@@ -19,9 +18,7 @@
 #include <mw/font.h>
 #include <mw/text.h>
 #include <mw/sprite.h>
-#include <mw/vertexbufferobject.h>
 #include <mw/signal.h>
-#include <mw/buffer.h>
 #include <mw/sound.h>
 
 #include <gui/component.h>
@@ -32,21 +29,13 @@
 
 class GameGraphic {
 public:
-	enum GraphicMode {
-		LIGHTNING_SHADER,
-		BOARD_SHADER,
-		BOARD_SHADER_TEXT
-	};
-
 	GameGraphic();
 
 	~GameGraphic();
 
-	void restart(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, Player& player, float x, float y);
+	void restart(BoardBatch& boardBatch, const LightningShader& lightningShader, Player& player, float x, float y);
 
 	void update(int clearedRows, int points, int level);
-
-	void updateTextSize(float size, const mw::Font& font);
 
 	float getWidth() const {
 		return width_;
@@ -56,7 +45,7 @@ public:
 		return height_;
 	}
 
-	void draw(float deltaTime, GraphicMode mode);
+	void update(float deltaTime, BoardBatch& dynamicBoardBatch);
 
 	void setMiddleMessage(const mw::Text& text);
 
@@ -72,8 +61,10 @@ public:
 
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
+	void drawText(BoardBatch& batch);
+
 private:
-	void initStaticBackground(const LightningShader& lightningShader, const BoardShaderPtr& boardShader, float lowX, float lowY, Player& player);
+	void initStaticBackground(BoardBatch& boardBatch, const LightningShader& lightningShader, float lowX, float lowY, Player& player);
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
@@ -83,7 +74,6 @@ private:
 
 	std::list<DrawRowPtr> rows_;
 	std::list<DrawRowPtr> freeRows_;
-	std::shared_ptr<BoardBatch> staticBoardBatch_;	
 	
 	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	DrawBlockPtr currentBlockPtr_, nextBlockPtr_;
