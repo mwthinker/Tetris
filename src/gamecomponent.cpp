@@ -25,7 +25,6 @@ GameComponent::GameComponent(TetrisGame& tetrisGame)
 	soundTetris_ = TetrisData::getInstance().getBlockCollisionSound();
 
 	boardShader_ = std::make_shared<BoardShader>("board.ver.glsl", "board.fra.glsl");
-	lightningShader_ = LightningShader("lightning.ver.glsl", "lightning.fra.glsl");
 	dynamicBoardBatch_ = std::make_shared<BoardBatch>(boardShader_, 10000);
 }
 
@@ -69,9 +68,6 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		mw::scale2D(model, scale_, scale_);
 
 		boardShader_->setMatrix(graphic.getProjectionMatrix() * model);
-		lightningShader_.useProgram();
-		lightningShader_.setUMat(graphic.getProjectionMatrix() * model);
-		lightningShader_.setUColor(mw::Color(1, 1, 1));
 		boardShader_->useProgram();
 		updateMatrix_ = false;
 	}
@@ -102,11 +98,6 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 			graphic.drawText(*dynamicBoardBatch_);
 		}
 
-		for (auto& pair : graphicPlayers_) {
-			GameGraphic& graphic = pair.second;
-			//graphic.draw((float) deltaTime, GameGraphic::LIGHTNING_SHADER);
-		}
-
 		mw::checkGlError();
 	}
 }
@@ -124,7 +115,7 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	float w = 0;
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player->getId()];
-		graphic.restart(*staticBoardBatch_, lightningShader_, *player, w, 0);
+		graphic.restart(*staticBoardBatch_, *player, w, 0);
 		w += graphic.getWidth();
 	}
 	staticBoardBatch_->uploadToGraphicCard();

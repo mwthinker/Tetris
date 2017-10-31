@@ -52,7 +52,7 @@ GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }
 
-void GameGraphic::restart(BoardBatch& boardBatch, const LightningShader& lightningShader, Player& player, float x, float y) {
+void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float y) {
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
@@ -60,7 +60,7 @@ void GameGraphic::restart(BoardBatch& boardBatch, const LightningShader& lightni
 	connection_.disconnect();
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
-	initStaticBackground(boardBatch, lightningShader, x, y, player);
+	initStaticBackground(boardBatch, x, y, player);
 
 	showPoints_ = true;
 
@@ -69,7 +69,7 @@ void GameGraphic::restart(BoardBatch& boardBatch, const LightningShader& lightni
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
-void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, const LightningShader& lightningShader, float lowX, float lowY, Player& player) {
+void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX, float lowY, Player& player) {
 	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
 	const mw::Color c1 = TetrisData::getInstance().getOuterSquareColor();
 	const mw::Color c2 = TetrisData::getInstance().getInnerSquareColor();
@@ -145,28 +145,28 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, const Light
 		infoSize, infoSize,
 		c3);
 
-	nextBlockPtr_ = std::make_shared<DrawBlock>(Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
+	nextBlock_ = DrawBlock(Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
 
 
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
-	name_ = std::make_shared<DrawText>(player.getName(), font, x, y + squareSize * 5, 8.f);
+	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
 	{
 		std::stringstream stream;
 		level_ = player.getLevel();
 		stream << "Level " << level_;
-		textLevel_ = std::make_shared<DrawText>(stream.str(), font, x, y - 20, 8.f);
+		textLevel_ = DrawText(stream.str(), font, x, y - 20, 8.f);
 	}
 	{
 		std::stringstream stream;
 		points_ = player.getPoints();
 		stream << "Points " << points_;
-		textPoints_ = std::make_shared<DrawText>(stream.str(), font, x, y - 20 - 12, 8.f);
+		textPoints_ = DrawText(stream.str(), font, x, y - 20 - 12, 8.f);
 	}
 	{
 		std::stringstream stream;
 		clearedRows_ = player.getClearedRows();
 		stream << "Rows " << clearedRows_;
-		textClearedRows_ = std::make_shared<DrawText>(stream.str(), font, x, y - 20 - 12 * 2, 8.f);
+		textClearedRows_ = DrawText(stream.str(), font, x, y - 20 - 12 * 2, 8.f);
 	}
 
 	// Add border.
@@ -244,7 +244,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, const Light
 
 	rows_.clear();
 
-	currentBlockPtr_ = std::make_shared<DrawBlock>(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
+	currentBlock_ = DrawBlock(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
 
 	// Add rows to represent the board.
 	// Add free rows to represent potential rows, e.g. the board receives extrenal rows.
@@ -262,18 +262,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, const Light
 
 	mw::Sprite halfCircle = TetrisData::getInstance().getHalfCircleSprite();
 	mw::Sprite lineSegment = TetrisData::getInstance().getLineSegmentSprite();
-
-	lightningBoltCluster_ = LightningBoltCluster(lightningShader, halfCircle, lineSegment, points_, 50, 100, 100);
-	//lightningBoltCluster_.restart(points_, 1);
-
-	/*
-	std::vector<Vec2> points;
-	for (int column = 0; column < tetrisBoard.getColumns(); ++column) {
-		BlockType type = tetrisBoard.getBlockType(row->getRow() - 1, column);
-		points.push_back(Vec2(lowX_ + (column + 1) * squareSize_, lowY_ + (row->getRow() + 1) * squareSize_));
-	}
-	lightningBoltCluster_.restart(points, 5);
-	*/
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -316,7 +304,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		}
 		break;
 		case GameEvent::NEXT_BLOCK_UPDATED:
-			nextBlockPtr_->update(Block(tetrisBoard.getNextBlockType(), 0, 0));
+			nextBlock_.update(Block(tetrisBoard.getNextBlockType(), 0, 0));
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
 			// Fall through!
@@ -325,7 +313,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		case GameEvent::PLAYER_MOVES_BLOCK_LEFT:
 			// Fall through!
 		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
-			currentBlockPtr_->update(tetrisBoard.getBlock());
+			currentBlock_.update(tetrisBoard.getBlock());
 			break;
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND:
 			blockDownGround_ = true;
@@ -333,39 +321,18 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			break;
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
 			if (blockDownGround_) {
-				currentBlockPtr_->updateDown(tetrisBoard.getBlock());
-				int w = calculateWitdh(latestBlockDownGround_) + 1;
-				int h = calculateHighest(latestBlockDownGround_);
-				int lowest = tetrisBoard.getBlock().getLowestRow();
-				int leftColumn = calculateLeftColumn(tetrisBoard.getBlock());
-
-				std::vector<Vec2> points;
-				//for (int row = lowest; row < h; ++row) {
-				int row = lowest;
-				for (int column = leftColumn; column < w + leftColumn; ++column) {
-					Vec2 point(10 * (column + 1) + lowX_, 10 * (row + 2) + lowY_);
-					points.push_back(point);
-				}
-				row = h;
-				for (int column = leftColumn; column < w + leftColumn; ++column) {
-					Vec2 point(10 * (column + 1) + lowX_, 10 * (row + 2) + lowY_);
-					points.push_back(point);
-				}
-				//}
-				lightningBoltCluster_.restart(points);
+				currentBlock_.updateDown(tetrisBoard.getBlock());
 				blockDownGround_ = false;
 			}
 			// Fall through!
 		case GameEvent::GRAVITY_MOVES_BLOCK:
-			if (currentBlockPtr_) {
-				currentBlockPtr_->update(tetrisBoard.getBlock());
-			}
+			currentBlock_.update(tetrisBoard.getBlock());
 			break;
 		case GameEvent::ROW_TO_BE_REMOVED:
 		{
 			std::stringstream stream;
 			stream << "Rows " << tetrisBoard.getRemovedRows();
-			textClearedRows_->update(stream.str());
+			textClearedRows_.update(stream.str());
 		}
 		break;
 		case GameEvent::ONE_ROW_REMOVED:
@@ -395,9 +362,9 @@ void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
 }
 
 void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
-	currentBlockPtr_->update(deltaTime);
-	dynamicBoardBatch.add(currentBlockPtr_->getVertexes());
-	dynamicBoardBatch.add(nextBlockPtr_->getVertexes());
+	currentBlock_.update(deltaTime);
+	dynamicBoardBatch.add(currentBlock_.getVertexes());
+	dynamicBoardBatch.add(nextBlock_.getVertexes());
 
 	for (auto& rowPtr : rows_) {
 		if (rowPtr->isAlive()) {
@@ -405,32 +372,30 @@ void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
 			dynamicBoardBatch.add(rowPtr->getVertexes());
 		}
 	}
-
-	//lightningBoltCluster_.draw(deltaTime);
 }
 
 void GameGraphic::drawText(BoardBatch& batch) {
 	batch.clear();
-	name_->bindTexture();
-	batch.add(name_->getVertexes());
+	name_.bindTexture();
+	batch.add(name_.getVertexes());
 	batch.uploadToGraphicCard();
 	batch.draw();
 
 	batch.clear();
-	textPoints_->bindTexture();
-	batch.add(textPoints_->getVertexes());
+	textPoints_.bindTexture();
+	batch.add(textPoints_.getVertexes());
 	batch.uploadToGraphicCard();
 	batch.draw();
 
 	batch.clear();
-	textLevel_->bindTexture();
-	batch.add(textLevel_->getVertexes());
+	textLevel_.bindTexture();
+	batch.add(textLevel_.getVertexes());
 	batch.uploadToGraphicCard();
 	batch.draw();
 
 	batch.clear();
-	textClearedRows_->bindTexture();
-	batch.add(textClearedRows_->getVertexes());
+	textClearedRows_.bindTexture();
+	batch.add(textClearedRows_.getVertexes());
 	batch.uploadToGraphicCard();
 	batch.draw();
 }
@@ -444,24 +409,24 @@ void GameGraphic::update(int clearedRows, int points, int level) {
 		std::stringstream stream;
 		clearedRows_ = clearedRows;
 		stream << "Rows " << clearedRows;
-		textClearedRows_->update(stream.str());
+		textClearedRows_.update(stream.str());
 	}
 	if (points_ != points) {
 		std::stringstream stream;
 		points_ = points;
 		stream << "Points " << points;
-		textPoints_->update(stream.str());
+		textPoints_.update(stream.str());
 	}
 	if (level_ != level) {
 		std::stringstream stream;
 		level_ = level;
 		stream << "Level " << level;
-		textLevel_->update(stream.str());
+		textLevel_.update(stream.str());
 	}
 }
 
 void GameGraphic::setName(std::string name) {
-	name_->update(name);
+	name_.update(name);
 }
 
 void GameGraphic::addEmptyRowTop(const TetrisBoard& tetrisBoard) {

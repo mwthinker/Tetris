@@ -3,7 +3,6 @@
 
 #include "gamegraphic.h"
 #include "boardshader.h"
-#include "lightningshader.h"
 
 #include <gui/component.h>
 
@@ -41,7 +40,6 @@ private:
 
 	std::map<int, GameGraphic> graphicPlayers_;
 	BoardShaderPtr boardShader_;
-	LightningShader lightningShader_;
 	
 	std::shared_ptr<BoardBatch> staticBoardBatch_;
 	std::shared_ptr<BoardBatch> dynamicBoardBatch_;

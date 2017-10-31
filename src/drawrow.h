@@ -2,7 +2,6 @@
 #define DRAWROW_H
 
 #include "player.h"
-#include "boardshader.h"
 #include "boardbatch.h"
 
 class DrawRow;

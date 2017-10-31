@@ -5,14 +5,12 @@
 #include "boardshader.h"
 #include "boardbatch.h"
 
-#include <memory>
 #include <vector>
-
-class DrawBlock;
-using DrawBlockPtr = std::shared_ptr<DrawBlock>;
 
 class DrawBlock {
 public:
+	DrawBlock() = default;
+
 	DrawBlock(const Block& block, int boardHeight, float squareSize, float lowX, float lowY, bool center);
 	
 	void update(const Block& block);

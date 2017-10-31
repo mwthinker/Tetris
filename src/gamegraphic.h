@@ -9,10 +9,6 @@
 #include "drawblock.h"
 #include "drawtext.h"
 #include "mat44.h"
-#include "lightningvertexdata.h"
-#include "lightningbolt.h"
-#include "lightningboltcluster.h"
-#include "lightningshader.h"
 #include "boardbatch.h"
 
 #include <mw/font.h>
@@ -25,7 +21,7 @@
 
 #include <random>
 #include <string>
-#include <array>
+#include <list>
 
 class GameGraphic {
 public:
@@ -33,7 +29,7 @@ public:
 
 	~GameGraphic();
 
-	void restart(BoardBatch& boardBatch, const LightningShader& lightningShader, Player& player, float x, float y);
+	void restart(BoardBatch& boardBatch, Player& player, float x, float y);
 
 	void update(int clearedRows, int points, int level);
 
@@ -64,7 +60,7 @@ public:
 	void drawText(BoardBatch& batch);
 
 private:
-	void initStaticBackground(BoardBatch& boardBatch, const LightningShader& lightningShader, float lowX, float lowY, Player& player);
+	void initStaticBackground(BoardBatch& boardBatch, float lowX, float lowY, Player& player);
 
 	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
 
@@ -75,8 +71,8 @@ private:
 	std::list<DrawRowPtr> rows_;
 	std::list<DrawRowPtr> freeRows_;
 	
-	DrawTextPtr textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
-	DrawBlockPtr currentBlockPtr_, nextBlockPtr_;
+	DrawText textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	DrawBlock currentBlock_, nextBlock_;
 	int level_, points_, clearedRows_;
 	float lowX_, lowY_;
 	Block latestBlockDownGround_;
@@ -87,7 +83,6 @@ private:
 	bool showPoints_;	
 	
 	mw::Sound removeRowSound_;
-	LightningBoltCluster lightningBoltCluster_;
 };
 
 #endif // GRAPHICBOARD_H

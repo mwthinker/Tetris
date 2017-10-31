@@ -20,7 +20,9 @@ using LightningBoltPtr = std::shared_ptr<LightningBolt>;
 
 class LightningBolt : public LightningVertexData {
 public:
-	LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment, mw::Color tInt, float alphaMultiplier, float fadeOutRate, float thickness);
+	LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment,
+		mw::Color tInt, float alphaMultiplier, float fadeOutRate, float thickness);
+
 	LightningBolt(const LightningShader& lightShader, mw::Sprite halfCircle, mw::Sprite  lineSegment);
 
 	void draw(float deltaTime);

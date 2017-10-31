@@ -1,16 +1,14 @@
 #ifndef DRAWTEXT_H
 #define DRAWTEXT_H
 
-#include "boardshader.h"
 #include "boardbatch.h"
 
 #include <mw/text.h>
 
-class DrawText;
-using DrawTextPtr = std::shared_ptr<DrawText>;
-
 class DrawText {
 public:
+	DrawText() = default;
+
 	DrawText(std::string text, mw::Font& font, float lowX, float lowY, float scale);
 
 	void update(std::string text);
