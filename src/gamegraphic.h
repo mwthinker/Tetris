@@ -74,7 +74,6 @@ private:
 	DrawText textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	DrawBlock currentBlock_, nextBlock_;
 	int level_, points_, clearedRows_;
-	float lowX_, lowY_;
 	Block latestBlockDownGround_;
 	bool blockDownGround_;
 	

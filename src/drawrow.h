@@ -21,6 +21,8 @@ public:
 
 	bool isAlive() const;
 
+	bool isActive() const;
+
 	void init(int row, const TetrisBoard& board);
 
 	const std::vector<BoardShader::Vertex>& getVertexes() {
@@ -43,6 +45,7 @@ private:
 	float lowX_, lowY_;
 	float timeLeft_;
 	int highestBoardRow_;
+	float alpha_;
 
 	float movingTime_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;

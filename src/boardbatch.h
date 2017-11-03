@@ -21,18 +21,18 @@ inline void addRectangle(std::vector<BoardShader::Vertex>& vertexes,
 }
 
 inline void addRectangle(std::vector<BoardShader::Vertex>& vertexes,
-	float x, float y, float w, float h, const mw::Sprite& sprite) {
+	float x, float y, float w, float h, const mw::Sprite& sprite, const mw::Color& color = mw::Color(1,1,1)) {
 	
 	int textureW = sprite.getTexture().getWidth();
 	int textureH = sprite.getTexture().getHeight();
 	
-	vertexes.push_back(BoardShader::Vertex(x, y, sprite.getX() / textureW, sprite.getY() / textureH));
-	vertexes.push_back(BoardShader::Vertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH));
-	vertexes.push_back(BoardShader::Vertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH));
+	vertexes.push_back(BoardShader::Vertex(x, y, sprite.getX() / textureW, sprite.getY() / textureH, color));
+	vertexes.push_back(BoardShader::Vertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH, color));
+	vertexes.push_back(BoardShader::Vertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH, color));
 
-	vertexes.push_back(BoardShader::Vertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH));
-	vertexes.push_back(BoardShader::Vertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH));
-	vertexes.push_back(BoardShader::Vertex(x + w, y + h, (sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH));
+	vertexes.push_back(BoardShader::Vertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH, color));
+	vertexes.push_back(BoardShader::Vertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH, color));
+	vertexes.push_back(BoardShader::Vertex(x + w, y + h, (sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH, color));
 }
 
 class BoardBatch : public mw::Batch<BoardShader> {

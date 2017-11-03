@@ -98,9 +98,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	width_ = squareSize * columns + infoSize + borderSize * 2 + middleDistance + rightDistance;
 	height_ = squareSize * (rows - 2) + borderSize * 2;
 
-	lowX_ = lowX;
-	lowY_ = lowY;
-
 	// Draw the player area.
 	float x = lowX + borderSize;
 	float y = lowY * 0.5f + borderSize;
@@ -254,14 +251,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 		rows_.push_back(drawRow);
 		freeRows_.push_back(freeRow);
 	}
-
-	std::vector<Vec2> points_;
-	for (int i = 0; i < 11; ++i) {
-		points_.push_back(Vec2(lowX + (i + 1) * squareSize, 20 * squareSize));
-	}
-
-	mw::Sprite halfCircle = TetrisData::getInstance().getHalfCircleSprite();
-	mw::Sprite lineSegment = TetrisData::getInstance().getLineSegmentSprite();
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -270,7 +259,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 	}
 	rows_.remove_if([&](const DrawRowPtr& row) {
 		if (!row->isAlive()) {
-			freeRows_.push_back(row);
+			freeRows_.push_front(row);
 			return true;
 		}
 		return false;
@@ -292,14 +281,6 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			assert(rows_.size() - highestRow >= 0); // Something is wrong. Should not be posssible.
 			for (int i = 0; i < (int) rows_.size() - highestRow; ++i) { // Remove unneeded empty rows at the top.
 				rows_.pop_back();
-			}
-
-			int row = 0;
-			for (auto it = rows_.begin(); it != rows_.end(); ++it) {
-				if (row != (*it)->getRow()) {
-					int a = 0;
-				}
-				++row;
 			}
 		}
 		break;
@@ -355,7 +336,6 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 }
 
 void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
-	int highestRow = tetrisBoard.getBoardVector().size() / tetrisBoard.getColumns();
 	for (int i = 0; i < nbr; ++i) {
 		addEmptyRowTop(tetrisBoard); // Add them in ascending order.
 	}
@@ -366,11 +346,16 @@ void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
 	dynamicBoardBatch.add(currentBlock_.getVertexes());
 	dynamicBoardBatch.add(nextBlock_.getVertexes());
 
-	for (auto& rowPtr : rows_) {
-		if (rowPtr->isAlive()) {
+	for (auto& rowPtr : freeRows_) {
+		if (rowPtr->isActive()) {
 			rowPtr->update(deltaTime);
 			dynamicBoardBatch.add(rowPtr->getVertexes());
 		}
+	}
+
+	for (auto& rowPtr : rows_) {
+		rowPtr->update(deltaTime);
+		dynamicBoardBatch.add(rowPtr->getVertexes());
 	}
 }
 
@@ -431,10 +416,9 @@ void GameGraphic::setName(std::string name) {
 
 void GameGraphic::addEmptyRowTop(const TetrisBoard& tetrisBoard) {
 	assert(!freeRows_.empty()); // Should never be empty.
-	if (!freeRows_.empty()) {
-		// Just in case empty, but the game should be over anyway.
-		auto drawRow = freeRows_.front();
-		freeRows_.pop_front();
+	if (!freeRows_.empty()) { // Just in case empty, but the game should be over anyway.
+		auto drawRow = freeRows_.back();
+		freeRows_.pop_back();
 		drawRow->init(rows_.size(), tetrisBoard);
 		rows_.push_back(drawRow);
 	}
@@ -443,8 +427,8 @@ void GameGraphic::addEmptyRowTop(const TetrisBoard& tetrisBoard) {
 void GameGraphic::addDrawRowBottom(const TetrisBoard& tetrisBoard, int row) {
 	assert(!freeRows_.empty()); // Should never be empty.
 	if (!freeRows_.empty()) {
-		auto drawRow = freeRows_.front();
-		freeRows_.pop_front();
+		auto drawRow = freeRows_.back();
+		freeRows_.pop_back();
 		drawRow->init(row, tetrisBoard);
 		rows_.push_front(drawRow); // Add as the lowest row, i.e. on the bottom.
 	}

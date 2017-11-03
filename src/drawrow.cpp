@@ -31,40 +31,45 @@ void DrawRow::init(int row, const TetrisBoard& board) {
 	timeLeft_ = 0.f;
 	movingTime_ = 0.05f;
 	highestBoardRow_ = board.getRows();
+	alpha_ = 1.f;
 
 	updateVertexData(board);
 }
 
 void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
-	int rowTobeRemoved = tetrisBoard.getRowToBeRemoved();
-	switch (gameEvent) {
-		case GameEvent::ROW_TO_BE_REMOVED:
-			if (rowTobeRemoved < row_) {
-				--row_;
-				timeLeft_ += movingTime_;
-			} else if (rowTobeRemoved == row_) {
-				row_ = -1;
-			}
-			break;
-		case GameEvent::FOUR_ROW_REMOVED:
-		case GameEvent::THREE_ROW_REMOVED:
-		case GameEvent::TWO_ROW_REMOVED:
-		case GameEvent::ONE_ROW_REMOVED:
-			break;
-		case GameEvent::EXTERNAL_ROWS_ADDED:
-			row_ += tetrisBoard.getNbrExternalRowsAdded();
-			break;
-		case GameEvent::BLOCK_COLLISION:
-			if (row_ >= 0) {
-				updateVertexData(tetrisBoard);
-			}
-			break;
+	if (row_ >= 0) {
+		int rowTobeRemoved = tetrisBoard.getRowToBeRemoved();
+		switch (gameEvent) {
+			case GameEvent::ROW_TO_BE_REMOVED:
+				if (rowTobeRemoved < row_) {
+					--row_;
+					timeLeft_ += movingTime_;
+				} else if (rowTobeRemoved == row_) {
+					timeLeft_ = 0.25f;
+					row_ = -1;
+					alpha_ = 1.f;
+				}
+				break;
+			case GameEvent::FOUR_ROW_REMOVED:
+			case GameEvent::THREE_ROW_REMOVED:
+			case GameEvent::TWO_ROW_REMOVED:
+			case GameEvent::ONE_ROW_REMOVED:
+				break;
+			case GameEvent::EXTERNAL_ROWS_ADDED:
+				row_ += tetrisBoard.getNbrExternalRowsAdded();
+				break;
+			case GameEvent::BLOCK_COLLISION:
+				if (row_ >= 0) {
+					updateVertexData(tetrisBoard);
+				}
+				break;
+		}
 	}
 }
 
 void DrawRow::update(float deltaTime) {
 	if (oldRow_ != row_ && row_ >= 0) {
-		timeLeft_ += -deltaTime;
+		timeLeft_ -= deltaTime;
 		graphicRow_ += deltaTime / movingTime_ * sign(row_ - oldRow_);
 
 		if (timeLeft_ < 0) {
@@ -73,11 +78,19 @@ void DrawRow::update(float deltaTime) {
 			graphicRow_ = (float) row_;
 		}
 		updateVertexData();
+	} else if (row_ < 0) {
+		timeLeft_ -= deltaTime;
+		alpha_ = timeLeft_;
+		updateVertexData();
 	}
 }
 
 bool DrawRow::isAlive() const {
-	return row_ >= 0;
+	return row_ >= 0; // || alpha_ > 0;
+}
+
+bool DrawRow::isActive() const {
+	return row_ >= -1 && alpha_ > 0;
 }
 
 void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
@@ -97,7 +110,8 @@ void DrawRow::updateVertexData() {
 				addRectangle(vertexes_,
 					lowX_ + column * squareSize_, lowY_ + graphicRow_ * squareSize_,
 					squareSize_, squareSize_,
-					getSprite(blockTypes_[column])
+					getSprite(blockTypes_[column]),
+					mw::Color(1, 1, 1, alpha_)
 				);
 			}
 		}
