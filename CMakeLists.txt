@@ -161,8 +161,8 @@ endif ()
 target_link_libraries(MWetris
 	${CONSOLE_LIB}
 	SimpleNetwork
-	MwLibrary2
 	SdlGui
+	MwLibrary2
 	TetrisEngine
 	Calculator
 	${GLEW_LIBRARIES}
