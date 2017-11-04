@@ -44,6 +44,7 @@ private:
 	float squareSize_;
 	float lowX_, lowY_;
 	float timeLeft_;
+	float fadingTime_;
 	int highestBoardRow_;
 	float alpha_;
 

@@ -387,6 +387,30 @@ void TetrisData::setWindowVsync(bool activate) {
 	jsonObject_["window"]["vsync"] = activate;
 }
 
+int TetrisData::getMultiSampleBuffers() const {
+	return jsonObject_["window"]["multiSampleBuffers"];
+}
+
+int TetrisData::getMultiSampleSamples() const {
+	return jsonObject_["window"]["multiSampleSamples"];
+}
+
+float TetrisData::getRowFadingTime() const {
+	return jsonObject_["window"]["rowFadingTime"].get<float>();
+}
+
+void TetrisData::setRowFadingTime(float time) {
+	jsonObject_["window"]["rowFadingTime"] = time;
+}
+
+float TetrisData::getRowMovingTime() const {
+	return jsonObject_["window"]["rowMovingTime"].get<float>();
+}
+
+void TetrisData::setRowMovingTime(float time) {
+	jsonObject_["window"]["rowMovingTime"] = time;
+}
+
 mw::Sprite TetrisData::getBackgroundSprite() {
 	return loadSprite(jsonObject_["window"]["sprites"]["background"].get<std::string>());
 }

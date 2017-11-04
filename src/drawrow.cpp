@@ -20,6 +20,7 @@ DrawRow::DrawRow(int row, const TetrisBoard& board, float squareSize, float lowX
 	lowX_ = lowX;
 	lowY_ = lowY;
 	squareSize_ = squareSize;
+	fadingTime_ = TetrisData::getInstance().getRowFadingTime();
 	init(row, board);
 }
 
@@ -29,7 +30,7 @@ void DrawRow::init(int row, const TetrisBoard& board) {
 	graphicRow_ = (float) row;
 	columns_ = board.getColumns();
 	timeLeft_ = 0.f;
-	movingTime_ = 0.05f;
+	movingTime_ = TetrisData::getInstance().getRowMovingTime();
 	highestBoardRow_ = board.getRows();
 	alpha_ = 1.f;
 
@@ -45,7 +46,7 @@ void DrawRow::handleEvent(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
 					--row_;
 					timeLeft_ += movingTime_;
 				} else if (rowTobeRemoved == row_) {
-					timeLeft_ = 0.25f;
+					timeLeft_ = fadingTime_;
 					row_ = -1;
 					alpha_ = 1.f;
 				}
@@ -80,13 +81,13 @@ void DrawRow::update(float deltaTime) {
 		updateVertexData();
 	} else if (row_ < 0) {
 		timeLeft_ -= deltaTime;
-		alpha_ = timeLeft_;
+		alpha_ = timeLeft_ / fadingTime_;
 		updateVertexData();
 	}
 }
 
 bool DrawRow::isAlive() const {
-	return row_ >= 0; // || alpha_ > 0;
+	return row_ >= 0;
 }
 
 bool DrawRow::isActive() const {

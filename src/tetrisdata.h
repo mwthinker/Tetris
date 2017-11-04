@@ -104,6 +104,15 @@ public:
 	bool isWindowVsync();
 	void setWindowVsync(bool activate);
 
+	int getMultiSampleBuffers() const;
+	int getMultiSampleSamples() const;
+
+	float getRowFadingTime() const;
+	void setRowFadingTime(float time);
+
+	float getRowMovingTime() const;
+	void setRowMovingTime(float time);
+
 	bool isFullscreenOnDoubleClick();
 	void setFullscreenOnDoubleClick(bool activate);
 

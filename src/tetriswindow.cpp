@@ -37,9 +37,8 @@ TetrisWindow::TetrisWindow(int frame) :
 }
 
 void TetrisWindow::initOpenGl() {
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, TetrisData::getInstance().getMultiSampleBuffers());
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, TetrisData::getInstance().getMultiSampleSamples());
 	Window::setOpenGlVersion(2, 1);
 	Frame::initOpenGl();
 }

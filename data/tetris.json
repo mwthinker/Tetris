@@ -4,6 +4,10 @@
 		"border": true,
 		"moveWindowByHoldingDownMouse": false,
 		"vsync": false,
+		"multiSampleBuffers": 0,
+		"multiSampleSamples": 0,
+		"rowFadingTime": 0.25,
+		"rowMovingTime": 0.05,
 		"bar": {
 			"height": 35,
 			"color": "0.5 0 0 0.3)"
