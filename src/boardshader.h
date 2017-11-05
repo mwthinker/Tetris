@@ -1,11 +1,11 @@
 #ifndef BOARDSHADER_H
 #define BOARDSHADER_H
 
+#include "mat44.h"
+
 #include <mw/shader.h>
 #include <mw/color.h>
 #include <mw/sprite.h>
-
-#include "mat44.h"
 
 #include <memory>
 
@@ -14,14 +14,6 @@ using BoardShaderPtr = std::shared_ptr<BoardShader>;
 
 class BoardShader {
 public:
-	static constexpr unsigned int vertexSizeInBytes() {
-		return sizeof(Vertex);
-	}
-
-	static constexpr unsigned int vertexSizeInFloat() {
-		return sizeof(Vertex) / sizeof(GLfloat);
-	}
-
 	BoardShader();
 	BoardShader(std::string vShaderFile, std::string fShaderFile);
 
@@ -62,13 +54,14 @@ public:
 private:
 	mw::Shader shader_;
 
-	int uMatrixIndex_;
-
-	// Vertex buffer Attributes. ---------------------------
+	// Vertex buffer attributes.
 	int aPosIndex_;
 	int aTexIndex_;
 	int aTextureIndex_;
 	int aColorIndex_;
+
+	// Vertex buffer uniform.
+	int uMatrixIndex_;
 };
 
 #endif // BOARDSHADER_H

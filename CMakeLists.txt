@@ -26,8 +26,6 @@ set(SOURCES
 	src/boardbatch.h
 	src/boardshader.cpp
 	src/boardshader.h
-	src/boardsizebutton.cpp
-	src/boardsizebutton.h
 	src/computer.cpp
 	src/computer.h
 	src/definitions.h
@@ -49,14 +47,6 @@ set(SOURCES
 	src/gamecontroller.h
 	src/keyboard.cpp
 	src/keyboard.h
-	src/lightningbolt.cpp
-	src/lightningbolt.h
-	src/lightningboltcluster.cpp
-	src/lightningboltcluster.h
-	src/lightningshader.cpp
-	src/lightningshader.h
-	src/lightningvertexdata.cpp
-	src/lightningvertexdata.h
 	src/localconnection.h
 	src/localplayer.cpp
 	src/localplayer.h

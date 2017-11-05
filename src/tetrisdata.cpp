@@ -303,14 +303,6 @@ float TetrisData::getTetrisBorderSize() {
 	return jsonObject_["window"]["tetrisBoard"]["borderSize"].get<float>();
 }
 
-mw::Sprite TetrisData::getHalfCircleSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["halfCircle"].get<std::string>());
-}
-
-mw::Sprite TetrisData::getLineSegmentSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["lineSegment"].get<std::string>());
-}
-
 int TetrisData::getWindowPositionX() {
 	return jsonObject_["window"]["positionX"].get<int>();
 }

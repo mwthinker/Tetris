@@ -2,14 +2,7 @@
 
 #include <mw/window.h>
 
-BoardShader::BoardShader() {
-	aPosIndex_ = -1;
-	aTexIndex_ = -1;
-	aTextureIndex_ = -1;
-	aColorIndex_ = -1;
-
-	// Collect the vertex buffer uniforms indexes.
-	uMatrixIndex_ = -1;
+BoardShader::BoardShader() : aPosIndex_(-1), aTexIndex_(-1), aTextureIndex_(-1), aColorIndex_(-1), uMatrixIndex_(-1) {
 }
 
 BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
@@ -34,20 +27,20 @@ BoardShader::BoardShader(std::string vShaderFile, std::string fShaderFile) {
 void BoardShader::setVertexAttribPointer() const {
 	if (mw::Window::getOpenGlMajorVersion() >= 2) {
 		int size = 0;
-		glEnableVertexAttribArray(aPosIndex_);
-		glVertexAttribPointer(aPosIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		glEnableVertexAttribArray(aPosIndex_);		
+		glVertexAttribPointer(aPosIndex_, sizeof(Vertex::pos_)/sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<GLvoid*>(size));
 		size += sizeof(Vertex::pos_);
 
 		glEnableVertexAttribArray(aTexIndex_);
-		glVertexAttribPointer(aTexIndex_, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		glVertexAttribPointer(aTexIndex_, sizeof(Vertex::tex_) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<GLvoid*>(size));
 		size += sizeof(Vertex::tex_);
 
 		glEnableVertexAttribArray(aTextureIndex_);
-		glVertexAttribPointer(aTextureIndex_, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		glVertexAttribPointer(aTextureIndex_, sizeof(Vertex::texture_) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<GLvoid*>(size));
 		size += sizeof(Vertex::texture_);
 
 		glEnableVertexAttribArray(aColorIndex_);
-		glVertexAttribPointer(aColorIndex_, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) size);
+		glVertexAttribPointer(aColorIndex_, sizeof(Vertex::color_) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<GLvoid*>(size));
 		mw::checkGlError();
 	}
 }

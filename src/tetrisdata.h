@@ -74,9 +74,6 @@ public:
 
 	void bindTextureFromAtlas() const;
 
-	mw::Sprite getHalfCircleSprite();
-	mw::Sprite getLineSegmentSprite();
-
 	int getWindowPositionX();
 	int getWindowPositionY();
 
