@@ -20,32 +20,41 @@ public:
 
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
-	void drawSquare(int x, int y, BlockType blockType) const;
-	
-	void drawStatic() const;
-
-	void drawText() const;
-
 	void updatePoints(int points);
 
 	void updateLevel(int level);
+
+	void draw(const TetrisBoard& tetrisBoard);
+
+	void drawStatic() const;
+
 private:
+	
+
+	void drawText() const;
+	
+	void drawSquare(int x, int y, BlockType blockType) const;
+
 	void draw(int x, int y, char key) const;
 
 	void draw(int x, int y, std::string text) const;
 
 	void draw(int x, int y, std::string text, int number) const;
 
-	void drawNextBlock() const;
-	void drawCurrentBlock() const;
-	void drawBoard() const;
+	void drawNextBlock(BlockType nextBlockType) const;
+	void drawCurrentBlock(const Block& currentBlock) const;
+	void drawBoard(const TetrisBoard& board) const;
 
 	static const std::string SQUARE;
 
 	mw::signals::Connection connection_;
-	RawTetrisBoard tetrisBoard_;
 	std::string playerName_;
 	int x_, y_;
+	int rows_, columns_;
+	int nbrRemovedRows_;
+	BlockType nextBlockType_;
+	Block currentBlock_;
+
 	int points_, level_;
 	console::Console* console_;
 };

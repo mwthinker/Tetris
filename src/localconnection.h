@@ -17,7 +17,6 @@ public:
 		timeStep_(1.0/60),
 		accumulator_(0),
 		id_(UNDEFINED_CONNECTION_ID) {
-
 	}
 
 	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
@@ -48,8 +47,8 @@ public:
 
 	void restart() {
 		for (auto& player : players_) {
-			player->restart(player->getTetrisBoard().getBlockType(),
-				player->getTetrisBoard().getNextBlockType());
+			player->restart(randomBlockType(),
+				randomBlockType());
 		}
 
 		if (packetSender_.isActive()) {

@@ -47,13 +47,17 @@ DevicePtr ConsoleTetris::findAiDevice(std::string name) const {
 }
 
 void ConsoleTetris::printGameMenu() {
+	Console::setCursorPosition(0, 0);
 	Console::setTextColor(console::Color::RED);
 	Console::setBackgroundColor(console::Color::BLACK);
-	print("Menu [Key 1]    Restart [Key 2]    Human -/+ [Key 3/4]    AI -/+ [Key 5/6]    Pause [P]");
+	if (tetrisGame_.isPaused()) {
+		print("Menu [Key 1]    Restart [Key 2]    Human -/+ [Key 3/4]    AI -/+ [Key 5/6]    Unpause [P]");
+	} else {
+		print("Menu [Key 1]    Restart [Key 2]    Human -/+ [Key 3/4]    AI -/+ [Key 5/6]    Pause [P]   ");
+	}
 }
 
 void ConsoleTetris::printGame() {
-	clear();
 	printGameMenu();
 	for (auto& player : graphicPlayers_) {
 		player.second.drawStatic();
@@ -98,7 +102,7 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 							restartCurrentGame();
 							break;
 						case console::Key::KEY_4:
-							humanPlayers_ = (humanPlayers_ - 1) % 3; // Add a human player by one.
+							humanPlayers_ = (humanPlayers_ + 1) % 3; // Add a human player by one.
 							restartCurrentGame();
 							break;
 						case console::Key::KEY_5:
@@ -243,6 +247,7 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
+		printGame();
 		return;
 	} catch (std::bad_cast exp) {}
 
@@ -261,6 +266,7 @@ void ConsoleTetris::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			graphic.restart(*player, delta, 2, this);
 			delta += graphic.getWidth();
 		}
+		clear();
 		printGame();
 		return;
 	} catch (std::bad_cast exp) {}
@@ -283,9 +289,9 @@ void ConsoleTetris::moveMenuDown() {
 	int nbr = (int) option_;
 	++nbr;
 	if (nbr >= ENUM_SIZE) {
-		option_ = (Mode) 1;
+		option_ = GAME;
 	} else {
-		option_ = (Mode) nbr;
+		option_ = (TetrisMenu) nbr;
 	}
 	printMainMenu();
 }
@@ -294,14 +300,14 @@ void ConsoleTetris::moveMenuUp () {
 	int nbr = (int) option_;
 	--nbr;
 	if (nbr <= 0) {
-		option_ = (Mode) (ENUM_SIZE - 1);
+		option_ = (TetrisMenu) (ENUM_SIZE - 1);
 	} else {
-		option_ = (Mode) nbr;
+		option_ = (TetrisMenu) nbr;
 	}
 	printMainMenu();
 }
 
-void ConsoleTetris::execute(Mode option) {
+void ConsoleTetris::execute(TetrisMenu option) {
 	clear();
 	switch (option) {
 	case GAME:

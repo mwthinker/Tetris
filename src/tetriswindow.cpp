@@ -187,8 +187,7 @@ void TetrisWindow::initMenuPanel() {
 
 		setCurrentPanel(playIndex_);
 		resume_->setVisible(true);
-
-	});
+	});	
 
 	panel->addDefaultToGroup<Button>("Custom play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
 		setCurrentPanel(customIndex_);

@@ -71,8 +71,6 @@
 			"squareSize": 10,
 			"borderSize": 5,
 			"sprites": {
-				"halfCircle": "images/half_circle.png",
-				"lineSegment": "images/lightning_segment.png",
 				"squareZ": "images/Z.png",
 				"squareS": "images/S.png",
 				"squareJ": "images/J.png",

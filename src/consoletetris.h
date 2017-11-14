@@ -11,6 +11,7 @@
 #include "consolekeyboard.h"
 #include "device.h"
 #include "ai.h"
+#include "tetrisparameters.h"
 
 #include <console/console.h>
 
@@ -22,9 +23,8 @@ public:
 
 protected:
 	void initPreLoop() override;
-private:
-	enum Mode {MENU = 0, GAME = 1, CUSTOM_GAME = 2, NETWORK_GAME = 3, HIGHSCORE = 4, QUIT = 5, ENUM_SIZE = 6};
 
+private:
 	void update(double deltaTime) override;
 	
 	void eventUpdate(console::ConsoleEvent& consoleEvent) override;
@@ -50,14 +50,14 @@ private:
 
 	void restartCurrentGame();
 
-	void execute(Mode option);
+	void execute(TetrisMenu option);
 
 	TetrisGame tetrisGame_;
 
 	std::array<DevicePtr, 3> activeAis_;
 
-	Mode mode_;
-	Mode option_;
+	TetrisMenu mode_;
+	TetrisMenu option_;
 	std::shared_ptr<ConsoleKeyboard> keyboard1_, keyboard2_;
 	int humanPlayers_;
 	int aiPlayers_;
