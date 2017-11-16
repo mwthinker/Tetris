@@ -627,8 +627,6 @@ DevicePtr TetrisWindow::findHumanDevice(std::string name) const {
 
 DevicePtr TetrisWindow::findAiDevice(std::string name) const {
 	auto ais = TetrisData::getInstance().getAiVector();
-	ais.push_back(Ai()); // Add default ai.
-
 	for (const Ai& ai : ais) {
 		if (ai.getName() == name) {
 			return std::make_shared<Computer>(ai);

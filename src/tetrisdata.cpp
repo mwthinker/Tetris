@@ -437,7 +437,10 @@ void TetrisData::setAi4Name(std::string name) {
 }
 
 std::vector<Ai> TetrisData::getAiVector() {
-	return std::vector<Ai>(jsonObject_["ais"].begin(), jsonObject_["ais"].end());
+	std::vector<Ai> ais;
+	ais.push_back(Ai()); // Add default ai.
+	ais.insert(ais.end(), jsonObject_["ais"].begin(), jsonObject_["ais"].end());
+	return ais;
 }
 
 std::vector<HighscoreRecord> TetrisData::getHighscoreRecordVector() {
@@ -591,7 +594,7 @@ mw::Sprite TetrisData::getZoomSprite() {
 void TetrisData::setActiveLocalGame(int rows, int columns, std::vector<PlayerData> playerDataVector) {
 	jsonObject_["activeGames"]["localGame"]["rows"] = rows;
 	jsonObject_["activeGames"]["localGame"]["columns"] = columns;
-	
+
 	nlohmann::json playerJson = nlohmann::json::array();
 	for (PlayerData& data : playerDataVector) {
 		nlohmann::json test = nlohmann::json(data.board_);

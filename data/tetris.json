@@ -35,7 +35,7 @@
 		"comboBox": {
 			"textColor": "1 1 1",
 			"focusColor": ".8 .1 0 .3",
-			"backgroundColor": "1 1 1 0",
+			"backgroundColor": "0.21 .12 0.29 1",
 			"selectedTextColor": "1 1 1 1",
 			"selectedBackgroundColor": ".6 .1 .1",
 			"borderColor": "0 0 0 0",
@@ -153,14 +153,14 @@
 			"points": 0
 		},
 		{
-			"name": "MW",
-			"date": "2017-07-26",
-			"points": 5
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
 		},
 		{
-			"name": "MW",
-			"date": "2017-07-26",
-			"points": 164
+			"name": "EMPTY",
+			"date": "2014-01-01",
+			"points": 0
 		}
 	],
 	"activeGames": {
