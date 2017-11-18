@@ -30,7 +30,6 @@ public:
 	void startClient(int port, std::string ip);
 
 	~TetrisWindow();
-
 private:
 	void resumeGame();
 

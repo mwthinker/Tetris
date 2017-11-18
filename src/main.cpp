@@ -1,4 +1,5 @@
 #include "tetriswindow.h"
+#include "tetrisdata.h"
 
 #if CONSOLE_TETRIS
 #include "consoletetris.h"
@@ -46,7 +47,7 @@ int main (int argc, char** argv) {
 		}
 #endif // D_CONSOLE_TETRIS
 		else if (code == "-s" || code == "--server") {
-			int port = 11155;
+			int port = TetrisData::getInstance().getServerPort();
 			if (argc >= 3) {
 				std::stringstream stream(*(argv + 2));
 				stream >> port;
@@ -56,12 +57,12 @@ int main (int argc, char** argv) {
 			game.startLoop();
 			return 0;
 		} else if (code == "-s" || code == "--server") {
-			int port = 11155;
+			int port = TetrisData::getInstance().getPort();
 			if (argc >= 3) {
 				std::stringstream stream(*(argv + 2));
 				stream >> port;
 			}
-			std::string ip = "localhost";
+			std::string ip = TetrisData::getInstance().getIp();
 			if (argc >= 4) {
 				ip = *(argv + 2);
 			}

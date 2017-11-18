@@ -115,6 +115,15 @@ public:
 
 	bool isMoveWindowByHoldingDownMouse();
 	void setMoveWindowByHoldingDownMouse(bool activate);
+
+	int getServerPort() const;
+	void setServerPort(int port);
+
+	int getPort() const;
+	void setPort(int port);
+
+	std::string getIp() const;
+	void setIp(std::string ip);
 	
 	mw::Sprite getBackgroundSprite();
 

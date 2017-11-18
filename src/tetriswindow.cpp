@@ -23,6 +23,24 @@
 #include <iostream>
 #include <sstream>
 
+namespace {
+
+	int convertString2Int(std::string str) {
+		int nbr;
+		std::stringstream stream;
+		stream << str;
+		stream >> nbr;
+		return nbr;
+	}
+
+	std::string convertInt2String(int nbr) {
+		std::stringstream stream;
+		stream << nbr;
+		return stream.str();
+	}
+
+}
+
 TetrisWindow::TetrisWindow(int frame) : 
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
 	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(frame) {
@@ -132,18 +150,13 @@ void TetrisWindow::saveCurrentGame() {
 }
 
 void TetrisWindow::startServer(int port) {
-	std::stringstream stream;
-	stream << port;
-	portServer_->setText(stream.str());
-
+	portServer_->setText(convertInt2String(port));
 	tetrisGame_.closeGame();
 	tetrisGame_.createServerGame(port);
 }
 
 void TetrisWindow::startClient(int port, std::string ip) {
-	std::stringstream stream;
-	stream << port;
-	portClient_->setText(stream.str());
+	portClient_->setText(convertInt2String(port));
 	ipClient_->setText(ip);
 
 	tetrisGame_.closeGame();
@@ -480,15 +493,15 @@ void TetrisWindow::initCreateServerPanel() {
 
 	auto p3 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p3->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
-	portServer_ = p3->addDefault<TextField>("11155", TetrisData::getInstance().getDefaultFont(18));
+	portServer_ = p3->addDefault<TextField>(convertInt2String(TetrisData::getInstance().getServerPort()), TetrisData::getInstance().getDefaultFont(18));
 
 	centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component& c) {
-		std::stringstream stream(portServer_->getText());
-		int port;
-		stream >> port;
-
+		TetrisData::getInstance().setServerPort(convertString2Int(portServer_->getText()));
+		TetrisData::getInstance().save();
 		tetrisGame_.closeGame();
-		tetrisGame_.createServerGame(port);
+		nbrHumans_->setNbr(1);
+		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		tetrisGame_.createServerGame(convertString2Int(portServer_->getText()));
 	});
 }
 
@@ -509,18 +522,19 @@ void TetrisWindow::initCreateClientPanel() {
 
 	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p1->addDefault<Label>("Ip", TetrisData::getInstance().getDefaultFont(18));
-	ipClient_ = p1->addDefault<TextField>("", TetrisData::getInstance().getDefaultFont(18));
+	ipClient_ = p1->addDefault<TextField>(TetrisData::getInstance().getIp(), TetrisData::getInstance().getDefaultFont(18));
+
 	p1->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
-	portClient_ = p1->addDefault<TextField>("11155", TetrisData::getInstance().getDefaultFont(18));
+	portClient_ = p1->addDefault<TextField>(convertInt2String(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
 
 	centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component& c) {
-		int port;
-		std::stringstream stream1;
-		stream1 << portClient_->getText();
-		stream1 >> port;
-
+		TetrisData::getInstance().setPort(convertString2Int(portClient_->getText()));
+		TetrisData::getInstance().setIp(ipClient_->getText());
+		TetrisData::getInstance().save();
 		tetrisGame_.closeGame();
-		tetrisGame_.createClientGame(port, ipClient_->getText());
+		nbrHumans_->setNbr(1);
+		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+		tetrisGame_.createClientGame(convertString2Int(portClient_->getText()), ipClient_->getText());
 		setCurrentPanel(waitToConnectIndex_);
 	});
 }
@@ -541,7 +555,11 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 		// Points high enough to be saved in the highscore list?
-		if (highscore_->isNewRecord(gameOver.points_)) {
+		if (tetrisGame_.getStatus() == TetrisGame::LOCAL &&
+			tetrisGame_.getRows() == TETRIS_HEIGHT && tetrisGame_.getColumns() == TETRIS_WIDTH &&
+			highscore_->isNewRecord(gameOver.points_)) {
+			// New record only in local game with default settings.
+
 			// Set points in order for highscore to know which point to save in list.
 			highscore_->setNextRecord(gameOver.points_);
 			// In order for the user to insert name.
