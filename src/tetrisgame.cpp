@@ -17,7 +17,8 @@ TetrisGame::TetrisGame() :
 	status_(WAITING_TO_CONNECT), nbrOfPlayers_(0),
 	localConnection_(sender_),
 	width_(TETRIS_WIDTH), height_(TETRIS_HEIGHT), maxLevel_(TETRIS_MAX_LEVEL),
-	lastConnectionId_(UNDEFINED_CONNECTION_ID) {
+	lastConnectionId_(UNDEFINED_CONNECTION_ID),
+	network_(10) {
 
 }
 
@@ -81,6 +82,7 @@ void TetrisGame::createServerGame(int port) {
 void TetrisGame::createClientGame(int port, std::string ip) {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = CLIENT;
+
 		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.setId(lastConnectionId_);
 
@@ -496,7 +498,7 @@ void TetrisGame::Sender::sendToAll(const net::Packet& packet) const {
 }
 
 bool TetrisGame::Sender::isActive() const {
-	return !remoteConnections_.empty() || connectionToServer_ != nullptr;
+	return !remoteConnections_.empty() || connectionToServer_ != nullptr && connectionToServer_->isActive();
 }
 
 void TetrisGame::Sender::sendToAllExcept(std::shared_ptr<RemoteConnection> remoteSendNot, const net::Packet& packet) const {
@@ -532,9 +534,11 @@ std::shared_ptr<RemoteConnection> TetrisGame::Sender::addRemoteConnection(int co
 }
 
 void TetrisGame::Sender::serverRemoveDisconnectedConnections() {
-	std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
+	// Find iterator to the connections that were disconnected.
+	auto newEnd = std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
 		[&](const std::shared_ptr<RemoteConnection>& remote) {
 			if (!remote->isActive()) {
+				// Signal all connections that one connection has disconnected.
 				net::Packet packet;
 				packet << PacketType::CONNECTION_DISCONNECT;
 				packet << remote->getId();
@@ -543,6 +547,8 @@ void TetrisGame::Sender::serverRemoveDisconnectedConnections() {
 			}
 			return false;
 		});
+	// Remove all connections that were disconnected.
+	remoteConnections_.erase(newEnd, remoteConnections_.end());
 }
 
 void TetrisGame::Sender::disconnect() {
