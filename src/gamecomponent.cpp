@@ -50,7 +50,7 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		}
 
 		// Centers the game and holds the correct proportions.
-		// The sides is transparent.
+		// The sides are transparent.
 		Mat44 model = getModelMatrix();
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
@@ -71,9 +71,6 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 		boardShader_->useProgram();
 		updateMatrix_ = false;
 	}
-
-	mw::Text text; // Used to update the "Pause".
-
 
 	if (!graphicPlayers_.empty()) {
 		// Draw boards.
@@ -114,7 +111,7 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 
 	float w = 0;
 	for (auto& player : players) {
-		auto& graphic = graphicPlayers_[player->getId()];
+		auto& graphic = graphicPlayers_[player];
 		graphic.restart(*staticBoardBatch_, *player, w, 0);
 		w += graphic.getWidth();
 	}
@@ -152,14 +149,14 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 
 	try {
 		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
-		GameGraphic& gg = graphicPlayers_[levelChange.player_->getId()];
+		GameGraphic& gg = graphicPlayers_[levelChange.player_];
 		gg.update(levelChange.player_->getClearedRows(), levelChange.player_->getPoints(), levelChange.newLevel_);
 		return;
 	} catch (std::bad_cast exp) {}
 
 	try {
 		auto& pointsChange = dynamic_cast<PointsChange&>(tetrisEvent);
-		GameGraphic& gg = graphicPlayers_[pointsChange.player_->getId()];
+		GameGraphic& gg = graphicPlayers_[pointsChange.player_];
 		gg.update(pointsChange.player_->getClearedRows(), pointsChange.player_->getPoints(), pointsChange.player_->getLevel());
 		return;
 	} catch (std::bad_cast exp) {}

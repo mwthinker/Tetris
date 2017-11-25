@@ -3,6 +3,7 @@
 
 #include "gamegraphic.h"
 #include "boardshader.h"
+#include "player.h"
 
 #include <gui/component.h>
 
@@ -38,7 +39,7 @@ private:
 	// Called when the component is resized or moved.
 	void validate() override;
 
-	std::map<int, GameGraphic> graphicPlayers_;
+	std::map<PlayerPtr, GameGraphic> graphicPlayers_;
 	BoardShaderPtr boardShader_;
 	
 	std::shared_ptr<BoardBatch> staticBoardBatch_;
