@@ -52,11 +52,10 @@ int main (int argc, char** argv) {
 				std::stringstream stream(*(argv + 2));
 				stream >> port;
 			}
-			TetrisWindow game(0);
-			game.startServer(port);
-			game.startLoop();
+			TetrisWindow game;
+			game.startServerLoop(port);
 			return 0;
-		} else if (code == "-s" || code == "--server") {
+		} else if (code == "-c" || code == "--client") {
 			int port = TetrisData::getInstance().getPort();
 			if (argc >= 3) {
 				std::stringstream stream(*(argv + 2));
@@ -66,9 +65,8 @@ int main (int argc, char** argv) {
 			if (argc >= 4) {
 				ip = *(argv + 2);
 			}
-			TetrisWindow game(0);
-			game.startClient(port, ip);
-			game.startLoop();
+			TetrisWindow game;
+			game.startClientLoop(port, ip);
 			return 0;
 		} else if (code == "-m" || code == "--menu-index") {
 			int menuIndex = 0;
@@ -77,13 +75,13 @@ int main (int argc, char** argv) {
 				stream << *(argv + 1);
 				stream >> menuIndex;
 			}
-			TetrisWindow game(menuIndex);
+			TetrisWindow game;
 			game.startLoop();
 		} else {
 			std::cout << "Incorrect argument " << code << "\n";
 		}
 	} else {
-		TetrisWindow game(0);
+		TetrisWindow game;
 		game.startLoop();
 	}
 

@@ -23,14 +23,16 @@ class GameData;
 
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow(int frame);
+	TetrisWindow();
 
-	void startServer(int port);
+	void startServerLoop(int port);
 
-	void startClient(int port, std::string ip);
+	void startClientLoop(int port, std::string ip);
 
 	~TetrisWindow();
 private:
+	enum class StartFrame { MENU, SERVER, CLIENT, LOCAL_GAME };
+
 	void resumeGame();
 
 	void saveCurrentGame();
@@ -78,10 +80,12 @@ private:
 
 	// initCreateServerPanel
 	std::shared_ptr<gui::TextField> portServer_;
+	std::shared_ptr<gui::Button> serverButton_;
 
 	// initCreateClientPanel
 	std::shared_ptr<gui::TextField> ipClient_;
 	std::shared_ptr<gui::TextField> portClient_;
+	std::shared_ptr<gui::Button> clientButton_;
 	
 	// Devices.
 	std::vector<SdlDevicePtr> devices_;
@@ -116,7 +120,7 @@ private:
 	int followMouseX_, followMouseY_;
 
 	int lastX_, lastY_;
-	int startFrame_;
+	StartFrame startFrame_;
 };
 
 #endif // TETRISWINDOW_H

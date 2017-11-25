@@ -41,9 +41,9 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow(int frame) : 
+TetrisWindow::TetrisWindow() : 
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
-	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(frame) {
+	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU) {
 
 	Frame::setPosition(TetrisData::getInstance().getWindowPositionX(), TetrisData::getInstance().getWindowPositionY());
 	Frame::setWindowSize(TetrisData::getInstance().getWindowWidth(), TetrisData::getInstance().getWindowHeight());
@@ -113,20 +113,31 @@ void TetrisWindow::initPreLoop() {
 	initCreateClientPanel();
 	initWaitToConnectPanel();
 
-	if (startFrame_ >= 0 && startFrame_ <= waitToConnectIndex_) {
-		if (startFrame_ == playIndex_) {
-			// Initialization local game settings.
-			tetrisGame_.createLocalGame();
-		}
-		setCurrentPanel(startFrame_);
-	}
-
 	loadHighscore();
 	// Init ai players.
 	activeAis_[0] = findAiDevice(TetrisData::getInstance().getAi1Name());
 	activeAis_[1] = findAiDevice(TetrisData::getInstance().getAi2Name());
 	activeAis_[2] = findAiDevice(TetrisData::getInstance().getAi3Name());
 	activeAis_[3] = findAiDevice(TetrisData::getInstance().getAi4Name());
+
+	switch (startFrame_) {
+		case StartFrame::MENU:
+			setCurrentPanel(menuIndex_);
+			break;
+		case StartFrame::SERVER:
+			setCurrentPanel(createServerIndex_);
+			serverButton_->doAction();
+			break;
+		case StartFrame::CLIENT:
+			setCurrentPanel(createClientIndex_);
+			clientButton_->doAction();
+			break;
+		case StartFrame::LOCAL_GAME:
+			// Initialization local game settings.
+			tetrisGame_.createLocalGame();
+			setCurrentPanel(playIndex_);
+			break;
+	}
 }
 
 void TetrisWindow::resumeGame() {
@@ -149,20 +160,17 @@ void TetrisWindow::saveCurrentGame() {
 	TetrisData::getInstance().save();
 }
 
-void TetrisWindow::startServer(int port) {
-	portServer_->setText(convertInt2String(port));
-	tetrisGame_.closeGame();
-	tetrisGame_.createServerGame(port);
+void TetrisWindow::startServerLoop(int port) {
+	startFrame_ = StartFrame::SERVER;
+	TetrisData::getInstance().setServerPort(port);
+	startLoop();
 }
 
-void TetrisWindow::startClient(int port, std::string ip) {
-	portClient_->setText(convertInt2String(port));
-	ipClient_->setText(ip);
-
-	tetrisGame_.closeGame();
-	tetrisGame_.createClientGame(port, ipClient_->getText());
-
-	setCurrentPanel(waitToConnectIndex_);
+void TetrisWindow::startClientLoop(int port, std::string ip) {
+	startFrame_ = StartFrame::CLIENT;
+	TetrisData::getInstance().setPort(port);
+	TetrisData::getInstance().setIp(ip);
+	startLoop();
 }
 
 void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent) {
@@ -272,7 +280,6 @@ void TetrisWindow::initPlayPanel() {
 	});
 	
     // Add the game component, already created in the constructor.
-	//game_ = add<GameComponent>(gui::BorderLayout::CENTER, tetrisGame_, tetrisEntry_);
 	game_ = std::make_shared<GameComponent>(tetrisGame_);
 	add(gui::BorderLayout::CENTER, game_);
 		
@@ -495,7 +502,8 @@ void TetrisWindow::initCreateServerPanel() {
 	p3->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
 	portServer_ = p3->addDefault<TextField>(convertInt2String(TetrisData::getInstance().getServerPort()), TetrisData::getInstance().getDefaultFont(18));
 
-	centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component& c) {
+	serverButton_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
+	serverButton_->addActionListener([&](gui::Component& c) {
 		TetrisData::getInstance().setServerPort(convertString2Int(portServer_->getText()));
 		TetrisData::getInstance().save();
 		tetrisGame_.closeGame();
@@ -527,7 +535,8 @@ void TetrisWindow::initCreateClientPanel() {
 	p1->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
 	portClient_ = p1->addDefault<TextField>(convertInt2String(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
 
-	centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component& c) {
+	clientButton_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
+	clientButton_->addActionListener([&](gui::Component& c) {
 		TetrisData::getInstance().setPort(convertString2Int(portClient_->getText()));
 		TetrisData::getInstance().setIp(ipClient_->getText());
 		TetrisData::getInstance().save();
@@ -548,6 +557,10 @@ void TetrisWindow::initWaitToConnectPanel() {
 		tetrisGame_.closeGame();
 	});	
 
+	addDrawListener([&](gui::Frame& frame, double deltaTime) {
+		tetrisGame_.update(deltaTime);
+	});
+
 	add<Label>(gui::BorderLayout::CENTER, "Waiting for the server to accept connection!", TetrisData::getInstance().getDefaultFont(18));
 }
 
@@ -555,7 +568,10 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 		// Points high enough to be saved in the highscore list?
-		if (tetrisGame_.getStatus() == TetrisGame::LOCAL &&
+		
+		if (tetrisGame_.getNbrOfPlayers() == 1 &&
+			!tetrisGame_.getPlayerData()[0].ai_ &&
+			tetrisGame_.getStatus() == TetrisGame::LOCAL &&
 			tetrisGame_.getRows() == TETRIS_HEIGHT && tetrisGame_.getColumns() == TETRIS_WIDTH &&
 			highscore_->isNewRecord(gameOver.points_)) {
 			// New record only in local game with default settings.
