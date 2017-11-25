@@ -56,14 +56,14 @@ int main (int argc, char** argv) {
 			game.startServerLoop(port);
 			return 0;
 		} else if (code == "-c" || code == "--client") {
-			int port = TetrisData::getInstance().getPort();
-			if (argc >= 3) {
-				std::stringstream stream(*(argv + 2));
-				stream >> port;
-			}
 			std::string ip = TetrisData::getInstance().getIp();
-			if (argc >= 4) {
+			if (argc >= 3) {
 				ip = *(argv + 2);
+			}
+			int port = TetrisData::getInstance().getPort();
+			if (argc >= 4) {
+				std::stringstream stream(*(argv + 3));
+				stream >> port;
 			}
 			TetrisWindow game;
 			game.startClientLoop(port, ip);
