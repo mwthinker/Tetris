@@ -28,8 +28,6 @@ public:
 
 	void initGame(std::vector<PlayerPtr>& player);
 
-	void countDown(int msCountDown);
-
 	void eventHandler(TetrisGameEvent& tetrisGameEvent);
 
 private:
@@ -63,6 +61,7 @@ private:
 	int alivePlayers_;
 
 	// Font related.
+	mw::Text middleText_;
 	mw::Font font_;
 	float fontSize_;
 	float dx_, dy_;

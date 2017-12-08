@@ -29,6 +29,14 @@ public:
 	Status status_;
 };
 
+class CountDown : public TetrisGameEvent {
+public:
+	CountDown(int timeLeft) : timeLeft_(timeLeft) {
+	}
+
+	int timeLeft_;
+};
+
 class GamePause : public TetrisGameEvent {
 public:
 	GamePause(bool pause) : pause_(pause) {
@@ -39,10 +47,11 @@ public:
 
 class GameOver : public TetrisGameEvent {
 public:
-    GameOver(int points) : points_(points) {
+    GameOver(unsigned int position, const std::shared_ptr<Player>& player) : position_(position), player_(player) {
     }
 
-    int points_;
+    unsigned int position_;
+	std::shared_ptr<Player> player_;
 };
 
 class InitGame : public TetrisGameEvent {

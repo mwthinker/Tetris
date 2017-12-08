@@ -8,6 +8,7 @@
 *.mp3
 *.xcf
 *~
+.vs
 *.layout
 *.depend
 *highscore
@@ -38,6 +39,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+
 
 # External tool builders
 .externalToolBuilders/

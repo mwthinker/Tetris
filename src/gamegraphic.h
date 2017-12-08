@@ -59,6 +59,8 @@ public:
 
 	void drawText(BoardBatch& batch);
 
+	void drawMiddleText(BoardBatch& batch);
+
 private:
 	void initStaticBackground(BoardBatch& boardBatch, float lowX, float lowY, Player& player);
 
@@ -72,6 +74,7 @@ private:
 	std::list<DrawRowPtr> freeRows_;
 	
 	DrawText textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	DrawText middleText_;
 	DrawBlock currentBlock_, nextBlock_;
 	int level_, points_, clearedRows_;
 	Block latestBlockDownGround_;

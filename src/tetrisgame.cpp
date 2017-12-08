@@ -18,8 +18,10 @@ TetrisGame::TetrisGame() :
 	localConnection_(sender_),
 	width_(TETRIS_WIDTH), height_(TETRIS_HEIGHT), maxLevel_(TETRIS_MAX_LEVEL),
 	lastConnectionId_(UNDEFINED_CONNECTION_ID),
-	network_(10) {
-
+	network_(10),
+	countDownTime_(COUNT_DOWN_TIME),
+	timeLeftToStart_(-0.0),
+	wholeTimeLeft_(0) {
 }
 
 TetrisGame::~TetrisGame() {
@@ -32,7 +34,7 @@ void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>
 	status_ = LOCAL;
 	localConnection_.removeAllPlayers();
 	for (const PlayerData& data : playersData) {
-		localConnection_.addPlayer(data.device_, width_, height_, data.levelUpCounter_, data.points_, data.level_, data.current_, data.next_, data.board_);		
+		localConnection_.addPlayer(data.device_, width_, height_, data.levelUpCounter_, data.points_, data.level_, data.current_, data.next_, data.board_);
 	}
 	nbrOfPlayers_ = localConnection_.getNbrOfPlayers();
 	initGame();
@@ -59,7 +61,7 @@ std::vector<PlayerData> TetrisGame::getPlayerData() const {
 void TetrisGame::createLocalGame() {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
-		
+
 		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.restart();
 		initGame();
@@ -72,7 +74,7 @@ void TetrisGame::createServerGame(int port) {
 
 		lastConnectionId_ = SERVER_CONNECTION_ID;
 		localConnection_.setId(lastConnectionId_);
-		
+
 		network_.startServer(port);
 		network_.setAcceptConnections(true);
 		initGame();
@@ -124,6 +126,13 @@ void TetrisGame::initGame() {
 	nbrOfAlivePlayers_ = nbrOfPlayers_; // All players are living again.
 	InitGame initGame(players);
 	eventHandler_(initGame);
+
+	if (currentGameHasCountDown()) { // Must be called last, after all settings are defined for the current game.
+		timeLeftToStart_ = countDownTime_;
+		wholeTimeLeft_ = countDownTime_;
+		CountDown countDown(wholeTimeLeft_);
+		eventHandler_(countDown);
+	}
 }
 
 void TetrisGame::restartGame() {
@@ -179,7 +188,7 @@ void TetrisGame::resizeBoard(int width, int height) {
 	if (width > 6 && width <= 40 &&
 		height > 6 && height <= 40 &&
 		(width_ != width || height_ != height)) {
-		
+
 		width_ = width;
 		height_ = height;
 
@@ -191,7 +200,7 @@ void TetrisGame::resizeBoard(int width, int height) {
 			sender_.sendToAll(packet);
 		}
 		localConnection_.resizeBoard(width, height);
-		
+
 		initGame();
 	}
 }
@@ -220,7 +229,7 @@ void TetrisGame::receiveAndSendNetworkData() {
 		if (connection) {
 			// Add the new connection.
 			auto newRemote = sender_.addRemoteConnection(++lastConnectionId_, connection);
-			
+
 			// Send game info to the new connection.
 			net::Packet packet;
 			packet << PacketType::BOARD_SIZE;
@@ -273,9 +282,23 @@ void TetrisGame::receiveAndSendNetworkData() {
 void TetrisGame::update(double deltaTime) {
 	if (status_ != Status::WAITING_TO_CONNECT) {
 		receiveAndSendNetworkData();
-	
+
 		if (!pause_) {
-			localConnection_.updateGame(deltaTime);
+			if (timeLeftToStart_ > 0) {
+				timeLeftToStart_ -= deltaTime;
+			}
+
+			if (currentGameHasCountDown() && wholeTimeLeft_ != (int) (timeLeftToStart_ + 1) && wholeTimeLeft_ > timeLeftToStart_ + 1) {
+				wholeTimeLeft_ = (int) (timeLeftToStart_ + 1);
+				CountDown countDown(wholeTimeLeft_);
+				eventHandler_(countDown);
+			}
+
+			if (nbrOfPlayers_ == 1 || currentGameHasCountDown() && timeLeftToStart_ < 0) {
+				// No count down for one player game.
+				// Update the game.
+				localConnection_.updateGame(deltaTime);
+			}
 		}
 	}
 }
@@ -285,7 +308,7 @@ void TetrisGame::serverReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	PacketType type;
 	packet >> type;
 	packet[2] = remoteConnection->getId(); // Set the connection id. The remote has no obligation to use the correct id.
-		
+
 	// Send through to all connections.
 	sender_.sendToAllExcept(remoteConnection, packet);
 
@@ -327,7 +350,7 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	packet >> type;
 	int id;
 	packet >> id;
-	
+
 	switch (type) {
 		case PacketType::RESTART:
 			localConnection_.restart();
@@ -407,28 +430,18 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 			}
 			break;
 		case GameEvent::GAME_OVER:
+			// One player more is dead.
+			--nbrOfAlivePlayers_;
+
+			GameOver gameOver(nbrOfAlivePlayers_ + 1, player);
+			eventHandler_(gameOver);
+
 			// Multiplayer?
 			if (nbrOfPlayers_ > 1) {
-				// One player more is dead.
-				--nbrOfAlivePlayers_;
-
 				// All dead except one => End game!
 				if (nbrOfAlivePlayers_ == 1) {
 					for (auto& local : localConnection_) {
 						local->endGame();
-					}
-				}
-			} else { // Singleplayer.
-				// And is the correct settings?
-				if (player->getTetrisBoard().getRows() == TETRIS_HEIGHT
-					&& player->getTetrisBoard().getColumns() == TETRIS_WIDTH
-					&& maxLevel_ == TETRIS_MAX_LEVEL) {
-
-					// Is a human player?
-					if (!player->getDevice()->isAi()) {
-						// May be a record.
-						GameOver gameOver(player->getPoints());
-						eventHandler_(gameOver);
 					}
 				}
 			}
@@ -480,13 +493,19 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
 			break;
+		case GameEvent::GAME_OVER:
+		{
+			GameOver gameOver(nbrOfAlivePlayers_--, player);
+			eventHandler_(gameOver);
+			break;
+		}
 	}
 
 	if (nbrOfPlayers_ > 1 && rows > 0) {
 		// Increase level up counter for all opponents to the current player.
 		// Remote players will be added indirectly.
 		for (auto& opponent : localConnection_) {
-			if (opponent->getId() != player->getId()) {
+			if (opponent->getId() != player->getId() && !opponent->getTetrisBoard().isGameOver()) {
 				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
 			}
 		}
@@ -537,16 +556,16 @@ void TetrisGame::Sender::serverRemoveDisconnectedConnections() {
 	// Find iterator to the connections that were disconnected.
 	auto newEnd = std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
 		[&](const std::shared_ptr<RemoteConnection>& remote) {
-			if (!remote->isActive()) {
-				// Signal all connections that one connection has disconnected.
-				net::Packet packet;
-				packet << PacketType::CONNECTION_DISCONNECT;
-				packet << remote->getId();
-				sendToAllExcept(remote, packet);
-				return true;
-			}
-			return false;
-		});
+		if (!remote->isActive()) {
+			// Signal all connections that one connection has disconnected.
+			net::Packet packet;
+			packet << PacketType::CONNECTION_DISCONNECT;
+			packet << remote->getId();
+			sendToAllExcept(remote, packet);
+			return true;
+		}
+		return false;
+	});
 	// Remove all connections that were disconnected.
 	remoteConnections_.erase(newEnd, remoteConnections_.end());
 }

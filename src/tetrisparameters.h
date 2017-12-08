@@ -6,6 +6,7 @@ const int TETRIS_MAX_LEVEL = 40;
 const int TETRIS_WIDTH = 10;
 const int TETRIS_HEIGHT = 24;
 const int ROWS_TO_LEVEL_UP = 10;
+const int COUNT_DOWN_TIME = 3;
 
 enum TetrisMenu {
 	MENU,

@@ -34,25 +34,25 @@ public:
 
 class TetrisGame {
 public:
-	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
+	enum Status { WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT };
 
 	TetrisGame();
 	~TetrisGame();
 
 	// Updates everything. Should be called each frame.
 	void update(double deltaTime);
-	
+
 	// Uses the same settings as last call.
 	void createLocalGame();
-	
+
 	void createServerGame(int port);
-	
+
 	void createClientGame(int port, std::string ip);
 
 	void resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData);
-	
+
 	void closeGame();
-	
+
 	bool isPaused() const;
 
 	// Pause/Unpause the game depending on the current state of
@@ -68,6 +68,14 @@ public:
 
 	int getMaxLevel() const {
 		return maxLevel_;
+	}
+
+	void setCountDownTime(int countDownTime) {
+		countDownTime_ = countDownTime;
+	}
+
+	int getCountDownTime() const {
+		return countDownTime_;
 	}
 
 	void resizeBoard(int width, int height);
@@ -86,11 +94,15 @@ public:
 		return status_;
 	}
 
-	mw::signals::Connection addGameEventHandler(const std::function<void (TetrisGameEvent&)>& handler) {
+	mw::signals::Connection addGameEventHandler(const std::function<void(TetrisGameEvent&)>& handler) {
 		return eventHandler_.connect(handler);
 	}
 
 	std::vector<PlayerData> getPlayerData() const;
+	
+	bool currentGameHasCountDown() const {
+		return nbrOfPlayers_ > 1 && countDownTime_ > 0;
+	}
 
 private:
 	class Sender : public PacketSender {
@@ -110,7 +122,7 @@ private:
 		void removeConnection(int connectionId);
 
 		void disconnect();
-				
+
 		std::vector<std::shared_ptr<RemoteConnection>>::iterator begin() {
 			return remoteConnections_.begin();
 		}
@@ -122,7 +134,7 @@ private:
 		void setServerConnection(const net::ConnectionPtr& connectionToServer) {
 			connectionToServer_ = connectionToServer;
 		}
-		
+
 		bool receivePacketFromServer(net::Packet& packet) {
 			return connectionToServer_->receive(packet);
 		}
@@ -156,11 +168,15 @@ private:
 	int lastConnectionId_;
 
 	net::Network network_;
-	
+
 	Status status_;
 	int width_, height_, maxLevel_;
 
 	int nbrOfAlivePlayers_;
+
+	int countDownTime_;   // Controlling how long the start game count down should be in seconds.
+	double timeLeftToStart_; // Time left for the count down.
+	int wholeTimeLeft_; // Time left in whole seconds. E.g. timeLeftToStart_ = 1.4s means that wholeTimeLeft_ = 2s;
 };
 
 #endif // TETRISGAME_H

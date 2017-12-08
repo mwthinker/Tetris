@@ -13,6 +13,30 @@
 #include <sstream>
 #include <cassert>
 
+namespace {
+
+	std::string gamePosition(int position) {
+		std::stringstream stream;
+		stream << position;
+		switch (position) {
+			case 1:
+				stream << ":st place!";
+				break;
+			case 2:
+				stream << ":nd place!";
+				break;
+			case 3:
+				stream << ":rd place!";
+				break;
+			default:
+				stream << ":th place!";
+				break;
+		}
+		return stream.str();
+	}
+
+}
+
 GameComponent::GameComponent(TetrisGame& tetrisGame)
 	: tetrisGame_(tetrisGame), alivePlayers_(0),
 	updateMatrix_(true) {
@@ -88,13 +112,18 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 
 		staticBoardBatch_->draw();
 		dynamicBoardBatch_->draw();
-
+		
 		// Draw text.
 		for (auto& pair : graphicPlayers_) {
 			GameGraphic& graphic = pair.second;
 			graphic.drawText(*dynamicBoardBatch_);
 		}
 
+		// Draw middle text.
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;			
+			graphic.drawMiddleText(*dynamicBoardBatch_);
+		}
 		mw::checkGlError();
 	}
 }
@@ -121,27 +150,33 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	updateMatrix_ = true;
 }
 
-void GameComponent::countDown(int msCountDown) {
-	mw::Text text("", TetrisData::getInstance().getInstance().getDefaultFont(30));
-	if (msCountDown > 0) {
-		std::stringstream stream;
-		stream << "Start in " << (int) (msCountDown / 1000) + 1;
-		text.setText(stream.str());
-	}
-}
-
 void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 	try {
-		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
+		auto& countDown = dynamic_cast<CountDown&>(tetrisEvent);
+
+		if (countDown.timeLeft_ > 0) {
+			std::stringstream stream;
+			stream << "Start in " << countDown.timeLeft_;
+			middleText_.setText(stream.str());
+		} else {
+			middleText_.setText("");
+		}
+
+		for (auto& graphic : graphicPlayers_) {
+			graphic.second.setMiddleMessage(middleText_);
+		} 
+
+		std::cout << countDown.timeLeft_ << "\n";
 		return;
 	} catch (std::bad_cast exp) {}
-
+	
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
 		return;
 	} catch (std::bad_cast exp) {}
 
 	try {
+		middleText_ = mw::Text("", TetrisData::getInstance().getDefaultFont(50), 20);
 		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
 		initGame(initGameVar.players_);
 		return;
@@ -158,6 +193,23 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		auto& pointsChange = dynamic_cast<PointsChange&>(tetrisEvent);
 		GameGraphic& gg = graphicPlayers_[pointsChange.player_];
 		gg.update(pointsChange.player_->getClearedRows(), pointsChange.player_->getPoints(), pointsChange.player_->getLevel());
+		return;
+	} catch (std::bad_cast exp) {}
+
+	try {
+		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
+		// Points high enough to be saved in the highscore list?
+
+		mw::Text middleText("", TetrisData::getInstance().getDefaultFont(50), 20);
+
+		// Test if the player is a local player, exception otherwise.
+		if (tetrisGame_.getNbrOfPlayers() == 1) {
+			middleText.setText("Game over");
+		} else {
+			middleText.setText(gamePosition(gameOver.position_));
+		}
+
+		graphicPlayers_[gameOver.player_].setMiddleMessage(middleText);
 		return;
 	} catch (std::bad_cast exp) {}
 }

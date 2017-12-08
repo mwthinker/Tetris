@@ -244,13 +244,15 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	currentBlock_ = DrawBlock(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
 
 	// Add rows to represent the board.
-	// Add free rows to represent potential rows, e.g. the board receives extrenal rows.
+	// Add free rows to represent potential rows, e.g. the board receives external rows.
 	for (int row = 0; row < rows; ++row) {
 		auto drawRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
 		auto freeRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
 		rows_.push_back(drawRow);
 		freeRows_.push_back(freeRow);
 	}
+
+	middleText_ = DrawText("", font, lowX + borderSize + squareSize * columns * 0.5f, lowY + height_ * 0.5f, 1.f, true);
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -385,8 +387,18 @@ void GameGraphic::drawText(BoardBatch& batch) {
 	batch.draw();
 }
 
+void GameGraphic::drawMiddleText(BoardBatch& batch) {
+	if (!middleText_.isEmpty()) {
+		middleText_.bindTexture();
+		batch.clear();
+		batch.add(middleText_.getVertexes());
+		batch.uploadToGraphicCard();
+		batch.draw();
+	}
+}
+
 void GameGraphic::setMiddleMessage(const mw::Text& text) {
-	//middleMessage_ = text;
+	middleText_.update(text);
 }
 
 void GameGraphic::update(int clearedRows, int points, int level) {

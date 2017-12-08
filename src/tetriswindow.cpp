@@ -568,16 +568,18 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 		// Points high enough to be saved in the highscore list?
+
+		// Test if the player is a local player, exception otherwise.
+		auto localPlayer = std::dynamic_pointer_cast<LocalPlayer>(gameOver.player_);
 		
 		if (tetrisGame_.getNbrOfPlayers() == 1 &&
-			!tetrisGame_.getPlayerData()[0].ai_ &&
 			tetrisGame_.getStatus() == TetrisGame::LOCAL &&
 			tetrisGame_.getRows() == TETRIS_HEIGHT && tetrisGame_.getColumns() == TETRIS_WIDTH &&
-			highscore_->isNewRecord(gameOver.points_)) {
+			highscore_->isNewRecord(localPlayer->getPoints())) {
 			// New record only in local game with default settings.
 
 			// Set points in order for highscore to know which point to save in list.
-			highscore_->setNextRecord(gameOver.points_);
+			highscore_->setNextRecord(localPlayer->getPoints());
 			// In order for the user to insert name.
 			setCurrentPanel(newHighscoreIndex_);
 		}
