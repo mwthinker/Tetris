@@ -226,22 +226,6 @@ mw::Sprite TetrisData::getSprite(BlockType blockType) {
 	return mw::Sprite();
 }
 
-mw::Sound TetrisData::getBlockCollisionSound() {
-	return loadSound(jsonObject_["window"]["sounds"]["blockCollision"].get<std::string>());
-}
-
-mw::Sound TetrisData::getRowRemovedSound() {
-	return loadSound(jsonObject_["window"]["sounds"]["rowRemoved"].get<std::string>());
-}
-
-mw::Sound TetrisData::getTetrisSound() {
-	return loadSound(jsonObject_["window"]["sounds"]["tetris"].get<std::string>());
-}
-
-mw::Sound TetrisData::getButtonPushSound() {
-	return loadSound(jsonObject_["window"]["sounds"]["buttonPush"].get<std::string>());
-}
-
 mw::Font TetrisData::getDefaultFont(int size) {
 	return loadFont(jsonObject_["window"]["font"].get<std::string>(), size);
 }
@@ -249,7 +233,6 @@ mw::Font TetrisData::getDefaultFont(int size) {
 void TetrisData::bindTextureFromAtlas() const {
 	textureAtlas_.getTexture().bindTexture();
 }
-
 
 mw::Color TetrisData::getOuterSquareColor() {
 	return jsonObject_["window"]["tetrisBoard"]["outerSquareColor"].get<mw::Color>();

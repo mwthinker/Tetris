@@ -7,6 +7,10 @@ DrawText::DrawText(std::string text, const mw::Font& font, float lowX, float low
 	update(text);
 }
 
+DrawText::DrawText(float lowX, float lowY)
+	: lowX_(lowX), lowY_(lowY), center_(true) {
+}
+
 void DrawText::update(std::string text) {
 	text_.setText(text);
 	vertexes_.clear();

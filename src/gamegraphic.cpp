@@ -61,10 +61,7 @@ void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
 	initStaticBackground(boardBatch, x, y, player);
-
 	showPoints_ = true;
-
-	removeRowSound_ = TetrisData::getInstance().getRowRemovedSound();
 
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
@@ -252,7 +249,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 		freeRows_.push_back(freeRow);
 	}
 
-	middleText_ = DrawText("", font, lowX + borderSize + squareSize * columns * 0.5f, lowY + height_ * 0.5f, 1.f, true);
+	middleText_ = DrawText(lowX + borderSize + squareSize * columns * 0.5f, lowY + height_ * 0.5f);
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
@@ -320,19 +317,15 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 		break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
-			removeRowSound_.play();
 			break;
 		case GameEvent::TWO_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 2);
-			removeRowSound_.play();
 			break;
 		case GameEvent::THREE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 3);
-			removeRowSound_.play();
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 4);
-			removeRowSound_.play();
 			break;
 	}
 }

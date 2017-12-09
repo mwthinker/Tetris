@@ -15,7 +15,6 @@
 #include <mw/text.h>
 #include <mw/sprite.h>
 #include <mw/signal.h>
-#include <mw/sound.h>
 
 #include <gui/component.h>
 
@@ -72,19 +71,17 @@ private:
 
 	std::list<DrawRowPtr> rows_;
 	std::list<DrawRowPtr> freeRows_;
-	
+
 	DrawText textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	DrawText middleText_;
 	DrawBlock currentBlock_, nextBlock_;
 	int level_, points_, clearedRows_;
 	Block latestBlockDownGround_;
 	bool blockDownGround_;
-	
+
 	mw::signals::Connection connection_;
 	float width_, height_;
-	bool showPoints_;	
-	
-	mw::Sound removeRowSound_;
+	bool showPoints_;
 };
 
 #endif // GRAPHICBOARD_H

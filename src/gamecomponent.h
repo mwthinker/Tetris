@@ -45,10 +45,6 @@ private:
 	
 	TetrisGame& tetrisGame_;
 
-	mw::Sound soundBlockCollision_;
-	mw::Sound soundRowRemoved_;
-	mw::Sound soundTetris_;
-
 	mw::signals::Connection eventConnection_;
 
 	// Fix time step.

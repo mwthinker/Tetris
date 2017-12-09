@@ -49,11 +49,6 @@ public:
 
 	mw::Sprite getSprite(BlockType blockType);
 	
-	mw::Sound getBlockCollisionSound();
-	mw::Sound getRowRemovedSound();
-	mw::Sound getTetrisSound();
-	mw::Sound getButtonPushSound();
-
 	mw::Font getDefaultFont(int size);
 
 	mw::Color getOuterSquareColor();

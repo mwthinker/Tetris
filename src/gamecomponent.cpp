@@ -44,10 +44,6 @@ GameComponent::GameComponent(TetrisGame& tetrisGame)
 	setGrabFocus(true);
 	eventConnection_ = tetrisGame_.addGameEventHandler(std::bind(&GameComponent::eventHandler, this, std::placeholders::_1));
 
-	soundBlockCollision_ = TetrisData::getInstance().getBlockCollisionSound();
-	soundRowRemoved_ = TetrisData::getInstance().getRowRemovedSound();
-	soundTetris_ = TetrisData::getInstance().getBlockCollisionSound();
-
 	boardShader_ = std::make_shared<BoardShader>("board.ver.glsl", "board.fra.glsl");
 	dynamicBoardBatch_ = std::make_shared<BoardBatch>(boardShader_, 10000);
 }
@@ -164,7 +160,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 
 		for (auto& graphic : graphicPlayers_) {
 			graphic.second.setMiddleMessage(middleText_);
-		} 
+		}
 
 		std::cout << countDown.timeLeft_ << "\n";
 		return;
@@ -212,71 +208,4 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		graphicPlayers_[gameOver.player_].setMiddleMessage(middleText);
 		return;
 	} catch (std::bad_cast exp) {}
-}
-
-/*
-void GameComponent::eventHandler(const Player& player, PlayerEvent playerEvent) {
-	GameGraphic& graphic = graphicPlayers_[player.getId()];
-
-	graphic.update(player.getClearedRows(), player.getPoints(), player.getLevel());
-
-	/*soundEffects(gameEvent);
-
-	switch (gameEvent) {
-		case GameEvent::GAME_OVER:
-			if (tetrisGame_.getNbrOfPlayers() == 1) {
-				mw::Text text("Game Over", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
-				//it->second.setMiddleMessage(text);
-			} else {
-				std::stringstream stream;
-				stream << alivePlayers_;
-				if (alivePlayers_ == 1) {
-					stream << ":st place!";
-				} else if (alivePlayers_ == 2) {
-					stream << ":nd place!";
-				} else if (alivePlayers_ == 3) {
-					stream << ":rd place!";
-				} else {
-					stream << ":th place!";
-				}
-				--alivePlayers_;
-				//mw::Text text(stream.str(), tetrisEntry_.getEntry("window font").getFont(30));
-				//it->second.setMiddleMessage(text);
-			}
-			break;
-		case GameEvent::ONE_ROW_REMOVED:
-			// Fall through!
-		case GameEvent::TWO_ROW_REMOVED:
-			// Fall through!
-		case GameEvent::THREE_ROW_REMOVED:
-			// Fall through!
-		case GameEvent::FOUR_ROW_REMOVED:
-			break;
-	}
-}*/
-
-void GameComponent::soundEffects(GameEvent gameEvent) const {
-	mw::Sound sound;
-	switch (gameEvent) {
-		case GameEvent::GRAVITY_MOVES_BLOCK:
-			break;
-		case GameEvent::BLOCK_COLLISION:
-			sound = soundBlockCollision_;
-			break;
-		case GameEvent::PLAYER_MOVES_BLOCK_ROTATE:
-			break;
-		case GameEvent::ONE_ROW_REMOVED:
-			// Fall through
-		case GameEvent::TWO_ROW_REMOVED:
-			// Fall through
-		case GameEvent::THREE_ROW_REMOVED:
-			sound = soundRowRemoved_;
-			break;
-		case GameEvent::FOUR_ROW_REMOVED:
-			sound = soundTetris_;
-			break;
-		case GameEvent::GAME_OVER:
-			break;
-	}
-	sound.play();
 }

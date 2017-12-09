@@ -9,6 +9,8 @@ class DrawText {
 public:
 	DrawText() = default;
 
+	DrawText(float lowX, float lowY);
+
 	DrawText(std::string text, const mw::Font& font, float lowX, float lowY,
 		float scale = 1.f, bool center = false);
 
