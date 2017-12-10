@@ -45,9 +45,6 @@ namespace {
 
 }
 
-GameGraphic::GameGraphic() {
-}
-
 GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }

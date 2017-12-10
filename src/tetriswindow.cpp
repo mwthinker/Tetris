@@ -250,6 +250,8 @@ void TetrisWindow::initPlayPanel() {
 			tetrisGame_.closeGame();
 			menu_->setLabel("Menu");
 			SDL_SetWindowTitle(getSdlWindow(), "MWetris");
+		} else {
+			saveCurrentGame();
 		}
 	});
 

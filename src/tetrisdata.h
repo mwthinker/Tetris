@@ -172,7 +172,7 @@ public:
 	mw::Sprite getCrossSprite();
 	mw::Sprite getZoomSprite();
 	
-	void setActiveLocalGame(int rows, int columns, std::vector<PlayerData> playerDataVector);
+	void setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector);
 	std::vector<PlayerData> getActiveLocalGamePlayers();
 	int getActiveLocalGameRows();
 	int getActiveLocalGameColumns();

@@ -598,12 +598,12 @@ mw::Sprite TetrisData::getZoomSprite() {
 	return loadSprite(jsonObject_["window"]["sprites"]["zoom"].get<std::string>());
 }
 
-void TetrisData::setActiveLocalGame(int rows, int columns, std::vector<PlayerData> playerDataVector) {
+void TetrisData::setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector) {
 	jsonObject_["activeGames"]["localGame"]["rows"] = rows;
 	jsonObject_["activeGames"]["localGame"]["columns"] = columns;
 
 	nlohmann::json playerJson = nlohmann::json::array();
-	for (PlayerData& data : playerDataVector) {
+	for (const PlayerData& data : playerDataVector) {
 		nlohmann::json test = nlohmann::json(data.board_);
 
 		playerJson.push_back({

@@ -1,6 +1,6 @@
 {
 	"window": {
-		"fullscreenOnDoubleClick": true,
+		"fullscreenOnDoubleClick": false,
 		"border": true,
 		"moveWindowByHoldingDownMouse": false,
 		"vsync": false,

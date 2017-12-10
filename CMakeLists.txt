@@ -28,7 +28,6 @@ set(SOURCES
 	src/boardshader.h
 	src/computer.cpp
 	src/computer.h
-	src/definitions.h
 	src/device.h
 	src/drawblock.cpp
 	src/drawblock.h

@@ -24,7 +24,7 @@
 
 class GameGraphic {
 public:
-	GameGraphic();
+	GameGraphic() = default;
 
 	~GameGraphic();
 
