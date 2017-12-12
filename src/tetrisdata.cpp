@@ -118,7 +118,7 @@ void from_json(const json& j, Block& block) {
 
 void to_json(json& j, const Block& block) {
 	j = json({
-		{"bottomRow", block.getLowestRow()},
+		{"bottomRow", block.getLowestStartRow()},
 		{"blockType", block.getBlockType()},
 		{"leftColumn", block.getStartColumn()},
 		{"currentRotation", block.getCurrentRotation()}

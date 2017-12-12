@@ -15,36 +15,32 @@ RawTetrisBoard::RawTetrisBoard(int rows, int columns, BlockType current, BlockTy
 	current_ = createBlock(current);
 }
 
-RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) :
+RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, const Block& current, BlockType next) :
 	RawTetrisBoard(rows, columns, current.getBlockType(), next) {
-
-	current_ = current;
 
 	gameboard_.insert(gameboard_.begin(), board.begin(), board.end());
 
-	int calcRows = gameboard_.size() / columns_;
-	int nbr = gameboard_.size() - calcRows * columns_;
+	int calcRows = gameboard_.size() / columns_; // Number of whole rows.
+	int nbr = gameboard_.size() - calcRows * columns_; // The number of elements in the unfilled row.
 
-	// To make all rows filled. Remove unfilled row.
+	// To make all rows filled. Remove elements in the unfilled row.
 	for (int i = 0; i < nbr; ++i) {
 		gameboard_.pop_back();
 	}
 
-	// Remove unneeded rows.
+	// Remove unneeded rows. I.e. remove empty rows at the top which are outside the board.
 	for (int row = calcRows - 1; row >= rows_; --row) {
-		bool empty = true;
-		for (int column = 0; column < columns_; ++column) {
-			if (gameboard_[row * columns_] != BlockType::EMPTY) {
-				empty = false;
-				break;
-			} 
-		}
-		if (empty) {
+		if (isRowEmpty(row)) {
 			for (int column = 0; column < columns_; ++column) {
 				gameboard_.pop_back();
 			}
 		}
 	}
+
+	if (collision(current)) {
+		isGameOver_ = true;
+	}
+	current_ = current;
 }
 
 void RawTetrisBoard::update(Move move) {
@@ -227,16 +223,9 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 	int nbr = 0; // Number of rows filled.
 	const int nbrOfSquares = current_.getSize();
 	for (int i = 0; i < nbrOfSquares; ++i) {
-		bool filled = true;
+		bool filled = false;
 		if (row >= 0) {
-			int index = row * columns_;
-			for (int column = 0; column < columns_; ++column) {
-				if (gameboard_[index + column] == BlockType::EMPTY) {
-					filled = false;
-				}
-			}
-		} else {
-			filled = false;
+			filled = isRowFilled(row);
 		}
 		if (filled) {
 			moveRowsOneStepDown(row);

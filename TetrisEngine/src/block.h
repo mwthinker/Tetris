@@ -4,14 +4,15 @@
 #include "square.h"
 
 #include <array>
+#include <algorithm>
 
 class Block {
 public:
 	using const_iterator = std::array<Square, 4>::const_iterator;
 
     Block();
-	Block(BlockType blockType, int lowestRow, int startColumn);
-	Block(BlockType blockType, int lowestRow, int startColumn, int rotations);
+	Block(BlockType blockType, int lowestStartRow, int startColumn);
+	Block(BlockType blockType, int lowestStartRow, int startColumn, int rotations);
 	
 	void moveLeft();
 	void moveRight();
@@ -36,10 +37,16 @@ public:
 		return blockType_;
 	}
 
-	// Returns the lowest possible row for the block when rotating.
+	// Return the lowest row when the block is in default rotation.
+	// I.e. When the constructor is called with no rotation defined.
+	int getLowestStartRow() const {
+		return lowestStartRow_;
+	}
+
+	// Returns the lowest row.
 	int getLowestRow() const {
-		return lowestRow_;
-	}	
+		return std::min({squares_[0].row_, squares_[1].row_, squares_[2].row_, squares_[3].row_});;
+	}
 
 	const_iterator begin() const {
 		return squares_.begin();
@@ -65,9 +72,9 @@ private:
 	int rotationSquareIndex_;
 	std::array<Square, 4> squares_;
 	int maxRotations_, currentRotation_;
-	BlockType blockType_;
-	int lowestRow_;
+	int lowestStartRow_;
 	int startColumn_;
+	BlockType blockType_;
 };
 
 #endif	// BLOCK_H

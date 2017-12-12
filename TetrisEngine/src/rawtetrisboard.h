@@ -42,7 +42,7 @@ enum class Move {
 class RawTetrisBoard {
 public:
 	RawTetrisBoard(int rows, int columns, BlockType current, BlockType next);
-	RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next);
+	RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, const Block& current, BlockType next);
 	
 	virtual ~RawTetrisBoard() = default;
 
@@ -119,6 +119,24 @@ private:
 	}
 
 	Block createBlock(BlockType blockType) const;
+
+	bool isRowEmpty(int row) const {
+		for (int column = 0; column < columns_; ++column) {
+			if (gameboard_[row * columns_ + column] != BlockType::EMPTY) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool isRowFilled(int row) const {
+		for (int column = 0; column < columns_; ++column) {
+			if (gameboard_[row * columns_ + column] == BlockType::EMPTY) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	// Set all squares on the board to empty.
 	// Game over is set to false.

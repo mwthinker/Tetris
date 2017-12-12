@@ -12,7 +12,8 @@ BlockType randomBlockType() {
 	Random random;
 	const int BLOCK_TYPE_MIN = 0;
 	const int BLOCK_TYPE_MAX = 6;
-	static_assert((int) BlockType::EMPTY > BLOCK_TYPE_MAX && (int) BlockType::WALL > BLOCK_TYPE_MAX, "BlockType::EMPTY should not be generated");
+	static_assert((int) BlockType::EMPTY > BLOCK_TYPE_MAX && 
+		(int) BlockType::WALL > BLOCK_TYPE_MAX, "BlockType::EMPTY should not be generated");
 	// Generate a block type.
 	return static_cast<BlockType>(random.generateInt(BLOCK_TYPE_MIN, BLOCK_TYPE_MAX));
 }
@@ -50,13 +51,16 @@ std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPe
 	return rows;
 }
 
-TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next) : RawTetrisBoard(nbrRows, nbrColumns, current, next), turns_(0) {
+TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next)
+	: RawTetrisBoard(nbrRows, nbrColumns, current, next), turns_(0) {
 }
 
-TetrisBoard::TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next) : RawTetrisBoard(board, rows, columns, current, next), turns_(0) {
+TetrisBoard::TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next)
+	: RawTetrisBoard(board, rows, columns, current, next), turns_(0) {
 }
 
-TetrisBoard::TetrisBoard(const TetrisBoard& board) : RawTetrisBoard(board) {
+TetrisBoard::TetrisBoard(const TetrisBoard& board)
+	: RawTetrisBoard(board) {
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
