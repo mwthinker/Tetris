@@ -31,8 +31,6 @@ public:
 	void eventHandler(TetrisGameEvent& tetrisGameEvent);
 
 private:
-	void soundEffects(GameEvent gameEvent) const;
-
 	// @gui::Component
 	// Called when the component is resized or moved.
 	void validate() override;
@@ -54,11 +52,9 @@ private:
 	// Updated in initGame().
 	Mat44 matrix_;
 	bool updateMatrix_;
-	int alivePlayers_;
-
+	
 	// Font related.
 	mw::Text middleText_;
-	mw::Font font_;
 	float fontSize_;
 	float dx_, dy_;
 	float scale_;

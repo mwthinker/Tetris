@@ -9,7 +9,10 @@ namespace {
 
 }
 
-DrawRow::DrawRow(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) {
+DrawRow::DrawRow(int row, const TetrisBoard& board, float squareSize, float lowX, float lowY) :
+	fadingTime_(TetrisData::getInstance().getRowFadingTime()), squareSize_(squareSize),
+	movingTime_(TetrisData::getInstance().getRowMovingTime()) {
+
 	spriteZ_ = TetrisData::getInstance().getSprite(BlockType::Z);
 	spriteS_ = TetrisData::getInstance().getSprite(BlockType::S);
 	spriteJ_ = TetrisData::getInstance().getSprite(BlockType::J);
@@ -17,10 +20,9 @@ DrawRow::DrawRow(int row, const TetrisBoard& board, float squareSize, float lowX
 	spriteL_ = TetrisData::getInstance().getSprite(BlockType::L);
 	spriteT_ = TetrisData::getInstance().getSprite(BlockType::T);
 	spriteO_ = TetrisData::getInstance().getSprite(BlockType::O);
+	
 	lowX_ = lowX;
 	lowY_ = lowY;
-	squareSize_ = squareSize;
-	fadingTime_ = TetrisData::getInstance().getRowFadingTime();
 	init(row, board);
 }
 
@@ -30,7 +32,6 @@ void DrawRow::init(int row, const TetrisBoard& board) {
 	graphicRow_ = (float) row;
 	columns_ = board.getColumns();
 	timeLeft_ = 0.f;
-	movingTime_ = TetrisData::getInstance().getRowMovingTime();
 	highestBoardRow_ = board.getRows();
 	alpha_ = 1.f;
 
@@ -84,6 +85,19 @@ void DrawRow::update(float deltaTime) {
 		alpha_ = timeLeft_ / fadingTime_;
 		updateVertexData();
 	}
+}
+
+void DrawRow::clear() {
+	oldRow_ = row_;
+	graphicRow_ = (float) row_;
+	timeLeft_ = 0.f;
+	alpha_ = 1.f;
+
+	blockTypes_.clear();
+	for (int column = 0; column < columns_; ++column) {
+		blockTypes_.push_back(BlockType::EMPTY);
+	}
+	vertexes_.clear();
 }
 
 bool DrawRow::isAlive() const {

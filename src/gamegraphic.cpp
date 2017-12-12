@@ -64,23 +64,10 @@ void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float
 }
 
 void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX, float lowY, Player& player) {
-	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
-	const mw::Color c1 = TetrisData::getInstance().getOuterSquareColor();
-	const mw::Color c2 = TetrisData::getInstance().getInnerSquareColor();
-	const mw::Color c3 = TetrisData::getInstance().getStartAreaColor();
-	const mw::Color c4 = TetrisData::getInstance().getPlayerAreaColor();
-	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
-
-	const mw::Sprite borderHorizontal = TetrisData::getInstance().getBorderHorizontalSprite();
-	const mw::Sprite borderVertical = TetrisData::getInstance().getBorderVerticalSprite();
-	const mw::Sprite borderLeftUp = TetrisData::getInstance().getBorderLeftUpSprite();
-	const mw::Sprite borderRightUp = TetrisData::getInstance().getBorderRightUpSprite();
-	const mw::Sprite borderDownLeft = TetrisData::getInstance().getBorderDownLeftSprite();
-	const mw::Sprite borderDownRight = TetrisData::getInstance().getBorderDownRightSprite();
-
 	const float squareSize = TetrisData::getInstance().getTetrisSquareSize();
 	const float borderSize = TetrisData::getInstance().getTetrisBorderSize();
 
+	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
 	const int columns = tetrisBoard.getColumns();
 	const int rows = tetrisBoard.getRows();
 
@@ -98,7 +85,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		boardWidth + infoSize + middleDistance + rightDistance, squareSize * (rows - 2),
-		c4);
+		TetrisData::getInstance().getPlayerAreaColor());
 
 	// Draw the outer square.
 	x = lowX + borderSize;
@@ -106,7 +93,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		squareSize * columns, squareSize * (rows - 2),
-		c1);
+		TetrisData::getInstance().getOuterSquareColor());
 
 	// Draw the inner squares.
 	for (int row = 0; row < rows - 2; ++row) {
@@ -116,7 +103,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 			staticBoardBatch.addRectangle(
 				x, y,
 				squareSize * 0.8f, squareSize * 0.8f,
-				c2);
+				TetrisData::getInstance().getInnerSquareColor());
 		}
 	}
 
@@ -126,7 +113,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		squareSize * columns, squareSize * 2,
-		c3);
+		TetrisData::getInstance().getStartAreaColor());
 
 	// Draw the preview block area.
 	x = lowX + borderSize + boardWidth + middleDistance;
@@ -134,10 +121,9 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		infoSize, infoSize,
-		c3);
+		TetrisData::getInstance().getStartAreaColor());
 
 	nextBlock_ = DrawBlock(Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
-
 
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
@@ -159,6 +145,14 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 		stream << "Rows " << clearedRows_;
 		textClearedRows_ = DrawText(stream.str(), font, x, y - 20 - 12 * 2, 8.f);
 	}
+
+	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
+	const mw::Sprite borderHorizontal = TetrisData::getInstance().getBorderHorizontalSprite();
+	const mw::Sprite borderVertical = TetrisData::getInstance().getBorderVerticalSprite();
+	const mw::Sprite borderLeftUp = TetrisData::getInstance().getBorderLeftUpSprite();
+	const mw::Sprite borderRightUp = TetrisData::getInstance().getBorderRightUpSprite();
+	const mw::Sprite borderDownLeft = TetrisData::getInstance().getBorderDownLeftSprite();
+	const mw::Sprite borderDownRight = TetrisData::getInstance().getBorderDownRightSprite();
 
 	// Add border.
 	// Left-up corner.
@@ -235,13 +229,15 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 
 	rows_.clear();
 
-	currentBlock_ = DrawBlock(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize, lowX + borderSize, lowY + borderSize, false);
+	currentBlock_ = DrawBlock(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize,
+		lowX + borderSize, lowY + borderSize, false);
 
 	// Add rows to represent the board.
 	// Add free rows to represent potential rows, e.g. the board receives external rows.
 	for (int row = 0; row < rows; ++row) {
 		auto drawRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
-		auto freeRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
+		auto freeRow = std::make_shared<DrawRow>(*drawRow);
+		freeRow->clear(); // Make all elements to only contain blocktype empty squares.
 		rows_.push_back(drawRow);
 		freeRows_.push_back(freeRow);
 	}
@@ -338,6 +334,7 @@ void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
 	dynamicBoardBatch.add(currentBlock_.getVertexes());
 	dynamicBoardBatch.add(nextBlock_.getVertexes());
 
+	// Update the animation for the rows still showing animations.
 	for (auto& rowPtr : freeRows_) {
 		if (rowPtr->isActive()) {
 			rowPtr->update(deltaTime);
@@ -345,6 +342,7 @@ void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
 		}
 	}
 
+	// Update the rows for representing the tetris board.
 	for (auto& rowPtr : rows_) {
 		rowPtr->update(deltaTime);
 		dynamicBoardBatch.add(rowPtr->getVertexes());

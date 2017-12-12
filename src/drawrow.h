@@ -29,27 +29,31 @@ public:
 		return vertexes_;
 	}
 
+	void clear();
+
 private:
 	void updateVertexData(const TetrisBoard& tetrisBoard);
 	void updateVertexData();
 
 	mw::Sprite getSprite(BlockType blockType) const;
-
-	std::vector<BoardShader::Vertex> vertexes_;
-	std::vector<BlockType> blockTypes_;
+		
 	int columns_;
 	int row_;
 	int oldRow_;
 	float graphicRow_;
-	float squareSize_;
+	
 	float lowX_, lowY_;
 	float timeLeft_;
-	float fadingTime_;
 	int highestBoardRow_;
 	float alpha_;
 
-	float movingTime_;
+	const float squareSize_;
+	const float fadingTime_;
+	const float movingTime_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
+
+	std::vector<BoardShader::Vertex> vertexes_;
+	std::vector<BlockType> blockTypes_;
 };
 
 #endif // DRAWROW_H

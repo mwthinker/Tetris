@@ -38,7 +38,7 @@ namespace {
 }
 
 GameComponent::GameComponent(TetrisGame& tetrisGame)
-	: tetrisGame_(tetrisGame), alivePlayers_(0),
+	: tetrisGame_(tetrisGame),
 	updateMatrix_(true) {
 
 	setGrabFocus(true);
@@ -142,7 +142,6 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	}
 	staticBoardBatch_->uploadToGraphicCard();
 
-	alivePlayers_ = players.size();
 	updateMatrix_ = true;
 }
 
