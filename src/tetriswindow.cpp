@@ -155,9 +155,12 @@ void TetrisWindow::resumeGame() {
 	tetrisGame_.resumeGame(rows, columns, playerDataVector);
 }
 
-void TetrisWindow::saveCurrentGame() {
-	TetrisData::getInstance().setActiveLocalGame(tetrisGame_.getRows(), tetrisGame_.getColumns(), tetrisGame_.getPlayerData());
-	TetrisData::getInstance().save();
+void TetrisWindow::saveCurrentLocalGame() {
+	if (getCurrentPanelIndex() == playIndex_ && tetrisGame_.getStatus() == TetrisGame::LOCAL) {
+		// Save only when the game is active and is a local game.
+		TetrisData::getInstance().setActiveLocalGame(tetrisGame_.getRows(), tetrisGame_.getColumns(), tetrisGame_.getPlayerData());
+		TetrisData::getInstance().save();
+	}
 }
 
 void TetrisWindow::startServerLoop(int port) {
@@ -245,13 +248,12 @@ void TetrisWindow::initPlayPanel() {
 	
 	menu_ = p1->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30));
 	menu_->addActionListener([&](gui::Component&) {
+		saveCurrentLocalGame(); // Must be called first, must be in play frame.
 		setCurrentPanel(menuIndex_);
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.closeGame();
 			menu_->setLabel("Menu");
 			SDL_SetWindowTitle(getSdlWindow(), "MWetris");
-		} else {
-			saveCurrentGame();
 		}
 	});
 
@@ -677,6 +679,9 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 	switch (e.type) {
 		case SDL_WINDOWEVENT:
 			switch (e.window.event) {
+				case SDL_WINDOWEVENT_CLOSE:
+					saveCurrentLocalGame();
+					break;
 				case SDL_WINDOWEVENT_RESIZED:
 					if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
 						// The Window's is not maximized. Save size!
@@ -750,7 +755,7 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 			break;
 		case SDL_KEYDOWN:
 			if (e.key.keysym.sym == SDLK_ESCAPE) {
-				saveCurrentGame();
+				saveCurrentLocalGame();
 			}
 			break;
 		default:

@@ -35,7 +35,7 @@ private:
 
 	void resumeGame();
 
-	void saveCurrentGame();
+	void saveCurrentLocalGame();
 
 	void initOpenGl() override;
 

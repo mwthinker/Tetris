@@ -34,7 +34,8 @@ void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>
 	status_ = LOCAL;
 	localConnection_.removeAllPlayers();
 	for (const PlayerData& data : playersData) {
-		localConnection_.addPlayer(data.device_, width_, height_, data.levelUpCounter_, data.points_, data.level_, data.current_, data.next_, data.board_);
+		localConnection_.addPlayer(data.device_, width_, height_,data.levelUpCounter_,
+			data.points_, data.level_, data.current_, data.next_, data.board_);
 	}
 	nbrOfPlayers_ = localConnection_.getNbrOfPlayers();
 	initGame();
@@ -288,7 +289,9 @@ void TetrisGame::update(double deltaTime) {
 				timeLeftToStart_ -= deltaTime;
 			}
 
-			if (currentGameHasCountDown() && wholeTimeLeft_ != (int) (timeLeftToStart_ + 1) && wholeTimeLeft_ > timeLeftToStart_ + 1) {
+			if (currentGameHasCountDown() && wholeTimeLeft_ != (int) (timeLeftToStart_ + 1)
+				&& wholeTimeLeft_ > timeLeftToStart_ + 1) {
+
 				wholeTimeLeft_ = (int) (timeLeftToStart_ + 1);
 				CountDown countDown(wholeTimeLeft_);
 				eventHandler_(countDown);
