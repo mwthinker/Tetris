@@ -62,7 +62,7 @@
 		"tetrisBoard": {
 			"font": "fonts/Ubuntu-B.ttf",
 			"squareSize": 10,
-			"borderSize": 5,
+			"borderSize": 3,
 			"sprites": {
 				"squareZ": "images/Z.png",
 				"squareS": "images/S.png",
@@ -70,15 +70,9 @@
 				"squareI": "images/I.png",
 				"squareL": "images/L.png",
 				"squareT": "images/T.png",
-				"squareO": "images/O.png",
-				"borderHorizontal": "images/border1.png",
-				"borderVertical": "images/border2.png",
-				"borderLeftUp": "images/border3.png",
-				"borderRightUp": "images/border4.png",
-				"borderDownRight": "images/border5.png",
-				"borderDownLeft": "images/border6.png"
+				"squareO": "images/O.png"
 			},
-			"borderColor": "0.5 0 0 1",
+			"borderColor": "0.3 0 0 1",
 			"startAreaColor": "0.64 0.16 0.24 0.5",
 			"outerSquareColor": "0.64 0.04 0.09 0.6",
 			"innerSquareColor": "0.08 0.02 0.03 0.1",

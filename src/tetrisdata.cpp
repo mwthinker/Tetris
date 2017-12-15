@@ -254,30 +254,6 @@ mw::Color TetrisData::getBorderColor() {
 	return jsonObject_["window"]["tetrisBoard"]["borderColor"].get<mw::Color>();
 }
 
-mw::Sprite TetrisData::getBorderHorizontalSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["borderHorizontal"].get<std::string>());
-}
-
-mw::Sprite TetrisData::getBorderVerticalSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["borderVertical"].get<std::string>());
-}
-
-mw::Sprite TetrisData::getBorderLeftUpSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["borderLeftUp"].get<std::string>());
-}
-
-mw::Sprite TetrisData::getBorderRightUpSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["borderRightUp"].get<std::string>());
-}
-
-mw::Sprite TetrisData::getBorderDownRightSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["borderDownRight"].get<std::string>());
-}
-
-mw::Sprite TetrisData::getBorderDownLeftSprite() {
-	return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["borderDownLeft"].get<std::string>());
-}
-
 float TetrisData::getTetrisSquareSize() {
 	return jsonObject_["window"]["tetrisBoard"]["squareSize"].get<float>();
 }

@@ -147,12 +147,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	}
 
 	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
-	const mw::Sprite borderHorizontal = TetrisData::getInstance().getBorderHorizontalSprite();
-	const mw::Sprite borderVertical = TetrisData::getInstance().getBorderVerticalSprite();
-	const mw::Sprite borderLeftUp = TetrisData::getInstance().getBorderLeftUpSprite();
-	const mw::Sprite borderRightUp = TetrisData::getInstance().getBorderRightUpSprite();
-	const mw::Sprite borderDownLeft = TetrisData::getInstance().getBorderDownLeftSprite();
-	const mw::Sprite borderDownRight = TetrisData::getInstance().getBorderDownRightSprite();
 
 	// Add border.
 	// Left-up corner.
@@ -161,7 +155,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
-		borderLeftUp,
 		borderColor);
 
 	// Right-up corner.
@@ -170,7 +163,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
-		borderRightUp,
 		borderColor);
 
 	// Left-down corner.
@@ -179,7 +171,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
-		borderDownLeft,
 		borderColor);
 
 	// Right-down corner.
@@ -188,7 +179,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addSquare(
 		x, y,
 		borderSize,
-		borderDownRight,
 		borderColor);
 
 	// Up.
@@ -197,7 +187,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		width_ - 2 * borderSize, borderSize,
-		borderHorizontal,
 		borderColor);
 
 	// Down.
@@ -206,7 +195,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		width_ - 2 * borderSize, borderSize,
-		borderHorizontal,
 		borderColor);
 
 	// Left.
@@ -215,7 +203,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		borderSize, height_ - 2 * borderSize,
-		borderVertical,
 		borderColor);
 
 	// Right.
@@ -224,7 +211,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	staticBoardBatch.addRectangle(
 		x, y,
 		borderSize, height_ - 2 * borderSize,
-		borderVertical,
 		borderColor);
 
 	rows_.clear();

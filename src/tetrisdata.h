@@ -57,13 +57,6 @@ public:
 	mw::Color getPlayerAreaColor();
 	mw::Color getBorderColor();
 
-	mw::Sprite getBorderHorizontalSprite();
-	mw::Sprite getBorderVerticalSprite();
-	mw::Sprite getBorderLeftUpSprite();
-	mw::Sprite getBorderRightUpSprite();
-	mw::Sprite getBorderDownLeftSprite();
-	mw::Sprite getBorderDownRightSprite();
-
 	float getTetrisSquareSize();
 	float getTetrisBorderSize();
 
