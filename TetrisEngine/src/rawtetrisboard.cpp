@@ -224,7 +224,7 @@ int RawTetrisBoard::removeFilledRows(const Block& block) {
 	const int nbrOfSquares = current_.getSize();
 	for (int i = 0; i < nbrOfSquares; ++i) {
 		bool filled = false;
-		if (row >= 0) {
+		if (row >= 0 && row * columns_ < (int) gameboard_.size() ) { // Check only rows inside the board.			
 			filled = isRowFilled(row);
 		}
 		if (filled) {
