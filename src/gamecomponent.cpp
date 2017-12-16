@@ -150,9 +150,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		auto& countDown = dynamic_cast<CountDown&>(tetrisEvent);
 
 		if (countDown.timeLeft_ > 0) {
-			std::stringstream stream;
-			stream << "Start in " << countDown.timeLeft_;
-			middleText_.setText(stream.str());
+			middleText_.setText("Start in " + std::to_string(countDown.timeLeft_));
 		} else {
 			middleText_.setText("");
 		}

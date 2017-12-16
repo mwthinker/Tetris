@@ -5,7 +5,6 @@
 #include "consoletetris.h"
 #endif // D_CONSOLE_TETRIS
 
-#include <sstream>
 #include <iostream>
 
 int main (int argc, char** argv) {
@@ -49,8 +48,12 @@ int main (int argc, char** argv) {
 		else if (code == "-s" || code == "--server") {
 			int port = TetrisData::getInstance().getServerPort();
 			if (argc >= 3) {
-				std::stringstream stream(*(argv + 2));
-				stream >> port;
+				try {
+					port = std::stoi(*(argv + 2));
+				} catch (const std::exception&) {
+					std::cerr << "Unvalid argument, [<PORT>].\n";
+					return 0;
+				}
 			}
 			TetrisWindow game;
 			game.startServerLoop(port);
@@ -62,8 +65,12 @@ int main (int argc, char** argv) {
 			}
 			int port = TetrisData::getInstance().getPort();
 			if (argc >= 4) {
-				std::stringstream stream(*(argv + 3));
-				stream >> port;
+				try {
+					port = std::stoi(*(argv + 3));
+				} catch (const std::exception&) {
+					std::cerr << "Unvalid argument, [<PORT>].\n";
+					return 0;
+				}
 			}
 			TetrisWindow game;
 			game.startClientLoop(port, ip);
@@ -71,9 +78,12 @@ int main (int argc, char** argv) {
 		} else if (code == "-m" || code == "--menu-index") {
 			int menuIndex = 0;
 			if (argc >= 2) {
-				std::stringstream stream;
-				stream << *(argv + 1);
-				stream >> menuIndex;
+				try {
+					menuIndex = std::stoi(*(argv + 1));
+				} catch (const std::exception&) {
+					std::cerr << "Unvalid argument, [<MENU_INDEX>].\n";
+					return 0;
+				}
 			}
 			TetrisWindow game;
 			game.startLoop();

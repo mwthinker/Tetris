@@ -3,9 +3,8 @@
 #include "player.h"
 #include "tetrisdata.h"
 
-#include <sstream>
-#include <iostream>
 #include <limits>
+#include <string>
 
 namespace {
 
@@ -127,24 +126,15 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
-	{
-		std::stringstream stream;
-		level_ = player.getLevel();
-		stream << "Level " << level_;
-		textLevel_ = DrawText(stream.str(), font, x, y - 20, 8.f);
-	}
-	{
-		std::stringstream stream;
-		points_ = player.getPoints();
-		stream << "Points " << points_;
-		textPoints_ = DrawText(stream.str(), font, x, y - 20 - 12, 8.f);
-	}
-	{
-		std::stringstream stream;
-		clearedRows_ = player.getClearedRows();
-		stream << "Rows " << clearedRows_;
-		textClearedRows_ = DrawText(stream.str(), font, x, y - 20 - 12 * 2, 8.f);
-	}
+	
+	level_ = player.getLevel();
+	textLevel_ = DrawText("Level " + std::to_string(level_), font, x, y - 20, 8.f);
+
+	points_ = player.getPoints();
+	textPoints_ = DrawText("Points " + std::to_string(points_), font, x, y - 20 - 12, 8.f);
+
+	clearedRows_ = player.getClearedRows();
+	textClearedRows_ = DrawText("Rows " + std::to_string(clearedRows_), font, x, y - 20 - 12 * 2, 8.f);
 
 	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
 
@@ -288,11 +278,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			currentBlock_.update(tetrisBoard.getBlock());
 			break;
 		case GameEvent::ROW_TO_BE_REMOVED:
-		{
-			std::stringstream stream;
-			stream << "Rows " << tetrisBoard.getRemovedRows();
-			textClearedRows_.update(stream.str());
-		}
+			textClearedRows_.update("Rows " + std::to_string(tetrisBoard.getRemovedRows()));
 		break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
@@ -377,22 +363,16 @@ void GameGraphic::setMiddleMessage(const mw::Text& text) {
 
 void GameGraphic::update(int clearedRows, int points, int level) {
 	if (clearedRows_ != clearedRows) {
-		std::stringstream stream;
 		clearedRows_ = clearedRows;
-		stream << "Rows " << clearedRows;
-		textClearedRows_.update(stream.str());
+		textClearedRows_.update("Rows " + std::to_string(clearedRows_));
 	}
 	if (points_ != points) {
-		std::stringstream stream;
 		points_ = points;
-		stream << "Points " << points;
-		textPoints_.update(stream.str());
+		textPoints_.update("Points " + std::to_string(points_));
 	}
 	if (level_ != level) {
-		std::stringstream stream;
 		level_ = level;
-		stream << "Level " << level;
-		textLevel_.update(stream.str());
+		textLevel_.update("Level " + std::to_string(level_));
 	}
 }
 

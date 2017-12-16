@@ -33,6 +33,8 @@ public:
 	}
 
 private:
+	void updateVertexes();
+
 	mw::Text text_;
 
 	float lowX_, lowY_;

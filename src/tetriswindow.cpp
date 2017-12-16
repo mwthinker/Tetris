@@ -23,24 +23,6 @@
 #include <iostream>
 #include <sstream>
 
-namespace {
-
-	int convertString2Int(std::string str) {
-		int nbr;
-		std::stringstream stream;
-		stream << str;
-		stream >> nbr;
-		return nbr;
-	}
-
-	std::string convertInt2String(int nbr) {
-		std::stringstream stream;
-		stream << nbr;
-		return stream.str();
-	}
-
-}
-
 TetrisWindow::TetrisWindow() : 
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
 	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU) {
@@ -504,16 +486,16 @@ void TetrisWindow::initCreateServerPanel() {
 
 	auto p3 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p3->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
-	portServer_ = p3->addDefault<TextField>(convertInt2String(TetrisData::getInstance().getServerPort()), TetrisData::getInstance().getDefaultFont(18));
+	portServer_ = p3->addDefault<TextField>(std::to_string(TetrisData::getInstance().getServerPort()), TetrisData::getInstance().getDefaultFont(18));
 
 	serverButton_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
 	serverButton_->addActionListener([&](gui::Component& c) {
-		TetrisData::getInstance().setServerPort(convertString2Int(portServer_->getText()));
+		TetrisData::getInstance().setServerPort(std::stoi(portServer_->getText()));
 		TetrisData::getInstance().save();
 		tetrisGame_.closeGame();
 		nbrHumans_->setNbr(1);
 		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-		tetrisGame_.createServerGame(convertString2Int(portServer_->getText()));
+		tetrisGame_.createServerGame(std::stoi(portServer_->getText()));
 	});
 }
 
@@ -537,17 +519,17 @@ void TetrisWindow::initCreateClientPanel() {
 	ipClient_ = p1->addDefault<TextField>(TetrisData::getInstance().getIp(), TetrisData::getInstance().getDefaultFont(18));
 
 	p1->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
-	portClient_ = p1->addDefault<TextField>(convertInt2String(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
+	portClient_ = p1->addDefault<TextField>(std::to_string(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
 
 	clientButton_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
 	clientButton_->addActionListener([&](gui::Component& c) {
-		TetrisData::getInstance().setPort(convertString2Int(portClient_->getText()));
+		TetrisData::getInstance().setPort(std::stoi(portClient_->getText()));
 		TetrisData::getInstance().setIp(ipClient_->getText());
 		TetrisData::getInstance().save();
 		tetrisGame_.closeGame();
 		nbrHumans_->setNbr(1);
 		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-		tetrisGame_.createClientGame(convertString2Int(portClient_->getText()), ipClient_->getText());
+		tetrisGame_.createClientGame(std::stoi(portClient_->getText()), ipClient_->getText());
 		setCurrentPanel(waitToConnectIndex_);
 	});
 }
