@@ -55,9 +55,6 @@ private:
 
 	TetrisGame tetrisGame_;
 
-	// initMenuPanel
-	std::shared_ptr<gui::Button> resume_;
-
 	// initPlayPanel
 	std::shared_ptr<GameComponent> game_;
 	std::shared_ptr<ManButton> nbrHumans_;

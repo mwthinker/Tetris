@@ -155,8 +155,11 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 			middleText_.setText("");
 		}
 
+		// Update the text for the active players.
 		for (auto& graphic : graphicPlayers_) {
-			graphic.second.setMiddleMessage(middleText_);
+			if (!graphic.first->getTetrisBoard().isGameOver()) {
+				graphic.second.setMiddleMessage(middleText_);
+			}
 		}
 
 		std::cout << countDown.timeLeft_ << "\n";
@@ -165,6 +168,19 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 	
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
+
+		if (!gamePause.pause_) {
+			middleText_.setText("");
+		} else {
+			middleText_.setText("Paused");
+		}	
+
+		// Update the text for the active players.
+		for (auto& graphic : graphicPlayers_) {
+			if (!graphic.first->getTetrisBoard().isGameOver()) {
+				graphic.second.setMiddleMessage(middleText_);
+			}
+		}
 		return;
 	} catch (std::bad_cast exp) {}
 

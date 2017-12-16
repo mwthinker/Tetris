@@ -126,15 +126,22 @@ void TetrisWindow::resumeGame() {
 	int rows = TetrisData::getInstance().getActiveLocalGameRows();
 	int columns = TetrisData::getInstance().getActiveLocalGameColumns();
 
+	int ais = 0;
+	int humans = 0;
+
 	std::vector<PlayerData> playerDataVector = TetrisData::getInstance().getActiveLocalGamePlayers();
 	for (PlayerData& playerData : playerDataVector) {
 		if (playerData.ai_) {
 			playerData.device_ = findAiDevice(playerData.deviceName_);
+			++ais;
 		} else {
 			playerData.device_ = findHumanDevice(playerData.deviceName_);
+			++humans;
 		}
 	}
 	tetrisGame_.resumeGame(rows, columns, playerDataVector);
+	nbrAis_->setNbr(ais);
+	nbrHumans_->setNbr(humans);
 }
 
 void TetrisWindow::saveCurrentLocalGame() {
@@ -172,12 +179,6 @@ void TetrisWindow::initMenuPanel() {
 	setCurrentPanel(menuIndex_);
 	
 	auto bar = add<Bar>(gui::BorderLayout::NORTH);
-	resume_ = bar->addDefault<Button>("Resume", TetrisData::getInstance().getDefaultFont(30));
-	resume_->setVisible(true);
-	resume_->addActionListener([&](gui::Component&) {
-		resumeGame();
-		setCurrentPanel(playIndex_);
-	});
 
 	// 400 in order to be wide enough for all buttons.
 	auto panel = add<TransparentPanel>(gui::BorderLayout::WEST, 400.f);
@@ -187,13 +188,10 @@ void TetrisWindow::initMenuPanel() {
 	panel->addDefault<Label>("MWetris", TetrisData::getInstance().getDefaultFont(50));
 
 	panel->addDefaultToGroup<Button>("Play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
-		tetrisGame_.closeGame();
-		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-		tetrisGame_.createLocalGame();
-
+		resumeGame();
+		tetrisGame_.pause();
 		setCurrentPanel(playIndex_);
-		resume_->setVisible(true);
-	});	
+	});
 
 	panel->addDefaultToGroup<Button>("Custom play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
 		setCurrentPanel(customIndex_);
@@ -241,7 +239,13 @@ void TetrisWindow::initPlayPanel() {
 
 	restart_ = p1->addDefault<Button>("Restart", TetrisData::getInstance().getDefaultFont(30));
 	restart_->addActionListener([&](gui::Component&) {
-		tetrisGame_.restartGame();
+		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
+			tetrisGame_.restartGame();
+		} else {
+			tetrisGame_.closeGame();
+			setPlayers();
+			tetrisGame_.createLocalGame();
+		}
 	});	
 
 	nbrHumans_ = p1->addDefault<ManButton>(devices_.size(), TetrisData::getInstance().getHumanSprite(), TetrisData::getInstance().getCrossSprite());

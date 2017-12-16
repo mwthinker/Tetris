@@ -175,6 +175,13 @@ void TetrisGame::pause() {
 	}
 	GamePause gamePause(pause_);
 	eventHandler_(gamePause);
+	
+	if (!pause_ && nbrOfPlayers_ > 1) {
+		timeLeftToStart_ = countDownTime_;
+		wholeTimeLeft_ = countDownTime_;
+		CountDown countDown(wholeTimeLeft_);
+		eventHandler_(countDown);
+	}
 }
 
 void TetrisGame::addCallback(const mw::Signal<TetrisGameEvent&>::Callback& callback) {
