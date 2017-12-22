@@ -141,6 +141,13 @@ public:
 	mw::Color getCheckboxBoxColor();
 	mw::Color getChecboxCheckColor();
 
+	mw::Sprite getRadioButtonBoxSprite();
+	mw::Sprite getRadioButtonCheckSprite();
+	mw::Color getRadioButtonTextColor();
+	mw::Color getRadioButtonBackgroundColor();
+	mw::Color getRadioButtonBoxColor();
+	mw::Color getRadioButtonCheckColor();
+
 	mw::Color getLabelTextColor();
 	mw::Color getLabelBackgroundColor();
 

@@ -81,9 +81,7 @@ void TetrisWindow::initPreLoop() {
 	customIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	settingsIndex_ = pushBackPanel(std::make_shared<Background>(background));
 	newHighscoreIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	createClientIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	createServerIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	waitToConnectIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	networkIndex_ = pushBackPanel(std::make_shared<Background>(background));
 
 	initMenuPanel();
 	initPlayPanel();
@@ -91,9 +89,7 @@ void TetrisWindow::initPreLoop() {
 	initNewHighscorePanel();
 	initCustomPlayPanel();
 	initSettingsPanel();
-	initCreateServerPanel();
-	initCreateClientPanel();
-	initWaitToConnectPanel();
+	initNetworkPanel();
 
 	loadHighscore();
 	// Init ai players.
@@ -107,12 +103,12 @@ void TetrisWindow::initPreLoop() {
 			setCurrentPanel(menuIndex_);
 			break;
 		case StartFrame::SERVER:
-			setCurrentPanel(createServerIndex_);
-			serverButton_->doAction();
+			setCurrentPanel(networkIndex_);
+			radioButtonServer_->doAction();
 			break;
 		case StartFrame::CLIENT:
-			setCurrentPanel(createClientIndex_);
-			clientButton_->doAction();
+			setCurrentPanel(networkIndex_);
+			radioButtonClient_->doAction();
 			break;
 		case StartFrame::LOCAL_GAME:
 			// Initialization local game settings.
@@ -198,7 +194,7 @@ void TetrisWindow::initMenuPanel() {
 	});
 
 	panel->addDefaultToGroup<Button>("Network play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
-		setCurrentPanel(createServerIndex_);
+		setCurrentPanel(networkIndex_);
 	});
 
 	panel->addDefaultToGroup<Button>("Highscore", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
@@ -401,8 +397,6 @@ void TetrisWindow::initSettingsPanel() {
 
 	auto checkBox4 = p->addDefault<CheckBox>("Vsync", TetrisData::getInstance().getDefaultFont(18));
 	checkBox4->setSelected(TetrisData::getInstance().isWindowVsync());
-	
-
 	checkBox4->addActionListener([&](gui::Component& c) {
 		auto& check = static_cast<CheckBox&>(c);
 		TetrisData::getInstance().setWindowVsync(check.isSelected());
@@ -473,85 +467,87 @@ void TetrisWindow::initSettingsPanel() {
 	}
 }
 
-void TetrisWindow::initCreateServerPanel() {
-	setCurrentPanel(createServerIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
-
-	bar->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+void TetrisWindow::initNetworkPanel() {
+	setCurrentPanel(networkIndex_);
+	
+	add<Bar>(gui::BorderLayout::NORTH)->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
-	});
-
-	bar->addDefault<Button>("Client", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
-		setCurrentPanel(createClientIndex_);
 	});
 
 	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
 	centerPanel->setLayout<gui::VerticalLayout>();
+
+	radioButtonServer_ = centerPanel->addDefault<RadioButton>("   Server", TetrisData::getInstance().getDefaultFont(18));
+	radioButtonServer_->setSelected(true);
+	radioButtonServer_->addActionListener([&](gui::Component& c) {
+		auto& check = static_cast<RadioButton&>(c);
+		radioButtonServer_->setSelected(true);
+		radioButtonClient_->setSelected(false);
+		
+		portServer_->setVisible(true);
+
+		clientIpLabel_->setVisible(false);
+		ipClient_->setVisible(false);
+		portClient_->setVisible(false);
+	});
+	
+	radioButtonClient_ = centerPanel->addDefault<RadioButton>("   Client", TetrisData::getInstance().getDefaultFont(18));
+	radioButtonClient_->setSelected(false);
+	radioButtonClient_->addActionListener([&](gui::Component& c) {
+		auto& check = static_cast<RadioButton&>(c);
+		radioButtonClient_->setSelected(true);
+		radioButtonServer_->setSelected(false);
+		
+		portServer_->setVisible(false);
+
+		clientIpLabel_->setVisible(true);
+		ipClient_->setVisible(true);
+		portClient_->setVisible(true);
+	});
 
 	auto p3 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
 	p3->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
 	portServer_ = p3->addDefault<TextField>(std::to_string(TetrisData::getInstance().getServerPort()), TetrisData::getInstance().getDefaultFont(18));
+	
+	portClient_ = p3->addDefault<TextField>(std::to_string(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
+	portClient_->setVisible(false);
 
-	serverButton_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
-	serverButton_->addActionListener([&](gui::Component& c) {
-		TetrisData::getInstance().setServerPort(std::stoi(portServer_->getText()));
-		TetrisData::getInstance().save();
-		tetrisGame_.closeGame();
-		nbrHumans_->setNbr(1);
-		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-		tetrisGame_.createServerGame(std::stoi(portServer_->getText()));
+	clientIpLabel_ = p3->addDefault<Label>("IP", TetrisData::getInstance().getDefaultFont(18));
+	ipClient_ = p3->addDefault<TextField>(TetrisData::getInstance().getIp(), TetrisData::getInstance().getDefaultFont(18));
+	ipClient_->setVisible(false);	
+
+	errorMessage_ = centerPanel->addDefault<Label>("Connecting ...", TetrisData::getInstance().getDefaultFont(18));
+	errorMessage_->setVisible(true);
+	
+	progressBar_ = centerPanel->addDefault<ProgressBar>();
+	progressBar_->setVisible(true);
+
+	networkConnect_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
+
+	networkConnect_->addActionListener([&](gui::Component& c) {
+		errorMessage_->setVisible(true);
+		progressBar_->setVisible(true);
+		if (radioButtonServer_->isSelected()) {
+			TetrisData::getInstance().setServerPort(std::stoi(portServer_->getText()));
+			TetrisData::getInstance().save();
+			tetrisGame_.closeGame();
+			nbrHumans_->setNbr(1);
+			tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+			tetrisGame_.createServerGame(std::stoi(portServer_->getText()));
+		} else {
+			TetrisData::getInstance().setPort(std::stoi(portClient_->getText()));
+			TetrisData::getInstance().setIp(ipClient_->getText());
+			TetrisData::getInstance().save();
+			tetrisGame_.closeGame();
+			nbrHumans_->setNbr(1);
+			tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+			tetrisGame_.createClientGame(std::stoi(portClient_->getText()), ipClient_->getText());
+		}
 	});
-}
-
-void TetrisWindow::initCreateClientPanel() {
-	setCurrentPanel(createClientIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
-
-	bar->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
-		setCurrentPanel(menuIndex_);
-	});
-    
-	bar->addDefault<Button>("Server", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
-		setCurrentPanel(createServerIndex_);
-	});
-
-	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
-	centerPanel->setLayout<gui::VerticalLayout>();
-
-	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
-	p1->addDefault<Label>("Ip", TetrisData::getInstance().getDefaultFont(18));
-	ipClient_ = p1->addDefault<TextField>(TetrisData::getInstance().getIp(), TetrisData::getInstance().getDefaultFont(18));
-
-	p1->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
-	portClient_ = p1->addDefault<TextField>(std::to_string(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
-
-	clientButton_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
-	clientButton_->addActionListener([&](gui::Component& c) {
-		TetrisData::getInstance().setPort(std::stoi(portClient_->getText()));
-		TetrisData::getInstance().setIp(ipClient_->getText());
-		TetrisData::getInstance().save();
-		tetrisGame_.closeGame();
-		nbrHumans_->setNbr(1);
-		tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-		tetrisGame_.createClientGame(std::stoi(portClient_->getText()), ipClient_->getText());
-		setCurrentPanel(waitToConnectIndex_);
-	});
-}
-
-void TetrisWindow::initWaitToConnectPanel() {
-	setCurrentPanel(waitToConnectIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
-
-	bar->addDefault<Button>("Abort", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
-		setCurrentPanel(menuIndex_);
-		tetrisGame_.closeGame();
-	});	
 
 	addDrawListener([&](gui::Frame& frame, double deltaTime) {
 		tetrisGame_.update(deltaTime);
 	});
-
-	add<Label>(gui::BorderLayout::CENTER, "Waiting for the server to accept connection!", TetrisData::getInstance().getDefaultFont(18));
 }
 
 void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
@@ -590,6 +586,9 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 	try {
 		auto& newConnection = dynamic_cast<NewConnection&>(tetrisEvent);
 		setCurrentPanel(playIndex_);
+
+		errorMessage_->setVisible(false);
+		progressBar_->setVisible(false);
 		return;
 	} catch (std::bad_cast exp) {}
 	

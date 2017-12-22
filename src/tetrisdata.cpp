@@ -493,6 +493,30 @@ mw::Color TetrisData::getChecboxCheckColor() {
 	return jsonObject_["window"]["checkBox"]["checkColor"].get<mw::Color>();
 }
 
+mw::Sprite TetrisData::getRadioButtonBoxSprite() {
+	return loadSprite(jsonObject_["window"]["radioButton"]["boxImage"].get<std::string>());
+}
+
+mw::Sprite TetrisData::getRadioButtonCheckSprite() {
+	return loadSprite(jsonObject_["window"]["radioButton"]["checkImage"].get<std::string>());
+}
+
+mw::Color TetrisData::getRadioButtonTextColor() {
+	return jsonObject_["window"]["radioButton"]["textColor"].get<mw::Color>();
+}
+
+mw::Color TetrisData::getRadioButtonBackgroundColor() {
+	return jsonObject_["window"]["radioButton"]["backgroundColor"].get<mw::Color>();
+}
+
+mw::Color TetrisData::getRadioButtonBoxColor() {
+	return jsonObject_["window"]["radioButton"]["boxColor"].get<mw::Color>();
+}
+
+mw::Color TetrisData::getRadioButtonCheckColor() {
+	return jsonObject_["window"]["radioButton"]["checkColor"].get<mw::Color>();
+}
+
 mw::Color TetrisData::getLabelTextColor() {
 	return jsonObject_["window"]["label"]["textColor"].get<mw::Color>();
 }

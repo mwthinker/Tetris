@@ -2,12 +2,12 @@
 
 #include <sstream>
 
-net::Packet& operator<<(net::Packet& packe1t, const net::Packet& packet2) {
+net::Packet& operator<<(net::Packet& packet1, const net::Packet& packet2) {
 	int size = packet2.getSize();
 	for (int i = 1; i < size; ++i) {
-		packe1t << packet2[i];
+		packet1 << packet2[i];
 	}
-	return packe1t;
+	return packet1;
 }
 
 net::Packet& operator<<(net::Packet& packet, Input input) {

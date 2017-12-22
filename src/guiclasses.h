@@ -11,6 +11,7 @@
 #include <gui/flowlayout.h>
 #include <gui/borderlayout.h>
 #include <gui/combobox.h>
+#include <gui/progressbar.h>
 
 namespace {
 
@@ -68,6 +69,20 @@ namespace {
         }
     };
 
+	class RadioButton : public gui::CheckBox {
+	public:
+		RadioButton(std::string text, const mw::Font& font)
+			: gui::CheckBox(text, font,
+			TetrisData::getInstance().getRadioButtonBoxSprite(),
+			TetrisData::getInstance().getRadioButtonCheckSprite()) {
+
+			setTextColor(TetrisData::getInstance().getRadioButtonTextColor());
+			setBackgroundColor(TetrisData::getInstance().getRadioButtonBackgroundColor());
+			setBoxColor(TetrisData::getInstance().getRadioButtonBoxColor());
+			setCheckColor(TetrisData::getInstance().getRadioButtonCheckColor());
+		}
+	};
+
     class TransparentPanel : public gui::Panel {
     public:
         TransparentPanel(float preferredWidth = 100, float preferredHeight = 100) {
@@ -91,6 +106,12 @@ namespace {
 			setShowDropDownColor(TetrisData::getInstance().getComboBoxShowDropDownColor());
 			setBackgroundColor(TetrisData::getInstance().getComboBoxBackgroundColor());
 			setBorderColor(TetrisData::getInstance().getComboBoxBorderColor());
+		}
+	};
+
+	class ProgressBar : public gui::ProgressBar {
+	public:
+		ProgressBar() {
 		}
 	};
 

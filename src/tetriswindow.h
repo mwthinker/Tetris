@@ -10,6 +10,8 @@
 #include <gui/button.h>
 #include <gui/panel.h>
 #include <gui/label.h>
+#include <gui/checkbox.h>
+#include <gui/progressbar.h>
 
 #include <array>
 #include <memory>
@@ -75,15 +77,17 @@ private:
 	std::shared_ptr<gui::TextField> customMinLevel_;
 	std::shared_ptr<gui::TextField> customMaxLevel_;
 
-	// initCreateServerPanel
+	// initNetworkPanel
+	std::shared_ptr<gui::Button> networkConnect_;
+	std::shared_ptr<gui::CheckBox> radioButtonServer_;
+	std::shared_ptr<gui::CheckBox> radioButtonClient_;
 	std::shared_ptr<gui::TextField> portServer_;
-	std::shared_ptr<gui::Button> serverButton_;
-
-	// initCreateClientPanel
 	std::shared_ptr<gui::TextField> ipClient_;
 	std::shared_ptr<gui::TextField> portClient_;
-	std::shared_ptr<gui::Button> clientButton_;
-	
+	std::shared_ptr<gui::Label> clientIpLabel_;
+	std::shared_ptr<gui::Label> errorMessage_;
+	std::shared_ptr<gui::ProgressBar> progressBar_;
+
 	// Devices.
 	std::vector<SdlDevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
@@ -96,9 +100,7 @@ private:
 	void initNewHighscorePanel();
 	void initCustomPlayPanel();
 	void initSettingsPanel();
-	void initCreateServerPanel();
-	void initCreateClientPanel();
-	void initWaitToConnectPanel();
+	void initNetworkPanel();
 
 	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
 
@@ -109,9 +111,7 @@ private:
 		customIndex_,
 		settingsIndex_,
 		newHighscoreIndex_,
-		createClientIndex_,
-		createServerIndex_,
-		waitToConnectIndex_;
+		networkIndex_;
 
 	bool windowFollowMouse_;
 	int followMouseX_, followMouseY_;

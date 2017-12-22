@@ -146,6 +146,7 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 }
 
 void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
+	// Handle CountDown event.
 	try {
 		auto& countDown = dynamic_cast<CountDown&>(tetrisEvent);
 
@@ -161,11 +162,10 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 				graphic.second.setMiddleMessage(middleText_);
 			}
 		}
-
-		std::cout << countDown.timeLeft_ << "\n";
 		return;
 	} catch (std::bad_cast exp) {}
 	
+	// Handle GamePause event.
 	try {
 		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
 
@@ -184,6 +184,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		return;
 	} catch (std::bad_cast exp) {}
 
+	// Handle InitGame event.
 	try {
 		middleText_ = mw::Text("", TetrisData::getInstance().getDefaultFont(50), 20);
 		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
@@ -191,6 +192,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		return;
 	} catch (std::bad_cast exp) {}
 
+	// Handle LevelChange event.
 	try {
 		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
 		GameGraphic& gg = graphicPlayers_[levelChange.player_];
@@ -198,6 +200,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		return;
 	} catch (std::bad_cast exp) {}
 
+	// Handle PointsChange event.
 	try {
 		auto& pointsChange = dynamic_cast<PointsChange&>(tetrisEvent);
 		GameGraphic& gg = graphicPlayers_[pointsChange.player_];
@@ -205,6 +208,7 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		return;
 	} catch (std::bad_cast exp) {}
 
+	// Handle GameOver event.
 	try {
 		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
 		// Points high enough to be saved in the highscore list?
