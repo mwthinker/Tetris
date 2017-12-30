@@ -81,9 +81,8 @@ private:
 	std::shared_ptr<gui::Button> networkConnect_;
 	std::shared_ptr<gui::CheckBox> radioButtonServer_;
 	std::shared_ptr<gui::CheckBox> radioButtonClient_;
-	std::shared_ptr<gui::TextField> portServer_;
 	std::shared_ptr<gui::TextField> ipClient_;
-	std::shared_ptr<gui::TextField> portClient_;
+	std::shared_ptr<gui::TextField> port_;
 	std::shared_ptr<gui::Label> clientIpLabel_;
 	std::shared_ptr<gui::Label> errorMessage_;
 	std::shared_ptr<gui::ProgressBar> progressBar_;

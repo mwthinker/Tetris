@@ -437,14 +437,6 @@ void TetrisData::setMoveWindowByHoldingDownMouse(bool activate) {
 	jsonObject_["window"]["moveWindowByHoldingDownMouse"] = activate;
 }
 
-int TetrisData::getServerPort() const {
-	return jsonObject_["window"]["serverPort"].get<int>();
-}
-
-void TetrisData::setServerPort(int port) {
-	jsonObject_["window"]["serverPort"] = port;
-}
-
 int TetrisData::getPort() const {
 	return jsonObject_["window"]["port"].get<int>();
 }
