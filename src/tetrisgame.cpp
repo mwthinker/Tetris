@@ -117,7 +117,9 @@ void TetrisGame::initGame() {
 	for (auto& player : localConnection_) {
 		players.push_back(player);
 	}
+	std::vector<std::shared_ptr<Connection>> remoteConnections;
 	for (auto& remoteConnection : sender_) {
+		remoteConnections.push_back(remoteConnection);
 		for (auto& player : *remoteConnection) {
 			players.push_back(player);
 		}
@@ -125,7 +127,7 @@ void TetrisGame::initGame() {
 
 	nbrOfPlayers_ = players.size();
 	nbrOfAlivePlayers_ = nbrOfPlayers_; // All players are living again.
-	InitGame initGame(players);
+	InitGame initGame(players, remoteConnections);
 	eventHandler_(initGame);
 
 	if (currentGameHasCountDown()) { // Must be called last, after all settings are defined for the current game.

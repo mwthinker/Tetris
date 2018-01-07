@@ -27,11 +27,12 @@ class TetrisWindow : public gui::Frame {
 public:
 	TetrisWindow();
 
+	~TetrisWindow();
+
 	void startServerLoop(int port);
 
 	void startClientLoop(int port, std::string ip);
 
-	~TetrisWindow();
 private:
 	enum class StartFrame { MENU, SERVER, CLIENT, LOCAL_GAME };
 
@@ -61,6 +62,9 @@ private:
 	std::shared_ptr<GameComponent> game_;
 	std::shared_ptr<ManButton> nbrHumans_;
 	std::shared_ptr<ManButton> nbrAis_;
+	std::shared_ptr<gui::Panel> manBar_;
+	std::vector<std::shared_ptr<ManButton>> remoteManButtons;
+
 	std::shared_ptr<gui::Button> pauseButton_;
 	std::shared_ptr<gui::Button> menu_;
 	std::shared_ptr<gui::Button> restart_;

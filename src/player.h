@@ -55,6 +55,8 @@ public:
 		return 0.5f;
 	}
 
+	virtual bool isAi() const = 0;
+
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
 protected:

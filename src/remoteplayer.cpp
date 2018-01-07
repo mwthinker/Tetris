@@ -5,8 +5,8 @@
 #include <net/connection.h>
 #include <net/packet.h>
 
-RemotePlayer::RemotePlayer(int id, int width, int height, BlockType current, BlockType next) :
-	Player(id, width, height, current, next) {
+RemotePlayer::RemotePlayer(int id, int width, int height, bool ai, BlockType current, BlockType next) :
+	Player(id, width, height, current, next), ai_(ai) {
 
 }
 
@@ -14,9 +14,9 @@ void RemotePlayer::receive(net::Packet& packet) {
 	packet.reset();
 	PacketType type;
 	packet >> type;
-	int id;
+	int id; // Not used;
 	packet >> id;
-	int playerId;
+	int playerId; // Not used;
 	packet >> playerId;
 	switch (type) {
 		case PacketType::PLAYER_MOVE:

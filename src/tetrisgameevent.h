@@ -5,6 +5,8 @@
 
 #include "player.h"
 
+class Connection;
+
 class TetrisGameEvent {
 public:
 	virtual ~TetrisGameEvent() {
@@ -56,10 +58,12 @@ public:
 
 class InitGame : public TetrisGameEvent {
 public:
-	InitGame(const std::vector<std::shared_ptr<Player>>& players) : players_(players) {
+	InitGame(const std::vector<std::shared_ptr<Player>>& players, const std::vector<std::shared_ptr<Connection>>& remoteConnections)
+		: players_(players), remoteConnections_(remoteConnections) {
 	}
 
 	std::vector<std::shared_ptr<Player>> players_;
+	std::vector<std::shared_ptr<Connection>> remoteConnections_;
 };
 
 class LevelChange : public TetrisGameEvent {

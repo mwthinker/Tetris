@@ -3,11 +3,12 @@
 
 #include "localplayer.h"
 #include "protocol.h"
+#include "connection.h"
 
 #include <vector>
 
 // Hold information about all local players.
-class LocalConnection {
+class LocalConnection : public Connection {
 public:
 	using iterator = std::vector<std::shared_ptr<LocalPlayer>>::iterator;
 	using const_iterator = std::vector<std::shared_ptr<LocalPlayer>>::const_iterator;
@@ -40,7 +41,8 @@ public:
 		int points, int level,
 		Block current, BlockType next, const std::vector<BlockType>& board) {
 		
-		auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height, board, levelUpCounter, points, level,
+		auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
+			board, levelUpCounter, points, level,
 			current, next, device, packetSender_);
 		players_.push_back(player);
 	}
@@ -69,6 +71,21 @@ public:
 	// Return the number of players.
 	int getNbrOfPlayers() const {
 		return players_.size();
+	}
+
+	int getNbrHumanPlayers() const override {
+		return players_.size() - LocalConnection::getNbrAiPlayers();
+	}
+
+	int getNbrAiPlayers() const override {
+		int nbr = 0;
+		for (auto& player : players_) {
+			if (player->isAi()) {
+				++nbr;
+			}
+		}
+
+		return nbr;
 	}
 
 	iterator begin() {
@@ -111,6 +128,7 @@ public:
 			packet << player->getName();
 			packet << player->getLevel();
 			packet << player->getPoints();
+			packet << player->isAi();
 			
 			auto& board = player->getTetrisBoard();
 			packet << board.getBlockType();

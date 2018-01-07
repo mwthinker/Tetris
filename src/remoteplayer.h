@@ -10,7 +10,7 @@
 
 class RemotePlayer : public Player {
 public:
-	RemotePlayer(int id, int width, int height, BlockType current, BlockType next);
+	RemotePlayer(int id, int width, int height, bool ai, BlockType current, BlockType next);
 
 	// @Player
 	void update(double deltaTime) override {
@@ -33,6 +33,14 @@ public:
 	void setPoints(int points) {
 		points_ = points;
 	}
+	
+	// @Player
+	bool isAi() const override {
+		return ai_;
+	}
+
+private:
+	bool ai_;
 };
 
 #endif // REMOTEPLAYER_H

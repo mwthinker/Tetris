@@ -218,13 +218,13 @@ void TetrisWindow::initPlayPanel() {
     auto bar = add<Bar>(gui::BorderLayout::NORTH);
 	bar->setLayout<gui::BorderLayout>();
 
-	auto p1 = bar->add<TransparentPanel>(gui::BorderLayout::WEST, 400.f, 100.f);
+	manBar_ = bar->add<TransparentPanel>(gui::BorderLayout::WEST, 400.f, 100.f);
 	auto p2 = bar->add<TransparentPanel>(gui::BorderLayout::EAST, 200.f, 100.f);
 
-	p1->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
+	manBar_->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
 	p2->setLayout<gui::FlowLayout>(gui::FlowLayout::RIGHT, 5.f, 0.f);
 	
-	menu_ = p1->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30));
+	menu_ = manBar_->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30));
 	menu_->addActionListener([&](gui::Component&) {
 		saveCurrentLocalGame(); // Must be called first, must be in play frame.
 		setCurrentPanel(menuIndex_);
@@ -235,7 +235,7 @@ void TetrisWindow::initPlayPanel() {
 		}
 	});
 
-	restart_ = p1->addDefault<Button>("Restart", TetrisData::getInstance().getDefaultFont(30));
+	restart_ = manBar_->addDefault<Button>("Restart", TetrisData::getInstance().getDefaultFont(30));
 	restart_->addActionListener([&](gui::Component&) {
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.restartGame();
@@ -244,14 +244,14 @@ void TetrisWindow::initPlayPanel() {
 			setPlayers();
 			tetrisGame_.createLocalGame();
 		}
-	});	
+	});
 
-	nbrHumans_ = p1->addDefault<ManButton>(devices_.size(), TetrisData::getInstance().getHumanSprite(), TetrisData::getInstance().getCrossSprite());
+	nbrHumans_ = manBar_->addDefault<ManButton>(devices_.size(), TetrisData::getInstance().getHumanSprite(), TetrisData::getInstance().getCrossSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
 		setPlayers();
 	});
 
-	nbrAis_ = p1->addDefault<ManButton>(activeAis_.size(), TetrisData::getInstance().getComputerSprite(), TetrisData::getInstance().getCrossSprite());
+	nbrAis_ = manBar_->addDefault<ManButton>(activeAis_.size(), TetrisData::getInstance().getComputerSprite(), TetrisData::getInstance().getCrossSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
 		setPlayers();
@@ -584,6 +584,30 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		progressBar_->setVisible(false);
 		return;
 	} catch (std::bad_cast exp) {}
+
+	try {
+		auto& initGame = dynamic_cast<InitGame&>(tetrisEvent);
+
+		// Remove all man buttons for the old remote players.
+		for (auto& remoteManButton : remoteManButtons) {
+			manBar_->remove(remoteManButton);
+		}
+
+		// Add all man buttons for the new remote players.
+		for (auto& remoteConnection : initGame.remoteConnections_) {
+			// Show remote number of humans.
+			auto man = manBar_->addDefault<ManButton>(remoteConnection->getNbrHumanPlayers(), TetrisData::getInstance().getHumanSprite(), TetrisData::getInstance().getCrossSprite());
+			man->setNbr(remoteConnection->getNbrHumanPlayers());
+			man->setActive(false);
+			remoteManButtons.push_back(man);
+			// Show remote number of ais.
+			man = manBar_->addDefault<ManButton>(remoteConnection->getNbrAiPlayers(), TetrisData::getInstance().getComputerSprite(), TetrisData::getInstance().getCrossSprite());
+			man->setNbr(remoteConnection->getNbrAiPlayers());
+			man->setActive(false);
+			remoteManButtons.push_back(man);
+		}
+		return;
+	} catch (std::bad_cast exp) {}
 	
 	try {
 		auto& start = dynamic_cast<GameStart&>(tetrisEvent);
@@ -665,6 +689,7 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 						// The Window's is not maximized. Save size!
 						TetrisData::getInstance().setWindowWidth(e.window.data1);
 						TetrisData::getInstance().setWindowHeight(e.window.data2);
+						manBar_->setPreferredSize((float) (e.window.data1 - 100), 100);
 					}
 					break;
 				case SDL_WINDOWEVENT_MOVED:

@@ -20,6 +20,17 @@ public:
 		return max_;
 	}
 
+	void setActive(bool active) {
+		active_ = active;
+		if (!active) {
+			mouseInside_ = false;
+		}
+	}
+
+	bool getActive() const {
+		return active_;
+	};
+
 	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
 private:
@@ -32,6 +43,7 @@ private:
 	unsigned int max_;
 
 	bool mouseInside_;
+	bool active_;
 };
 
 #endif // MANBUTTON_H

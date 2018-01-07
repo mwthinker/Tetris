@@ -53,6 +53,10 @@ public:
 	void endGame();
 
 	void addExternalRows(const std::vector<BlockType>& blockTypes);
+
+	bool isAi() const override {
+		return device_->isAi();
+	}
 	
 private:
 	void update(Move move);
