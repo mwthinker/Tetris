@@ -8,17 +8,22 @@
 #include <string>
 #include <memory>
 
+class Player;
+using PlayerPtr = std::shared_ptr<Player>;
+
 class Player {
 public:
 	Player(int id, int width, int height, BlockType current, BlockType next);
+
+	Player(int id, int width, int height, int points, int level, Block current, BlockType next, const std::vector<BlockType>& board);
 	
-	inline virtual ~Player() {
+	virtual ~Player() {
 	}
 	
 	// Update the player.
 	virtual void update(double deltaTime) = 0;
 	
-	inline int getId() const {
+	int getId() const {
 		return id_;
 	}
 	
@@ -26,25 +31,31 @@ public:
 		return name_;
 	}
 	
-	inline int getLevel() const {
+	int getLevel() const {
 		return level_;
 	}
 
-	inline int getPoints() const {
+	int getPoints() const {
 		return points_;
 	}
 
-	inline int getClearedRows() const {
-		return clearedRows_;
-	}
-
-	inline void setClearedRows(int clearedRows) {
-		clearedRows_ = clearedRows;
+	int getClearedRows() const {
+		return tetrisBoard_.getRemovedRows();
 	}
 	
 	const TetrisBoard& getTetrisBoard() const {
 		return tetrisBoard_;
 	}
+
+	float getGravityDownSpeed() const {
+		return 1 + level_ * 0.5f;
+	}
+
+	float getWaitingTime() const {
+		return 0.5f;
+	}
+
+	virtual bool isAi() const = 0;
 
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
@@ -53,7 +64,7 @@ protected:
 	std::string name_;
 	int id_;
 	int level_;
-	int points_, clearedRows_;
+	int points_;
 };
 
 #endif // PLAYER_H

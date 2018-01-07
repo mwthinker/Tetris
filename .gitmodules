@@ -4,12 +4,12 @@
 [submodule "SdlGui"]
 	path = SdlGui
 	url = https://github.com/mwthinker/SdlGui.git
-[submodule "DataEntry"]
-	path = DataEntry
-	url = https://github.com/mwthinker/DataEntry.git
 [submodule "Calculator"]
 	path = Calculator
 	url = https://github.com/mwthinker/Calculator.git
 [submodule "SimpleNetwork"]
 	path = SimpleNetwork
 	url = https://github.com/mwthinker/SimpleNetwork.git
+[submodule "CppConsole"]
+	path = CppConsole
+	url = https://github.com/mwthinker/CppConsole.git

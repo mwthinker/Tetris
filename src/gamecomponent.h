@@ -2,62 +2,63 @@
 #define GAMECOMPONENT_H
 
 #include "gamegraphic.h"
-#include "gamehandler.h"
-#include "tetrisentry.h"
 #include "boardshader.h"
+#include "player.h"
 
 #include <gui/component.h>
 
 #include <mw/vertexbufferobject.h>
 #include <mw/shader.h>
 
+#include <mw/signal.h>
+
 #include <map>
 
 class TetrisGame;
 class GameData;
+class TetrisGameEvent;
 
-class GameComponent : public gui::Component, public GameHandler {
+class GameComponent : public gui::Component {
 public:
-	GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry);
+	GameComponent(TetrisGame& tetrisGame);
+	~GameComponent();
+	
+	// @gui::Component
+	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
-	void draw(Uint32 deltaTime) override;
+	void initGame(std::vector<PlayerPtr>& player);
 
-	void initGame(std::vector<std::shared_ptr<Player>>& player) override;
-
-	void countDown(int msCountDown) override;
+	void eventHandler(TetrisGameEvent& tetrisGameEvent);
 
 private:
-	void eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) override;
-
-	void soundEffects(GameEvent gameEvent) const;
-
 	// @gui::Component
 	// Called when the component is resized or moved.
 	void validate() override;
 
-	std::map<int, GameGraphic> graphicPlayers_;
-	BoardShader boardShader_;
-	TetrisEntry tetrisEntry_;
+	std::map<PlayerPtr, GameGraphic> graphicPlayers_;
+	BoardShaderPtr boardShader_;
+	
+	std::shared_ptr<BoardBatch> staticBoardBatch_;
+	std::shared_ptr<BoardBatch> dynamicBoardBatch_;
+	
 	TetrisGame& tetrisGame_;
 
-	mw::Sound soundBlockCollision_;
-	mw::Sound soundRowRemoved_;
-	mw::Sound soundTetris_;
+	mw::signals::Connection eventConnection_;
 
 	// Fix time step.
 	Uint32 timeStep_;
 	Uint32 accumulator_;
 
 	// Updated in initGame().
-	mw::Matrix44 matrix_;
+	Mat44 matrix_;
 	bool updateMatrix_;
-	int alivePlayers_;
-
+	
 	// Font related.
-	mw::Font font_;
+	mw::Text middleText_;
 	float fontSize_;
 	float dx_, dy_;
 	float scale_;
+	float borderSize_;
 };
 
 #endif // GAMECOMPONENT_H

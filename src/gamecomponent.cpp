@@ -2,7 +2,8 @@
 #include "tetrisgame.h"
 #include "gamegraphic.h"
 #include "tetrisparameters.h"
-#include "tetrisentry.h"
+#include "tetrisgameevent.h"
+#include "tetrisdata.h"
 
 #include <mw/opengl.h>
 #include <gui/component.h>
@@ -12,27 +13,51 @@
 #include <sstream>
 #include <cassert>
 
-GameComponent::GameComponent(TetrisGame& tetrisGame, TetrisEntry tetrisEntry)
-	: tetrisGame_(tetrisGame), tetrisEntry_(tetrisEntry), alivePlayers_(0),
+namespace {
+
+	std::string gamePosition(int position) {
+		std::stringstream stream;
+		stream << position;
+		switch (position) {
+			case 1:
+				stream << ":st place!";
+				break;
+			case 2:
+				stream << ":nd place!";
+				break;
+			case 3:
+				stream << ":rd place!";
+				break;
+			default:
+				stream << ":th place!";
+				break;
+		}
+		return stream.str();
+	}
+
+}
+
+GameComponent::GameComponent(TetrisGame& tetrisGame)
+	: tetrisGame_(tetrisGame),
 	updateMatrix_(true) {
 
 	setGrabFocus(true);
-	tetrisGame_.setGameHandler(this);
+	eventConnection_ = tetrisGame_.addGameEventHandler(std::bind(&GameComponent::eventHandler, this, std::placeholders::_1));
 
-	soundBlockCollision_ = tetrisEntry_.getDeepChildEntry("window sounds blockCollision").getSound();
-	soundRowRemoved_ = tetrisEntry_.getDeepChildEntry("window sounds rowRemoved").getSound();
-	soundTetris_ = tetrisEntry_.getDeepChildEntry("window sounds tetris").getSound();
+	boardShader_ = std::make_shared<BoardShader>("board.ver.glsl", "board.fra.glsl");
+	dynamicBoardBatch_ = std::make_shared<BoardBatch>(boardShader_, 10000);
+}
 
-	boardShader_ = BoardShader("board.ver.glsl", "board.fra.glsl");
+GameComponent::~GameComponent() {
+	eventConnection_.disconnect();
 }
 
 void GameComponent::validate() {
 	updateMatrix_ = true;
 }
 
-void GameComponent::draw(Uint32 deltaTime) {
-	boardShader_.glUseProgram();
-
+void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
+	boardShader_->useProgram();
 	const gui::Dimension dim = getSize();
 	if (updateMatrix_) {
 		float width = 0;
@@ -45,8 +70,8 @@ void GameComponent::draw(Uint32 deltaTime) {
 		}
 
 		// Centers the game and holds the correct proportions.
-		// The sides is transparent.
-		mw::Matrix44 model = getModelMatrix();
+		// The sides are transparent.
+		Mat44 model = getModelMatrix();
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
 			scale_ = dim.width_ / width;
@@ -62,139 +87,142 @@ void GameComponent::draw(Uint32 deltaTime) {
 		mw::translate2D(model, dx_, dy_);
 		mw::scale2D(model, scale_, scale_);
 
-		boardShader_.setGlMatrixU(getProjectionMatrix() * model);
-
-		fontSize_ = scale_ * 12.f;
-		if (font_.getCharacterSize() != fontSize_) {
-			font_ = tetrisEntry_.getDeepChildEntry("window font").getFont((int) fontSize_);
-			// Update the font!
-			for (auto& pair : graphicPlayers_) {
-				GameGraphic& graphic = pair.second;
-				graphic.updateTextSize(fontSize_, font_);
-			}
-		}
+		boardShader_->setMatrix(graphic.getProjectionMatrix() * model);
+		boardShader_->useProgram();
 		updateMatrix_ = false;
 	}
 
-	enableGlTransparancy();
+	if (!graphicPlayers_.empty()) {
+		// Draw boards.
+		TetrisData::getInstance().bindTextureFromAtlas();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	mw::Text text; // Used to update the "Pause".
+		dynamicBoardBatch_->clear();
 
-	// Draw boards.
-	for (auto& pair : graphicPlayers_) {
-		GameGraphic& graphic = pair.second;
-
-		if (tetrisGame_.isPaused()) {
-			text = mw::Text("Paused", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
-			graphic.setMiddleMessage(text);
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;
+			graphic.update((float) deltaTime, *dynamicBoardBatch_);
 		}
-		tetrisEntry_.bindTextureFromAtlas();
-		graphic.draw(deltaTime / 1000.f, boardShader_);
+		dynamicBoardBatch_->uploadToGraphicCard();
+
+		staticBoardBatch_->draw();
+		dynamicBoardBatch_->draw();
+		
+		// Draw text.
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;
+			graphic.drawText(*dynamicBoardBatch_);
+		}
+
+		// Draw middle text.
+		for (auto& pair : graphicPlayers_) {
+			GameGraphic& graphic = pair.second;			
+			graphic.drawMiddleText(*dynamicBoardBatch_);
+		}
+		mw::checkGlError();
 	}
-
-	// Draw texts.
-	glUseProgram();
-	setGlModelU(getModelMatrix());
-
-	int i = 0;
-	float boardWidth = getSize().width_ / graphicPlayers_.size();
-	for (auto& pair : graphicPlayers_) {
-		GameGraphic& graphic = pair.second;
-		graphic.drawText(*this, i * boardWidth + dx_, dy_, getSize().width_, getSize().height_, scale_);
-		++i;
-	}
-
-	mw::checkGlError();
 }
 
-void GameComponent::initGame(std::vector<std::shared_ptr<Player>>& players) {
+void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	bool showPoints = false;
 	if (players.size() == 1) {
 		showPoints = true;
 	}
 
+	staticBoardBatch_ = std::make_shared<BoardBatch>(boardShader_);
+
 	graphicPlayers_.clear();
 
 	float w = 0;
 	for (auto& player : players) {
-		auto& graphic = graphicPlayers_[player->getId()];
-		graphic.restart(*player, w, 0, tetrisEntry_.getDeepChildEntry("window tetrisBoard"));
+		auto& graphic = graphicPlayers_[player];
+		graphic.restart(*staticBoardBatch_, *player, w, 0);
 		w += graphic.getWidth();
 	}
+	staticBoardBatch_->uploadToGraphicCard();
 
-	alivePlayers_ = players.size();
 	updateMatrix_ = true;
 }
 
-void GameComponent::countDown(int msCountDown) {
-	mw::Text text("", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
-	if (msCountDown > 0) {
-		std::stringstream stream;
-		stream << "Start in " << (int) (msCountDown / 1000) + 1;
-		text.setText(stream.str());
-	}
-}
+void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
+	// Handle CountDown event.
+	try {
+		auto& countDown = dynamic_cast<CountDown&>(tetrisEvent);
 
-void GameComponent::eventHandler(const std::shared_ptr<Player>& player, GameEvent gameEvent) {
-	GameGraphic& graphic = graphicPlayers_[player->getId()];
-	//graphic.update(player->getPlayerInfo().nbrClearedRows_, player->getPlayerInfo().points_, player->getLevel());
+		if (countDown.timeLeft_ > 0) {
+			middleText_.setText("Start in " + std::to_string(countDown.timeLeft_));
+		} else {
+			middleText_.setText("");
+		}
 
-	soundEffects(gameEvent);
-	switch (gameEvent) {
-		case GameEvent::GAME_OVER:
-			if (tetrisGame_.getNbrOfPlayers() == 1) {
-				mw::Text text("Game Over", tetrisEntry_.getDeepChildEntry("window font").getFont(30));
-				//it->second.setMiddleMessage(text);
-			} else {
-				std::stringstream stream;
-				stream << alivePlayers_;
-				if (alivePlayers_ == 1) {
-					stream << ":st place!";
-				} else if (alivePlayers_ == 2) {
-					stream << ":nd place!";
-				} else if (alivePlayers_ == 3) {
-					stream << ":rd place!";
-				} else {
-					stream << ":th place!";
-				}
-				--alivePlayers_;
-				//mw::Text text(stream.str(), tetrisEntry_.getEntry("window font").getFont(30));
-				//it->second.setMiddleMessage(text);
+		// Update the text for the active players.
+		for (auto& graphic : graphicPlayers_) {
+			if (!graphic.first->getTetrisBoard().isGameOver()) {
+				graphic.second.setMiddleMessage(middleText_);
 			}
-			break;
-		case GameEvent::ONE_ROW_REMOVED:
-			// Fall through!
-		case GameEvent::TWO_ROW_REMOVED:
-			// Fall through!
-		case GameEvent::THREE_ROW_REMOVED:
-			// Fall through!
-		case GameEvent::FOUR_ROW_REMOVED:
-			break;
-	}
-}
+		}
+		return;
+	} catch (std::bad_cast exp) {}
+	
+	// Handle GamePause event.
+	try {
+		auto& gamePause = dynamic_cast<GamePause&>(tetrisEvent);
 
-void GameComponent::soundEffects(GameEvent gameEvent) const {
-	mw::Sound sound;
-	switch (gameEvent) {
-		case GameEvent::GRAVITY_MOVES_BLOCK:
-			break;
-		case GameEvent::BLOCK_COLLISION:
-			sound = soundBlockCollision_;
-			break;
-		case GameEvent::PLAYER_ROTATES_BLOCK:
-			break;
-		case GameEvent::ONE_ROW_REMOVED:
-			// Fall through
-		case GameEvent::TWO_ROW_REMOVED:
-			// Fall through
-		case GameEvent::THREE_ROW_REMOVED:
-			sound = soundRowRemoved_;
-			break;
-		case GameEvent::FOUR_ROW_REMOVED:
-			sound = soundTetris_;
-			break;
-		case GameEvent::GAME_OVER:
-			break;
-	}
-	sound.play();
+		if (!gamePause.pause_) {
+			middleText_.setText("");
+		} else {
+			middleText_.setText("Paused");
+		}	
+
+		// Update the text for the active players.
+		for (auto& graphic : graphicPlayers_) {
+			if (!graphic.first->getTetrisBoard().isGameOver()) {
+				graphic.second.setMiddleMessage(middleText_);
+			}
+		}
+		return;
+	} catch (std::bad_cast exp) {}
+
+	// Handle InitGame event.
+	try {
+		middleText_ = mw::Text("", TetrisData::getInstance().getDefaultFont(50), 20);
+		auto& initGameVar = dynamic_cast<InitGame&>(tetrisEvent);
+		initGame(initGameVar.players_);
+		return;
+	} catch (std::bad_cast exp) {}
+
+	// Handle LevelChange event.
+	try {
+		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
+		GameGraphic& gg = graphicPlayers_[levelChange.player_];
+		gg.update(levelChange.player_->getClearedRows(), levelChange.player_->getPoints(), levelChange.newLevel_);
+		return;
+	} catch (std::bad_cast exp) {}
+
+	// Handle PointsChange event.
+	try {
+		auto& pointsChange = dynamic_cast<PointsChange&>(tetrisEvent);
+		GameGraphic& gg = graphicPlayers_[pointsChange.player_];
+		gg.update(pointsChange.player_->getClearedRows(), pointsChange.player_->getPoints(), pointsChange.player_->getLevel());
+		return;
+	} catch (std::bad_cast exp) {}
+
+	// Handle GameOver event.
+	try {
+		auto& gameOver = dynamic_cast<GameOver&>(tetrisEvent);
+		// Points high enough to be saved in the highscore list?
+
+		mw::Text middleText("", TetrisData::getInstance().getDefaultFont(50), 20);
+
+		// Test if the player is a local player, exception otherwise.
+		if (tetrisGame_.getNbrOfPlayers() == 1) {
+			middleText.setText("Game over");
+		} else {
+			middleText.setText(gamePosition(gameOver.position_));
+		}
+
+		graphicPlayers_[gameOver.player_].setMiddleMessage(middleText);
+		return;
+	} catch (std::bad_cast exp) {}
 }

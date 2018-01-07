@@ -12,10 +12,12 @@ struct Input {
 		down_ = false;
 		left_ = false;
 		right_ = false;
+		downGround_ = false;
 	}
 
 	bool rotate_;
 	bool down_;
+	bool downGround_;
 	bool left_;
 	bool right_;
 };
@@ -30,24 +32,16 @@ public:
 	Device(bool ai) : ai_(ai) {
 	}
 
-	virtual ~Device() {
-	}
+	virtual ~Device() = default;
 
 	virtual Input currentInput() = 0;
 
 	virtual std::string getName() const = 0;
 
-	virtual std::string getPlayerName() const = 0;
-
-	virtual void setPlayerName(std::string playerName) = 0;
-
 	virtual void update(const TetrisBoard& board) {
 	}
 
-	virtual void eventUpdate(const SDL_Event& windowEvent) {
-	}
-
-	inline bool isAi() const {
+	bool isAi() const {
 		return ai_;
 	}
 

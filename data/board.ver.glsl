@@ -6,8 +6,8 @@ uniform mat4 uMat;
 
 attribute vec2 aPos;
 attribute vec2 aTex;
-attribute float aIsTex;
 attribute vec4 aColor;
+attribute float aIsTex;
 
 varying vec2 vTex;
 varying float vIsTex;

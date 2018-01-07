@@ -2,7 +2,6 @@
 #define TETRISGAME_H
 
 #include "protocol.h"
-#include "gamehandler.h"
 #include "localconnection.h"
 #include "remoteconnection.h"
 #include "device.h"
@@ -18,29 +17,42 @@
 class TetrisGameEvent;
 class Player;
 
+class PlayerData {
+public:
+	PlayerData() : device_(nullptr), name_(""), deviceName_(""), ai_(false), points_(0), level_(0), levelUpCounter_(0) {
+	}
+
+	DevicePtr device_;
+	std::string name_;
+	std::string deviceName_;
+	bool ai_;
+	int points_, level_, levelUpCounter_;
+	Block current_;
+	BlockType next_;
+	std::vector<BlockType> board_;
+};
+
 class TetrisGame {
 public:
-	enum Status {WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT};
+	enum Status { WAITING_TO_CONNECT, LOCAL, SERVER, CLIENT };
 
 	TetrisGame();
 	~TetrisGame();
 
-	inline void setGameHandler(GameHandler* gameHandler) {
-		gameHandler_ = gameHandler;
-	}
-
 	// Updates everything. Should be called each frame.
-	void update(Uint32 msDeltaTime);
-	
+	void update(double deltaTime);
+
 	// Uses the same settings as last call.
 	void createLocalGame();
-	
+
 	void createServerGame(int port);
-	
+
 	void createClientGame(int port, std::string ip);
-	
+
+	void resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData);
+
 	void closeGame();
-	
+
 	bool isPaused() const;
 
 	// Pause/Unpause the game depending on the current state of
@@ -54,16 +66,42 @@ public:
 
 	int getNbrOfPlayers() const;
 
-	inline int getMaxLevel() const {
+	int getMaxLevel() const {
 		return maxLevel_;
+	}
+
+	void setCountDownTime(int countDownTime) {
+		countDownTime_ = countDownTime;
+	}
+
+	int getCountDownTime() const {
+		return countDownTime_;
 	}
 
 	void resizeBoard(int width, int height);
 
+	int getRows() const {
+		return height_;
+	}
+
+	int getColumns() const {
+		return width_;
+	}
+
 	void setPlayers(const std::vector<DevicePtr>& devices);
 
-	inline Status getStatus() const {
+	Status getStatus() const {
 		return status_;
+	}
+
+	mw::signals::Connection addGameEventHandler(const std::function<void(TetrisGameEvent&)>& handler) {
+		return eventHandler_.connect(handler);
+	}
+
+	std::vector<PlayerData> getPlayerData() const;
+	
+	bool currentGameHasCountDown() const {
+		return nbrOfPlayers_ > 1 && countDownTime_ > 0;
 	}
 
 private:
@@ -84,20 +122,20 @@ private:
 		void removeConnection(int connectionId);
 
 		void disconnect();
-				
-		inline std::vector<std::shared_ptr<RemoteConnection>>::iterator begin() {
+
+		std::vector<std::shared_ptr<RemoteConnection>>::iterator begin() {
 			return remoteConnections_.begin();
 		}
 
-		inline std::vector<std::shared_ptr<RemoteConnection>>::iterator end() {
+		std::vector<std::shared_ptr<RemoteConnection>>::iterator end() {
 			return remoteConnections_.end();
 		}
 
-		inline void setServerConnection(const net::ConnectionPtr& connectionToServer) {
+		void setServerConnection(const net::ConnectionPtr& connectionToServer) {
 			connectionToServer_ = connectionToServer;
 		}
-		
-		inline bool receivePacketFromServer(net::Packet& packet) {
+
+		bool receivePacketFromServer(net::Packet& packet) {
 			return connectionToServer_->receive(packet);
 		}
 
@@ -116,9 +154,9 @@ private:
 
 	void initGame();
 
-	void applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoard& board, LocalPlayer& player);
+	void applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<LocalPlayer>& player);
 
-	void applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, RemotePlayer& player);
+	void applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<RemotePlayer>& player);
 
 	mw::Signal<TetrisGameEvent&> eventHandler_;
 	bool pause_;
@@ -130,12 +168,15 @@ private:
 	int lastConnectionId_;
 
 	net::Network network_;
-	
+
 	Status status_;
 	int width_, height_, maxLevel_;
 
-	GameHandler* gameHandler_;
 	int nbrOfAlivePlayers_;
+
+	int countDownTime_;   // Controlling how long the start game count down should be in seconds.
+	double timeLeftToStart_; // Time left for the count down.
+	int wholeTimeLeft_; // Time left in whole seconds. E.g. timeLeftToStart_ = 1.4s means that wholeTimeLeft_ = 2s;
 };
 
 #endif // TETRISGAME_H

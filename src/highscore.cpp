@@ -13,9 +13,7 @@ Highscore::HighscoreElement::HighscoreElement(int intPoints, const mw::Text& poi
 
 Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : color_(color), font_(font) {
 	for (int i = 0; i < nbr; ++i) {
-		std::stringstream stream;
-		stream << nbr - i << ":";
-		numbers_.push_back(mw::Text(stream.str(), font_));
+		numbers_.push_back(mw::Text(std::to_string(nbr - i) + ": ", font_));
 	}
 	setPreferredSize(300, (float) nbr * (font_.getCharacterSize() + 2));
 
@@ -24,11 +22,8 @@ Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : co
 	dateHeader_ = mw::Text("Date", font_);
 }
 
-void Highscore::draw(Uint32 deltaTime) {
-	glUseProgram();
-	mw::Matrix44 model = getModelMatrix();
-	setGlModelU(model);
-	setGlColorU(1, 1, 1);
+void Highscore::draw(const gui::Graphic& graphic, double deltaTime) {
+	graphic.setColor(1, 1, 1);
 
 	gui::Dimension size = getSize();
 
@@ -42,20 +37,21 @@ void Highscore::draw(Uint32 deltaTime) {
 
 		x = 5;
 		y += 5;
-		drawText(numbers_[index++], x, y);
+		graphic.drawText(numbers_[index++], x, y);
+
 		x += 50;
-		drawText(points, x, y);
+		graphic.drawText(points, x, y);
 		x += 150;
-		drawText(name, x, y);
+		graphic.drawText(name, x, y);
 		x += 170;
-		drawText(date, x, y);
+		graphic.drawText(date, x, y);
 		y += font_.getCharacterSize() + 2;
 	}
 
 	x = 5;
-	drawText(pointsHeader_, x + 50, y);
-	drawText(nameHeader_, x + 50 + 150, y);
-	drawText(dateHeader_, x + 50 + 150 + 170, y);
+	graphic.drawText(pointsHeader_, x + 50, y);
+	graphic.drawText(nameHeader_, x + 50 + 150, y);
+	graphic.drawText(dateHeader_, x + 50 + 150 + 170, y);
 }
 
 bool Highscore::isNewRecord(int record) const {
@@ -73,10 +69,7 @@ void Highscore::addNewRecord(std::string name, std::string date) {
 	mw::Text nameT(name, font_);
 	mw::Text dateT(date, font_);
 
-	std::stringstream stream;
-	stream << nextRecord_;
-
-	mw::Text pointsT(stream.str(), font_);
+	mw::Text pointsT(std::to_string(nextRecord_), font_);
 	ascList_.push_back(HighscoreElement(nextRecord_, pointsT, nameT, dateT));
 	sortAsc(ascList_);
 

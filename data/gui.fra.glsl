@@ -10,7 +10,7 @@ varying vec2 vTex;
 
 void main() {
 	if (uIsTex > 0.5) {
-		gl_FragColor = texture2D(uTexture, vTex) * uColor;	
+		gl_FragColor = texture2D(uTexture, vTex) * uColor;
 	} else {
 		gl_FragColor = uColor;
 	}

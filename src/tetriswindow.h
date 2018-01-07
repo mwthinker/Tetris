@@ -1,16 +1,17 @@
 #ifndef TETRISWINDOW_H
 #define TETRISWINDOW_H
 
-#include "device.h"
+#include "sdldevice.h"
 #include "ai.h"
 #include "tetrisgame.h"
-#include "tetrisentry.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
 #include <gui/button.h>
 #include <gui/panel.h>
 #include <gui/label.h>
+#include <gui/checkbox.h>
+#include <gui/progressbar.h>
 
 #include <array>
 #include <memory>
@@ -24,16 +25,24 @@ class GameData;
 
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow(TetrisEntry tetrisEntry, int frame);
-
-	void startServer(int port);
-
-	void startClient(int port, std::string ip);
+	TetrisWindow();
 
 	~TetrisWindow();
 
+	void startServerLoop(int port);
+
+	void startClientLoop(int port, std::string ip);
+
 private:
-	mw::Font getDefaultFont(int size);
+	enum class StartFrame { MENU, SERVER, CLIENT, LOCAL_GAME };
+
+	void resumeGame();
+
+	void saveCurrentLocalGame();
+
+	void initOpenGl() override;
+
+	void initPreLoop() override;
 
 	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
 
@@ -44,15 +53,18 @@ private:
 
 	void setPlayers();
 
-	TetrisGame tetrisGame_;
+	DevicePtr findHumanDevice(std::string name) const;
+	DevicePtr findAiDevice(std::string name) const;
 
-	// initMenuPanel
-	std::shared_ptr<gui::Button> resume_;
+	TetrisGame tetrisGame_;
 
 	// initPlayPanel
 	std::shared_ptr<GameComponent> game_;
 	std::shared_ptr<ManButton> nbrHumans_;
 	std::shared_ptr<ManButton> nbrAis_;
+	std::shared_ptr<gui::Panel> manBar_;
+	std::vector<std::shared_ptr<ManButton>> remoteManButtons;
+
 	std::shared_ptr<gui::Button> pauseButton_;
 	std::shared_ptr<gui::Button> menu_;
 	std::shared_ptr<gui::Button> restart_;
@@ -69,20 +81,20 @@ private:
 	std::shared_ptr<gui::TextField> customMinLevel_;
 	std::shared_ptr<gui::TextField> customMaxLevel_;
 
-	// initCreateServerPanel
-	std::shared_ptr<gui::TextField> portServer_;
-
-	// initCreateClientPanel
+	// initNetworkPanel
+	std::shared_ptr<gui::Button> networkConnect_;
+	std::shared_ptr<gui::CheckBox> radioButtonServer_;
+	std::shared_ptr<gui::CheckBox> radioButtonClient_;
 	std::shared_ptr<gui::TextField> ipClient_;
-	std::shared_ptr<gui::TextField> portClient_;
-
-	// All ai:s.
-	std::array<Ai, 4> activeAis_;
-	std::vector<Ai> ais_;
+	std::shared_ptr<gui::TextField> port_;
+	std::shared_ptr<gui::Label> clientIpLabel_;
+	std::shared_ptr<gui::Label> errorMessage_;
+	std::shared_ptr<gui::ProgressBar> progressBar_;
 
 	// Devices.
-	std::vector<DevicePtr> devices_;
+	std::vector<SdlDevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
+	std::array<DevicePtr, 4> activeAis_;
 
 	// All panels.
 	void initMenuPanel();
@@ -91,10 +103,7 @@ private:
 	void initNewHighscorePanel();
 	void initCustomPlayPanel();
 	void initSettingsPanel();
-	void initCreateServerPanel();
-	void initCreateClientPanel();
-	void initWaitToConnectPanel();
-	void initNewHighScorePanel();
+	void initNetworkPanel();
 
 	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
 
@@ -105,16 +114,13 @@ private:
 		customIndex_,
 		settingsIndex_,
 		newHighscoreIndex_,
-		createClientIndex_,
-		createServerIndex_,
-		waitToConnectIndex_;
+		networkIndex_;
 
-	TetrisEntry tetrisEntry_;
 	bool windowFollowMouse_;
 	int followMouseX_, followMouseY_;
 
 	int lastX_, lastY_;
-	int lastWidth_, lastHeight_;
+	StartFrame startFrame_;
 };
 
 #endif // TETRISWINDOW_H

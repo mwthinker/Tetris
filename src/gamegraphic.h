@@ -1,61 +1,54 @@
 #ifndef GRAPHICBOARD_H
 #define GRAPHICBOARD_H
 
-#include "tetrisentry.h"
 #include "boardshader.h"
-#include "dynamicgraphicboard.h"
-#include "staticgraphicboard.h"
 #include "player.h"
+#include "drawrow.h"
+#include "tetrisboard.h"
+#include "boardshader.h"
+#include "drawblock.h"
+#include "drawtext.h"
+#include "mat44.h"
+#include "boardbatch.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
 #include <mw/sprite.h>
-#include <mw/vertexbufferobject.h>
 #include <mw/signal.h>
 
 #include <gui/component.h>
 
+#include <random>
 #include <string>
-
-class TetrisBoard;
+#include <list>
 
 class GameGraphic {
 public:
+	GameGraphic() = default;
+
 	~GameGraphic();
 
-	void restart(Player& player, float x, float y,
-		TetrisEntry boardEntry);
+	void restart(BoardBatch& boardBatch, Player& player, float x, float y);
 
 	void update(int clearedRows, int points, int level);
 
-	void updateTextSize(float size, const mw::Font& font);
-
-	void updateLinesRemoved(float downTime, int row1, int row2, int row3, int row4) {
-		dynamicBoard_.updateLinesRemoved(downTime, row1, row2, row3, row4);
+	float getWidth() const {
+		return width_;
 	}
 
-	void updateExternalRowsAdded(float upTime, int rowsAdded) {
-		dynamicBoard_.updateExternalRowsAdded(upTime, rowsAdded);
+	float getHeight() const {
+		return height_;
 	}
 
-	inline float getWidth() const {
-		return staticBoard_.getWidth();
-	}
-
-	inline float getHeight() const {
-		return staticBoard_.getHeight();
-	}
-
-	void draw(float deltaTime, const BoardShader& shader);
-	void drawText(const gui::Component& component, float x, float y, float width, float height, float scale);
+	void update(float deltaTime, BoardBatch& dynamicBoardBatch);
 
 	void setMiddleMessage(const mw::Text& text);
 
-	inline void showPoints() {
+	void showPoints() {
 		showPoints_ = true;
 	}
 
-	inline void hidePoints() {
+	void hidePoints() {
 		showPoints_ = false;
 	}
 
@@ -63,15 +56,31 @@ public:
 
 	void callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard);
 
+	void drawText(BoardBatch& batch);
+
+	void drawMiddleText(BoardBatch& batch);
+
 private:
-	DynamicGraphicBoard dynamicBoard_;
-	StaticGraphicBoard staticBoard_;
-	mw::Text textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	void initStaticBackground(BoardBatch& boardBatch, float lowX, float lowY, Player& player);
+
+	void addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr);
+
+	void addEmptyRowTop(const TetrisBoard& tetrisBoard);
+
+	void addDrawRowBottom(const TetrisBoard& tetrisBoard, int row);
+
+	std::list<DrawRowPtr> rows_;
+	std::list<DrawRowPtr> freeRows_;
+
+	DrawText textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
+	DrawText middleText_;
+	DrawBlock currentBlock_, nextBlock_;
 	int level_, points_, clearedRows_;
+	Block latestBlockDownGround_;
+	bool blockDownGround_;
 
-	mw::Font font_;
 	mw::signals::Connection connection_;
-
+	float width_, height_;
 	bool showPoints_;
 };
 

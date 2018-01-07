@@ -2,12 +2,18 @@
 
 #include <SDL.h>
 
-Keyboard::Keyboard(std::string name, SDL_Keycode down, SDL_Keycode left, SDL_Keycode right, SDL_Keycode rotate) : Device(false) {
-	name_ = name;
-	down_ = down;
-	right_ = right;
-	left_ = left;
-	rotate_ = rotate;
+Keyboard::Keyboard(std::string name,
+	SDL_Keycode down,
+	SDL_Keycode left,
+	SDL_Keycode right,
+	SDL_Keycode rotate,
+	SDL_Keycode downGround) : SdlDevice(false),
+	name_(name),
+	down_(down),
+	right_(right),
+	left_(left),
+	rotate_(rotate),
+	downGround_(downGround)	{
 }
 
 Input Keyboard::currentInput() {
@@ -31,6 +37,8 @@ void Keyboard::eventUpdate(const SDL_Event& windowEvent) {
 			input_.right_ = true;
 		} else if (key == rotate_) {
 			input_.rotate_ = true;
+		} else if (key == downGround_) {
+			input_.downGround_ = true;
 		}
 		break;
 	case SDL_KEYUP:
@@ -42,6 +50,8 @@ void Keyboard::eventUpdate(const SDL_Event& windowEvent) {
 			input_.right_ = false;
 		} else if (key == rotate_) {
 			input_.rotate_ = false;
+		} else if (key == downGround_) {
+			input_.downGround_ = false;
 		}
 		break;
 	default:

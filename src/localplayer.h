@@ -16,9 +16,13 @@ public:
 	LocalPlayer(int connectionId, int playerId, int width, int height,
 		BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
 
+	LocalPlayer(int connectionId, int playerId, int width, int height, const std::vector<BlockType>& board, int levelUpCounter, int points, int level,
+		Block current, BlockType next, const DevicePtr& device, PacketSender& sender);
+
+	// @Player
     void update(double deltaTime) override;
 
-	inline const DevicePtr& getDevice() const {
+	const DevicePtr& getDevice() const {
 		return device_;
 	}
 
@@ -26,16 +30,20 @@ public:
 
 	void resizeBoard(int width, int height);
 
-	inline int getLevelUpCounter() const {
+	int getLevelUpCounter() const {
 		return levelUpCounter_;
 	}
 
-	inline void setLevelUpCounter(int levelUpCounter) {
+	void setLevelUpCounter(int levelUpCounter) {
 		levelUpCounter_ = levelUpCounter;
 	}
 
-	inline void setLevel(int level) {
+	void setLevel(int level) {
 		level_ = level;
+	}
+
+	void setPoints(int points) {
+		points_ = points;
 	}
 
 	void setConnectionId(int connectionId) {
@@ -44,20 +52,24 @@ public:
 
 	void endGame();
 
-private:
-	double calculateDownSpeed(int level) const;
+	void addExternalRows(const std::vector<BlockType>& blockTypes);
 
+	bool isAi() const override {
+		return device_->isAi();
+	}
+	
+private:
 	void update(Move move);
 
 	void boardListener(GameEvent, const TetrisBoard&);
 
-    // Objects controling how the moving block is moved.
-	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_;
-	int nbrOfUpdates_;
-    DevicePtr device_;
+    // Objects controlling how the moving block is moved.
+	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_, downGroundHandler_;
+	DevicePtr device_;
 	PacketSender& sender_;
 	int levelUpCounter_;
 	int connectionId_;
+	double watingTime_;
 };
 
 #endif // LOCALPLAYER_H

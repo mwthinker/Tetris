@@ -8,6 +8,7 @@
 *.mp3
 *.xcf
 *~
+.vs
 *.layout
 *.depend
 *highscore
@@ -19,6 +20,7 @@
 *DebugBuildSdl2
 *ReleaseSdl2
 *ReleaseBuildSdl2
+build2
 
 #################
 ## Eclipse
@@ -37,6 +39,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+
 
 # External tool builders
 .externalToolBuilders/

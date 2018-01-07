@@ -17,18 +17,53 @@ TetrisGame::TetrisGame() :
 	status_(WAITING_TO_CONNECT), nbrOfPlayers_(0),
 	localConnection_(sender_),
 	width_(TETRIS_WIDTH), height_(TETRIS_HEIGHT), maxLevel_(TETRIS_MAX_LEVEL),
-	lastConnectionId_(UNDEFINED_CONNECTION_ID) {
-
+	lastConnectionId_(UNDEFINED_CONNECTION_ID),
+	network_(10),
+	countDownTime_(COUNT_DOWN_TIME),
+	timeLeftToStart_(-0.0),
+	wholeTimeLeft_(0) {
 }
 
 TetrisGame::~TetrisGame() {
 	closeGame();
 }
 
+void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData) {
+	width_ = columns;
+	height_ = rows;
+	status_ = LOCAL;
+	localConnection_.removeAllPlayers();
+	for (const PlayerData& data : playersData) {
+		localConnection_.addPlayer(data.device_, width_, height_,data.levelUpCounter_,
+			data.points_, data.level_, data.current_, data.next_, data.board_);
+	}
+	nbrOfPlayers_ = localConnection_.getNbrOfPlayers();
+	initGame();
+}
+
+std::vector<PlayerData> TetrisGame::getPlayerData() const {
+	std::vector<PlayerData> playerData;
+	for (const std::shared_ptr<LocalPlayer>& player : localConnection_) {
+		playerData.emplace_back();
+		const TetrisBoard& tetrisBoard = player->getTetrisBoard();
+		playerData.back().current_ = tetrisBoard.getBlock();
+		playerData.back().next_ = tetrisBoard.getNextBlockType();
+		playerData.back().board_ = tetrisBoard.getBoardVector();
+		playerData.back().levelUpCounter_ = player->getLevelUpCounter();
+		playerData.back().level_ = player->getLevel();
+		playerData.back().name_ = player->getName();
+		playerData.back().points_ = player->getPoints();
+		playerData.back().device_ = player->getDevice();
+	}
+
+	return playerData;
+}
+
 void TetrisGame::createLocalGame() {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
-		
+
+		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.restart();
 		initGame();
 	}
@@ -40,7 +75,7 @@ void TetrisGame::createServerGame(int port) {
 
 		lastConnectionId_ = SERVER_CONNECTION_ID;
 		localConnection_.setId(lastConnectionId_);
-		
+
 		network_.startServer(port);
 		network_.setAcceptConnections(true);
 		initGame();
@@ -50,6 +85,7 @@ void TetrisGame::createServerGame(int port) {
 void TetrisGame::createClientGame(int port, std::string ip) {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = CLIENT;
+
 		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.setId(lastConnectionId_);
 
@@ -81,7 +117,9 @@ void TetrisGame::initGame() {
 	for (auto& player : localConnection_) {
 		players.push_back(player);
 	}
+	std::vector<std::shared_ptr<Connection>> remoteConnections;
 	for (auto& remoteConnection : sender_) {
+		remoteConnections.push_back(remoteConnection);
 		for (auto& player : *remoteConnection) {
 			players.push_back(player);
 		}
@@ -89,7 +127,15 @@ void TetrisGame::initGame() {
 
 	nbrOfPlayers_ = players.size();
 	nbrOfAlivePlayers_ = nbrOfPlayers_; // All players are living again.
-	gameHandler_->initGame(players);
+	InitGame initGame(players, remoteConnections);
+	eventHandler_(initGame);
+
+	if (currentGameHasCountDown()) { // Must be called last, after all settings are defined for the current game.
+		timeLeftToStart_ = countDownTime_;
+		wholeTimeLeft_ = countDownTime_;
+		CountDown countDown(wholeTimeLeft_);
+		eventHandler_(countDown);
+	}
 }
 
 void TetrisGame::restartGame() {
@@ -103,7 +149,6 @@ void TetrisGame::restartGame() {
 		}
 
 		localConnection_.restart();
-
 		initGame();
 	}
 }
@@ -132,6 +177,13 @@ void TetrisGame::pause() {
 	}
 	GamePause gamePause(pause_);
 	eventHandler_(gamePause);
+	
+	if (!pause_ && nbrOfPlayers_ > 1) {
+		timeLeftToStart_ = countDownTime_;
+		wholeTimeLeft_ = countDownTime_;
+		CountDown countDown(wholeTimeLeft_);
+		eventHandler_(countDown);
+	}
 }
 
 void TetrisGame::addCallback(const mw::Signal<TetrisGameEvent&>::Callback& callback) {
@@ -146,7 +198,7 @@ void TetrisGame::resizeBoard(int width, int height) {
 	if (width > 6 && width <= 40 &&
 		height > 6 && height <= 40 &&
 		(width_ != width || height_ != height)) {
-		
+
 		width_ = width;
 		height_ = height;
 
@@ -158,16 +210,16 @@ void TetrisGame::resizeBoard(int width, int height) {
 			sender_.sendToAll(packet);
 		}
 		localConnection_.resizeBoard(width, height);
-		
+
 		initGame();
 	}
 }
 
 void TetrisGame::setPlayers(const std::vector<DevicePtr>& devices) {
 	// Add human players.
-	localConnection_.setPlayers(10, 24, devices);
-	for (auto& player : localConnection_) {
-		player->addGameEventListener(std::bind(&TetrisGame::applyRulesForLocalPlayers, this, std::placeholders::_1, std::placeholders::_2, *player));
+	localConnection_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, devices);
+	for (std::shared_ptr<LocalPlayer>& player : localConnection_) {
+		player->addGameEventListener(std::bind(&TetrisGame::applyRulesForLocalPlayers, this, std::placeholders::_1, std::placeholders::_2, player));
 	}
 
 	if (status_ != Status::WAITING_TO_CONNECT) {
@@ -187,7 +239,7 @@ void TetrisGame::receiveAndSendNetworkData() {
 		if (connection) {
 			// Add the new connection.
 			auto newRemote = sender_.addRemoteConnection(++lastConnectionId_, connection);
-			
+
 			// Send game info to the new connection.
 			net::Packet packet;
 			packet << PacketType::BOARD_SIZE;
@@ -237,12 +289,28 @@ void TetrisGame::receiveAndSendNetworkData() {
 	}
 }
 
-void TetrisGame::update(Uint32 deltaTime) {
+void TetrisGame::update(double deltaTime) {
 	if (status_ != Status::WAITING_TO_CONNECT) {
 		receiveAndSendNetworkData();
-	
+
 		if (!pause_) {
-			localConnection_.updateGame(deltaTime);
+			if (timeLeftToStart_ > 0) {
+				timeLeftToStart_ -= deltaTime;
+			}
+
+			if (currentGameHasCountDown() && wholeTimeLeft_ != (int) (timeLeftToStart_ + 1)
+				&& wholeTimeLeft_ > timeLeftToStart_ + 1) {
+
+				wholeTimeLeft_ = (int) (timeLeftToStart_ + 1);
+				CountDown countDown(wholeTimeLeft_);
+				eventHandler_(countDown);
+			}
+
+			if (nbrOfPlayers_ == 1 || currentGameHasCountDown() && timeLeftToStart_ < 0) {
+				// No count down for one player game.
+				// Update the game.
+				localConnection_.updateGame(deltaTime);
+			}
 		}
 	}
 }
@@ -252,7 +320,7 @@ void TetrisGame::serverReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	PacketType type;
 	packet >> type;
 	packet[2] = remoteConnection->getId(); // Set the connection id. The remote has no obligation to use the correct id.
-		
+
 	// Send through to all connections.
 	sender_.sendToAllExcept(remoteConnection, packet);
 
@@ -294,7 +362,7 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	packet >> type;
 	int id;
 	packet >> id;
-	
+
 	switch (type) {
 		case PacketType::RESTART:
 			localConnection_.restart();
@@ -315,8 +383,8 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 			break;
 		case PacketType::CONNECTION_INFO:
 			remoteConnection->receive(packet);
-			for (auto& player : *remoteConnection) {
-				player->addGameEventListener(std::bind(&TetrisGame::applyRulesForRemotePlayers, this, std::placeholders::_1, std::placeholders::_2, *player));
+			for (std::shared_ptr<RemotePlayer>& player : *remoteConnection) {
+				player->addGameEventListener(std::bind(&TetrisGame::applyRulesForRemotePlayers, this, std::placeholders::_1, std::placeholders::_2, player));
 			}
 			break;
 		case PacketType::CONNECTION_START_BLOCK:
@@ -333,7 +401,7 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 	}
 }
 
-void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoard& board, LocalPlayer& player) {
+void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<LocalPlayer>& player) {
 	int rows = 0;
 	switch (gameEvent) {
 		case GameEvent::ONE_ROW_REMOVED:
@@ -352,12 +420,13 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 				// Add rows only for local players. Remote players will add
 				// indirectly.
 				for (auto& local : localConnection_) {
-					if (player.getId() != local->getId()) {
+					if (player->getId() != local->getId()) {
 						std::vector<BlockType> blockTypes;
 						for (int i = 0; i < rows; ++i) {
 							std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
 							blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
 						}
+						local->addExternalRows(blockTypes);
 						if (sender_.isActive()) {
 							net::Packet packet;
 							packet << PacketType::PLAYER_TETRIS;
@@ -373,28 +442,18 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 			}
 			break;
 		case GameEvent::GAME_OVER:
+			// One player more is dead.
+			--nbrOfAlivePlayers_;
+
+			GameOver gameOver(nbrOfAlivePlayers_ + 1, player);
+			eventHandler_(gameOver);
+
 			// Multiplayer?
 			if (nbrOfPlayers_ > 1) {
-				// One player more is dead.
-				--nbrOfAlivePlayers_;
-
 				// All dead except one => End game!
 				if (nbrOfAlivePlayers_ == 1) {
 					for (auto& local : localConnection_) {
 						local->endGame();
-					}
-				}
-			} else { // Singleplayer.
-				// And is the correct settings?
-				if (player.getTetrisBoard().getRows() == TETRIS_HEIGHT
-					&& player.getTetrisBoard().getColumns() == TETRIS_WIDTH
-					&& maxLevel_ == TETRIS_MAX_LEVEL) {
-
-					// Is a human player?
-					if (!player.getDevice()->isAi()) {
-						// May be a record.
-						GameOver gameOver(player.getPoints());
-						eventHandler_(gameOver);
 					}
 				}
 			}
@@ -402,28 +461,36 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 	}
 
 	if (rows != 0) {
+		int newPoints = player->getPoints() + player->getLevel() * rows * rows;
+		PointsChange pointsChange(player, player->getPoints(), newPoints);
+		player->setPoints(newPoints);
+		eventHandler_(pointsChange);
+
 		// Multiplayer?
 		if (nbrOfPlayers_ > 1) {
 			// Increase level up counter for all opponents to the current player.
 			// Remote players will be added indirectly.
 			for (auto& opponent : localConnection_) {
-				if (opponent->getId() != player.getId()) {
+				if (opponent->getId() != player->getId()) {
 					opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
 				}
 			}
 		} else { // Singleplayer!
-			player.setLevelUpCounter(player.getLevelUpCounter() + rows);
+			player->setLevelUpCounter(player->getLevelUpCounter() + rows);
 		}
 
 		// Set level.
-		int level = (player.getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
-		if (level <= maxLevel_) {
-			player.setLevel(level);
+		int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
+		if (level <= maxLevel_ && level != player->getLevel()) {
+			int oldLevel = player->getLevel();
+			player->setLevel(level);
+			LevelChange levelChange(player, level, oldLevel);
+			eventHandler_(levelChange);
 		}
 	}
 }
 
-void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, RemotePlayer& player) {
+void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<RemotePlayer>& player) {
 	int rows = 0;
 	switch (gameEvent) {
 		case GameEvent::ONE_ROW_REMOVED:
@@ -438,15 +505,19 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
 			break;
+		case GameEvent::GAME_OVER:
+		{
+			GameOver gameOver(nbrOfAlivePlayers_--, player);
+			eventHandler_(gameOver);
+			break;
+		}
 	}
-
-	player.setClearedRows(player.getClearedRows() + rows);
 
 	if (nbrOfPlayers_ > 1 && rows > 0) {
 		// Increase level up counter for all opponents to the current player.
 		// Remote players will be added indirectly.
 		for (auto& opponent : localConnection_) {
-			if (opponent->getId() != player.getId()) {
+			if (opponent->getId() != player->getId() && !opponent->getTetrisBoard().isGameOver()) {
 				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
 			}
 		}
@@ -458,7 +529,7 @@ void TetrisGame::Sender::sendToAll(const net::Packet& packet) const {
 }
 
 bool TetrisGame::Sender::isActive() const {
-	return !remoteConnections_.empty() || connectionToServer_ != nullptr;
+	return !remoteConnections_.empty() || connectionToServer_ != nullptr && connectionToServer_->isActive();
 }
 
 void TetrisGame::Sender::sendToAllExcept(std::shared_ptr<RemoteConnection> remoteSendNot, const net::Packet& packet) const {
@@ -494,17 +565,21 @@ std::shared_ptr<RemoteConnection> TetrisGame::Sender::addRemoteConnection(int co
 }
 
 void TetrisGame::Sender::serverRemoveDisconnectedConnections() {
-	std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
+	// Find iterator to the connections that were disconnected.
+	auto newEnd = std::remove_if(remoteConnections_.begin(), remoteConnections_.end(),
 		[&](const std::shared_ptr<RemoteConnection>& remote) {
-			if (!remote->isActive()) {
-				net::Packet packet;
-				packet << PacketType::CONNECTION_DISCONNECT;
-				packet << remote->getId();
-				sendToAllExcept(remote, packet);
-				return true;
-			}
-			return false;
-		});
+		if (!remote->isActive()) {
+			// Signal all connections that one connection has disconnected.
+			net::Packet packet;
+			packet << PacketType::CONNECTION_DISCONNECT;
+			packet << remote->getId();
+			sendToAllExcept(remote, packet);
+			return true;
+		}
+		return false;
+	});
+	// Remove all connections that were disconnected.
+	remoteConnections_.erase(newEnd, remoteConnections_.end());
 }
 
 void TetrisGame::Sender::disconnect() {

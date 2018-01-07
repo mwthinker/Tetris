@@ -12,11 +12,26 @@ public:
 	unsigned int getNbr() const;
 	void setNbr(unsigned int nbr);
 
-	inline unsigned int getMax() const {
+	void setMax(unsigned int max) {
+		max_ = max;
+	}
+
+	unsigned int getMax() const {
 		return max_;
 	}
 
-	void draw(Uint32 deltaTime) override;
+	void setActive(bool active) {
+		active_ = active;
+		if (!active) {
+			mouseInside_ = false;
+		}
+	}
+
+	bool getActive() const {
+		return active_;
+	};
+
+	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
 private:
 	void handleMouse(const SDL_Event& mouseEvent) override;
@@ -28,6 +43,7 @@ private:
 	unsigned int max_;
 
 	bool mouseInside_;
+	bool active_;
 };
 
 #endif // MANBUTTON_H

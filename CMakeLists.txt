@@ -1,79 +1,86 @@
 cmake_minimum_required(VERSION 2.8)
 project(MWetris)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SdlGui/MwLibrary2/cmake/Modules/)
 if (MSVC)
 	# Exception handler model.
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /EHsc")
 	
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32)
-else (MSVC)
-	set(CMAKE_CXX_FLAGS "-std=c++11")
-	set(CMAKE_BUILD_TYPE "Debug")
-endif (MSVC)
-
-# Only use OpenGL ES 2.
-set(OpenGLES2_REMOVE_OPTION 1)
-add_definitions(-DMW_OPENGLES2)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32 -D_WINSOCKAPI_)
+	# D_WINSOCKAPI_ makes redefinition warnings disappear.
+else ()
+	set(CMAKE_CXX_FLAGS "-std=c++1y")
+	option(Debug "Set projects to debug mode.")
+	if (Debug)
+		set(CMAKE_BUILD_TYPE "Debug" CACHE INTERNAL "Build type.")
+		add_definitions(-D_DEBUG)
+	else ()
+		set(CMAKE_BUILD_TYPE "Release" CACHE INTERNAL "Build type.")
+	endif ()
+endif ()
 
 # Source files.
 set(SOURCES
 	src/actionhandler.cpp
 	src/actionhandler.h
-	src/ai.h
-	src/block.cpp
-	src/block.h
+	src/boardbatch.h
 	src/boardshader.cpp
 	src/boardshader.h
-	src/boardshaderfunctions.cpp
-	src/boardshaderfunctions.h
-	src/boardsizebutton.cpp
-	src/boardsizebutton.h
 	src/computer.cpp
 	src/computer.h
+	src/connection.h
 	src/device.h
-	src/dynamicgraphicboard.cpp
-	src/dynamicgraphicboard.h
+	src/drawblock.cpp
+	src/drawblock.h
+	src/drawrow.cpp
+	src/drawrow.h
+	src/drawtext.cpp
+	src/drawtext.h
 	src/gamecomponent.cpp
-	src/gamecomponent.h	
-	src/gamehandler.h
+	src/gamecomponent.h
 	src/gamegraphic.cpp
 	src/gamegraphic.h
 	src/guiclasses.h
 	src/highscore.cpp
 	src/highscore.h
-	src/joystick.cpp
-	src/joystick.h
+	src/gamecontroller.cpp
+	src/gamecontroller.h
 	src/keyboard.cpp
 	src/keyboard.h
+	src/localconnection.h
 	src/localplayer.cpp
 	src/localplayer.h
-	src/localconnection.h
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
+	src/mat44.h
 	src/player.cpp
 	src/player.h
 	src/protocol.cpp
 	src/protocol.h
-	src/rawtetrisboard.cpp
-	src/rawtetrisboard.h
-	src/remoteplayer.h
 	src/remoteconnection.h
-	src/square.h
-	src/staticgraphicboard.cpp
-	src/staticgraphicboard.h
-	src/tetrisboard.cpp
-	src/tetrisboard.h
-	src/tetrisentry.cpp
-	src/tetrisentry.h
+	src/remoteplayer.cpp
+	src/remoteplayer.h
+	src/sdldevice.h
+	src/tetrisdata.cpp
+	src/tetrisdata.h
 	src/tetrisgame.cpp
 	src/tetrisgame.h
 	src/tetrisgameevent.h
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
-	src/tetriswindow.h
+	src/tetriswindow.h 
 )
+
+set(SOURCES_CONSOLE
+	src/consolegraphic.cpp
+	src/consolegraphic.h
+	src/consolekeyboard.cpp
+	src/consolekeyboard.h
+	src/consoletetris.cpp
+	src/consoletetris.h
+)
+
 # End of source files.
 
 find_package(SDL2 REQUIRED)
@@ -81,15 +88,24 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_net REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-find_package(Threads REQUIRED) # Due to a bug, which forces the uses to link to Threads when using #include <thread>.
+	find_package(Threads REQUIRED) # Due to a bug, which forces the user to link to Threads when using #include <thread>.
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-add_subdirectory(DataEntry)
 add_subdirectory(SdlGui)
 add_subdirectory(Calculator)
 add_subdirectory(SimpleNetwork)
+add_subdirectory(TetrisEngine)
+
+option(ConsoleTetris "Console tetris is added" ON)
+
+if (ConsoleTetris)
+	add_definitions(-DCONSOLE_TETRIS)
+	add_subdirectory(CppConsole)
+endif ()
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
@@ -99,30 +115,48 @@ include_directories(
 	${SDL2_MIXER_INCLUDE_DIRS} 
 	${SDL2_IMAGE_INCLUDE_DIRS}
 	${SDL2_NET_INCLUDE_DIRS}
+	${GLEW_INCLUDE_DIRS}
 	SimpleNetwork/src
 	SdlGui/src
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
-	DataEntry/src
-	DataEntry/TinyXML2/src
 	Calculator/src
+	TetrisEngine/src
+	nlohmann-json/src
 )
 
-add_executable(MWetris ${SOURCES})
+if (ConsoleTetris)
+	if (MSVC)
+		set(CONSOLE_LIB Console)
+	else ()
+		find_package(Curses REQUIRED)
+		set(CONSOLE_LIB Console ${CURSES_LIBRARIES})
+		include_directories(${CURSES_INCLUDE_DIR})
+	endif ()
+
+	include_directories(
+		CppConsole/src
+	)
+	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE})
+else ()
+	set(ConsoleTest OFF)
+	add_executable(MWetris ${SOURCES})
+endif ()
 
 if (MSVC)
 	set_target_properties(MWetris PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt")
 	set_target_properties(MWetris PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:windows")
-endif (MSVC)
+endif ()
 
 target_link_libraries(MWetris
-	Calculator
-	TinyXML2
-	DataEntry
+	${CONSOLE_LIB}
 	SimpleNetwork
-	MwLibrary2
-	Signal
 	SdlGui
+	MwLibrary2
+	TetrisEngine
+	Calculator
+	${GLEW_LIBRARIES}
+	${OPENGL_LIBRARIES}
 	${SDL2_LIBRARIES}
 	${SDL2_TTF_LIBRARIES}
 	${SDL2_MIXER_LIBRARIES}

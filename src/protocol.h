@@ -27,7 +27,7 @@ enum class PacketType {
 static const int SERVER_CONNECTION_ID = 0;
 static const int UNDEFINED_CONNECTION_ID = -1;
 
-net::Packet& operator<<(net::Packet& packe1t, const net::Packet& packet2);
+net::Packet& operator<<(net::Packet& packet1, const net::Packet& packet2);
 
 net::Packet& operator<<(net::Packet& packet, Input input);
 

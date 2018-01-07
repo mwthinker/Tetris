@@ -1,134 +1,401 @@
 #include "gamegraphic.h"
 #include "tetrisboard.h"
 #include "player.h"
+#include "tetrisdata.h"
 
-#include <sstream>
+#include <limits>
+#include <string>
+
+namespace {
+
+	int calculateWitdh(const Block& block) {
+		int min = std::numeric_limits<int>::max();
+		int max = 0;
+		for (const Square& sq : block) {
+			if (sq.column_ > max) {
+				max = sq.column_;
+			}
+			if (sq.column_ < min) {
+				min = sq.column_;
+			}
+		}
+		return max + 1 - min;
+	}
+
+	int calculateHighest(const Block& block) {
+		int max = 0;
+		for (const Square& sq : block) {
+			if (sq.row_ > max) {
+				max = sq.row_;
+			}
+		}
+		return max;
+	}
+
+	int calculateLeftColumn(const Block& block) {
+		int min = std::numeric_limits<int>::max();
+		for (const Square& sq : block) {
+			if (sq.column_ < min) {
+				min = sq.column_;
+			}
+		}
+		return min;
+	}
+
+}
 
 GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }
 
-void GameGraphic::restart(Player& player, float x, float y,
-	TetrisEntry boardEntry) {
-
+void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float y) {
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
 
-	dynamicBoard_.restart(x, y, boardEntry, player.getTetrisBoard());
-	staticBoard_.restart(x, y, boardEntry, player.getTetrisBoard());
-
 	connection_.disconnect();
-	connection_ = player.addGameEventListener(
-		std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
+	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
-	font_ = boardEntry.getChildEntry("font").getFont(30);
-
-	// Define all text sizes and font usage.
-	textLevel_ = mw::Text("", font_, 16);
-	textPoints_ = mw::Text("", font_, 16);
-	textClearedRows_ = mw::Text("", font_, 16);
+	initStaticBackground(boardBatch, x, y, player);
 	showPoints_ = true;
 
-	name_ = mw::Text(player.getName(), font_, 16);
-	//update(player.getPlayerInfo().nbrClearedRows_, player.getPlayerInfo().points_, player.getLevel());
+	update(player.getClearedRows(), player.getPoints(), player.getLevel());
+}
+
+void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX, float lowY, Player& player) {
+	const float squareSize = TetrisData::getInstance().getTetrisSquareSize();
+	const float borderSize = TetrisData::getInstance().getTetrisBorderSize();
+
+	const TetrisBoard& tetrisBoard = player.getTetrisBoard();
+	const int columns = tetrisBoard.getColumns();
+	const int rows = tetrisBoard.getRows();
+
+	const float middleDistance = 5;
+	const float rightDistance = 5;
+	const float infoSize = squareSize * 5;
+	const float boardWidth = squareSize * columns;
+
+	width_ = squareSize * columns + infoSize + borderSize * 2 + middleDistance + rightDistance;
+	height_ = squareSize * (rows - 2) + borderSize * 2;
+
+	// Draw the player area.
+	float x = lowX + borderSize;
+	float y = lowY * 0.5f + borderSize;
+	staticBoardBatch.addRectangle(
+		x, y,
+		boardWidth + infoSize + middleDistance + rightDistance, squareSize * (rows - 2),
+		TetrisData::getInstance().getPlayerAreaColor());
+
+	// Draw the outer square.
+	x = lowX + borderSize;
+	y = lowY + borderSize;
+	staticBoardBatch.addRectangle(
+		x, y,
+		squareSize * columns, squareSize * (rows - 2),
+		TetrisData::getInstance().getOuterSquareColor());
+
+	// Draw the inner squares.
+	for (int row = 0; row < rows - 2; ++row) {
+		for (int column = 0; column < columns; ++column) {
+			x = lowX + borderSize + squareSize * column + squareSize * 0.1f;
+			y = lowY + borderSize + squareSize * row + squareSize * 0.1f;
+			staticBoardBatch.addRectangle(
+				x, y,
+				squareSize * 0.8f, squareSize * 0.8f,
+				TetrisData::getInstance().getInnerSquareColor());
+		}
+	}
+
+	// Draw the block start area.
+	x = lowX + borderSize;
+	y = lowY + borderSize + squareSize * (rows - 4);
+	staticBoardBatch.addRectangle(
+		x, y,
+		squareSize * columns, squareSize * 2,
+		TetrisData::getInstance().getStartAreaColor());
+
+	// Draw the preview block area.
+	x = lowX + borderSize + boardWidth + middleDistance;
+	y = lowY + borderSize + squareSize * (rows - 4) - (squareSize * 5 + middleDistance);
+	staticBoardBatch.addRectangle(
+		x, y,
+		infoSize, infoSize,
+		TetrisData::getInstance().getStartAreaColor());
+
+	nextBlock_ = DrawBlock(Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
+
+	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
+	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
+	
+	level_ = player.getLevel();
+	textLevel_ = DrawText("Level " + std::to_string(level_), font, x, y - 20, 8.f);
+
+	points_ = player.getPoints();
+	textPoints_ = DrawText("Points " + std::to_string(points_), font, x, y - 20 - 12, 8.f);
+
+	clearedRows_ = player.getClearedRows();
+	textClearedRows_ = DrawText("Rows " + std::to_string(clearedRows_), font, x, y - 20 - 12 * 2, 8.f);
+
+	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
+
+	// Add border.
+	// Left-up corner.
+	x = lowX;
+	y = lowY + height_ - borderSize;
+	staticBoardBatch.addSquare(
+		x, y,
+		borderSize,
+		borderColor);
+
+	// Right-up corner.
+	x = lowX + width_ - borderSize;
+	y = lowY + height_ - borderSize;
+	staticBoardBatch.addSquare(
+		x, y,
+		borderSize,
+		borderColor);
+
+	// Left-down corner.
+	x = lowX;
+	y = lowY;
+	staticBoardBatch.addSquare(
+		x, y,
+		borderSize,
+		borderColor);
+
+	// Right-down corner.
+	x = lowX + width_ - borderSize;
+	y = lowY;
+	staticBoardBatch.addSquare(
+		x, y,
+		borderSize,
+		borderColor);
+
+	// Up.
+	x = lowX + borderSize;
+	y = lowY + height_ - borderSize;
+	staticBoardBatch.addRectangle(
+		x, y,
+		width_ - 2 * borderSize, borderSize,
+		borderColor);
+
+	// Down.
+	x = lowX + borderSize;
+	y = lowY;
+	staticBoardBatch.addRectangle(
+		x, y,
+		width_ - 2 * borderSize, borderSize,
+		borderColor);
+
+	// Left.
+	x = lowX;
+	y = lowY + borderSize;
+	staticBoardBatch.addRectangle(
+		x, y,
+		borderSize, height_ - 2 * borderSize,
+		borderColor);
+
+	// Right.
+	x = lowX + width_ - borderSize;
+	y = lowY + borderSize;
+	staticBoardBatch.addRectangle(
+		x, y,
+		borderSize, height_ - 2 * borderSize,
+		borderColor);
+
+	rows_.clear();
+
+	currentBlock_ = DrawBlock(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize,
+		lowX + borderSize, lowY + borderSize, false);
+
+	// Add rows to represent the board.
+	// Add free rows to represent potential rows, e.g. the board receives external rows.
+	for (int row = 0; row < rows; ++row) {
+		auto drawRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
+		auto freeRow = std::make_shared<DrawRow>(*drawRow);
+		freeRow->clear(); // Make all elements to only contain blocktype empty squares.
+		rows_.push_back(drawRow);
+		freeRows_.push_back(freeRow);
+	}
+
+	middleText_ = DrawText(lowX + borderSize + squareSize * columns * 0.5f, lowY + height_ * 0.5f);
 }
 
 void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) {
+	for (auto& row : rows_) {
+		row->handleEvent(gameEvent, tetrisBoard);
+	}
+	rows_.remove_if([&](const DrawRowPtr& row) {
+		if (!row->isAlive()) {
+			freeRows_.push_front(row);
+			return true;
+		}
+		return false;
+	});
 	switch (gameEvent) {
 		case GameEvent::GAME_OVER:
 			break;
 		case GameEvent::BLOCK_COLLISION:
-			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::RESTARTED:
-			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
-			dynamicBoard_.updatePreviewBlock(tetrisBoard.getNextBlockType());
-			dynamicBoard_.updateBoard(tetrisBoard);
 			break;
 		case GameEvent::EXTERNAL_ROWS_ADDED:
-			dynamicBoard_.updateBoard(tetrisBoard);
-			updateExternalRowsAdded(0.3f, tetrisBoard.getNbrExternalRowsAdded());
+		{
+			int rows = tetrisBoard.getNbrExternalRowsAdded();
+			for (int row = 0; row < rows; ++row) {
+				addDrawRowBottom(tetrisBoard, rows - row - 1);
+			}
+			int highestRow = tetrisBoard.getBoardVector().size() / tetrisBoard.getColumns();
+			assert(rows_.size() - highestRow >= 0); // Something is wrong. Should not be posssible.
+			for (int i = 0; i < (int) rows_.size() - highestRow; ++i) { // Remove unneeded empty rows at the top.
+				rows_.pop_back();
+			}
+		}
+		break;
+		case GameEvent::NEXT_BLOCK_UPDATED:
+			nextBlock_.update(Block(tetrisBoard.getNextBlockType(), 0, 0));
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
-			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
-			break;
-		case GameEvent::PLAYER_ROTATES_BLOCK:
 			// Fall through!
-		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
-			// Fall through!
+		case GameEvent::PLAYER_MOVES_BLOCK_ROTATE:
+			// Fall through!		
 		case GameEvent::PLAYER_MOVES_BLOCK_LEFT:
 			// Fall through!
 		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
+			currentBlock_.update(tetrisBoard.getBlock());
+			break;
+		case GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND:
+			blockDownGround_ = true;
+			latestBlockDownGround_ = tetrisBoard.getBlock();
+			break;
+		case GameEvent::PLAYER_MOVES_BLOCK_DOWN:
+			if (blockDownGround_) {
+				currentBlock_.updateDown(tetrisBoard.getBlock());
+				blockDownGround_ = false;
+			}
 			// Fall through!
 		case GameEvent::GRAVITY_MOVES_BLOCK:
-			dynamicBoard_.updateCurrentBlock(tetrisBoard.getBlock());
+			currentBlock_.update(tetrisBoard.getBlock());
 			break;
-		case GameEvent::NEXT_BLOCK_UPDATED:
-			dynamicBoard_.updatePreviewBlock(tetrisBoard.getNextBlockType());
-			break;
+		case GameEvent::ROW_TO_BE_REMOVED:
+			textClearedRows_.update("Rows " + std::to_string(tetrisBoard.getRemovedRows()));
+		break;
 		case GameEvent::ONE_ROW_REMOVED:
-			// Fall through!
+			addDrawRowAtTheTop(tetrisBoard, 1);
+			break;
 		case GameEvent::TWO_ROW_REMOVED:
-			// Fall through!
+			addDrawRowAtTheTop(tetrisBoard, 2);
+			break;
 		case GameEvent::THREE_ROW_REMOVED:
-			// Fall through!
+			addDrawRowAtTheTop(tetrisBoard, 3);
+			break;
 		case GameEvent::FOUR_ROW_REMOVED:
-			dynamicBoard_.updateLinesRemoved(0.3f,
-				tetrisBoard.getRemovedRow1(),
-				tetrisBoard.getRemovedRow2(),
-				tetrisBoard.getRemovedRow3(),
-				tetrisBoard.getRemovedRow4());
+			addDrawRowAtTheTop(tetrisBoard, 4);
 			break;
 	}
 }
 
-void GameGraphic::draw(float deltaTime, const BoardShader& shader) {
-	staticBoard_.draw(deltaTime, shader);
-	dynamicBoard_.draw(deltaTime, shader);
+void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
+	for (int i = 0; i < nbr; ++i) {
+		addEmptyRowTop(tetrisBoard); // Add them in ascending order.
+	}
 }
 
-void GameGraphic::drawText(const gui::Component& component, float x, float y, float width, float height, float scale) {
-	float boardWidth = staticBoard_.getBoardWidth() * scale;
-	float borderSize = staticBoard_.getBorderSize();
-	component.drawText(name_, x + boardWidth + borderSize * scale, height - y - name_.getHeight() - borderSize * scale);
-	component.drawText(textPoints_, x + boardWidth + borderSize * scale, y + 50 * scale + borderSize * scale);
-	component.drawText(textLevel_, x + boardWidth + borderSize * scale, y + 70 * scale + borderSize * scale);
-	component.drawText(textClearedRows_, x + boardWidth + borderSize * scale, y + 100 * scale + borderSize * scale);
+void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
+	currentBlock_.update(deltaTime);
+	dynamicBoardBatch.add(currentBlock_.getVertexes());
+	dynamicBoardBatch.add(nextBlock_.getVertexes());
+
+	// Update the animation for the rows still showing animations.
+	for (auto& rowPtr : freeRows_) {
+		if (rowPtr->isActive()) {
+			rowPtr->update(deltaTime);
+			dynamicBoardBatch.add(rowPtr->getVertexes());
+		}
+	}
+
+	// Update the rows for representing the tetris board.
+	for (auto& rowPtr : rows_) {
+		rowPtr->update(deltaTime);
+		dynamicBoardBatch.add(rowPtr->getVertexes());
+	}
 }
 
-void GameGraphic::updateTextSize(float size, const mw::Font& font) {
-	textPoints_ = mw::Text(textPoints_.getText(), font, size);
-	name_ = mw::Text(name_.getText(), font, size);
-	textLevel_ = mw::Text(textLevel_.getText(), font, size);
-	textClearedRows_ = mw::Text(textClearedRows_.getText(), font, size);
+void GameGraphic::drawText(BoardBatch& batch) {
+	batch.clear();
+	name_.bindTexture();
+	batch.add(name_.getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+
+	batch.clear();
+	textPoints_.bindTexture();
+	batch.add(textPoints_.getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+
+	batch.clear();
+	textLevel_.bindTexture();
+	batch.add(textLevel_.getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+
+	batch.clear();
+	textClearedRows_.bindTexture();
+	batch.add(textClearedRows_.getVertexes());
+	batch.uploadToGraphicCard();
+	batch.draw();
+}
+
+void GameGraphic::drawMiddleText(BoardBatch& batch) {
+	if (!middleText_.isEmpty()) {
+		middleText_.bindTexture();
+		batch.clear();
+		batch.add(middleText_.getVertexes());
+		batch.uploadToGraphicCard();
+		batch.draw();
+	}
 }
 
 void GameGraphic::setMiddleMessage(const mw::Text& text) {
-	middleMessage_ = text;
+	middleText_.update(text);
 }
 
 void GameGraphic::update(int clearedRows, int points, int level) {
 	if (clearedRows_ != clearedRows) {
-		std::stringstream stream;
 		clearedRows_ = clearedRows;
-		stream << "Rows " << clearedRows;
-		textClearedRows_.setText(stream.str());
+		textClearedRows_.update("Rows " + std::to_string(clearedRows_));
 	}
 	if (points_ != points) {
-		std::stringstream stream;
 		points_ = points;
-		stream << "Points " << points;
-		textPoints_.setText(stream.str());
+		textPoints_.update("Points " + std::to_string(points_));
 	}
 	if (level_ != level) {
-		std::stringstream stream;
 		level_ = level;
-		stream << "Level " << level;
-		textLevel_.setText(stream.str());
+		textLevel_.update("Level " + std::to_string(level_));
 	}
 }
 
 void GameGraphic::setName(std::string name) {
-	name_.setText(name);
+	name_.update(name);
+}
+
+void GameGraphic::addEmptyRowTop(const TetrisBoard& tetrisBoard) {
+	assert(!freeRows_.empty()); // Should never be empty.
+	if (!freeRows_.empty()) { // Just in case empty, but the game should be over anyway.
+		auto drawRow = freeRows_.back();
+		freeRows_.pop_back();
+		drawRow->init(rows_.size(), tetrisBoard);
+		rows_.push_back(drawRow);
+	}
+}
+
+void GameGraphic::addDrawRowBottom(const TetrisBoard& tetrisBoard, int row) {
+	assert(!freeRows_.empty()); // Should never be empty.
+	if (!freeRows_.empty()) {
+		auto drawRow = freeRows_.back();
+		freeRows_.pop_back();
+		drawRow->init(row, tetrisBoard);
+		rows_.push_front(drawRow); // Add as the lowest row, i.e. on the bottom.
+	}
 }

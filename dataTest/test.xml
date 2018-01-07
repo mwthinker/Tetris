@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test>
+    <window>
+        <width>128.5</width>
+        <height>129.5</height>
+        <positionX>600</positionX>
+        <positionY>50</positionY>
+        <maximized>1</maximized>
+    </window>
+	<iter>
+		<testing a="1">Yes</testing>
+		<testing a="2">No</testing>
+		<testing>No</testing>
+	</iter>
+</test>

@@ -4,13 +4,14 @@
 #include "remoteplayer.h"
 #include "protocol.h"
 #include "tetrisparameters.h"
+#include "connection.h"
 
 #include <net/connection.h>
 
 #include <vector>
 
 // Hold information about players from a remote connection.
-class RemoteConnection {
+class RemoteConnection : public Connection {
 public:
 	RemoteConnection(int id, const net::ConnectionPtr& connection) : 
 		connection_(connection), id_(id), width_(TETRIS_WIDTH), height_(TETRIS_HEIGHT) {
@@ -31,6 +32,21 @@ public:
 	// The number of players are returned.
 	int getNbrOfPlayers() const {
 		return players_.size();
+	}
+	
+	int getNbrHumanPlayers() const override {
+		return players_.size() - RemoteConnection::getNbrAiPlayers();
+	}
+
+	int getNbrAiPlayers() const override {
+		int nbr = 0;
+		for (auto& player : players_) {
+			if (player->isAi()) {
+				++nbr;
+			}
+		}
+
+		return nbr;
 	}
 
 	std::vector<std::shared_ptr<RemotePlayer>>::iterator begin() {
@@ -66,12 +82,14 @@ public:
 					packet >> level;
 					int points;
 					packet >> points;
+					bool ai;
+					packet >> ai;
 					BlockType current;
 					packet >> current;
 					BlockType next;
 					packet >> next;
 					
-					auto player = std::make_shared<RemotePlayer>(players_.size(), width_, height_, current, next);
+					auto player = std::make_shared<RemotePlayer>(players_.size(), width_, height_, ai, current, next);
 					player->setName(name);
 					player->setLevel(level);
 					player->setPoints(points);
@@ -127,6 +145,7 @@ public:
 			packet << player->getName();
 			packet << player->getLevel();
 			packet << player->getPoints();
+			packet << player->isAi();
 
 			auto& board = player->getTetrisBoard();
 			packet << board.getBlockType();
