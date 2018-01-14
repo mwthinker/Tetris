@@ -170,6 +170,7 @@
 					"nextBlockType": "Z",
 					"levelUpCounter": 65,
 					"ai": false,
+					"clearedRows": 7,
 					"level": 7,
 					"points": 410,
 					"currentBlock": {

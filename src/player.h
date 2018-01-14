@@ -15,10 +15,10 @@ class Player {
 public:
 	Player(int id, int width, int height, BlockType current, BlockType next);
 
-	Player(int id, int width, int height, int points, int level, Block current, BlockType next, const std::vector<BlockType>& board);
+	Player(int id, int width, int height, int points, int level, int clearedRows,
+		Block current, BlockType next, const std::vector<BlockType>& board);
 	
-	virtual ~Player() {
-	}
+	virtual ~Player() = default;
 	
 	// Update the player.
 	virtual void update(double deltaTime) = 0;

@@ -32,11 +32,17 @@ void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>
 	width_ = columns;
 	height_ = rows;
 	status_ = LOCAL;
+	
 	localConnection_.removeAllPlayers();
 	for (const PlayerData& data : playersData) {
 		localConnection_.addPlayer(data.device_, width_, height_,data.levelUpCounter_,
-			data.points_, data.level_, data.current_, data.next_, data.board_);
+			data.points_, data.level_, data.clearedRows_, data.current_, data.next_, data.board_);
 	}
+	// Add event listener to each player.
+	for (std::shared_ptr<LocalPlayer>& player : localConnection_) {
+		player->addGameEventListener(std::bind(&TetrisGame::applyRulesForLocalPlayers, this, std::placeholders::_1, std::placeholders::_2, player));
+	}
+
 	nbrOfPlayers_ = localConnection_.getNbrOfPlayers();
 	initGame();
 }
@@ -51,6 +57,7 @@ std::vector<PlayerData> TetrisGame::getPlayerData() const {
 		playerData.back().board_ = tetrisBoard.getBoardVector();
 		playerData.back().levelUpCounter_ = player->getLevelUpCounter();
 		playerData.back().level_ = player->getLevel();
+		playerData.back().clearedRows_ = player->getClearedRows();
 		playerData.back().name_ = player->getName();
 		playerData.back().points_ = player->getPoints();
 		playerData.back().device_ = player->getDevice();

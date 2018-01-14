@@ -105,10 +105,6 @@ public:
 		return externalRowsAdded_;
 	}
 
-	int getRemovedRows() const {
-		return rowsRemoved_;
-	}
-
 	int getRowToBeRemoved() const {
 		return rowToBeRemoved_;
 	}
@@ -165,7 +161,6 @@ private:
 	int rows_, columns_;				// The size of the gameboard.
 	bool isGameOver_;					// True when game is over, else false.
 	int externalRowsAdded_;
-	int rowsRemoved_;
 	int rowToBeRemoved_;
 };
 

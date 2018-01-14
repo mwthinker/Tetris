@@ -605,6 +605,7 @@ void TetrisData::setActiveLocalGame(int rows, int columns, const std::vector<Pla
 			{"ai", data.device_->isAi()},
 			{"level", data.level_},
 			{"points", data.points_},
+			{"clearedRows", data.clearedRows_},
 			{"currentBlock", data.current_},
 			{"board", convertBlockTypesToString(data.board_)},
 			{"device",{
@@ -627,6 +628,7 @@ std::vector<PlayerData> TetrisData::getActiveLocalGamePlayers() {
 		playerData.levelUpCounter_ = player["levelUpCounter"].get<int>();
 		playerData.level_ = player["level"].get<int>();
 		playerData.points_ = player["points"].get<int>();
+		playerData.clearedRows_ = player["clearedRows"].get<int>();
 		playerData.current_ = player["currentBlock"].get<Block>();
 		playerData.board_ = convertStringToBlockTypes(player["board"].get<std::string>());
 		playerData.ai_ = player["ai"].get<bool>();

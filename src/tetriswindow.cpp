@@ -98,6 +98,7 @@ void TetrisWindow::initPreLoop() {
 	activeAis_[2] = findAiDevice(TetrisData::getInstance().getAi3Name());
 	activeAis_[3] = findAiDevice(TetrisData::getInstance().getAi4Name());
 
+	// Choose start panel.
 	switch (startFrame_) {
 		case StartFrame::MENU:
 			setCurrentPanel(menuIndex_);
@@ -231,7 +232,7 @@ void TetrisWindow::initPlayPanel() {
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.closeGame();
 			menu_->setLabel("Menu");
-			SDL_SetWindowTitle(getSdlWindow(), "MWetris");
+			setTitle("MWetris");
 		}
 	});
 
@@ -616,11 +617,11 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 				menu_->setLabel("Menu");
 				break;
 			case GameStart::CLIENT:
-				SDL_SetWindowTitle(getSdlWindow(), "MWetris@Client");
+				setTitle("MWetris@Client");
 				menu_->setLabel("Abort");
 				break;
 			case GameStart::SERVER:
-				SDL_SetWindowTitle(getSdlWindow(), "MWetris@Server");
+				setTitle("MWetris@Server");
 				menu_->setLabel("Abort");
 				break;
 		}

@@ -26,11 +26,11 @@ public:
 	// @gui::Component
 	void draw(const gui::Graphic& graphic, double deltaTime) override;
 
+private:
 	void initGame(std::vector<PlayerPtr>& player);
 
 	void eventHandler(TetrisGameEvent& tetrisGameEvent);
 
-private:
 	// @gui::Component
 	// Called when the component is resized or moved.
 	void validate() override;

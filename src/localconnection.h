@@ -38,11 +38,11 @@ public:
 	}
 
 	void addPlayer(const DevicePtr& device, int width, int height, int levelUpCounter,
-		int points, int level,
+		int points, int level, int clearedRows,
 		Block current, BlockType next, const std::vector<BlockType>& board) {
 		
 		auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
-			board, levelUpCounter, points, level,
+			board, levelUpCounter, points, level, clearedRows,
 			current, next, device, packetSender_);
 		players_.push_back(player);
 	}

@@ -24,9 +24,10 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	watingTime_ = 0;
 }
 
-LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height, const std::vector<BlockType>& board, int levelUpCounter, int points, int level,
+LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
+	const std::vector<BlockType>& board, int levelUpCounter, int points, int level, int clearedRows,
 	Block current, BlockType next, const DevicePtr& device, PacketSender& sender) :
-	Player(playerId, width, height, points, level, current, next, board),
+	Player(playerId, width, height, points, level, clearedRows, current, next, board),
 	sender_(sender),
 	leftHandler_(0.09, false),
 	rightHandler_(0.09, false),

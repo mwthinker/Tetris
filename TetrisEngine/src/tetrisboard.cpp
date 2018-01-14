@@ -52,15 +52,19 @@ std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPe
 }
 
 TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next)
-	: RawTetrisBoard(nbrRows, nbrColumns, current, next), turns_(0) {
+	: RawTetrisBoard(nbrRows, nbrColumns, current, next), turns_(0), rowsRemoved_(0) {
 }
 
-TetrisBoard::TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next)
-	: RawTetrisBoard(board, rows, columns, current, next), turns_(0) {
+TetrisBoard::TetrisBoard(const std::vector<BlockType>& board,
+	int rows, int columns, Block current, BlockType next,
+	int savedRowsRemoved)
+	: RawTetrisBoard(board, rows, columns, current, next), turns_(0), rowsRemoved_(savedRowsRemoved) {
 }
 
 TetrisBoard::TetrisBoard(const TetrisBoard& board)
-	: RawTetrisBoard(board) {
+	: RawTetrisBoard(board), turns_(board.turns_), rowsRemoved_(board.rowsRemoved_) {
+	
+	// No copy of the listener_.
 }
 
 void TetrisBoard::restart(BlockType current, BlockType next) {
@@ -75,6 +79,21 @@ void TetrisBoard::triggerEvent(GameEvent gameEvent) {
 		case GameEvent::NEXT_BLOCK_UPDATED:
 			// Assumes a new turn.
 			++turns_;
+			break;
+		case GameEvent::ONE_ROW_REMOVED:
+			rowsRemoved_ += 1;
+			break;
+		case GameEvent::TWO_ROW_REMOVED:
+			rowsRemoved_ += 2;
+			break;
+		case GameEvent::THREE_ROW_REMOVED:
+			rowsRemoved_ += 3;
+			break;
+		case GameEvent::FOUR_ROW_REMOVED:
+			rowsRemoved_ += 4;
+			break;
+		case GameEvent::RESTARTED:
+			rowsRemoved_ = 0;
 			break;
 	}
 }

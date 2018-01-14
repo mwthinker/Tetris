@@ -18,8 +18,11 @@ class TetrisBoard : public RawTetrisBoard {
 public:
     TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next);
 
-	TetrisBoard(const std::vector<BlockType>& board, int rows, int columns, Block current, BlockType next);
+	TetrisBoard(const std::vector<BlockType>& board,
+		int rows, int columns, Block current, BlockType next,
+		int savedRowsRemoved = 0);
 
+	// Copy a tetrisboard except the connected gameEventListener.
 	TetrisBoard(const TetrisBoard&);
 
 	// Restarts the board. Resets all states. Current and next represents the two starting blocks.
@@ -34,6 +37,10 @@ public:
 
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
 
+	int getRemovedRows() const {
+		return rowsRemoved_;
+	}
+
 private:
 	// @RawTetrisBoard
 	void triggerEvent(GameEvent gameEvent) override;
@@ -43,9 +50,9 @@ private:
 
 	std::vector<BlockType> squaresToAdd_;
 	mw::Signal<GameEvent, const TetrisBoard&> listener_;
-	
-	int turns_;
 	Random random_;
+	int turns_;
+	int rowsRemoved_;
 };
 
 #endif // TETRISBOARD_H
