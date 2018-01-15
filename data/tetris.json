@@ -169,18 +169,18 @@
 					"name": "",
 					"lastPosition": 0,
 					"nextBlockType": "Z",
-					"levelUpCounter": 65,
+					"levelUpCounter": 0,
 					"ai": false,
-					"clearedRows": 7,
-					"level": 7,
-					"points": 410,
+					"clearedRows": 0,
+					"level": 1,
+					"points": 0,
 					"currentBlock": {
-						"bottomRow": 15,
+						"bottomRow": 20,
 						"blockType": "J",
 						"leftColumn": 4,
 						"currentRotation": 0
 					},
-					"board": "IJTEZZIIIZZIESJSJJTIITLJZETEELILLZEZSSOOZZZZJLZZELIZZEJZZEEEIEEEJJEEEEIEEEEEEEEEIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+					"board": "",
 					"device": {
 						"name": "Keyboard 1",
 						"ai": false
