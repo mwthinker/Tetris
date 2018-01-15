@@ -9,7 +9,6 @@
 
 #include <mw/vertexbufferobject.h>
 #include <mw/shader.h>
-
 #include <mw/signal.h>
 
 #include <map>
@@ -34,6 +33,8 @@ private:
 	// @gui::Component
 	// Called when the component is resized or moved.
 	void validate() override;
+
+	void handleMiddleText(const PlayerPtr& player, int lastPostion);
 
 	std::map<PlayerPtr, GameGraphic> graphicPlayers_;
 	BoardShaderPtr boardShader_;

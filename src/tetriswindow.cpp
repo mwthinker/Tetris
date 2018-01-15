@@ -188,7 +188,9 @@ void TetrisWindow::initMenuPanel() {
 
 	panel->addDefaultToGroup<Button>("Play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
 		resumeGame();
-		tetrisGame_.pause();
+		if (tetrisGame_.getNbrOfPlayers() == 1) {
+			tetrisGame_.pause();
+		}
 		setCurrentPanel(playIndex_);
 	});
 

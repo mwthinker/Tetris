@@ -167,6 +167,7 @@
 			"players": [
 				{
 					"name": "",
+					"lastPosition": 0,
 					"nextBlockType": "Z",
 					"levelUpCounter": 65,
 					"ai": false,

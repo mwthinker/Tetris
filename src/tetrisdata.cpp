@@ -517,7 +517,6 @@ mw::Color TetrisData::getLabelBackgroundColor() {
 	return jsonObject_["window"]["label"]["backgroundColor"].get<mw::Color>();
 }
 
-
 mw::Color TetrisData::getButtonFocusColor() {
 	return jsonObject_["window"]["button"]["focusColor"].get<mw::Color>();
 }
@@ -600,6 +599,7 @@ void TetrisData::setActiveLocalGame(int rows, int columns, const std::vector<Pla
 
 		playerJson.push_back({
 			{"name", data.name_},
+			{"lastPosition", data.lastPosition_},
 			{"nextBlockType", data.next_},
 			{"levelUpCounter", data.levelUpCounter_},
 			{"ai", data.device_->isAi()},
@@ -624,6 +624,7 @@ std::vector<PlayerData> TetrisData::getActiveLocalGamePlayers() {
 	for (nlohmann::json& player : players) {
 		PlayerData playerData;
 		playerData.name_ = player["name"].get<std::string>();
+		playerData.lastPosition_ = player["lastPosition"].get<int>();
 		playerData.next_ = player["nextBlockType"].get<BlockType>();
 		playerData.levelUpCounter_ = player["levelUpCounter"].get<int>();
 		playerData.level_ = player["level"].get<int>();

@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "tetrisboard.h"
+#include "playerdata.h"
 
 #include <mw/signal.h>
 
@@ -15,8 +16,7 @@ class Player {
 public:
 	Player(int id, int width, int height, BlockType current, BlockType next);
 
-	Player(int id, int width, int height, int points, int level, int clearedRows,
-		Block current, BlockType next, const std::vector<BlockType>& board);
+	Player(int id, int width, int height, const PlayerData& playerData);
 	
 	virtual ~Player() = default;
 	
@@ -42,6 +42,18 @@ public:
 	int getClearedRows() const {
 		return tetrisBoard_.getRemovedRows();
 	}
+
+	int getLastPositon() const {
+		return lastPosition_;
+	}
+
+	void setLastPosition(int lastPosition) {
+		lastPosition_ = lastPosition;
+	}
+
+	bool isGameOver() const {
+		return tetrisBoard_.isGameOver();
+	}
 	
 	const TetrisBoard& getTetrisBoard() const {
 		return tetrisBoard_;
@@ -65,6 +77,7 @@ protected:
 	int id_;
 	int level_;
 	int points_;
+	int lastPosition_;
 };
 
 #endif // PLAYER_H

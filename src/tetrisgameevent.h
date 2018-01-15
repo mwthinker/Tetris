@@ -26,7 +26,7 @@ public:
 	};
 
 	GameStart(Status status) : status_(status) {
-	}	
+	}
 
 	Status status_;
 };
@@ -41,18 +41,21 @@ public:
 
 class GamePause : public TetrisGameEvent {
 public:
-	GamePause(bool pause) : pause_(pause) {
+	GamePause(bool pause, bool printPause)
+		: pause_(pause), printPause_(printPause) {
 	}
 
 	bool pause_;
+	bool printPause_;
 };
 
 class GameOver : public TetrisGameEvent {
 public:
-    GameOver(unsigned int position, const std::shared_ptr<Player>& player) : position_(position), player_(player) {
-    }
+	GameOver(unsigned int position, const std::shared_ptr<Player>& player)
+		: position_(position), player_(player) {
+	}
 
-    unsigned int position_;
+	unsigned int position_;
 	std::shared_ptr<Player> player_;
 };
 
@@ -68,7 +71,8 @@ public:
 
 class LevelChange : public TetrisGameEvent {
 public:
-	LevelChange(const std::shared_ptr<Player>& player, int newLevel, int oldLevel) : player_(player), newLevel_(newLevel), oldLevel_(oldLevel) {
+	LevelChange(const std::shared_ptr<Player>& player, int newLevel, int oldLevel)
+		: player_(player), newLevel_(newLevel), oldLevel_(oldLevel) {
 	}
 
 	int newLevel_;
@@ -78,7 +82,8 @@ public:
 
 class PointsChange : public TetrisGameEvent {
 public:
-	PointsChange(const std::shared_ptr<Player>& player, int newPoints, int oldPoints) : player_(player), newPoints_(newPoints), oldPoints_(oldPoints) {
+	PointsChange(const std::shared_ptr<Player>& player, int newPoints, int oldPoints)
+		: player_(player), newPoints_(newPoints), oldPoints_(oldPoints) {
 	}
 
 	int newPoints_;

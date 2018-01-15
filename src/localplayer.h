@@ -5,6 +5,7 @@
 #include "tetrisboard.h"
 #include "actionhandler.h"
 #include "device.h"
+#include "playerdata.h"
 
 #include "protocol.h"
 
@@ -17,8 +18,7 @@ public:
 		BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
 
 	LocalPlayer(int connectionId, int playerId, int width, int height,
-		const std::vector<BlockType>& board, int levelUpCounter, int points, int level, int clearedRows,
-		Block current, BlockType next, const DevicePtr& device, PacketSender& sender);
+		const PlayerData& playerData, PacketSender& sender);
 
 	// @Player
     void update(double deltaTime) override;

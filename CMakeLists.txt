@@ -56,6 +56,7 @@ set(SOURCES
 	src/mat44.h
 	src/player.cpp
 	src/player.h
+	src/playerdata.h
 	src/protocol.cpp
 	src/protocol.h
 	src/remoteconnection.h

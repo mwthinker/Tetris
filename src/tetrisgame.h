@@ -5,6 +5,7 @@
 #include "localconnection.h"
 #include "remoteconnection.h"
 #include "device.h"
+#include "playerdata.h"
 
 #include <mw/signal.h>
 
@@ -16,22 +17,6 @@
 
 class TetrisGameEvent;
 class Player;
-
-class PlayerData {
-public:
-	PlayerData() : device_(nullptr), name_(""), deviceName_(""),
-		ai_(false), points_(0), level_(0), levelUpCounter_(0), clearedRows_(0) {
-	}
-
-	DevicePtr device_;
-	std::string name_;
-	std::string deviceName_;
-	bool ai_;
-	int points_, level_, levelUpCounter_, clearedRows_;
-	Block current_;
-	BlockType next_;
-	std::vector<BlockType> board_;
-};
 
 class TetrisGame {
 public:
@@ -69,14 +54,6 @@ public:
 
 	int getMaxLevel() const {
 		return maxLevel_;
-	}
-
-	void setCountDownTime(int countDownTime) {
-		countDownTime_ = countDownTime;
-	}
-
-	int getCountDownTime() const {
-		return countDownTime_;
 	}
 
 	void resizeBoard(int width, int height);

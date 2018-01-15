@@ -35,8 +35,7 @@ void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>
 	
 	localConnection_.removeAllPlayers();
 	for (const PlayerData& data : playersData) {
-		localConnection_.addPlayer(data.device_, width_, height_,data.levelUpCounter_,
-			data.points_, data.level_, data.clearedRows_, data.current_, data.next_, data.board_);
+		localConnection_.addPlayer(width_, height_, data);
 	}
 	// Add event listener to each player.
 	for (std::shared_ptr<LocalPlayer>& player : localConnection_) {
@@ -53,6 +52,7 @@ std::vector<PlayerData> TetrisGame::getPlayerData() const {
 		playerData.emplace_back();
 		const TetrisBoard& tetrisBoard = player->getTetrisBoard();
 		playerData.back().current_ = tetrisBoard.getBlock();
+		playerData.back().lastPosition_ = player->getLastPositon();
 		playerData.back().next_ = tetrisBoard.getNextBlockType();
 		playerData.back().board_ = tetrisBoard.getBoardVector();
 		playerData.back().levelUpCounter_ = player->getLevelUpCounter();
@@ -115,7 +115,7 @@ void TetrisGame::initGame() {
 
 	if (pause_) {
 		pause_ = false;
-		GamePause gamePause(pause_);
+		GamePause gamePause(pause_, false);
 		eventHandler_(gamePause);
 	}
 
@@ -182,7 +182,9 @@ void TetrisGame::pause() {
 		packet << localConnection_.getId();
 		sender_.sendToAll(packet);
 	}
-	GamePause gamePause(pause_);
+	
+	GamePause gamePause(pause_, nbrOfAlivePlayers_ > 0 && nbrOfPlayers_ == 1 || 
+		nbrOfPlayers_ > 1 && nbrOfPlayers_ - nbrOfAlivePlayers_ <= 1);
 	eventHandler_(gamePause);
 	
 	if (!pause_ && nbrOfPlayers_ > 1) {
@@ -378,7 +380,8 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 		case PacketType::PAUSE:
 		{
 			pause_ = !pause_;
-			GamePause gamePause(pause_);
+			GamePause gamePause(pause_, nbrOfAlivePlayers_ > 0 && nbrOfPlayers_ == 1 ||
+				nbrOfPlayers_ > 1 && nbrOfPlayers_ - nbrOfAlivePlayers_ <= 1);
 			eventHandler_(gamePause);
 			break;
 		}
@@ -452,6 +455,7 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 			// One player more is dead.
 			--nbrOfAlivePlayers_;
 
+			player->setLastPosition(nbrOfAlivePlayers_ + 1);
 			GameOver gameOver(nbrOfAlivePlayers_ + 1, player);
 			eventHandler_(gameOver);
 
@@ -514,6 +518,7 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 			break;
 		case GameEvent::GAME_OVER:
 		{
+			player->setLastPosition(nbrOfAlivePlayers_ - 1);
 			GameOver gameOver(nbrOfAlivePlayers_--, player);
 			eventHandler_(gameOver);
 			break;
