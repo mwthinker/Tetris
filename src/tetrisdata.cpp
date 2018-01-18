@@ -122,7 +122,7 @@ void to_json(json& j, const Block& block) {
 		{"blockType", block.getBlockType()},
 		{"leftColumn", block.getStartColumn()},
 		{"currentRotation", block.getCurrentRotation()}
-	});
+		});
 }
 
 std::string convertBlockTypesToString(const std::vector<BlockType>& board) {
@@ -445,6 +445,10 @@ void TetrisData::setPort(int port) {
 	jsonObject_["window"]["port"] = port;
 }
 
+int TetrisData::getTimeToConnectMS() const {
+	return jsonObject_["window"]["timeToConnectMS"].get<int>();
+}
+
 std::string TetrisData::getIp() const {
 	return jsonObject_["window"]["ip"].get<std::string>();
 }
@@ -612,7 +616,7 @@ void TetrisData::setActiveLocalGame(int rows, int columns, const std::vector<Pla
 				{"name", data.device_->getName()},
 				{"ai", data.device_->isAi()},
 			}}
-		});
+			});
 	}
 	jsonObject_["activeGames"]["localGame"]["players"] = playerJson;
 }

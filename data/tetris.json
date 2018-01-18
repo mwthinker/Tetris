@@ -87,7 +87,8 @@
 			"playerAreaColor": "0.4 0.1 0.15 0.5"
 		},
 		"port": 11155,
-		"ip": "127.0.0.1"
+		"ip": "127.0.0.1",
+		"timeToConnectMS": 3000
 	},
 	"ai1": "DefaultAi",
 	"ai2": "DefaultAi",

@@ -35,8 +35,6 @@ namespace {
     class Label : public gui::Label {
     public:
         Label(std::string text, mw::Font font) : gui::Label(text, font) {
-			auto color = TetrisData::getInstance().getLabelTextColor();
-			auto color2 = TetrisData::getInstance().getLabelBackgroundColor();
             setTextColor(TetrisData::getInstance().getLabelTextColor());
             setBackgroundColor(TetrisData::getInstance().getLabelBackgroundColor());
         }

@@ -107,6 +107,8 @@ public:
 	int getPort() const;
 	void setPort(int port);
 
+	int getTimeToConnectMS() const;
+
 	std::string getIp() const;
 	void setIp(std::string ip);
 	

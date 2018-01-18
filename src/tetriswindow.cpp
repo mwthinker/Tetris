@@ -25,7 +25,8 @@
 
 TetrisWindow::TetrisWindow() : 
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
-	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU) {
+	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU),
+	lastTimerId_(0) {
 
 	Frame::setPosition(TetrisData::getInstance().getWindowPositionX(), TetrisData::getInstance().getWindowPositionY());
 	Frame::setWindowSize(TetrisData::getInstance().getWindowWidth(), TetrisData::getInstance().getWindowHeight());
@@ -508,42 +509,107 @@ void TetrisWindow::initNetworkPanel() {
 	p3->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
 	port_ = p3->addDefault<TextField>(std::to_string(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
 	
+	auto p4 = centerPanel->addDefault<TransparentPanel>(450.f, 60.f);
+	p4->setLayout<gui::VerticalLayout>();
+
 	clientIpLabel_ = p3->addDefault<Label>("IP", TetrisData::getInstance().getDefaultFont(18));
 	clientIpLabel_->setVisible(false);
 	ipClient_ = p3->addDefault<TextField>(TetrisData::getInstance().getIp(), TetrisData::getInstance().getDefaultFont(18));
 	ipClient_->setVisible(false);
 
-	errorMessage_ = centerPanel->addDefault<Label>("Connecting ...", TetrisData::getInstance().getDefaultFont(18));
-	errorMessage_->setVisible(true);
+	errorMessage_ = p4->addDefault<Label>("Connecting ...", TetrisData::getInstance().getDefaultFont(18));
+	errorMessage_->setVisible(false);
 	
-	progressBar_ = centerPanel->addDefault<ProgressBar>();
-	progressBar_->setVisible(true);
+	progressBar_ = p4->addDefault<ProgressBar>();
+	progressBar_->setVisible(false);
 
 	networkConnect_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
 
 	networkConnect_->addActionListener([&](gui::Component& c) {
-		errorMessage_->setVisible(true);
-		progressBar_->setVisible(true);
-		TetrisData::getInstance().setPort(std::stoi(port_->getText()));
-		if (radioButtonServer_->isSelected()) {
-			TetrisData::getInstance().save();
+		if (tetrisGame_.getStatus() == TetrisGame::Status::WAITING_TO_CONNECT) { // Is connecting!
+			std::cout << "WAITING_TO_CONNECT\n";
+			errorMessage_->setVisible(true);
+			progressBar_->setVisible(true);
+			TetrisData::getInstance().setPort(std::stoi(port_->getText()));
+			if (radioButtonServer_->isSelected()) {
+				TetrisData::getInstance().save();
+				tetrisGame_.closeGame();
+				nbrHumans_->setNbr(1);
+				tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+				tetrisGame_.createServerGame(std::stoi(port_->getText()));
+			} else {
+				TetrisData::getInstance().setIp(ipClient_->getText());
+				TetrisData::getInstance().save();
+				tetrisGame_.closeGame();
+				nbrHumans_->setNbr(1);
+				tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+				tetrisGame_.createClientGame(std::stoi(port_->getText()), ipClient_->getText());
+				addTimerMS(TetrisData::getInstance().getTimeToConnectMS());
+				progressBar_->setVisible(true);
+				errorMessage_->setText("Connectiong ...");
+				errorMessage_->setVisible(true);
+				networkConnect_->setLabel("Abort");
+			}
+		} else { // Active connection, abort the current connection!
 			tetrisGame_.closeGame();
-			nbrHumans_->setNbr(1);
-			tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-			tetrisGame_.createServerGame(std::stoi(port_->getText()));
+			networkConnect_->setLabel("Connect");
+			progressBar_->setVisible(false);
+			errorMessage_->setVisible(false);
+			removeLastTimer();
+		}
+	});
+
+	addPanelChangeListener([&](gui::Component& c, bool enterFrame) {
+		if (!enterFrame) {
+			// Leaving frame, abort current connection.
+			tetrisGame_.closeGame();
+			progressBar_->setVisible(false);
+			networkConnect_->setLabel("Abort");
+			errorMessage_->setVisible(true);
+			removeLastTimer();
 		} else {
-			TetrisData::getInstance().setIp(ipClient_->getText());
-			TetrisData::getInstance().save();
-			tetrisGame_.closeGame();
-			nbrHumans_->setNbr(1);
-			tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
-			tetrisGame_.createClientGame(std::stoi(port_->getText()), ipClient_->getText());
+			errorMessage_->setVisible(false);
+			networkConnect_->setLabel("Connect");
+			removeLastTimer();
 		}
 	});
 
 	addDrawListener([&](gui::Frame& frame, double deltaTime) {
 		tetrisGame_.update(deltaTime);
 	});
+}
+
+// Add a new timer and remove the last.
+void TetrisWindow::addTimerMS(unsigned int ms) {
+	removeLastTimer();
+	lastTimerId_ = SDL_AddTimer(ms, TetrisWindow::addTimer, 0); // Clean up timer?
+	if (lastTimerId_ == 0) {
+		std::cout << SDL_GetError() << "\n";
+	}
+}
+
+// Remove last timer. Safe to be called mulltiple times.
+void TetrisWindow::removeLastTimer() {
+	if (lastTimerId_ != 0) {
+		SDL_RemoveTimer(lastTimerId_); // Only call this once per id.
+		lastTimerId_ = 0;
+	}
+}
+
+// Only allowed to be called by addTimer().
+Uint32 TetrisWindow::addTimer(Uint32 interval, void* sdlTimerId) {
+	SDL_Event event;
+	SDL_UserEvent userevent;
+	userevent.type = SDL_USEREVENT;
+	userevent.code = 0;
+	userevent.data1 = nullptr;
+	userevent.data2 = nullptr;
+
+	event.type = SDL_USEREVENT;
+	event.user = userevent;
+
+	SDL_PushEvent(&event);
+	return 0;
 }
 
 void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
@@ -682,6 +748,13 @@ DevicePtr TetrisWindow::findAiDevice(std::string name) const {
 
 void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 	switch (e.type) {
+		case SDL_USEREVENT: // Abort the current connection.
+			progressBar_->setVisible(false);
+			errorMessage_->setText("Failed to connect");
+			errorMessage_->setVisible(true);
+			networkConnect_->setLabel("Connect");
+			tetrisGame_.closeGame();
+			break;
 		case SDL_WINDOWEVENT:
 			switch (e.window.event) {
 				case SDL_WINDOWEVENT_CLOSE:
@@ -689,7 +762,7 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 					break;
 				case SDL_WINDOWEVENT_RESIZED:
 					if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
-						// The Window's is not maximized. Save size!
+						// The window is not maximized. Save size!
 						TetrisData::getInstance().setWindowWidth(e.window.data1);
 						TetrisData::getInstance().setWindowHeight(e.window.data2);
 						manBar_->setPreferredSize((float) (e.window.data1 - 100), 100);
@@ -697,7 +770,7 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 					break;
 				case SDL_WINDOWEVENT_MOVED:
 					if (!(SDL_GetWindowFlags(mw::Window::getSdlWindow()) & SDL_WINDOW_MAXIMIZED)) {
-						// The Window's is not maximized. Save position!
+						// The window is not maximized. Save position!
 						TetrisData::getInstance().setWindowPositionX(e.window.data1);
 						TetrisData::getInstance().setWindowPositionY(e.window.data2);
 					}

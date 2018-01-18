@@ -107,6 +107,10 @@ private:
 
 	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
 
+	void addTimerMS(unsigned int ms);
+	void removeLastTimer();
+	static Uint32 addTimer(Uint32 interval, void* sdlTimerId);
+
 	// Panel indexes.
 	int menuIndex_,
 		playIndex_,
@@ -121,6 +125,7 @@ private:
 
 	int lastX_, lastY_;
 	StartFrame startFrame_;
+	SDL_TimerID lastTimerId_;
 };
 
 #endif // TETRISWINDOW_H
