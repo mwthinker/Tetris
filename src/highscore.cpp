@@ -54,6 +54,18 @@ void Highscore::draw(const gui::Graphic& graphic, double deltaTime) {
 	graphic.drawText(dateHeader_, x + 50 + 150 + 170, y);
 }
 
+int Highscore::getNextPosition() const {
+	int position = ascList_.size() + 1;
+	for (const HighscoreElement& highscore : ascList_) {
+		int points = highscore.intPoints_;
+		// New record?
+		if (nextRecord_ > points) {
+			--position;
+		}
+	}
+	return position;
+}
+
 bool Highscore::isNewRecord(int record) const {
 	for (const HighscoreElement& highscore : ascList_) {
 		int points = highscore.intPoints_;
@@ -70,7 +82,8 @@ void Highscore::addNewRecord(std::string name, std::string date) {
 	mw::Text dateT(date, font_);
 
 	mw::Text pointsT(std::to_string(nextRecord_), font_);
-	ascList_.push_back(HighscoreElement(nextRecord_, pointsT, nameT, dateT));
+	ascList_.push_front(HighscoreElement(nextRecord_, pointsT, nameT, dateT)); // If same points
+	// older will be ranked higher.
 	sortAsc(ascList_);
 
 	if (numbers_.size() < ascList_.size()) {

@@ -329,9 +329,21 @@ void TetrisWindow::initHighscorePanel() {
 void TetrisWindow::initNewHighscorePanel() {
 	setCurrentPanel(newHighscoreIndex_);
 	add<Bar>(gui::BorderLayout::NORTH);
+	
+	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
+	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto panel = add<TransparentPanel>(gui::BorderLayout::CENTER);
-	panel->addDefault<Label>("Name: ", TetrisData::getInstance().getDefaultFont(18));
+	centerPanel->addDefault<Label>("New higscore record!", TetrisData::getInstance().getDefaultFont(40));
+
+	centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
+	newHighscorePositionlabel_ = centerPanel->addDefault<Label>("Position: 1", TetrisData::getInstance().getDefaultFont(32));
+	newHighscorePointslabel_ = centerPanel->addDefault<Label>("Points: 512", TetrisData::getInstance().getDefaultFont(18));
+	centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
+
+	auto panel = centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
+	panel->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
+
+	panel->addDefault<Label>("Name: ", TetrisData::getInstance().getDefaultFont(18));	
 
     textField_ = panel->addDefault<TextField>(TetrisData::getInstance().getDefaultFont(18));
 	textField_->addActionListener([&](gui::Component& c) {
@@ -351,13 +363,19 @@ void TetrisWindow::initNewHighscorePanel() {
 			char mbstr[30];
 			std::strftime(mbstr, 30, "%Y-%m-%d", std::localtime(&t));
 			highscore_->addNewRecord(name, mbstr);
-			setCurrentPanel(menuIndex_);
+			setCurrentPanel(playIndex_);
 			saveHighscore();
 		}
 	});
 
-	panel->addDefault<Button>("Ok", TetrisData::getInstance().getDefaultFont(18))->addActionListener([&](gui::Component& c) {
+	centerPanel->addDefault<Button>("Continue", TetrisData::getInstance().getDefaultFont(25))->addActionListener([&](gui::Component& c) {
 		textField_->doAction();
+	});
+
+	addPanelChangeListener([&](gui::Component& c, bool enterFrame) {
+		if (enterFrame) {
+			textField_->setFocus(true);
+		}
 	});
 }
 
@@ -651,6 +669,17 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 
 			// Set points in order for highscore to know which point to save in list.
 			highscore_->setNextRecord(localPlayer->getPoints());
+			{
+				std::stringstream stream;
+				stream << "Position: " << highscore_->getNextPosition();
+				newHighscorePositionlabel_->setText(stream.str());
+			}
+			{
+				std::stringstream stream;
+				stream << "Points: " << highscore_->getNextRecord();
+				newHighscorePointslabel_->setText(stream.str());
+			}
+
 			// In order for the user to insert name.
 			setCurrentPanel(newHighscoreIndex_);
 		}

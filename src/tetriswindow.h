@@ -74,6 +74,8 @@ private:
 	std::shared_ptr<Highscore> highscore_;
 
 	// initNewHighscorePanel
+	std::shared_ptr<gui::Label> newHighscorePositionlabel_;
+	std::shared_ptr<gui::Label> newHighscorePointslabel_;
 	std::shared_ptr<gui::TextField> textField_;
 
 	// initCustomPlayPanel

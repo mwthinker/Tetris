@@ -20,9 +20,13 @@ public:
 		mw::Text points_, name_, date_;
 	};
 
+	using const_iterator = std::list<HighscoreElement>::const_iterator;
+
 	Highscore(int nbr, const mw::Color& color, const mw::Font& font);
 
 	void draw(const gui::Graphic& graphic, double deltaTime) override;
+
+	int getNextPosition() const;
 
 	bool isNewRecord(int record) const;
 	void addNewRecord(std::string name, std::string date);
@@ -30,13 +34,11 @@ public:
 	void setNextRecord(int record);
 	int getNextRecord() const;
 
-	std::list<HighscoreElement>::const_iterator begin() const {
-		return ascList_.cbegin();
-	}
+	const_iterator begin() const;
+	const_iterator end() const;
 
-	std::list<HighscoreElement>::const_iterator end() const {
-		return ascList_.cend();
-	}
+	const_iterator cbegin() const;
+	const_iterator cend() const;
 
 private:
 	// Sorts the vector in descending order.
@@ -50,5 +52,21 @@ private:
 	int nextRecord_;
 	mw::Font font_;
 };
+
+inline Highscore::const_iterator Highscore::begin() const {
+	return ascList_.begin();
+}
+
+inline Highscore::const_iterator Highscore::end() const {
+	return ascList_.end();
+}
+
+inline Highscore::const_iterator Highscore::cbegin() const {
+	return ascList_.cbegin();
+}
+
+inline Highscore::const_iterator Highscore::cend() const {
+	return ascList_.cend();
+}
 
 #endif // HIGHSCORE_H
