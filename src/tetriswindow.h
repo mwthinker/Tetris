@@ -12,6 +12,7 @@
 #include <gui/label.h>
 #include <gui/checkbox.h>
 #include <gui/progressbar.h>
+#include <gui/traversalgroup.h>
 
 #include <array>
 #include <memory>
@@ -126,6 +127,7 @@ private:
 	int lastX_, lastY_;
 	StartFrame startFrame_;
 	SDL_TimerID lastTimerId_;
+	gui::TraversalGroup groupMenu_;
 };
 
 #endif // TETRISWINDOW_H

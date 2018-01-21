@@ -186,33 +186,51 @@ void TetrisWindow::initMenuPanel() {
 	panel->setLayout<gui::VerticalLayout>(5.f, 15.f, 10.f);
 	panel->setBackgroundColor(1, 1, 1, 0);
 	panel->addDefault<Label>("MWetris", TetrisData::getInstance().getDefaultFont(50));
-
-	panel->addDefaultToGroup<Button>("Play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	
+	auto button = panel->addDefault<Button>("Play", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
 		resumeGame();
 		if (tetrisGame_.getNbrOfPlayers() == 1) {
 			tetrisGame_.pause();
 		}
 		setCurrentPanel(playIndex_);
 	});
+	groupMenu_.add(button);
 
-	panel->addDefaultToGroup<Button>("Custom play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	button = panel->addDefault<Button>("Custom play", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(customIndex_);
 	});
+	groupMenu_.add(button);
 
-	panel->addDefaultToGroup<Button>("Network play", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	button = panel->addDefault<Button>("Network play", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(networkIndex_);
 	});
+	groupMenu_.add(button);
 
-	panel->addDefaultToGroup<Button>("Highscore", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	button = panel->addDefault<Button>("Highscore", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(highscoreIndex_);
 	});
+	groupMenu_.add(button);
 
-	panel->addDefaultToGroup<Button>("Settings", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	button = panel->addDefault<Button>("Settings", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(settingsIndex_);
 	});
-
-	panel->addDefaultToGroup<Button>("Exit", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	groupMenu_.add(button);
+	
+	button = panel->addDefault<Button>("Exit", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
 		Window::quit();
+	});
+	groupMenu_.add(button);
+
+	// In order for the user to traverse the menu with the keyboard.
+	groupMenu_.setVerticalArrows(true);
+	addKeyListener([&](gui::Component&, const SDL_Event& sdlEvent) {
+		groupMenu_.handleKeyboard(sdlEvent);
 	});
 }
 
@@ -238,6 +256,7 @@ void TetrisWindow::initPlayPanel() {
 			setTitle("MWetris");
 		}
 	});
+	menu_->setFocus(false);
 
 	restart_ = manBar_->addDefault<Button>("Restart", TetrisData::getInstance().getDefaultFont(30));
 	restart_->addActionListener([&](gui::Component&) {
@@ -288,6 +307,10 @@ void TetrisWindow::initPlayPanel() {
 				}
 				break;
 		}
+	});
+
+	addPanelChangeListener([&](gui::Component& c, bool enterFrame) {
+		menu_->setFocus(false);
 	});
 }
 

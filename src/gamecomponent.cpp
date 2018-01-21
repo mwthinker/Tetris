@@ -41,7 +41,6 @@ GameComponent::GameComponent(TetrisGame& tetrisGame)
 	: tetrisGame_(tetrisGame),
 	updateMatrix_(true) {
 
-	setGrabFocus(true);
 	eventConnection_ = tetrisGame_.addGameEventHandler(std::bind(&GameComponent::eventHandler, this, std::placeholders::_1));
 
 	boardShader_ = std::make_shared<BoardShader>("board.ver.glsl", "board.fra.glsl");
