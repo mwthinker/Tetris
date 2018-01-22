@@ -16,7 +16,7 @@ The project is using CMake to generate the environment specific development
 tools. E.g. Visual Studio solution (Windows) or makefile (Unix). See more 
 at http://www.cmake.org/.
 
-Current release is MWetris 1.0 which uses OpenGl 1.1 and SDL. Is tested to work under windows, but should work under linux too (no binary avaiable though!).
+Current release is MWetris 1.0 which uses OpenGl 1.1 and SDL. Is tested to work under windows, but should work under linux too (no binary available though!).
 
 Next version is MWetris 2.x which uses OpenGl 2.1 and SDL2.
 ![MWetris 2.x window](data/images/PlayMWetris.png)

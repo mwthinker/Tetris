@@ -155,12 +155,26 @@ TetrisData::TetrisData() : textureAtlas_(2048, 2048, []() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }) {
-	std::ifstream stream(JSON_PATH);
+	std::ifstream defaultStream("USE_APPLICATION_JSON");
+	bool applicationJson;
+	defaultStream >> applicationJson;
+	const std::string APPLICATION_JSON = "tetris.json";
+	if (applicationJson) {
+		jsonPath_ = APPLICATION_JSON;
+	} else {
+		// Find default path to save/load file from.
+		jsonPath_ = SDL_GetPrefPath("mwthinker", "MWetris2") + APPLICATION_JSON;
+	}
+	std::ifstream stream(jsonPath_);
+	if (!stream.is_open()) {
+		// Assume that the file does not exist, load file from application folder.
+		stream = std::ifstream(APPLICATION_JSON);
+	}
 	stream >> jsonObject_;
 }
 
 void TetrisData::save() {
-	std::ofstream stream(JSON_PATH);
+	std::ofstream stream(jsonPath_);
 	stream << jsonObject_.dump(1);
 }
 

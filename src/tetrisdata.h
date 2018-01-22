@@ -179,7 +179,7 @@ public:
 private:
 	TetrisData();
 	
-	const std::string JSON_PATH = "tetris.json";
+	std::string jsonPath_;
 	mw::TextureAtlas textureAtlas_;
 	std::map<std::string, mw::Sound> sounds_;
 	std::map<std::string, mw::Font> fonts_;
