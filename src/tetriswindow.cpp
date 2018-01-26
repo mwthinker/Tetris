@@ -601,17 +601,19 @@ void TetrisWindow::initNetworkPanel() {
 	});
 
 	addPanelChangeListener([&](gui::Component& c, bool enterFrame) {
-		if (!enterFrame) {
-			// Leaving frame, abort current connection.
-			tetrisGame_.closeGame();
-			progressBar_->setVisible(false);
-			networkConnect_->setLabel("Abort");
-			errorMessage_->setVisible(true);
-			removeLastTimer();
-		} else {
+		if (enterFrame) {
 			errorMessage_->setVisible(false);
 			networkConnect_->setLabel("Connect");
 			removeLastTimer();
+		} else { // Leaving frame.
+			if (getCurrentPanelIndex() == menuIndex_) {
+				// Abort current connection.
+				tetrisGame_.closeGame();				
+			}
+			removeLastTimer();
+			errorMessage_->setVisible(true);
+			progressBar_->setVisible(false);
+			networkConnect_->setLabel("Abort");
 		}
 	});
 
