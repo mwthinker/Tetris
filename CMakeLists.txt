@@ -8,6 +8,8 @@ if (MSVC)
 	
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DWIN32 -D_WINSOCKAPI_)
 	# D_WINSOCKAPI_ makes redefinition warnings disappear.
+
+	set(WIN_RESOURCE_FILE ${CMAKE_SOURCE_DIR}/data/package/mwetris.rc)
 else ()
 	set(CMAKE_CXX_FLAGS "-std=c++1y")
 	option(Debug "Set projects to debug mode.")
@@ -18,6 +20,10 @@ else ()
 		set(CMAKE_BUILD_TYPE "Release" CACHE INTERNAL "Build type.")
 	endif ()
 endif ()
+
+set(MWETRIS_VERSION_MAJOR "2")
+set(MWETRIS_VERSION_MINOR "1")
+set(MWETRIS_VERSION_PATCH "0")
 
 # Source files.
 set(SOURCES
@@ -138,7 +144,7 @@ if (ConsoleTetris)
 	include_directories(
 		CppConsole/src
 	)
-	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE})
+	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE} ${WIN_RESOURCE_FILE})
 else ()
 	set(ConsoleTest OFF)
 	add_executable(MWetris ${SOURCES})
@@ -165,3 +171,106 @@ target_link_libraries(MWetris
 	${SDL2_NET_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
+
+option(PackageBuilder "Create a package builder" OFF)
+
+if (MSVC AND PackageBuilder)
+	set(CPACK_NSIS_MODIFY_PATH "ON")
+	
+	install(TARGETS MWetris
+        DESTINATION .
+        COMPONENT application
+	)
+	
+	string(REPLACE "\\" "/" DLL_FOLDER $ENV{DLL_FOLDER})
+
+	if (DLL_FOLDER)
+		set(DLL_FILES
+			"${DLL_FOLDER}/glew32.dll"
+			"${DLL_FOLDER}/libFLAC-8.dll"
+			"${DLL_FOLDER}/libfreetype-6.dll"
+			"${DLL_FOLDER}/libjpeg-9.dll"
+			"${DLL_FOLDER}/libmodplug-1.dll"
+			"${DLL_FOLDER}/libogg-0.dll"
+			"${DLL_FOLDER}/libpng16-16.dll"
+			"${DLL_FOLDER}/libtiff-5.dll"
+			"${DLL_FOLDER}/libvorbis-0.dll"
+			"${DLL_FOLDER}/libvorbisfile-3.dll"
+			"${DLL_FOLDER}/libwebp-4.dll"
+			"${DLL_FOLDER}/SDL2.dll"
+			"${DLL_FOLDER}/SDL2_image.dll"
+			"${DLL_FOLDER}/SDL2_mixer.dll"
+			"${DLL_FOLDER}/SDL2_net.dll"
+			"${DLL_FOLDER}/SDL2_ttf.dll"
+			"${DLL_FOLDER}/smpeg2.dll"
+			"${DLL_FOLDER}/zlib1.dll"
+		)
+		
+		install(FILES ${DLL_FILES}
+			DESTINATION .
+			COMPONENT runtime
+		)
+	else ()
+		message(STATUS "Enviroment variable DLL_FOLDER not defined")
+	endif ()
+	
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/data/
+		DESTINATION .
+		COMPONENT data
+	)
+	
+	# Replace the USE_APPLICATION_JSON file, use default saving place.
+	install(FILES ${CMAKE_SOURCE_DIR}/data/package/USE_APPLICATION_JSON
+		DESTINATION .
+		COMPONENT data
+	)
+
+	########################################################################
+	# Tell CMake to install the windows runtime libraries to the programs
+	# directory and tell CPack that they belong to the applications component
+	include(InstallRequiredSystemLibraries)
+	install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+		DESTINATION .
+		COMPONENT application
+	)
+
+	# CPack configuration
+	set(CPACK_PACKAGE_NAME "MWetris_Installer")
+	set(CPACK_PACKAGE_VENDOR "MW")
+	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Installs MWetris")
+	set(CPACK_PACKAGE_VERSION_MAJOR ${MWETRIS_VERSION_MAJOR})
+	set(CPACK_PACKAGE_VERSION_MINOR ${MWETRIS_VERSION_MINOR})
+	set(CPACK_PACKAGE_VERSION_PATCH ${MWETRIS_VERSION_PATCH})
+	set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+	set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")
+
+	# Tell CPack about the components and group the data components together.
+	set(CPACK_COMPONENTS_ALL application data runtime vcredist)
+
+	# More descriptive names for each of the components, and component groups.
+	set(CPACK_COMPONENT_APPLICATION_DISPLAY_NAME "Application")
+	set(CPACK_COMPONENT_APPLICATION_REQUIRED true)
+
+	set(CPACK_COMPONENT_DATA_DISPLAY_NAME "Data")
+	set(CPACK_COMPONENT_DATA_REQUIRED true)
+
+	set(CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime")
+	set(CPACK_COMPONENT_RUNTIME_REQUIRED true)
+
+	# Text from "LICENSE.txt" is displayed in the installer's license tab.
+	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
+
+	# Set the icon used inside the installer wizard and the icons for the installer and uninstaller.
+	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\data\\\\package\\\\mw.bmp")
+	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
+	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
+	set(CPACK_NSIS_INSTALLED_ICON_NAME "MWetris.exe")
+ 
+	# Set the programs displayed under the Start menu shortcut.
+	set(CPACK_NSIS_MENU_LINKS
+		"MWetris" "MWetris"
+		"https://github.com/mwthinker/MWetris" "Github MWetris"
+	)
+
+	include(CPack)
+endif ()

@@ -59,7 +59,7 @@
 		"resizeable": true,
 		"minWidth": 480,
 		"minHeight": 480,
-		"icon": "images/icon.bmp",
+		"icon": "images/icon.png",
 		"sprites": {
 			"background": "images/background.png",
 			"computer": "images/computer.png",

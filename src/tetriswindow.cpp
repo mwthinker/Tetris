@@ -336,8 +336,8 @@ void TetrisWindow::initNewHighscorePanel() {
 	centerPanel->addDefault<Label>("New higscore record!", TetrisData::getInstance().getDefaultFont(40));
 
 	centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
-	newHighscorePositionlabel_ = centerPanel->addDefault<Label>("Position: 1", TetrisData::getInstance().getDefaultFont(32));
-	newHighscorePointslabel_ = centerPanel->addDefault<Label>("Points: 512", TetrisData::getInstance().getDefaultFont(18));
+	newHighscorePositionlabel_ = centerPanel->addDefault<Label>("", TetrisData::getInstance().getDefaultFont(32));
+	newHighscorePointslabel_ = centerPanel->addDefault<Label>("", TetrisData::getInstance().getDefaultFont(18));
 	centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
 
 	auto panel = centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
@@ -668,7 +668,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			highscore_->isNewRecord(localPlayer->getPoints())) { // New record only in local game with default settings.
 			
 			saveCurrentLocalGame();
-
+			
 			// Set points in order for highscore to know which point to save in list.
 			highscore_->setNextRecord(localPlayer->getPoints());
 			{
