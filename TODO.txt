@@ -1,26 +1,18 @@
+v2.1
+Done! Use json instead of xml
+Done! Add animation effects to game.
+
 v2.0
-
 Done! Use SDL 2 instead of SDL library.
-
 Done! Game logic should be performed in a new thread to increase input response.
-
 Done! Decouple graphic from game logic in order for thread to share data safely.
-
 Done! The gui code must be made smaller and if possible into an own project.
-
 Last played game can be resumed at the same point when the window was closed.
-
 Partly done! Add animation effects to game.
-
 Done! Use external TinyXMl library to load xml files.
-
 Done! Save/load highscore records to/from a xml file.
-
 Done! Save/load game settings, graphic and logic settings to/from xml file.
-
 Done! Sound, image and data should be defined in a xml file to increase game customization.
-
 Done! The AI parameters be defined in xml file.
-
 Done! The "value" function for the AI should be defined outside the c++ code.
 	  Therefore a simple calculator must be defined to support loading custom math formula.

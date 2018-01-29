@@ -235,7 +235,14 @@ if (MSVC AND PackageBuilder)
 	)
 
 	# CPack configuration
-	set(CPACK_PACKAGE_NAME "MWetris_Installer")
+	
+	if (Debug)
+		set(CPACK_PACKAGE_NAME "MWetris_Installer_Debug")
+	else ()	
+		set(CPACK_PACKAGE_NAME "MWetris_Installer")
+	endif()
+	
+	set(CPACK_PACKAGE_NAME "MWetris_Installer_Debug")
 	set(CPACK_PACKAGE_VENDOR "MW")
 	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Installs MWetris")
 	set(CPACK_PACKAGE_VERSION_MAJOR ${MWETRIS_VERSION_MAJOR})
