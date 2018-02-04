@@ -1,16 +1,18 @@
 #include "ai.h"
 
+#include <calc/cache.h>
+#include <calc/calculatorexception.h>
+
 #include <limits>
 #include <cmath>
-
-#include <calc/cache.h>
+#include <iostream>
 
 namespace {
 
 	// Calculate and return all possible states for the block provided.
 	std::vector<Ai::State> calculateAllPossibleStates(const RawTetrisBoard& board, Block block) {
 		std::vector<Ai::State> states;
-		
+
 		// Valid block position?
 		if (!board.collision(block)) {
 			// Go through all rotations for the block.
@@ -55,7 +57,7 @@ namespace {
 			}
 		}
 		return states;
-	}	
+	}
 
 	struct RowRoughness {
 		RowRoughness() : holes_(0), rowSum_(0) {
@@ -153,7 +155,7 @@ namespace {
 		ColumnRoughness columnRoughness = calculateColumnHoles(board, highestUsedRow);
 		int edges = calculateBlockEdges(board, block);
 		float blockMeanHeight = calculateBlockMeanHeight(block);
-		
+
 		calculator.updateVariable("rowHoles", (float) rowRoughness.holes_);
 		calculator.updateVariable("columnHoles", (float) columnRoughness.holes_);
 		calculator.updateVariable("bumpiness", (float) columnRoughness.bumpiness);
@@ -198,7 +200,7 @@ Ai::State Ai::calculateBestStateRecursive(RawTetrisBoard board, int depth) {
 			for (int i = 0; i < state.rotationLeft_; ++i) {
 				childBoard.update(Move::ROTATE_LEFT);
 			}
-			
+
 			// Move left.
 			for (int i = 0; i < state.left_; ++i) {
 				childBoard.update(Move::LEFT);
@@ -245,5 +247,9 @@ void Ai::initCalculator() {
 
 	calculator_.addVariable("rows", 0);
 	calculator_.addVariable("columns", 0);
-	cache_ = calculator_.preCalculate(valueFunction_);
+	try {
+		cache_ = calculator_.preCalculate(valueFunction_);
+	} catch (calc::CalculatorException exception) {
+		std::cerr << getName() << "failed to load ai";
+	}
 }
