@@ -70,7 +70,6 @@ private:
 	PacketSender& sender_;
 	int levelUpCounter_;
 	int connectionId_;
-	double watingTime_;
 };
 
 #endif // LOCALPLAYER_H

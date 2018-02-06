@@ -23,7 +23,7 @@ endif ()
 
 set(MWETRIS_VERSION_MAJOR "2")
 set(MWETRIS_VERSION_MINOR "1")
-set(MWETRIS_VERSION_PATCH "0")
+set(MWETRIS_VERSION_PATCH "1")
 
 # Source files.
 set(SOURCES
@@ -53,6 +53,7 @@ set(SOURCES
 	src/gamecontroller.h
 	src/keyboard.cpp
 	src/keyboard.h
+	src/localconnection.cpp
 	src/localconnection.h
 	src/localplayer.cpp
 	src/localplayer.h
@@ -175,8 +176,6 @@ target_link_libraries(MWetris
 option(PackageBuilder "Create a package builder" OFF)
 
 if (MSVC AND PackageBuilder)
-	set(CPACK_NSIS_MODIFY_PATH "ON")
-	
 	install(TARGETS MWetris
         DESTINATION .
         COMPONENT application
@@ -235,14 +234,8 @@ if (MSVC AND PackageBuilder)
 	)
 
 	# CPack configuration
-	
-	if (Debug)
-		set(CPACK_PACKAGE_NAME "MWetris_Installer_Debug")
-	else ()	
-		set(CPACK_PACKAGE_NAME "MWetris_Installer")
-	endif()
-	
-	set(CPACK_PACKAGE_NAME "MWetris_Installer_Debug")
+	set(CPACK_PACKAGE_NAME "MWetris")
+
 	set(CPACK_PACKAGE_VENDOR "MW")
 	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Installs MWetris")
 	set(CPACK_PACKAGE_VERSION_MAJOR ${MWETRIS_VERSION_MAJOR})
@@ -250,6 +243,8 @@ if (MSVC AND PackageBuilder)
 	set(CPACK_PACKAGE_VERSION_PATCH ${MWETRIS_VERSION_PATCH})
 	set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 	set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")
+	
+	set(CPACK_GENERATOR ZIP NSIS)
 
 	# Tell CPack about the components and group the data components together.
 	set(CPACK_COMPONENTS_ALL application data runtime vcredist)
@@ -266,9 +261,15 @@ if (MSVC AND PackageBuilder)
 
 	# Text from "LICENSE.txt" is displayed in the installer's license tab.
 	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
-
-	# Set the icon used inside the installer wizard and the icons for the installer and uninstaller.
 	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\data\\\\package\\\\mw.bmp")
+	
+	# NSIS ------------------------------------------------------------------------
+	set(CPACK_NSIS_MODIFY_PATH "ON") # Ask of adding path and desktop icon.
+
+	set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")	
+	set(CPACK_NSIS_COMPRESSOR "/SOLID lzma")
+	
+	# Set the icon used inside the installer wizard and the icons for the installer and uninstaller.	
 	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
 	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
 	set(CPACK_NSIS_INSTALLED_ICON_NAME "MWetris.exe")
@@ -278,6 +279,9 @@ if (MSVC AND PackageBuilder)
 		"MWetris" "MWetris"
 		"https://github.com/mwthinker/MWetris" "Github MWetris"
 	)
-
+	
+	set(CPACK_NSIS_MUI_FINISHPAGE_RUN "MWetris.exe")
+	# ------------------------------------------------------------------------------	
+	
 	include(CPack)
 endif ()

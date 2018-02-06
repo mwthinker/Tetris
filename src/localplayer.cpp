@@ -21,7 +21,6 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	device_->update(getTetrisBoard());
 	name_ = device_->getName();
 	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
-	watingTime_ = 0;
 }
 
 LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
@@ -45,7 +44,6 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 		tetrisBoard_.update(Move::GAME_OVER);
 	}
 	tetrisBoard_.addGameEventListener(std::bind(&LocalPlayer::boardListener, this, std::placeholders::_1, std::placeholders::_2));
-	watingTime_ = 0;
 }
 
 void LocalPlayer::endGame() {
@@ -70,16 +68,16 @@ void LocalPlayer::update(Move move) {
 void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 	switch (gameEvent) {
 		case GameEvent::ONE_ROW_REMOVED:
-			watingTime_ = getWaitingTime();
+			//watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::TWO_ROW_REMOVED:
-			watingTime_ = getWaitingTime();
+			//watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::THREE_ROW_REMOVED:
-			watingTime_ = getWaitingTime();
+			//watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
-			watingTime_ = getWaitingTime();
+			//watingTime_ = getWaitingTime();
 			break;
 		case GameEvent::CURRENT_BLOCK_UPDATED:
 			// Generate a new block for a local player.
@@ -95,42 +93,38 @@ void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 void LocalPlayer::update(double deltaTime) {
 	Input input = device_->currentInput();
 
-	if (watingTime_ > 0)
-		watingTime_ -= deltaTime;
-	else {
-		// The time beetween each "gravity" move.
-		double downTime = 1.0 / getGravityDownSpeed();
-		gravityMove_.setWaitingTime(downTime);
+	// The time beetween each "gravity" move.
+	double downTime = 1.0 / getGravityDownSpeed();
+	gravityMove_.setWaitingTime(downTime);
 
-		gravityMove_.update(deltaTime, true);
-		if (gravityMove_.doAction()) {
-			update(Move::DOWN_GRAVITY);
-		}
+	gravityMove_.update(deltaTime, true);
+	if (gravityMove_.doAction()) {
+		update(Move::DOWN_GRAVITY);
+	}
 
-		leftHandler_.update(deltaTime, input.left_ && !input.right_);
-		if (leftHandler_.doAction()) {
-			update(Move::LEFT);
-		}
+	leftHandler_.update(deltaTime, input.left_ && !input.right_);
+	if (leftHandler_.doAction()) {
+		update(Move::LEFT);
+	}
 
-		rightHandler_.update(deltaTime, input.right_ && !input.left_);
-		if (rightHandler_.doAction()) {
-			update(Move::RIGHT);
-		}
+	rightHandler_.update(deltaTime, input.right_ && !input.left_);
+	if (rightHandler_.doAction()) {
+		update(Move::RIGHT);
+	}
 
-		downHandler_.update(deltaTime, input.down_);
-		if (downHandler_.doAction()) {
-			update(Move::DOWN);
-		}
+	downHandler_.update(deltaTime, input.down_);
+	if (downHandler_.doAction()) {
+		update(Move::DOWN);
+	}
 
-		rotateHandler_.update(deltaTime, input.rotate_);
-		if (rotateHandler_.doAction()) {
-			update(Move::ROTATE_LEFT);
-		}
+	rotateHandler_.update(deltaTime, input.rotate_);
+	if (rotateHandler_.doAction()) {
+		update(Move::ROTATE_LEFT);
+	}
 
-		downGroundHandler_.update(deltaTime, input.downGround_);
-		if (downGroundHandler_.doAction()) {
-			update(Move::DOWN_GROUND);
-		}
+	downGroundHandler_.update(deltaTime, input.downGround_);
+	if (downGroundHandler_.doAction()) {
+		update(Move::DOWN_GROUND);
 	}
 	
 	device_->update(tetrisBoard_);

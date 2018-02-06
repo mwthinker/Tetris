@@ -13,165 +13,97 @@ public:
 	using iterator = std::vector<std::shared_ptr<LocalPlayer>>::iterator;
 	using const_iterator = std::vector<std::shared_ptr<LocalPlayer>>::const_iterator;
 
-	LocalConnection(PacketSender& packetSender) :
-		packetSender_(packetSender),
-		timeStep_(1.0/60),
-		accumulator_(0),
-		id_(UNDEFINED_CONNECTION_ID) {
-	}
+	LocalConnection(PacketSender& packetSender);
 
-	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
-		players_.clear();
-		for (const auto& device : devices) {
-			auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
-				randomBlockType(), randomBlockType(), device, packetSender_);
-			players_.push_back(player);
-		}
-		
-		if (packetSender_.isActive()) {
-			packetSender_.sendToAll(getClientInfo());
-		}
-	}
+	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices);
 
-	void removeAllPlayers() {
-		players_.clear();
-	}
+	void removeAllPlayers();
 
-	void addPlayer(int width, int height, const PlayerData& playerData) {		
-		auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height,
-			playerData, packetSender_);
-		players_.push_back(player);
-	}
+	void addPlayer(int width, int height, const PlayerData& playerData);
 
-	void restart() {
-		for (auto& player : players_) {
-			player->restart(randomBlockType(),
-				randomBlockType());
-		}
+	void restart();
 
-		if (packetSender_.isActive()) {
-			sendConnectionStartBlock();
-		}
-	}
-
-	void resizeBoard(int width, int height) {
-		for (auto& player : players_) {
-			player->resizeBoard(width, height);
-		}
-
-		if (packetSender_.isActive()) {
-			sendConnectionStartBlock();
-		}
-	}
+	void resizeBoard(int width, int height);
 
 	// Return the number of players.
-	int getNbrOfPlayers() const {
-		return players_.size();
-	}
+	int getNbrOfPlayers() const;
 
-	int getNbrHumanPlayers() const override {
-		return players_.size() - LocalConnection::getNbrAiPlayers();
-	}
+	int getNbrHumanPlayers() const override;
 
-	int getNbrAiPlayers() const override {
-		int nbr = 0;
-		for (auto& player : players_) {
-			if (player->isAi()) {
-				++nbr;
-			}
-		}
+	int getNbrAiPlayers() const override;
 
-		return nbr;
-	}
+	iterator begin();
 
-	iterator begin() {
-        return players_.begin();
-    }
+	iterator end();
 
-	iterator end() {
-        return players_.end();
-    }
+	const_iterator begin() const;
 
-	const_iterator begin() const {
-		return players_.begin();
-	}
+	const_iterator end() const;
 
-	const_iterator end() const {
-		return players_.end();
-	}
+	void updateGame(double deltaTime);
 
-	void updateGame(double deltaTime) {
-		// DeltaTime to big?
-		if (deltaTime > 0.250) {
-			// To avoid spiral of death.
-			deltaTime = 0.250;
-		}
+	net::Packet getClientInfo() const;
 
-		accumulator_ += deltaTime;
-		while (accumulator_ >= timeStep_) {
-			accumulator_ -= timeStep_;
-			for (auto& player : players_) {
-				player->update(timeStep_);
-			}
-		}
-	}
+	void setId(int id);
 
-	net::Packet getClientInfo() const {
-		net::Packet packet;
-		packet << PacketType::CONNECTION_INFO;
-		packet << id_;
-		for (auto& player : players_) {
-			packet << player->getName();
-			packet << player->getLevel();
-			packet << player->getPoints();
-			packet << player->isAi();
-			
-			auto& board = player->getTetrisBoard();
-			packet << board.getBlockType();
-			packet << board.getNextBlockType();
-		}
-		return packet;
-	}
+	int getId() const;
 
-	void setId(int id) {
-		id_ = id;
-		for (auto& player : players_) {
-			player->setConnectionId(id_);
-		}
-	}
-
-	int getId() const {
-		return id_;
-	}
-
-	int getSize() const {
-		return players_.size();
-	}
+	int getSize() const;
 
 private:
-	bool isMultiplayerGame() const {
-		return players_.size() > 1 && packetSender_.isActive();
-	}	
+	bool isMultiplayerGame() const;
 
-	void sendConnectionStartBlock() {
-		net::Packet packet;
-		packet << PacketType::CONNECTION_START_BLOCK;
-		packet << id_;
-		for (auto& player : players_) {
-			packet << player->getTetrisBoard().getBlockType();
-			packet << player->getTetrisBoard().getNextBlockType();
-		}
-		packetSender_.sendToAll(packet);
-	}
+	void sendConnectionStartBlock();
 
 	std::vector<std::shared_ptr<LocalPlayer>> players_;
 	PacketSender& packetSender_;
-	
+
 	int id_;
 
 	// Fix timestep.
 	const double timeStep_;
 	double accumulator_;
 };
+
+inline LocalConnection::iterator LocalConnection::begin() {
+	return players_.begin();
+}
+
+inline LocalConnection::iterator LocalConnection::end() {
+	return players_.end();
+}
+
+inline LocalConnection::const_iterator LocalConnection::begin() const {
+	return players_.begin();
+}
+
+inline LocalConnection::const_iterator LocalConnection::end() const {
+	return players_.end();
+}
+
+// Return the number of players.
+inline int LocalConnection::getNbrOfPlayers() const {
+	return players_.size();
+}
+
+inline int LocalConnection::getNbrHumanPlayers() const {
+	return players_.size() - LocalConnection::getNbrAiPlayers();
+}
+
+inline void LocalConnection::removeAllPlayers() {
+	players_.clear();
+}
+
+inline int LocalConnection::getId() const {
+	return id_;
+}
+
+inline int LocalConnection::getSize() const {
+	return players_.size();
+}
+
+inline bool LocalConnection::isMultiplayerGame() const {
+	return players_.size() > 1 && packetSender_.isActive();
+}
 
 #endif // LOCALCONNECTION_H

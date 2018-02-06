@@ -63,10 +63,6 @@ public:
 		return 1 + level_ * 0.5f;
 	}
 
-	float getWaitingTime() const {
-		return 0.5f;
-	}
-
 	virtual bool isAi() const = 0;
 
 	mw::signals::Connection addGameEventListener(const std::function<void(GameEvent, const TetrisBoard&)>& callback);
