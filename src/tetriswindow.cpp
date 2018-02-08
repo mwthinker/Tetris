@@ -417,38 +417,46 @@ void TetrisWindow::initSettingsPanel() {
     p->setLayout<gui::VerticalLayout>();
 	p->addDefault<Label>("Settings", TetrisData::getInstance().getDefaultFont(30));
 
-	auto checkBox1 = p->addDefault<CheckBox>("Border around window", TetrisData::getInstance().getDefaultFont(18));
-	checkBox1->setSelected(TetrisData::getInstance().isWindowBordered());
-	checkBox1->addActionListener([&](gui::Component& c) {
+	auto checkBox = p->addDefault<CheckBox>("Border around window", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isWindowBordered());
+	checkBox->addActionListener([&](gui::Component& c) {
         auto& check = static_cast<CheckBox&>(c);
 		bool test = check.isSelected();
 		TetrisData::getInstance().setWindowBordered(check.isSelected());
 		TetrisData::getInstance().save();
 		setBordered(check.isSelected());
 	});
-	auto checkBox2 = p->addDefault<CheckBox>("Fullscreen on double click", TetrisData::getInstance().getDefaultFont(18));
-	checkBox2->setSelected(TetrisData::getInstance().isFullscreenOnDoubleClick());
-	checkBox2->addActionListener([&](gui::Component& c) {
+	checkBox = p->addDefault<CheckBox>("Fullscreen on double click", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isFullscreenOnDoubleClick());
+	checkBox->addActionListener([&](gui::Component& c) {
         auto& check = static_cast<CheckBox&>(c);
 		TetrisData::getInstance().setFullscreenOnDoubleClick(check.isSelected());
 		TetrisData::getInstance().save();
 	});
 
-	auto checkBox3 = p->addDefault<CheckBox>("Move the window by holding down left mouse button", TetrisData::getInstance().getDefaultFont(18));
-	checkBox3->setSelected(TetrisData::getInstance().isMoveWindowByHoldingDownMouse());
-	checkBox3->addActionListener([&](gui::Component& c) {
+	checkBox = p->addDefault<CheckBox>("Move the window by holding down left mouse button", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isMoveWindowByHoldingDownMouse());
+	checkBox->addActionListener([&](gui::Component& c) {
         auto& check =  static_cast<CheckBox&>(c);
 		TetrisData::getInstance().setMoveWindowByHoldingDownMouse(check.isSelected());
 		TetrisData::getInstance().save();
 	});
 
-	auto checkBox4 = p->addDefault<CheckBox>("Vsync", TetrisData::getInstance().getDefaultFont(18));
-	checkBox4->setSelected(TetrisData::getInstance().isWindowVsync());
-	checkBox4->addActionListener([&](gui::Component& c) {
+	checkBox = p->addDefault<CheckBox>("Vsync", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isWindowVsync());
+	checkBox->addActionListener([&](gui::Component& c) {
 		auto& check = static_cast<CheckBox&>(c);
 		TetrisData::getInstance().setWindowVsync(check.isSelected());
 		TetrisData::getInstance().save();
 		SDL_GL_SetSwapInterval(check.isSelected() ? 1 : 0);
+	});
+
+	checkBox = p->addDefault<CheckBox>("Pause on lost focus", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isWindowPauseOnLostFocus());
+	checkBox->addActionListener([&](gui::Component& c) {
+		auto& check = static_cast<CheckBox&>(c);
+		TetrisData::getInstance().setWindowPauseOnLostFocus(check.isSelected());
+		TetrisData::getInstance().save();
 	});
 	
 	auto label = p->addDefault<Label>("Ai players", TetrisData::getInstance().getDefaultFont(30));
@@ -834,6 +842,14 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 					break;
 				case SDL_WINDOWEVENT_RESTORED:
 					TetrisData::getInstance().setWindowMaximized(false);
+					break;
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					if (TetrisData::getInstance().isWindowPauseOnLostFocus() &&
+						tetrisGame_.getStatus() == TetrisGame::LOCAL &&
+						!tetrisGame_.isPaused()) {
+						
+						tetrisGame_.pause();
+					}
 					break;
 			}
 			break;

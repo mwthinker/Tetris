@@ -2,8 +2,9 @@
 	"window": {
 		"fullscreenOnDoubleClick": false,
 		"border": true,
+		"pauseOnLostFocus": true,
 		"moveWindowByHoldingDownMouse": false,
-		"vsync": false,
+		"vsync": true,
 		"multiSampleBuffers": 0,
 		"multiSampleSamples": 0,
 		"rowFadingTime": 0.25,
@@ -88,7 +89,7 @@
 		},
 		"port": 11155,
 		"ip": "127.0.0.1",
-		"timeToConnectMS": 3000
+		"timeToConnectMS": 5000
 	},
 	"ai1": "DefaultAi",
 	"ai2": "DefaultAi",

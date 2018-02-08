@@ -48,45 +48,49 @@ public:
 	mw::Sprite loadSprite(std::string file);
 
 	mw::Sprite getSprite(BlockType blockType);
-	
+
 	mw::Font getDefaultFont(int size);
 
-	mw::Color getOuterSquareColor();
-	mw::Color getInnerSquareColor();
-	mw::Color getStartAreaColor();
-	mw::Color getPlayerAreaColor();
-	mw::Color getBorderColor();
+	mw::Color getOuterSquareColor() const;
+	mw::Color getInnerSquareColor() const;
+	mw::Color getStartAreaColor() const;
+	mw::Color getPlayerAreaColor() const;
+	mw::Color getBorderColor() const;
 
-	float getTetrisSquareSize();
-	float getTetrisBorderSize();
+	float getTetrisSquareSize() const;
+	float getTetrisBorderSize() const;
 
 	void bindTextureFromAtlas() const;
 
-	int getWindowPositionX();
-	int getWindowPositionY();
+	int getWindowPositionX() const;
+	int getWindowPositionY() const;
 
 	void setWindowPositionX(int x);
 	void setWindowPositionY(int y);
 
-	int getWindowWidth();
-	int getWindowHeight();
+	int getWindowWidth() const;
+	int getWindowHeight() const;
 
 	void setWindowWidth(int width);
 	void setWindowHeight(int height);
 
-	bool isWindowResizable();
+	bool isWindowResizable() const;
 	void setWindowResizable(bool resizeable);
 
-	int getWindowMinWidth();
-	int getWindowMinHeight();
-	std::string getWindowIcon();
-	bool isWindowBordered();
+	int getWindowMinWidth() const;
+	int getWindowMinHeight() const;
+	std::string getWindowIcon() const;
+
+	bool isWindowPauseOnLostFocus() const;
+	void setWindowPauseOnLostFocus(bool pauseOnFocus);
+
+	bool isWindowBordered() const;
 	void setWindowBordered(bool border);
-	
-	bool isWindowMaximized();
+
+	bool isWindowMaximized() const;
 	void setWindowMaximized(bool maximized);
 
-	bool isWindowVsync();
+	bool isWindowVsync() const;
 	void setWindowVsync(bool activate);
 
 	int getMultiSampleBuffers() const;
@@ -98,10 +102,10 @@ public:
 	float getRowMovingTime() const;
 	void setRowMovingTime(float time);
 
-	bool isFullscreenOnDoubleClick();
+	bool isFullscreenOnDoubleClick() const;
 	void setFullscreenOnDoubleClick(bool activate);
 
-	bool isMoveWindowByHoldingDownMouse();
+	bool isMoveWindowByHoldingDownMouse() const;
 	void setMoveWindowByHoldingDownMouse(bool activate);
 
 	int getPort() const;
@@ -111,7 +115,7 @@ public:
 
 	std::string getIp() const;
 	void setIp(std::string ip);
-	
+
 	mw::Sprite getBackgroundSprite();
 
 	std::string getAi1Name() const;
@@ -124,61 +128,61 @@ public:
 	void setAi3Name(std::string name);
 	void setAi4Name(std::string name);
 
-	std::vector<Ai> getAiVector();
-	
-	std::vector<HighscoreRecord> getHighscoreRecordVector();
+	std::vector<Ai> getAiVector() const;
+
+	std::vector<HighscoreRecord> getHighscoreRecordVector() const;
 	void setHighscoreRecordVector(const std::vector<HighscoreRecord>& highscoreVector);
 
-	float getWindowBarHeight();
+	float getWindowBarHeight() const;
 
-	mw::Color getWindowBarColor();
+	mw::Color getWindowBarColor() const;
 
 	mw::Sprite getCheckboxBoxSprite();
 	mw::Sprite getCheckboxCheckSprite();
-	mw::Color getCheckboxTextColor();
-	mw::Color getCheckboxBackgroundColor();
-	mw::Color getCheckboxBoxColor();
-	mw::Color getChecboxCheckColor();
+	mw::Color getCheckboxTextColor() const;
+	mw::Color getCheckboxBackgroundColor() const;
+	mw::Color getCheckboxBoxColor() const;
+	mw::Color getChecboxCheckColor() const;
 
 	mw::Sprite getRadioButtonBoxSprite();
 	mw::Sprite getRadioButtonCheckSprite();
-	mw::Color getRadioButtonTextColor();
-	mw::Color getRadioButtonBackgroundColor();
-	mw::Color getRadioButtonBoxColor();
-	mw::Color getRadioButtonCheckColor();
+	mw::Color getRadioButtonTextColor() const;
+	mw::Color getRadioButtonBackgroundColor() const;
+	mw::Color getRadioButtonBoxColor() const;
+	mw::Color getRadioButtonCheckColor() const;
 
-	mw::Color getLabelTextColor();
-	mw::Color getLabelBackgroundColor();
+	mw::Color getLabelTextColor() const;
+	mw::Color getLabelBackgroundColor() const;
 
-	mw::Color getButtonFocusColor();
-	mw::Color getButtonTextColor();
-	mw::Color getButtonHoverColor();
-	mw::Color getButtonPushColor();
-	mw::Color getButtonBackgroundColor();
-	mw::Color getButtonBorderColor();
+	mw::Color getButtonFocusColor() const;
+	mw::Color getButtonTextColor() const;
+	mw::Color getButtonHoverColor() const;
+	mw::Color getButtonPushColor() const;
+	mw::Color getButtonBackgroundColor() const;
+	mw::Color getButtonBorderColor() const;
 
-	mw::Color getComboBoxFocusColor();
-	mw::Color getComboBoxTextColor();
-	mw::Color getComboBoxSelectedTextColor();
-	mw::Color getComboBoxSelectedBackgroundColor();
-	mw::Color getComboBoxBackgroundColor();
-	mw::Color getComboBoxBorderColor();
-	mw::Color getComboBoxShowDropDownColor();
+	mw::Color getComboBoxFocusColor() const;
+	mw::Color getComboBoxTextColor() const;
+	mw::Color getComboBoxSelectedTextColor() const;
+	mw::Color getComboBoxSelectedBackgroundColor() const;
+	mw::Color getComboBoxBackgroundColor() const;
+	mw::Color getComboBoxBorderColor() const;
+	mw::Color getComboBoxShowDropDownColor() const;
 	mw::Sprite getComboBoxShowDropDownSprite();
 
 	mw::Sprite getHumanSprite();
 	mw::Sprite getComputerSprite();
 	mw::Sprite getCrossSprite();
 	mw::Sprite getZoomSprite();
-	
+
 	void setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector);
 	std::vector<PlayerData> getActiveLocalGamePlayers();
-	int getActiveLocalGameRows();
-	int getActiveLocalGameColumns();
-	
+	int getActiveLocalGameRows() const;
+	int getActiveLocalGameColumns() const;
+
 private:
 	TetrisData();
-	
+
 	std::string jsonPath_;
 	mw::TextureAtlas textureAtlas_;
 	std::map<std::string, mw::Sound> sounds_;

@@ -248,39 +248,39 @@ void TetrisData::bindTextureFromAtlas() const {
 	textureAtlas_.getTexture().bindTexture();
 }
 
-mw::Color TetrisData::getOuterSquareColor() {
+mw::Color TetrisData::getOuterSquareColor() const {
 	return jsonObject_["window"]["tetrisBoard"]["outerSquareColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getInnerSquareColor() {
+mw::Color TetrisData::getInnerSquareColor() const {
 	return jsonObject_["window"]["tetrisBoard"]["innerSquareColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getStartAreaColor() {
+mw::Color TetrisData::getStartAreaColor() const {
 	return jsonObject_["window"]["tetrisBoard"]["startAreaColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getPlayerAreaColor() {
+mw::Color TetrisData::getPlayerAreaColor() const {
 	return jsonObject_["window"]["tetrisBoard"]["playerAreaColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getBorderColor() {
+mw::Color TetrisData::getBorderColor() const {
 	return jsonObject_["window"]["tetrisBoard"]["borderColor"].get<mw::Color>();
 }
 
-float TetrisData::getTetrisSquareSize() {
+float TetrisData::getTetrisSquareSize() const {
 	return jsonObject_["window"]["tetrisBoard"]["squareSize"].get<float>();
 }
 
-float TetrisData::getTetrisBorderSize() {
+float TetrisData::getTetrisBorderSize() const {
 	return jsonObject_["window"]["tetrisBoard"]["borderSize"].get<float>();
 }
 
-int TetrisData::getWindowPositionX() {
+int TetrisData::getWindowPositionX() const {
 	return jsonObject_["window"]["positionX"].get<int>();
 }
 
-int TetrisData::getWindowPositionY() {
+int TetrisData::getWindowPositionY() const {
 	return jsonObject_["window"]["positionY"].get<int>();
 }
 
@@ -292,11 +292,11 @@ void TetrisData::setWindowPositionY(int y) {
 	jsonObject_["window"]["positionY"] = y;
 }
 
-int TetrisData::getWindowWidth() {
+int TetrisData::getWindowWidth() const {
 	return jsonObject_["window"]["width"].get<int>();
 }
 
-int TetrisData::getWindowHeight() {
+int TetrisData::getWindowHeight() const {
 	return jsonObject_["window"]["height"].get<int>();
 }
 
@@ -308,7 +308,7 @@ void TetrisData::setWindowHeight(int height) {
 	jsonObject_["window"]["height"] = height;
 }
 
-bool TetrisData::isWindowResizable() {
+bool TetrisData::isWindowResizable() const {
 	return jsonObject_["window"]["resizeable"].get<bool>();
 }
 
@@ -316,19 +316,19 @@ void TetrisData::setWindowResizable(bool resizeable) {
 	jsonObject_["window"]["resizeable"] = resizeable;
 }
 
-int TetrisData::getWindowMinWidth() {
+int TetrisData::getWindowMinWidth() const {
 	return jsonObject_["window"]["minWidth"].get<int>();
 }
 
-int TetrisData::getWindowMinHeight() {
+int TetrisData::getWindowMinHeight() const {
 	return jsonObject_["window"]["minHeight"].get<int>();
 }
 
-std::string TetrisData::getWindowIcon() {
+std::string TetrisData::getWindowIcon() const {
 	return jsonObject_["window"]["icon"].get<std::string>();
 }
 
-bool TetrisData::isWindowBordered() {
+bool TetrisData::isWindowBordered() const {
 	return jsonObject_["window"]["border"].get<bool>();
 }
 
@@ -336,7 +336,15 @@ void TetrisData::setWindowBordered(bool border) {
 	jsonObject_["window"]["border"] = border;
 }
 
-bool TetrisData::isWindowMaximized() {
+bool TetrisData::isWindowPauseOnLostFocus() const {
+	return jsonObject_["window"]["pauseOnLostFocus"].get<bool>();
+}
+
+void TetrisData::setWindowPauseOnLostFocus(bool pauseOnFocus) {
+	jsonObject_["window"]["pauseOnLostFocus"] = pauseOnFocus;
+}
+
+bool TetrisData::isWindowMaximized() const {
 	return jsonObject_["window"]["maximized"].get<bool>();
 }
 
@@ -344,7 +352,7 @@ void TetrisData::setWindowMaximized(bool maximized) {
 	jsonObject_["window"]["maximized"] = maximized;
 }
 
-bool TetrisData::isWindowVsync() {
+bool TetrisData::isWindowVsync() const {
 	return jsonObject_["window"]["vsync"].get<bool>();
 }
 
@@ -409,14 +417,14 @@ void TetrisData::setAi4Name(std::string name) {
 	jsonObject_["ai4"] = name;
 }
 
-std::vector<Ai> TetrisData::getAiVector() {
+std::vector<Ai> TetrisData::getAiVector() const {
 	std::vector<Ai> ais;
 	ais.push_back(Ai()); // Add default ai.
 	ais.insert(ais.end(), jsonObject_["ais"].begin(), jsonObject_["ais"].end());
 	return ais;
 }
 
-std::vector<HighscoreRecord> TetrisData::getHighscoreRecordVector() {
+std::vector<HighscoreRecord> TetrisData::getHighscoreRecordVector() const {
 	return std::vector<HighscoreRecord>(jsonObject_["highscore"].begin(), jsonObject_["highscore"].end());
 }
 
@@ -427,15 +435,15 @@ void TetrisData::setHighscoreRecordVector(const std::vector<HighscoreRecord>& hi
 	}
 }
 
-int TetrisData::getActiveLocalGameRows() {
+int TetrisData::getActiveLocalGameRows() const {
 	return jsonObject_["activeGames"]["localGame"]["rows"].get<int>();
 }
 
-int TetrisData::getActiveLocalGameColumns() {
+int TetrisData::getActiveLocalGameColumns() const {
 	return jsonObject_["activeGames"]["localGame"]["columns"].get<int>();
 }
 
-bool TetrisData::isFullscreenOnDoubleClick() {
+bool TetrisData::isFullscreenOnDoubleClick() const {
 	return jsonObject_["window"]["fullscreenOnDoubleClick"].get<bool>();
 }
 
@@ -443,7 +451,7 @@ void TetrisData::setFullscreenOnDoubleClick(bool activate) {
 	jsonObject_["window"]["fullscreenOnDoubleClick"] = activate;
 }
 
-bool TetrisData::isMoveWindowByHoldingDownMouse() {
+bool TetrisData::isMoveWindowByHoldingDownMouse() const {
 	return jsonObject_["window"]["moveWindowByHoldingDownMouse"].get<bool>();
 }
 
@@ -471,11 +479,11 @@ void TetrisData::setIp(std::string ip) {
 	jsonObject_["window"]["ip"] = ip;
 }
 
-float TetrisData::getWindowBarHeight() {
+float TetrisData::getWindowBarHeight() const {
 	return jsonObject_["window"]["bar"]["height"].get<float>();
 }
 
-mw::Color TetrisData::getWindowBarColor() {
+mw::Color TetrisData::getWindowBarColor() const {
 	return jsonObject_["window"]["bar"]["color"].get<mw::Color>();
 }
 
@@ -487,19 +495,19 @@ mw::Sprite TetrisData::getCheckboxCheckSprite() {
 	return loadSprite(jsonObject_["window"]["checkBox"]["checkImage"].get<std::string>());
 }
 
-mw::Color TetrisData::getCheckboxTextColor() {
+mw::Color TetrisData::getCheckboxTextColor() const {
 	return jsonObject_["window"]["checkBox"]["textColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getCheckboxBackgroundColor() {
+mw::Color TetrisData::getCheckboxBackgroundColor() const {
 	return jsonObject_["window"]["checkBox"]["backgroundColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getCheckboxBoxColor() {
+mw::Color TetrisData::getCheckboxBoxColor() const {
 	return jsonObject_["window"]["checkBox"]["boxColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getChecboxCheckColor() {
+mw::Color TetrisData::getChecboxCheckColor() const {
 	return jsonObject_["window"]["checkBox"]["checkColor"].get<mw::Color>();
 }
 
@@ -511,79 +519,79 @@ mw::Sprite TetrisData::getRadioButtonCheckSprite() {
 	return loadSprite(jsonObject_["window"]["radioButton"]["checkImage"].get<std::string>());
 }
 
-mw::Color TetrisData::getRadioButtonTextColor() {
+mw::Color TetrisData::getRadioButtonTextColor() const {
 	return jsonObject_["window"]["radioButton"]["textColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getRadioButtonBackgroundColor() {
+mw::Color TetrisData::getRadioButtonBackgroundColor() const {
 	return jsonObject_["window"]["radioButton"]["backgroundColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getRadioButtonBoxColor() {
+mw::Color TetrisData::getRadioButtonBoxColor() const {
 	return jsonObject_["window"]["radioButton"]["boxColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getRadioButtonCheckColor() {
+mw::Color TetrisData::getRadioButtonCheckColor() const {
 	return jsonObject_["window"]["radioButton"]["checkColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getLabelTextColor() {
+mw::Color TetrisData::getLabelTextColor() const {
 	return jsonObject_["window"]["label"]["textColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getLabelBackgroundColor() {
+mw::Color TetrisData::getLabelBackgroundColor() const {
 	return jsonObject_["window"]["label"]["backgroundColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getButtonFocusColor() {
+mw::Color TetrisData::getButtonFocusColor() const {
 	return jsonObject_["window"]["button"]["focusColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getButtonTextColor() {
+mw::Color TetrisData::getButtonTextColor() const {
 	return jsonObject_["window"]["button"]["textColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getButtonHoverColor() {
+mw::Color TetrisData::getButtonHoverColor() const {
 	return jsonObject_["window"]["button"]["hoverColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getButtonPushColor() {
+mw::Color TetrisData::getButtonPushColor() const {
 	return jsonObject_["window"]["button"]["pushColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getButtonBackgroundColor() {
+mw::Color TetrisData::getButtonBackgroundColor() const {
 	return jsonObject_["window"]["button"]["backgroundColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getButtonBorderColor() {
+mw::Color TetrisData::getButtonBorderColor() const {
 	return jsonObject_["window"]["button"]["borderColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxFocusColor() {
+mw::Color TetrisData::getComboBoxFocusColor() const {
 	return jsonObject_["window"]["comboBox"]["focusColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxTextColor() {
+mw::Color TetrisData::getComboBoxTextColor() const {
 	return jsonObject_["window"]["comboBox"]["textColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxSelectedTextColor() {
+mw::Color TetrisData::getComboBoxSelectedTextColor() const {
 	return jsonObject_["window"]["comboBox"]["selectedTextColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxSelectedBackgroundColor() {
+mw::Color TetrisData::getComboBoxSelectedBackgroundColor() const {
 	return jsonObject_["window"]["comboBox"]["selectedBackgroundColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxBackgroundColor() {
+mw::Color TetrisData::getComboBoxBackgroundColor() const {
 	return jsonObject_["window"]["comboBox"]["backgroundColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxBorderColor() {
+mw::Color TetrisData::getComboBoxBorderColor() const {
 	return jsonObject_["window"]["comboBox"]["borderColor"].get<mw::Color>();
 }
 
-mw::Color TetrisData::getComboBoxShowDropDownColor() {
+mw::Color TetrisData::getComboBoxShowDropDownColor() const {
 	return jsonObject_["window"]["comboBox"]["showDropDownColor"].get<mw::Color>();
 }
 
