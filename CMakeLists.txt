@@ -263,8 +263,12 @@ if (MSVC AND PackageBuilder)
 	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
 	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\data\\\\package\\\\mw.bmp")
 	
+	set(CPACK_PACKAGE_EXECUTABLES "MWetris" "MWetris")
+	set(CPACK_CREATE_DESKTOP_LINKS "MWetris")
+	
 	# NSIS ------------------------------------------------------------------------
 	set(CPACK_NSIS_MODIFY_PATH "ON") # Ask of adding path and desktop icon.
+	set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
 
 	set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")	
 	set(CPACK_NSIS_COMPRESSOR "/SOLID lzma")

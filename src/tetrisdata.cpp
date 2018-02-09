@@ -337,7 +337,11 @@ void TetrisData::setWindowBordered(bool border) {
 }
 
 bool TetrisData::isWindowPauseOnLostFocus() const {
-	return jsonObject_["window"]["pauseOnLostFocus"].get<bool>();
+	try {
+		return jsonObject_.at("window").at("pauseOnLostFocus").get<bool>();
+	} catch (nlohmann::detail::out_of_range) {
+		return true;
+	}
 }
 
 void TetrisData::setWindowPauseOnLostFocus(bool pauseOnFocus) {
