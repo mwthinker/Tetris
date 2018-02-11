@@ -232,6 +232,7 @@ void TetrisWindow::initMenuPanel() {
 	addKeyListener([&](gui::Component&, const SDL_Event& sdlEvent) {
 		groupMenu_.handleKeyboard(sdlEvent);
 	});
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initPlayPanel() {
@@ -311,7 +312,9 @@ void TetrisWindow::initPlayPanel() {
 
 	addPanelChangeListener([&](gui::Component& c, bool enterFrame) {
 		menu_->setFocus(false);
+		panelChangeListenerFpsLimiter(c, enterFrame);
 	});
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initHighscorePanel() {
@@ -324,6 +327,7 @@ void TetrisWindow::initHighscorePanel() {
 
     // The component is reused in callbacks.
 	highscore_ = add<Highscore>(gui::BorderLayout::CENTER, 10, mw::Color(1, 1, 1), TetrisData::getInstance().getDefaultFont(18));
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initNewHighscorePanel() {
@@ -377,6 +381,7 @@ void TetrisWindow::initNewHighscorePanel() {
 			textField_->setFocus(true);
 		}
 	});
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initCustomPlayPanel() {
@@ -402,7 +407,23 @@ void TetrisWindow::initCustomPlayPanel() {
 	p2->addDefault<Label>("Max Level", TetrisData::getInstance().getDefaultFont(18));
 	customMaxLevel_ = p2->addDefault<TextField>("24", TetrisData::getInstance().getDefaultFont(18));
 
-	centerPanel->addDefault<Button>("Play", TetrisData::getInstance().getDefaultFont(30));
+	auto button = centerPanel->addDefault<Button>("Play", TetrisData::getInstance().getDefaultFont(30));
+	button->addActionListener([&](gui::Component&) {
+		int rows = std::stoi(customWidthField_->getText());
+		int columns = std::stoi(customWidthField_->getText());
+		
+		tetrisGame_.closeGame();
+		nbrHumans_->setNbr(1);
+		nbrAis_->setNbr(0);
+		setPlayers();
+		tetrisGame_.createLocalGame(rows, columns);
+
+		if (tetrisGame_.getNbrOfPlayers() == 1) {
+			tetrisGame_.pause();
+		}
+		setCurrentPanel(playIndex_);
+	});
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initSettingsPanel() {
@@ -449,6 +470,16 @@ void TetrisWindow::initSettingsPanel() {
 		TetrisData::getInstance().setWindowVsync(check.isSelected());
 		TetrisData::getInstance().save();
 		SDL_GL_SetSwapInterval(check.isSelected() ? 1 : 0);
+		updateCurrentFpsLimiter();
+	});
+
+	checkBox = p->addDefault<CheckBox>("Fps limiter", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isLimitFps());
+	checkBox->addActionListener([&](gui::Component& c) {
+		auto& check = static_cast<CheckBox&>(c);
+		TetrisData::getInstance().setLimitFps(check.isSelected());
+		TetrisData::getInstance().save();
+		updateCurrentFpsLimiter();
 	});
 
 	checkBox = p->addDefault<CheckBox>("Pause on lost focus", TetrisData::getInstance().getDefaultFont(18));
@@ -520,6 +551,7 @@ void TetrisWindow::initSettingsPanel() {
 			});
 		}
 	}
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initNetworkPanel() {
@@ -628,6 +660,7 @@ void TetrisWindow::initNetworkPanel() {
 	addDrawListener([&](gui::Frame& frame, double deltaTime) {
 		tetrisGame_.update(deltaTime);
 	});
+	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 // Add a new timer and remove the last.
@@ -693,6 +726,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			// In order for the user to insert name.
 			setCurrentPanel(newHighscoreIndex_);
 		}
+		updateCurrentFpsLimiter();
 		return;
 	} catch (std::bad_cast exp) {}
 	
@@ -704,6 +738,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		} else {
 			pauseButton_->setLabel("Pause");
 		}
+		updateCurrentFpsLimiter();
 		return;
 	} catch (std::bad_cast exp) {}
 	
@@ -737,6 +772,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			man->setActive(false);
 			remoteManButtons.push_back(man);
 		}
+		updateCurrentFpsLimiter();
 		return;
 	} catch (std::bad_cast exp) {}
 	
@@ -907,7 +943,23 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 				saveCurrentLocalGame();
 			}
 			break;
-		default:
-			break;
+	}
+}
+
+void TetrisWindow::updateCurrentFpsLimiter() {
+	if (getCurrentPanelIndex() == playIndex_ && tetrisGame_.isCurrentGameActive() && !tetrisGame_.isPaused()) {
+		if (TetrisData::getInstance().isLimitFps()) {
+			setLoopSleepingTime(10); // Minimum delay supported by most platforms, e.g. Windows.
+		} else {
+			setLoopSleepingTime(-1); // No delay, may cause 100% CPU and GPU usage.
+		}
+	} else {
+		setLoopSleepingTime(10); // Minimum delay supported by most platforms, e.g. Windows.
+	}
+}
+
+void TetrisWindow::panelChangeListenerFpsLimiter(gui::Component& c, bool enterFrame) {
+	if (enterFrame) {
+		updateCurrentFpsLimiter();
 	}
 }

@@ -5,6 +5,7 @@
 		"pauseOnLostFocus": true,
 		"moveWindowByHoldingDownMouse": false,
 		"vsync": true,
+		"limitFps": false,
 		"multiSampleBuffers": 0,
 		"multiSampleSamples": 0,
 		"rowFadingTime": 0.25,

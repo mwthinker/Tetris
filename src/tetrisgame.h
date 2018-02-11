@@ -30,6 +30,7 @@ public:
 
 	// Uses the same settings as last call.
 	void createLocalGame();
+	void createLocalGame(int rows, int columns);
 
 	void createServerGame(int port);
 
@@ -80,6 +81,10 @@ public:
 	
 	bool currentGameHasCountDown() const {
 		return nbrOfPlayers_ > 1 && countDownTime_ > 0;
+	}
+
+	bool isCurrentGameActive() const {
+		return nbrOfAlivePlayers_ > 0;
 	}
 
 private:

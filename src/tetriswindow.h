@@ -36,7 +36,6 @@ public:
 
 private:
 	enum class StartFrame { MENU, SERVER, CLIENT, LOCAL_GAME };
-
 	void resumeGame();
 
 	void saveCurrentLocalGame();
@@ -56,6 +55,9 @@ private:
 
 	DevicePtr findHumanDevice(std::string name) const;
 	DevicePtr findAiDevice(std::string name) const;
+
+	void updateCurrentFpsLimiter();
+	void panelChangeListenerFpsLimiter(gui::Component& c, bool enterFrame);
 
 	TetrisGame tetrisGame_;
 

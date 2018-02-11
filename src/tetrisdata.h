@@ -62,6 +62,9 @@ public:
 
 	void bindTextureFromAtlas() const;
 
+	bool isLimitFps() const;
+	void setLimitFps(bool limited);
+
 	int getWindowPositionX() const;
 	int getWindowPositionY() const;
 

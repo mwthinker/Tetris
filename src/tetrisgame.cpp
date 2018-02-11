@@ -62,13 +62,19 @@ std::vector<PlayerData> TetrisGame::getPlayerData() const {
 		playerData.back().points_ = player->getPoints();
 		playerData.back().device_ = player->getDevice();
 	}
-
 	return playerData;
 }
 
 void TetrisGame::createLocalGame() {
+	createLocalGame(TETRIS_HEIGHT, TETRIS_WIDTH);
+}
+
+void TetrisGame::createLocalGame(int rows, int columns) {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
+
+		width_ = columns;
+		height_ = rows;
 
 		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
 		localConnection_.restart();

@@ -276,6 +276,18 @@ float TetrisData::getTetrisBorderSize() const {
 	return jsonObject_["window"]["tetrisBoard"]["borderSize"].get<float>();
 }
 
+bool TetrisData::isLimitFps() const {
+	try {
+		return jsonObject_.at("window").at("limitFps").get<bool>();
+	} catch (nlohmann::detail::out_of_range) {
+		return false;
+	}
+}
+
+void TetrisData::setLimitFps(bool limited) {
+	jsonObject_["window"]["limitFps"] = limited;
+}
+
 int TetrisData::getWindowPositionX() const {
 	return jsonObject_["window"]["positionX"].get<int>();
 }
