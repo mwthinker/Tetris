@@ -1,5 +1,6 @@
 #include <ai.h>
 #include <tetrisboard.h>
+#include <calc/calculatorexception.h>
 
 #include <fstream>
 #include <sstream>
@@ -26,7 +27,7 @@ void printBoard(const TetrisBoard& board) {
 				// Add new row.
 				std::cout << "  " << row + 2 << "\n|";
 			}
-			
+
 			bool newSquare = false;
 			for (Square sq : block) {
 				if (sq.column_ == column && sq.row_ == row) {
@@ -38,7 +39,7 @@ void printBoard(const TetrisBoard& board) {
 			if (newSquare) {
 				continue;
 			}
-			
+
 			if (BlockType::EMPTY == squares[row * columns + column]) {
 				std::cout << " |";
 			} else {
@@ -131,7 +132,7 @@ void printHelpFunction(std::string programName, const Ai& ai) {
 	std::cout << "\t" << programName << "\n\n";
 
 	std::cout << "\tShow the tetrisboard each turn and delay 250 ms between each turn.\n";
-	std::cout << "\t"<< programName << "--play -d 250\n\n";
+	std::cout << "\t" << programName << "--play -d 250\n\n";
 
 	std::cout << "\tList the time and number of four-rows cleared.\n";
 	std::cout << "\t" << programName << "-T --cleared-row-4\n";
@@ -145,7 +146,23 @@ std::istream& operator>>(std::istream& is, std::chrono::milliseconds& time) {
 	return is;
 }
 
+struct Innocent {};
+
+struct Evil {
+	// Don't try this at home
+	template <typename T>
+	Evil(T) {}
+};
+
+bool operator==(Evil const&, Evil const&) { return true; }
+
 int main(const int argc, const char* const argv[]) {
+	Innocent a, b;
+
+	// Should never compile, right?
+	// But it does, thanks to the Evil non-explicit templated constructor
+	a == b;
+
 	std::string programName;
 	if (argc > 0) {
 		programName = argv[0];
@@ -168,8 +185,8 @@ int main(const int argc, const char* const argv[]) {
 		if (arg == "-h" || arg == "--help") {
 			printHelpFunction(programName, ai);
 		} else if (arg == "-d" || arg == "--delay") {
-			if (i+1 < argc) {
-				std::stringstream stream(argv[i+1]);
+			if (i + 1 < argc) {
+				std::stringstream stream(argv[i + 1]);
 				stream >> delay;
 				++i;
 			} else {
@@ -179,17 +196,18 @@ int main(const int argc, const char* const argv[]) {
 		} else if (arg == "-a" || arg == "--ai") {
 			if (i + 1 < argc) {
 				std::string valueFunction = argv[i + 1];
-				ai = Ai("AI", valueFunction);
-				if (ai.getCalculator().hasError()) {
+				try {
+					ai = Ai("AI", valueFunction);
+				} catch (calc::CalculatorException exception) {
 					std::cerr << "Value function error: ";
-					std::cerr << ai.getCalculator().getErrorMessage() << "\n";
+					std::cerr << exception.what() << "\n";
 					std::exit(1);
 				}
 				++i;
 			} else {
 				std::cerr << "Missing argument after " << arg << " flag\n";
 				std::exit(1);
-			}			
+			}
 		} else if (arg == "-m" || arg == "--max-nbr-blocks") {
 			if (i + 1 < argc) {
 				std::stringstream stream(argv[i + 1]);
@@ -247,7 +265,7 @@ int main(const int argc, const char* const argv[]) {
 
 	BlockType start = randomBlockType();
 	BlockType next = randomBlockType();
-	
+
 	if (useRandomFile) {
 		start = readBlockType(infile);
 		next = readBlockType(infile);
@@ -258,7 +276,7 @@ int main(const int argc, const char* const argv[]) {
 	int nbrTwoLine = 0;
 	int nbrThreeLine = 0;
 	int nbrFourLine = 0;
-	
+
 	tetrisBoard.addGameEventListener([&](GameEvent gameEvent, const TetrisBoard&) {
 		if (GameEvent::BLOCK_COLLISION == gameEvent) {
 			if (useRandomFile) {
@@ -317,7 +335,7 @@ int main(const int argc, const char* const argv[]) {
 		}
 	}
 	std::chrono::duration<double> delta = std::chrono::high_resolution_clock::now() - time;
-	
+
 	std::cout << std::setprecision(2) << std::fixed;
 	if (play) {
 		printBoard(tetrisBoard);

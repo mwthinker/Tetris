@@ -250,6 +250,6 @@ void Ai::initCalculator() {
 	try {
 		cache_ = calculator_.preCalculate(valueFunction_);
 	} catch (calc::CalculatorException exception) {
-		std::cerr << getName() << "failed to load ai";
+		cache_ = calculator_.preCalculate("0");
 	}
 }

@@ -173,16 +173,21 @@ target_link_libraries(MWetris
 	${CMAKE_THREAD_LIBS_INIT}
 )
 
-option(PackageBuilder "Create a package builder" OFF)
+set(DLL_FOLDER $ENV{DLL_FOLDER})
 
-if (MSVC AND PackageBuilder)
+if (MSVC AND NOT DLL_FOLDER)
+	message(STATUS "Enviroment variable DLL_FOLDER not defined, installer can not be created")
+endif ()
+
+if (MSVC AND DLL_FOLDER)
 	install(TARGETS MWetris
         DESTINATION .
         COMPONENT application
 	)
 	
-	string(REPLACE "\\" "/" DLL_FOLDER $ENV{DLL_FOLDER})
-
+	set(TMP_DLL_FOLDER ${DLL_FOLDER})
+	string(REPLACE "\\" "/" DLL_FOLDER ${TMP_DLL_FOLDER})
+	message(STATUS ${DLL_FOLDER} "")
 	if (DLL_FOLDER)
 		set(DLL_FILES
 			"${DLL_FOLDER}/glew32.dll"
@@ -242,9 +247,9 @@ if (MSVC AND PackageBuilder)
 	set(CPACK_PACKAGE_VERSION_MINOR ${MWETRIS_VERSION_MINOR})
 	set(CPACK_PACKAGE_VERSION_PATCH ${MWETRIS_VERSION_PATCH})
 	set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")
+	set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")	
 	
-	set(CPACK_GENERATOR ZIP NSIS)
+	set(CPACK_GENERATOR ZIP)
 
 	# Tell CPack about the components and group the data components together.
 	set(CPACK_COMPONENTS_ALL application data runtime vcredist)
@@ -266,26 +271,28 @@ if (MSVC AND PackageBuilder)
 	set(CPACK_PACKAGE_EXECUTABLES "MWetris" "MWetris")
 	set(CPACK_CREATE_DESKTOP_LINKS "MWetris")
 	
-	# NSIS ------------------------------------------------------------------------
-	set(CPACK_NSIS_MODIFY_PATH "ON") # Ask of adding path and desktop icon.
-	set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
+	option(USE_NSIS_GENERATOR "Use NSIS generator" OFF)
+	if (USE_NSIS_GENERATOR)
+		set(CPACK_GENERATOR ${CPACK_GENERATOR} NSIS)
+		set(CPACK_NSIS_MODIFY_PATH "ON") # Ask of adding path and desktop icon.
+		set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON")
 
-	set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")	
-	set(CPACK_NSIS_COMPRESSOR "/SOLID lzma")
-	
-	# Set the icon used inside the installer wizard and the icons for the installer and uninstaller.	
-	set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
-	set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
-	set(CPACK_NSIS_INSTALLED_ICON_NAME "MWetris.exe")
- 
-	# Set the programs displayed under the Start menu shortcut.
-	set(CPACK_NSIS_MENU_LINKS
-		"MWetris" "MWetris"
-		"https://github.com/mwthinker/MWetris" "Github MWetris"
-	)
-	
-	set(CPACK_NSIS_MUI_FINISHPAGE_RUN "MWetris.exe")
-	# ------------------------------------------------------------------------------	
+		set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")	
+		set(CPACK_NSIS_COMPRESSOR "/SOLID lzma")
+		
+		# Set the icon used inside the installer wizard and the icons for the installer and uninstaller.	
+		set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
+		set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/data/package/mwetris.ico")
+		set(CPACK_NSIS_INSTALLED_ICON_NAME "MWetris.exe")
+	 
+		# Set the programs displayed under the Start menu shortcut.
+		set(CPACK_NSIS_MENU_LINKS
+			"MWetris" "MWetris"
+			"https://github.com/mwthinker/MWetris" "Github MWetris"
+		)
+		
+		set(CPACK_NSIS_MUI_FINISHPAGE_RUN "MWetris.exe")
+	endif ()
 	
 	include(CPack)
 endif ()
