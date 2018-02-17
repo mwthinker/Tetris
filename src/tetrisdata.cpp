@@ -145,10 +145,27 @@ void from_json(const json& j, HighscoreRecord& highscoreRecord) {
 	highscoreRecord.name_ = j.at("name").get<std::string>();
 	highscoreRecord.date_ = j.at("date").get<std::string>();
 	highscoreRecord.points_ = j.at("points").get<int>();
+
+	try {
+		highscoreRecord.level_ = j.at("level").get<int>();
+	} catch (nlohmann::detail::out_of_range) {
+		highscoreRecord.level_ = 0;
+	}
+
+	try {
+		highscoreRecord.rows_ = j.at("rows").get<int>();
+	} catch (nlohmann::detail::out_of_range) {
+		highscoreRecord.rows_ = 0;
+	}
 }
 
 void to_json(json& j, const HighscoreRecord& highscoreRecord) {
-	j = json{{"name", highscoreRecord.name_},{"date", highscoreRecord.date_},{"points", highscoreRecord.points_}};
+	j = json{{"name", highscoreRecord.name_},
+	{"date", highscoreRecord.date_},
+	{"points", highscoreRecord.points_},
+	{"level", highscoreRecord.level_},
+	{"rows", highscoreRecord.rows_}
+	};
 }
 
 TetrisData::TetrisData() : textureAtlas_(2048, 2048, []() {

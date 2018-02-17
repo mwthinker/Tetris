@@ -3,23 +3,38 @@
 #include <algorithm>
 #include <sstream>
 
-Highscore::HighscoreElement::HighscoreElement(int intPoints, const mw::Text& points, const mw::Text& name, const mw::Text& date) :
-	intPoints_(intPoints),
-	points_(points),
-	name_(name),
-	date_(date) {
+Highscore::HighscoreElement::HighscoreElement(int points, int rows, int level,
+	std::string name, std::string date, const mw::Font& font) :
 
+	intPoints_(points),
+	intLevel_(level),
+	intRows_(rows),
+
+	points_(std::to_string(points), font),
+	level_(std::to_string(level), font),
+	rows_(std::to_string(rows), font),
+
+	name_(name, font),
+	date_(date, font) {
 }
 
 Highscore::Highscore(int nbr, const mw::Color& color, const mw::Font& font) : color_(color), font_(font) {
-	for (int i = 0; i < nbr; ++i) {
-		numbers_.push_back(mw::Text(std::to_string(nbr - i) + ": ", font_));
+	for (int i = 1; i <= nbr; ++i) {
+		int ranking = nbr - i + 1;
+		if (ranking < 10) {
+			numbers_.push_back(mw::Text(std::string("  ") + std::to_string(ranking) + ": ", font_));
+		} else {
+			numbers_.push_back(mw::Text(std::to_string(ranking) + ": ", font_));
+		}
 	}
 	setPreferredSize(300, (float) nbr * (font_.getCharacterSize() + 2));
 
+	ranking_ = mw::Text("Ranking", font_);
 	pointsHeader_ = mw::Text("Points", font_);
 	nameHeader_ = mw::Text("Name", font_);
 	dateHeader_ = mw::Text("Date", font_);
+	levelheader_ = mw::Text("Level", font_);
+	rowsHeader_ = mw::Text("Rows", font_);
 }
 
 void Highscore::draw(const gui::Graphic& graphic, double deltaTime) {
@@ -27,31 +42,25 @@ void Highscore::draw(const gui::Graphic& graphic, double deltaTime) {
 
 	gui::Dimension size = getSize();
 
-	int index = 0;
-	float x = 0;
+	float xArray[] = {5, 100, 220, 355, 415, 480};
 	float y = size.height_ - (float) (ascList_.size() + 1) * (5 + font_.getCharacterSize() + 2);
+	int index = 0;
 	for (auto& highscore : ascList_) {
-		mw::Text& points = highscore.points_;
-		mw::Text& name = highscore.name_;
-		mw::Text& date = highscore.date_;
-
-		x = 5;
 		y += 5;
-		graphic.drawText(numbers_[index++], x, y);
-
-		x += 50;
-		graphic.drawText(points, x, y);
-		x += 150;
-		graphic.drawText(name, x, y);
-		x += 170;
-		graphic.drawText(date, x, y);
+		graphic.drawText(numbers_[index++], xArray[0], y - 10);
+		graphic.drawText(highscore.points_, xArray[1], y - 10);
+		graphic.drawText(highscore.name_, xArray[2], y - 10);
+		graphic.drawText(highscore.rows_, xArray[3], y - 10);
+		graphic.drawText(highscore.level_, xArray[4], y - 10);
+		graphic.drawText(highscore.date_, xArray[5], y - 10);
 		y += font_.getCharacterSize() + 2;
 	}
-
-	x = 5;
-	graphic.drawText(pointsHeader_, x + 50, y);
-	graphic.drawText(nameHeader_, x + 50 + 150, y);
-	graphic.drawText(dateHeader_, x + 50 + 150 + 170, y);
+	graphic.drawText(ranking_, xArray[0], y);
+	graphic.drawText(pointsHeader_, xArray[1], y);
+	graphic.drawText(nameHeader_, xArray[2], y);
+	graphic.drawText(rowsHeader_, xArray[3], y);
+	graphic.drawText(levelheader_, xArray[4], y);
+	graphic.drawText(dateHeader_, xArray[5], y);
 }
 
 int Highscore::getNextPosition() const {
@@ -78,12 +87,8 @@ bool Highscore::isNewRecord(int record) const {
 }
 
 void Highscore::addNewRecord(std::string name, std::string date) {
-	mw::Text nameT(name, font_);
-	mw::Text dateT(date, font_);
-
-	mw::Text pointsT(std::to_string(nextRecord_), font_);
-	ascList_.push_front(HighscoreElement(nextRecord_, pointsT, nameT, dateT)); // If same points
-	// older will be ranked higher.
+	ascList_.push_front(HighscoreElement(nextRecord_, nextRows_, nextLevel_, name, date, font_));
+	// Same points, older will be ranked higher.
 	sortAsc(ascList_);
 
 	if (numbers_.size() < ascList_.size()) {
@@ -91,8 +96,10 @@ void Highscore::addNewRecord(std::string name, std::string date) {
 	}
 }
 
-void Highscore::setNextRecord(int record) {
+void Highscore::setNextRecord(int record, int rows, int level) {
 	nextRecord_ = record;
+	nextLevel_ = level;
+	nextRows_ = rows;
 }
 
 int Highscore::getNextRecord() const {

@@ -12,12 +12,37 @@
 
 class Highscore : public gui::Component {
 public:
-	struct HighscoreElement {
-		HighscoreElement(int intPoints, const mw::Text& points,
-			const mw::Text& name, const mw::Text& date);
+	class HighscoreElement {
+	public:
+		friend class Highscore;
 
+		HighscoreElement(int points, int rows, int level,
+			std::string name, std::string date, const mw::Font& font);
+
+		std::string getName() const {
+			return name_.getText();
+		}
+
+		std::string getDate() const {
+			return date_.getText();
+		}
+
+		int getPoints() const {
+			return intPoints_;
+		}
+
+		int getRows() const {
+			return intRows_;
+		}
+		
+		int getLevel() const {
+			return intLevel_;
+		}
+
+	private:
 		int intPoints_;
-		mw::Text points_, name_, date_;
+		int intLevel_, intRows_;
+		mw::Text points_, name_, date_, level_, rows_;
 	};
 
 	using const_iterator = std::list<HighscoreElement>::const_iterator;
@@ -31,7 +56,7 @@ public:
 	bool isNewRecord(int record) const;
 	void addNewRecord(std::string name, std::string date);
 
-	void setNextRecord(int record);
+	void setNextRecord(int record, int rows, int level);
 	int getNextRecord() const;
 
 	const_iterator begin() const;
@@ -44,12 +69,14 @@ private:
 	// Sorts the vector in descending order.
 	static void sortAsc(std::list<HighscoreElement>& ascList);
 
-	mw::Text pointsHeader_, nameHeader_, dateHeader_;
+	mw::Text ranking_, pointsHeader_, nameHeader_, dateHeader_, levelheader_, rowsHeader_;
 
 	std::vector<mw::Text> numbers_;
 	std::list<HighscoreElement> ascList_;
 	mw::Color color_;
 	int nextRecord_;
+	int nextRows_;
+	int nextLevel_;
 	mw::Font font_;
 };
 

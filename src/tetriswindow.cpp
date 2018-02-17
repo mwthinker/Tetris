@@ -711,7 +711,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 			saveCurrentLocalGame();
 			
 			// Set points in order for highscore to know which point to save in list.
-			highscore_->setNextRecord(localPlayer->getPoints());
+			highscore_->setNextRecord(localPlayer->getPoints(), localPlayer->getClearedRows(), localPlayer->getLevel());
 			{
 				std::stringstream stream;
 				stream << "Position: " << highscore_->getNextPosition();
@@ -799,7 +799,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 void TetrisWindow::loadHighscore() {
 	std::vector<HighscoreRecord> highscoreVector = TetrisData::getInstance().getHighscoreRecordVector();
 	for (const HighscoreRecord& record : highscoreVector) {
-		highscore_->setNextRecord(record.points_);
+		highscore_->setNextRecord(record.points_, record.rows_, record.level_);
 		highscore_->addNewRecord(record.name_, record.date_);
 	}
 }
@@ -807,7 +807,8 @@ void TetrisWindow::loadHighscore() {
 void TetrisWindow::saveHighscore() {
 	std::vector<HighscoreRecord> highscoreVector;
 	for (const auto& score : *highscore_) {
-		highscoreVector.emplace_back(score.name_.getText(), score.date_.getText(), score.intPoints_);
+		highscoreVector.emplace_back(score.getName(), score.getDate(),
+			score.getPoints(), score.getLevel(), score.getRows());
 	}
 	TetrisData::getInstance().setHighscoreRecordVector(highscoreVector);
 	TetrisData::getInstance().save();
@@ -947,14 +948,15 @@ void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
 }
 
 void TetrisWindow::updateCurrentFpsLimiter() {
+	const int DELAY_MS = 10; // Minimum delay supported by most platforms, e.g. Windows.
 	if (getCurrentPanelIndex() == playIndex_ && tetrisGame_.isCurrentGameActive() && !tetrisGame_.isPaused()) {
 		if (TetrisData::getInstance().isLimitFps()) {
-			setLoopSleepingTime(10); // Minimum delay supported by most platforms, e.g. Windows.
+			setLoopSleepingTime(DELAY_MS);
 		} else {
 			setLoopSleepingTime(-1); // No delay, may cause 100% CPU and GPU usage.
 		}
 	} else {
-		setLoopSleepingTime(10); // Minimum delay supported by most platforms, e.g. Windows.
+		setLoopSleepingTime(DELAY_MS);
 	}
 }
 

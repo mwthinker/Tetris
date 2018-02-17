@@ -19,15 +19,18 @@
 
 class HighscoreRecord {
 public:
-	HighscoreRecord() : points_(0) {
+	HighscoreRecord() : points_(0), level_(1), rows_(0) {
 	}
 
-	HighscoreRecord(std::string name, std::string date, int points) : name_(name), date_(date), points_(points) {
+	HighscoreRecord(std::string name, std::string date, int points, int level, int rows)
+		: name_(name), date_(date), points_(points), level_(level), rows_(0) {
 	}
 
 	std::string name_;
 	std::string date_;
 	int points_;
+	int level_;
+	int rows_;
 };
 
 class TetrisData {
