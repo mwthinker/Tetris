@@ -141,6 +141,8 @@ private:
 
 	void applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoard& board, std::shared_ptr<RemotePlayer>& player);
 
+	void addRowsToOpponentPlayersExcept(const std::shared_ptr<Player>& skipPlayer);
+
 	mw::Signal<TetrisGameEvent&> eventHandler_;
 	bool pause_;
 	int nbrOfPlayers_;

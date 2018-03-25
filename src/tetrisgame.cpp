@@ -431,31 +431,7 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
-			// Multiplayer?
-			if (nbrOfPlayers_ > 1) {
-				// Add rows only for local players. Remote players will add
-				// indirectly.
-				for (auto& local : localConnection_) {
-					if (player->getId() != local->getId()) {
-						std::vector<BlockType> blockTypes;
-						for (int i = 0; i < 2; ++i) {
-							std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
-							blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
-						}
-						local->addExternalRows(blockTypes);
-						if (sender_.isActive()) {
-							net::Packet packet;
-							packet << PacketType::PLAYER_TETRIS;
-							packet << localConnection_.getId();
-							packet << local->getId();
-							for (auto blockType : blockTypes) {
-								packet << blockType;
-							}
-							sender_.sendToAll(packet);
-						}
-					}
-				}
-			}
+			addRowsToOpponentPlayersExcept(player);
 			break;
 		case GameEvent::GAME_OVER:
 			// One player more is dead.
@@ -521,26 +497,7 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
-			// Add rows only for local players. Remote players will add
-			// indirectly.
-			for (auto& local : localConnection_) {
-				std::vector<BlockType> blockTypes;
-				for (int i = 0; i < 2; ++i) {
-					std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
-					blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
-				}
-				local->addExternalRows(blockTypes);
-				if (sender_.isActive()) {
-					net::Packet packet;
-					packet << PacketType::PLAYER_TETRIS;
-					packet << localConnection_.getId();
-					packet << local->getId();
-					for (auto blockType : blockTypes) {
-						packet << blockType;
-					}
-					sender_.sendToAll(packet);
-				}
-			}
+			addRowsToOpponentPlayersExcept(player);
 			break;
 		case GameEvent::GAME_OVER:
 		{
@@ -557,6 +514,32 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 		for (auto& opponent : localConnection_) {
 			if (!opponent->getTetrisBoard().isGameOver()) {
 				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
+			}
+		}
+	}
+}
+
+void TetrisGame::addRowsToOpponentPlayersExcept(const std::shared_ptr<Player>& skipPlayer) {
+	// Add rows only for local players. Remote players will add
+	// indirectly.
+	for (auto& local : localConnection_) {
+		if (skipPlayer != local) { // Skip player.
+			std::vector<BlockType> blockTypes;
+			for (int i = 0; i < 2; ++i) {
+				std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
+				blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
+			}
+			local->addExternalRows(blockTypes);
+			if (sender_.isActive()) {
+				// Send generated block to remote connections.
+				net::Packet packet;
+				packet << PacketType::PLAYER_TETRIS;
+				packet << localConnection_.getId();
+				packet << local->getId();
+				for (auto blockType : blockTypes) {
+					packet << blockType;
+				}
+				sender_.sendToAll(packet);
 			}
 		}
 	}
