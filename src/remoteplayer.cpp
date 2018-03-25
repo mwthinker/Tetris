@@ -35,6 +35,7 @@ void RemotePlayer::receive(net::Packet& packet) {
 			while (packet.dataLeftToRead() > 0) {
 				BlockType type;
 				packet >> type;
+				blockTypes.push_back(type);
 			}
 			tetrisBoard_.addRows(blockTypes);
 			break;

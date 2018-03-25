@@ -627,7 +627,7 @@ void TetrisWindow::initNetworkPanel() {
 				tetrisGame_.createClientGame(std::stoi(port_->getText()), ipClient_->getText());
 				addTimerMS(TetrisData::getInstance().getTimeToConnectMS());
 				progressBar_->setVisible(true);
-				errorMessage_->setText("Connectiong ...");
+				errorMessage_->setText("Connecting ...");
 				errorMessage_->setVisible(true);
 				networkConnect_->setLabel("Abort");
 			}

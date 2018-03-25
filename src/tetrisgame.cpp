@@ -438,7 +438,7 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 				for (auto& local : localConnection_) {
 					if (player->getId() != local->getId()) {
 						std::vector<BlockType> blockTypes;
-						for (int i = 0; i < rows; ++i) {
+						for (int i = 0; i < 2; ++i) {
 							std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
 							blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
 						}
@@ -449,7 +449,7 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 							packet << localConnection_.getId();
 							packet << local->getId();
 							for (auto blockType : blockTypes) {
-								packet << localConnection_.getId();
+								packet << blockType;
 							}
 							sender_.sendToAll(packet);
 						}
@@ -521,6 +521,26 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 			break;
 		case GameEvent::FOUR_ROW_REMOVED:
 			rows = 4;
+			// Add rows only for local players. Remote players will add
+			// indirectly.
+			for (auto& local : localConnection_) {
+				std::vector<BlockType> blockTypes;
+				for (int i = 0; i < 2; ++i) {
+					std::vector<BlockType> tmp = generateRow(local->getTetrisBoard(), 0.79);
+					blockTypes.insert(blockTypes.begin(), tmp.begin(), tmp.end());
+				}
+				local->addExternalRows(blockTypes);
+				if (sender_.isActive()) {
+					net::Packet packet;
+					packet << PacketType::PLAYER_TETRIS;
+					packet << localConnection_.getId();
+					packet << local->getId();
+					for (auto blockType : blockTypes) {
+						packet << blockType;
+					}
+					sender_.sendToAll(packet);
+				}
+			}
 			break;
 		case GameEvent::GAME_OVER:
 		{
@@ -535,7 +555,7 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 		// Increase level up counter for all opponents to the current player.
 		// Remote players will be added indirectly.
 		for (auto& opponent : localConnection_) {
-			if (opponent->getId() != player->getId() && !opponent->getTetrisBoard().isGameOver()) {
+			if (!opponent->getTetrisBoard().isGameOver()) {
 				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
 			}
 		}
