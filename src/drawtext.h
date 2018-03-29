@@ -32,6 +32,30 @@ public:
 		return text_.getText().empty();
 	}
 
+	float getLowX() const {
+		if (center_) {
+			return lowX_ - text_.getWidth() * 0.5f;
+		} else {
+			return lowX_;
+		}
+	}
+
+	float getLowY() const {
+		if (center_) {
+			return lowY_ - text_.getHeight() * 0.5f;
+		} else {
+			return lowY_;
+		}
+	}
+
+	float getWidth() const {
+		return text_.getWidth();
+	}
+
+	float getHeight() const {
+		return text_.getHeight();
+	}
+
 private:
 	void updateVertexes();
 

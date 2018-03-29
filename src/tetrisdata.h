@@ -181,6 +181,9 @@ public:
 	mw::Sprite getCrossSprite();
 	mw::Sprite getZoomSprite();
 
+	mw::Color getMiddleTextColor() const;
+	int getMiddleTextBoxSize() const;
+
 	void setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector);
 	std::vector<PlayerData> getActiveLocalGamePlayers();
 	int getActiveLocalGameRows() const;

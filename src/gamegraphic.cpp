@@ -126,7 +126,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
-	
+
 	level_ = player.getLevel();
 	textLevel_ = DrawText("Level " + std::to_string(level_), font, x, y - 20, 8.f);
 
@@ -279,7 +279,7 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			break;
 		case GameEvent::ROW_TO_BE_REMOVED:
 			textClearedRows_.update("Rows " + std::to_string(tetrisBoard.getRemovedRows()));
-		break;
+			break;
 		case GameEvent::ONE_ROW_REMOVED:
 			addDrawRowAtTheTop(tetrisBoard, 1);
 			break;
@@ -351,6 +351,12 @@ void GameGraphic::drawMiddleText(BoardBatch& batch) {
 	if (!middleText_.isEmpty()) {
 		middleText_.bindTexture();
 		batch.clear();
+		batch.addRectangle(middleText_.getLowX() - TetrisData::getInstance().getMiddleTextBoxSize() * 0.5f,
+			middleText_.getLowY(),
+			middleText_.getWidth() + TetrisData::getInstance().getMiddleTextBoxSize(),
+			middleText_.getHeight(),
+			TetrisData::getInstance().getMiddleTextColor()
+		);
 		batch.add(middleText_.getVertexes());
 		batch.uploadToGraphicCard();
 		batch.draw();

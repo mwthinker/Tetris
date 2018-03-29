@@ -2,7 +2,7 @@
 
 DrawText::DrawText(std::string text, const mw::Font& font, float lowX, float lowY, float scale, bool center)
 	: lowX_(lowX), lowY_(lowY), center_(center) {
-	
+
 	text_ = mw::Text(text, font, scale);
 	updateVertexes();
 }
@@ -44,17 +44,10 @@ void DrawText::bindTexture() {
 }
 
 void DrawText::updateVertexes() {
-	if (center_) {
-		addRectangle(vertexes_,
-			lowX_ - text_.getWidth() * 0.5f, lowY_ - text_.getHeight() * 0.5f,
-			text_.getWidth(),
-			text_.getHeight(),
-			mw::Sprite(text_.getTexture()));
-	} else {
-		addRectangle(vertexes_,
-			lowX_, lowY_,
-			text_.getWidth(),
-			text_.getHeight(),
-			mw::Sprite(text_.getTexture()));
-	}
+	addRectangle(vertexes_,
+		getLowX(), getLowY(),
+		text_.getWidth(),
+		text_.getHeight(),
+		mw::Sprite(text_.getTexture())
+	);
 }

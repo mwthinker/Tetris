@@ -648,6 +648,22 @@ mw::Sprite TetrisData::getZoomSprite() {
 	return loadSprite(jsonObject_["window"]["sprites"]["zoom"].get<std::string>());
 }
 
+mw::Color TetrisData::getMiddleTextColor() const {
+	try {
+		return jsonObject_.at("window").at("tetrisBoard").at("middleTextColor").get<mw::Color>();
+	} catch (nlohmann::detail::out_of_range) {
+		return mw::Color(0.2f, 0.2f, 0.2f, 0.5f);
+	}
+}
+
+int TetrisData::getMiddleTextBoxSize() const {
+	try {
+		return jsonObject_.at("window").at("tetrisBoard").at("middleTextBoxSize").get<int>();
+	} catch (nlohmann::detail::out_of_range) {
+		return 10;
+	}
+}
+
 void TetrisData::setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector) {
 	jsonObject_["activeGames"]["localGame"]["rows"] = rows;
 	jsonObject_["activeGames"]["localGame"]["columns"] = columns;
