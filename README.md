@@ -29,7 +29,7 @@ SDL2 (at least 2.0.3, http://www.libsdl.org/), SDL2_image, SDL2_ttf, SDL2_mixer
 and SDL2_net. And the application uses GLEW (http://glew.sourceforge.net/) to
 load OpengGl 2.1.
 
-Code from the json 3.0.1 project (https://nlohmann.github.io/json/) is used to provide json support.
+Code from the json 3.1.2 project (https://nlohmann.github.io/json/) is used to provide json support.
 
 For non Windows OS, ncurses library is used for the console tetris version.
 
