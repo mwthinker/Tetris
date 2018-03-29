@@ -136,7 +136,7 @@ void GameComponent::initGame(std::vector<PlayerPtr>& players) {
 	float w = 0;
 	for (auto& player : players) {
 		auto& graphic = graphicPlayers_[player];
-		graphic.restart(*staticBoardBatch_, *player, w, 0);
+		graphic.restart(*staticBoardBatch_, *player, w, 0, players.size() == 1);
 		w += graphic.getWidth();
 	}
 	staticBoardBatch_->uploadToGraphicCard();

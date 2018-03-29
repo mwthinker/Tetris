@@ -660,7 +660,7 @@ int TetrisData::getMiddleTextBoxSize() const {
 	try {
 		return jsonObject_.at("window").at("tetrisBoard").at("middleTextBoxSize").get<int>();
 	} catch (nlohmann::detail::out_of_range) {
-		return 10;
+		return 7;
 	}
 }
 

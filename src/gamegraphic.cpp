@@ -48,7 +48,7 @@ GameGraphic::~GameGraphic() {
 	connection_.disconnect();
 }
 
-void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float y) {
+void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float y, bool showPoints) {
 	level_ = -1;
 	points_ = -1;
 	clearedRows_ = -1;
@@ -56,9 +56,9 @@ void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float
 	connection_.disconnect();
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
+	showPoints_ = showPoints;
+	
 	initStaticBackground(boardBatch, x, y, player);
-	showPoints_ = true;
-
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
@@ -130,11 +130,16 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	level_ = player.getLevel();
 	textLevel_ = DrawText("Level " + std::to_string(level_), font, x, y - 20, 8.f);
 
-	points_ = player.getPoints();
-	textPoints_ = DrawText("Points " + std::to_string(points_), font, x, y - 20 - 12, 8.f);
+	if (showPoints_) {
+		points_ = player.getPoints();
+		textPoints_ = DrawText("Points " + std::to_string(points_), font, x, y - 20 - 12, 8.f);
 
-	clearedRows_ = player.getClearedRows();
-	textClearedRows_ = DrawText("Rows " + std::to_string(clearedRows_), font, x, y - 20 - 12 * 2, 8.f);
+		clearedRows_ = player.getClearedRows();
+		textClearedRows_ = DrawText("Rows " + std::to_string(clearedRows_), font, x, y - 20 - 12 * 2, 8.f);
+	} else {
+		clearedRows_ = player.getClearedRows();
+		textClearedRows_ = DrawText("Rows " + std::to_string(clearedRows_), font, x, y - 20 - 12, 8.f);
+	}
 
 	const mw::Color borderColor = TetrisData::getInstance().getBorderColor();
 
@@ -327,12 +332,15 @@ void GameGraphic::drawText(BoardBatch& batch) {
 	batch.add(name_.getVertexes());
 	batch.uploadToGraphicCard();
 	batch.draw();
-
-	batch.clear();
-	textPoints_.bindTexture();
-	batch.add(textPoints_.getVertexes());
-	batch.uploadToGraphicCard();
-	batch.draw();
+	
+	if (showPoints_) {
+		// Show points only in single player game.
+		batch.clear();
+		textPoints_.bindTexture();
+		batch.add(textPoints_.getVertexes());
+		batch.uploadToGraphicCard();
+		batch.draw();
+	}
 
 	batch.clear();
 	textLevel_.bindTexture();
@@ -372,7 +380,7 @@ void GameGraphic::update(int clearedRows, int points, int level) {
 		clearedRows_ = clearedRows;
 		textClearedRows_.update("Rows " + std::to_string(clearedRows_));
 	}
-	if (points_ != points) {
+	if (points_ != points && showPoints_) {
 		points_ = points;
 		textPoints_.update("Points " + std::to_string(points_));
 	}

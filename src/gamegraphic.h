@@ -28,7 +28,7 @@ public:
 
 	~GameGraphic();
 
-	void restart(BoardBatch& boardBatch, Player& player, float x, float y);
+	void restart(BoardBatch& boardBatch, Player& player, float x, float y, bool showPoints);
 
 	void update(int clearedRows, int points, int level);
 

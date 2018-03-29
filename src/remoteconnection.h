@@ -93,7 +93,7 @@ public:
 					player->setName(name);
 					player->setLevel(level);
 					player->setPoints(points);
-					player->setPoints(points);
+					player->setLastPosition(0);
 					players_.push_back(player);
 				}
 				break;
@@ -101,11 +101,7 @@ public:
 				// Fall through!
 			case PacketType::PLAYER_TETRIS:
 				// Fall through!
-			case PacketType::PLAYER_NAME:
-				// Fall through!
-			case PacketType::PLAYER_LEVEL:
-				// Fall through!
-			case PacketType::PLAYER_POINTS: {
+			case PacketType::PLAYER_NAME: {
 				int playerId;
 				packet >> playerId;
 				if (playerId >= 0 && playerId < (int) players_.size()) {
