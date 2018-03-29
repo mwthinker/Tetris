@@ -23,7 +23,7 @@ public:
 	}
 
 	HighscoreRecord(std::string name, std::string date, int points, int level, int rows)
-		: name_(name), date_(date), points_(points), level_(level), rows_(0) {
+		: name_(name), date_(date), points_(points), level_(level), rows_(rows) {
 	}
 
 	std::string name_;
