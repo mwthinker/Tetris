@@ -132,6 +132,7 @@ void LocalPlayer::update(double deltaTime) {
 
 void LocalPlayer::restart(BlockType current, BlockType next) {
 	tetrisBoard_.restart(current, next);
+	setLastPosition(0);
 	levelUpCounter_ = 0;
 	level_ = 1;
 	points_ = 0;
