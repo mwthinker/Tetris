@@ -57,6 +57,12 @@ public:
 		return players_.end();
 	}
 
+	void endGame() {
+		for (std::shared_ptr<RemotePlayer>& remote : players_) {
+			remote->endGame();
+		}
+	}
+
 	void receive(net::Packet& packet) {
 		packet.reset();
 		PacketType type;

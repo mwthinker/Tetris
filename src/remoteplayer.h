@@ -22,6 +22,8 @@ public:
 
 	void restart(BlockType current, BlockType next);
 
+	void endGame();
+
 	void setName(std::string name) {
 		name_ = name;
 	}

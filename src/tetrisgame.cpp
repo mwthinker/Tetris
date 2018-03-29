@@ -447,6 +447,9 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 				if (nbrOfAlivePlayers_ == 1) {
 					for (auto& local : localConnection_) {
 						local->endGame();
+					}					
+					for (std::shared_ptr<RemoteConnection>& remoteConnection : sender_) {
+						remoteConnection->endGame();
 					}
 				}
 			}
@@ -504,6 +507,19 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 			player->setLastPosition(nbrOfAlivePlayers_ - 1);
 			GameOver gameOver(nbrOfAlivePlayers_--, player);
 			eventHandler_(gameOver);
+
+			// Multiplayer?
+			if (nbrOfPlayers_ > 1) {
+				// All dead except one => End game!
+				if (nbrOfAlivePlayers_ == 1) {
+					for (auto& local : localConnection_) {
+						local->endGame();
+					}
+					for (std::shared_ptr<RemoteConnection>& remoteConnection : sender_) {
+						remoteConnection->endGame();
+					}
+				}
+			}
 			break;
 		}
 	}
@@ -516,6 +532,12 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
 			}
 		}
+	}
+	if (rows > 0) {
+		int newPoints = player->getPoints() + player->getLevel() * rows * rows;
+		PointsChange pointsChange(player, player->getPoints(), newPoints);
+		player->setPoints(newPoints);
+		eventHandler_(pointsChange);
 	}
 }
 

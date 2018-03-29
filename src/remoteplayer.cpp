@@ -57,3 +57,7 @@ void RemotePlayer::restart(BlockType current, BlockType next) {
 	level_ = 1;
 	points_ = 0;
 }
+
+void RemotePlayer::endGame() {
+	tetrisBoard_.update(Move::GAME_OVER);
+}
