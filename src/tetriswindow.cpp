@@ -23,6 +23,17 @@
 #include <iostream>
 #include <sstream>
 
+namespace {
+
+	std::string getCurrentDate() {
+		std::time_t t = std::time(0);
+		char mbstr[11];
+		std::strftime(mbstr, 11, "%Y-%m-%d", std::localtime(&t));
+		return mbstr;
+	}
+
+}
+
 TetrisWindow::TetrisWindow() : 
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
 	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU),
@@ -363,10 +374,7 @@ void TetrisWindow::initNewHighscorePanel() {
 		}
 
 		if (validName) {
-			std::time_t t = std::time(NULL);
-			char mbstr[30];
-			std::strftime(mbstr, 30, "%Y-%m-%d", std::localtime(&t));
-			highscore_->addNewRecord(name, mbstr);
+			highscore_->addNewRecord(name, getCurrentDate());
 			setCurrentPanel(playIndex_);
 			saveHighscore();
 		}
