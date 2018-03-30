@@ -66,6 +66,7 @@ set(SOURCES
 	src/playerdata.h
 	src/protocol.cpp
 	src/protocol.h
+	src/remoteconnection.cpp
 	src/remoteconnection.h
 	src/remoteplayer.cpp
 	src/remoteplayer.h
