@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "player.h"
+#include "remoteconnection.h"
 
 class Connection;
 
@@ -67,6 +68,14 @@ public:
 
 	std::vector<std::shared_ptr<Player>> players_;
 	std::vector<std::shared_ptr<Connection>> remoteConnections_;
+};
+
+class RestartPlayer : public TetrisGameEvent {
+public:
+	RestartPlayer(const std::shared_ptr<RemoteConnection>& connection) : connection_(connection) {
+	}
+
+	std::shared_ptr<RemoteConnection> connection_;
 };
 
 class LevelChange : public TetrisGameEvent {

@@ -30,6 +30,8 @@ public:
 
 	void restart(BoardBatch& boardBatch, Player& player, float x, float y, bool showPoints);
 
+	void restart(Player& player);
+
 	void update(int clearedRows, int points, int level);
 
 	float getWidth() const {
@@ -81,6 +83,7 @@ private:
 
 	mw::signals::Connection connection_;
 	float width_, height_;
+	float lowX_, lowY_;
 	bool showPoints_;
 };
 

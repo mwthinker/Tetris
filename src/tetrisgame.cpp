@@ -210,8 +210,8 @@ int TetrisGame::getNbrOfPlayers() const {
 }
 
 void TetrisGame::resizeBoard(int width, int height) {
-	if (width > 6 && width <= 40 &&
-		height > 6 && height <= 40 &&
+	if (width > TETRIS_MIN_WIDTH && width <= TETRIS_MAX_WIDTH &&
+		height > TETRIS_MIN_HEIGHT && height <= TETRIS_MAX_HEIGHT &&
 		(width_ != width || height_ != height)) {
 
 		width_ = width;
@@ -389,6 +389,13 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 			GamePause gamePause(pause_, nbrOfAlivePlayers_ > 0 && nbrOfPlayers_ == 1 ||
 				nbrOfPlayers_ > 1 && nbrOfPlayers_ - nbrOfAlivePlayers_ <= 1);
 			eventHandler_(gamePause);
+
+			if (!pause_ && nbrOfPlayers_ > 1) {
+				timeLeftToStart_ = countDownTime_;
+				wholeTimeLeft_ = countDownTime_;
+				CountDown countDown(wholeTimeLeft_);
+				eventHandler_(countDown);
+			}
 			break;
 		}
 		case PacketType::BOARD_SIZE:
@@ -402,10 +409,16 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 			for (std::shared_ptr<RemotePlayer>& player : *remoteConnection) {
 				player->addGameEventListener(std::bind(&TetrisGame::applyRulesForRemotePlayers, this, std::placeholders::_1, std::placeholders::_2, player));
 			}
+			localConnection_.restart();
+			initGame();
 			break;
 		case PacketType::CONNECTION_START_BLOCK:
-			initGame();
-			// Fall through.
+		{
+			remoteConnection->receive(packet);
+			RestartPlayer restartPlayer(remoteConnection);
+			eventHandler_(restartPlayer);
+			break;
+		}
 		default:
 			if (remoteConnection) {
 				remoteConnection->receive(packet);

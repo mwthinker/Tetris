@@ -62,6 +62,34 @@ void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
 
+void GameGraphic::restart(Player& player) {
+	level_ = player.getLevel();
+	points_ = player.getPoints();
+	clearedRows_ = player.getClearedRows();
+
+	const float squareSize = TetrisData::getInstance().getTetrisSquareSize();
+	const int rows = player.getTetrisBoard().getRows();
+	const float borderSize = TetrisData::getInstance().getTetrisBorderSize();
+
+	rows_.clear();
+	freeRows_.clear();
+
+	// Add rows to represent the board.
+	// Add free rows to represent potential rows, e.g. the board receives external rows.
+	for (int row = 0; row < rows; ++row) {
+		auto drawRow = std::make_shared<DrawRow>(row, player.getTetrisBoard(), squareSize, lowX_ + borderSize, lowY_ + borderSize);
+		auto freeRow = std::make_shared<DrawRow>(*drawRow);
+		freeRow->clear(); // Make all elements to only contain blocktype empty squares.
+		rows_.push_back(drawRow);
+		freeRows_.push_back(freeRow);
+	}
+
+	currentBlock_ = DrawBlock(player.getTetrisBoard().getBlock(), player.getTetrisBoard().getRows(), squareSize,
+		lowX_ + borderSize, lowY_ + borderSize, false);
+
+	nextBlock_.update(Block(player.getTetrisBoard().getNextBlockType(), 0, 0));
+}
+
 void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX, float lowY, Player& player) {
 	const float squareSize = TetrisData::getInstance().getTetrisSquareSize();
 	const float borderSize = TetrisData::getInstance().getTetrisBorderSize();
@@ -75,8 +103,13 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 	const float infoSize = squareSize * 5;
 	const float boardWidth = squareSize * columns;
 
+	lowX_ = lowX;
+	lowY_ = lowY;
+
 	width_ = squareSize * columns + infoSize + borderSize * 2 + middleDistance + rightDistance;
 	height_ = squareSize * (rows - 2) + borderSize * 2;
+
+	restart(player); // Must be called after variables are defined.
 
 	// Draw the player area.
 	float x = lowX + borderSize;
@@ -122,7 +155,10 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 		infoSize, infoSize,
 		TetrisData::getInstance().getStartAreaColor());
 
-	nextBlock_ = DrawBlock(Block(tetrisBoard.getNextBlockType(), 0, 0), tetrisBoard.getRows(), squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f, true);
+	nextBlock_ = DrawBlock(Block(tetrisBoard.getNextBlockType(), 0, 0),
+		tetrisBoard.getRows(),
+		squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f,
+		true);
 
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
@@ -207,21 +243,6 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 		x, y,
 		borderSize, height_ - 2 * borderSize,
 		borderColor);
-
-	rows_.clear();
-
-	currentBlock_ = DrawBlock(tetrisBoard.getBlock(), tetrisBoard.getRows(), squareSize,
-		lowX + borderSize, lowY + borderSize, false);
-
-	// Add rows to represent the board.
-	// Add free rows to represent potential rows, e.g. the board receives external rows.
-	for (int row = 0; row < rows; ++row) {
-		auto drawRow = std::make_shared<DrawRow>(row, tetrisBoard, squareSize, lowX + borderSize, lowY + borderSize);
-		auto freeRow = std::make_shared<DrawRow>(*drawRow);
-		freeRow->clear(); // Make all elements to only contain blocktype empty squares.
-		rows_.push_back(drawRow);
-		freeRows_.push_back(freeRow);
-	}
 
 	middleText_ = DrawText(lowX + borderSize + squareSize * columns * 0.5f, lowY + height_ * 0.5f);
 }

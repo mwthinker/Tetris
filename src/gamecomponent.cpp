@@ -200,6 +200,24 @@ void GameComponent::eventHandler(TetrisGameEvent& tetrisEvent) {
 		return;
 	} catch (std::bad_cast exp) {}
 
+	// Handle RestartPlayer event.
+	try {
+		middleText_ = mw::Text("", TetrisData::getInstance().getDefaultFont(50), 20);
+		auto& restartPlayer = dynamic_cast<RestartPlayer&>(tetrisEvent);
+		
+		for (auto& player : *restartPlayer.connection_) {
+
+			if (player->isGameOver()) {
+				handleMiddleText(player, player->getLastPositon());
+			}
+
+			GameGraphic& graphic = graphicPlayers_[player];
+			graphic.restart(*player);
+		}
+
+		return;
+	} catch (std::bad_cast exp) {}
+
 	// Handle LevelChange event.
 	try {
 		auto& levelChange = dynamic_cast<LevelChange&>(tetrisEvent);
