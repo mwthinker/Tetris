@@ -70,7 +70,7 @@ void GameComponent::draw(const gui::Graphic& graphic, double deltaTime) {
 
 		// Centers the game and holds the correct proportions.
 		// The sides are transparent.
-		Mat44 model = getModelMatrix();
+		mw::Matrix44f model = getModelMatrix();
 		if (width / dim.width_ > height / dim.height_) {
 			// Blank sides, up and down.
 			scale_ = dim.width_ / width;

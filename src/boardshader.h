@@ -1,8 +1,8 @@
 #ifndef BOARDSHADER_H
 #define BOARDSHADER_H
 
-#include "mat44.h"
-
+#include <mw/vec2.h>
+#include <mw/matrix44.h>
 #include <mw/shader.h>
 #include <mw/color.h>
 #include <mw/sprite.h>
@@ -22,7 +22,7 @@ public:
 	void setVertexAttribPointer() const;
 
 	// Uniforms. -------------------------------------------
-	void setMatrix(const Mat44& matrix) const;
+	void setMatrix(const mw::Matrix44f& matrix) const;
 
 	class Vertex {
 	public:
@@ -45,8 +45,8 @@ public:
 		}
 
 		// The order is important for setVertexAttribPointer()
-		Vec2 pos_;
-		Vec2 tex_;
+		mw::Vec2f pos_;
+		mw::Vec2f tex_;
 		GLfloat texture_;
 		mw::Color color_;
 	};

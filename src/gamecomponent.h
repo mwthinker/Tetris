@@ -51,7 +51,7 @@ private:
 	Uint32 accumulator_;
 
 	// Updated in initGame().
-	Mat44 matrix_;
+	mw::Matrix44f matrix_;
 	bool updateMatrix_;
 	
 	// Font related.

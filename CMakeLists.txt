@@ -60,7 +60,6 @@ set(SOURCES
 	src/main.cpp
 	src/manbutton.cpp
 	src/manbutton.h
-	src/mat44.h
 	src/player.cpp
 	src/player.h
 	src/playerdata.h

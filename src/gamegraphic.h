@@ -8,13 +8,14 @@
 #include "boardshader.h"
 #include "drawblock.h"
 #include "drawtext.h"
-#include "mat44.h"
 #include "boardbatch.h"
 
 #include <mw/font.h>
 #include <mw/text.h>
 #include <mw/sprite.h>
 #include <mw/signal.h>
+#include <mw/vec2.h>
+#include <mw/matrix44.h>
 
 #include <gui/component.h>
 
