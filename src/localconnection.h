@@ -61,8 +61,7 @@ private:
 	int id_;
 
 	// Fix timestep.
-	const double timeStep_;
-	double accumulator_;
+	static const double timeStep_;
 };
 
 inline LocalConnection::iterator LocalConnection::begin() {

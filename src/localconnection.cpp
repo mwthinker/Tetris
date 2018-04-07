@@ -1,9 +1,9 @@
 #include "localconnection.h"
 
+const double LocalConnection::timeStep_ = 1.0 / 60;
+
 LocalConnection::LocalConnection(PacketSender& packetSender) :
 	packetSender_(packetSender),
-	timeStep_(1.0 / 60),
-	accumulator_(0),
 	id_(UNDEFINED_CONNECTION_ID) {
 }
 
@@ -64,13 +64,16 @@ void LocalConnection::updateGame(double deltaTime) {
 		// To avoid spiral of death.
 		deltaTime = 0.250;
 	}
-
-	accumulator_ += deltaTime;
-	while (accumulator_ >= timeStep_) {
-		accumulator_ -= timeStep_;
+	// Update using fixed time step.
+	while (deltaTime >= timeStep_) {
+		deltaTime -= timeStep_;
 		for (auto& player : players_) {
 			player->update(timeStep_);
 		}
+	}
+	// Update the remaining time.
+	for (auto& player : players_) {
+		player->update(deltaTime);
 	}
 }
 
