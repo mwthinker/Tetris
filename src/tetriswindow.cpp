@@ -502,6 +502,14 @@ void TetrisWindow::initSettingsPanel() {
 		TetrisData::getInstance().setWindowPauseOnLostFocus(check.isSelected());
 		TetrisData::getInstance().save();
 	});
+
+	checkBox = p->addDefault<CheckBox>("Show down block", TetrisData::getInstance().getDefaultFont(18));
+	checkBox->setSelected(TetrisData::getInstance().isShowDownBlock());
+	checkBox->addActionListener([&](gui::Component& c) {
+		auto& check = static_cast<CheckBox&>(c);
+		TetrisData::getInstance().setShowDownBlock(check.isSelected());
+		TetrisData::getInstance().save();
+	});
 	
 	auto label = p->addDefault<Label>("Ai players", TetrisData::getInstance().getDefaultFont(30));
 	{
