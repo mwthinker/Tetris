@@ -75,12 +75,7 @@ void TetrisWindow::initPreLoop() {
 	devices_.push_back(std::make_shared<Keyboard>("Keyboard 2", SDLK_s, SDLK_a, SDLK_d, SDLK_w, SDLK_LCTRL));
 
 	// Initialization of all joysticks!
-	mw::GameController::loadAddGameControllerMappings("gamecontrollerdb.txt");
-
-	addSdlEventListener(std::bind(&TetrisWindow::updateDevices, this, std::placeholders::_1, std::placeholders::_2));
-
-	// Saves the last window position. And makes the window movable by holding down left mouse button.
-	addSdlEventListener(std::bind(&TetrisWindow::sdlEventListener, this, std::placeholders::_1, std::placeholders::_2));
+	mw::GameController::loadAddGameControllerMappings("gamecontrollerdb.txt");	
 
 	tetrisGame_.addCallback(std::bind(&TetrisWindow::handleConnectionEvent, this, std::placeholders::_1));
 
@@ -133,6 +128,27 @@ void TetrisWindow::initPreLoop() {
 	}
 }
 
+void TetrisWindow::update(double deltaTime) {
+	if (playIndex_ == getCurrentPanelIndex() ||
+		networkIndex_ == getCurrentPanelIndex()) {
+		
+		SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_); // Update last window position.
+		tetrisGame_.update(deltaTime);
+	}
+	gui::Frame::update(deltaTime);
+}
+
+void TetrisWindow::eventUpdate(const SDL_Event& windowEvent) {
+	gui::Frame::eventUpdate(windowEvent);
+	
+	for (SdlDevicePtr& device : devices_) {
+		device->eventUpdate(windowEvent);
+	}
+
+	// Saves the last window position. And makes the window movable by holding down left mouse button.
+	sdlEventListener(windowEvent);
+}
+
 void TetrisWindow::resumeGame() {
 	int rows = TetrisData::getInstance().getActiveLocalGameRows();
 	int columns = TetrisData::getInstance().getActiveLocalGameColumns();
@@ -174,12 +190,6 @@ void TetrisWindow::startClientLoop(int port, std::string ip) {
 	TetrisData::getInstance().setPort(port);
 	TetrisData::getInstance().setIp(ip);
 	startLoop();
-}
-
-void TetrisWindow::updateDevices(gui::Frame& frame, const SDL_Event& windowEvent) {
-	for (SdlDevicePtr& device : devices_) {
-		device->eventUpdate(windowEvent);
-	}
 }
 
 TetrisWindow::~TetrisWindow() {
@@ -295,11 +305,6 @@ void TetrisWindow::initPlayPanel() {
 	pauseButton_ = p2->addDefault<Button>("Pause", TetrisData::getInstance().getDefaultFont(30));
 	pauseButton_->addActionListener([&](gui::Component&) {
 		tetrisGame_.pause();
-	});
-	
-	addDrawListener([&](gui::Frame& frame, double deltaTime) {
-		SDL_GetWindowPosition(getSdlWindow(), &lastX_, &lastY_); // Update last window position.
-		tetrisGame_.update(deltaTime);
 	});
 	
     // Add the game component, already created in the constructor.
@@ -665,9 +670,6 @@ void TetrisWindow::initNetworkPanel() {
 		}
 	});
 
-	addDrawListener([&](gui::Frame& frame, double deltaTime) {
-		tetrisGame_.update(deltaTime);
-	});
 	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
@@ -853,7 +855,7 @@ DevicePtr TetrisWindow::findAiDevice(std::string name) const {
 	return std::make_shared<Computer>(ais.back());
 }
 
-void TetrisWindow::sdlEventListener(gui::Frame& frame, const SDL_Event& e) {
+void TetrisWindow::sdlEventListener(const SDL_Event& e) {
 	switch (e.type) {
 		case SDL_USEREVENT: // Abort the current connection.
 			progressBar_->setVisible(false);

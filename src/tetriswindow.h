@@ -35,6 +35,10 @@ public:
 	void startClientLoop(int port, std::string ip);
 
 private:
+	void update(double deltaTime) override;
+
+	void eventUpdate(const SDL_Event& windowEvent) override;
+
 	enum class StartFrame { MENU, SERVER, CLIENT, LOCAL_GAME };
 	void resumeGame();
 
@@ -43,8 +47,6 @@ private:
 	void initOpenGl() override;
 
 	void initPreLoop() override;
-
-	void updateDevices(gui::Frame& frame, const SDL_Event& windowEvent);
 
 	void handleConnectionEvent(TetrisGameEvent& tetrisEvent);
 
@@ -110,7 +112,7 @@ private:
 	void initSettingsPanel();
 	void initNetworkPanel();
 
-	void sdlEventListener(gui::Frame& frame, const SDL_Event& e);
+	void sdlEventListener(const SDL_Event& e);
 
 	void addTimerMS(unsigned int ms);
 	void removeLastTimer();
