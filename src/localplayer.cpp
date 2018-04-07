@@ -35,7 +35,7 @@ LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
 	downHandler_(0.04, false),
 	device_(playerData.device_),
 	connectionId_(connectionId),
-	levelUpCounter_(0) {
+	levelUpCounter_(playerData.levelUpCounter_) {
 
 	device_->update(getTetrisBoard());
 	name_ = device_->getName();
