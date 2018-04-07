@@ -63,6 +63,10 @@ public:
 	float getTetrisSquareSize() const;
 	float getTetrisBorderSize() const;
 
+	bool isShowDownBlock() const;
+	void setShowDownBlock(bool showDownColor);
+	mw::Color getDownBlockColor() const;
+
 	void bindTextureFromAtlas() const;
 
 	bool isLimitFps() const;

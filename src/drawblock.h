@@ -23,6 +23,10 @@ public:
 		return vertexes_;
 	}
 
+	void setColor(const mw::Color& color) {
+		color_ = color;
+	}
+
 private:
 	void calculateCenterOfMass(const Block& block, float& x, float& y);
 	mw::Sprite getSprite(BlockType blockType) const;
@@ -39,6 +43,7 @@ private:
 	float movingTime_, timeLeft_;
 	float deltaX_, deltaY_;
 	mw::Sprite spriteI_, spriteJ_, spriteL_, spriteO_, spriteS_, spriteT_, spriteZ_;
+	mw::Color color_;
 };
 
 #endif // DRAWBLOCK_H

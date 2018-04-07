@@ -285,6 +285,27 @@ mw::Color TetrisData::getBorderColor() const {
 	return jsonObject_["window"]["tetrisBoard"]["borderColor"].get<mw::Color>();
 }
 
+
+bool TetrisData::isShowDownBlock() const {
+	try {
+		return jsonObject_.at("window").at("tetrisBoard").at("showDownBlock").get<bool>();
+	} catch (nlohmann::detail::out_of_range) {
+		return true;
+	}
+}
+
+void TetrisData::setShowDownBlock(bool showDownColor) {
+	jsonObject_["window"]["tetrisBoard"]["showDownBlock"] = showDownColor;
+}
+
+mw::Color TetrisData::getDownBlockColor() const {
+	try {
+		return jsonObject_.at("window").at("tetrisBoard").at("downBlockColor").get<mw::Color>();
+	} catch (nlohmann::detail::out_of_range) {
+		return mw::Color(1, 1, 1, 0.15f);
+	}
+}
+
 float TetrisData::getTetrisSquareSize() const {
 	return jsonObject_["window"]["tetrisBoard"]["squareSize"].get<float>();
 }

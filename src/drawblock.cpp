@@ -17,6 +17,7 @@ DrawBlock::DrawBlock(const Block& block, int boardHeight, float squareSize, floa
 	timeLeft_ = -0.001f;
 	movingTime_ = 1.5f;
 	update(block);
+	color_ = mw::Color(1, 1, 1);
 }
 
 void DrawBlock::update(const Block& block) {
@@ -40,7 +41,8 @@ void DrawBlock::update(const Block& block) {
 			addRectangle(vertexes_,
 				lowX_ + sq.column_ * squareSize_ + deltaX_, lowY_ + sq.row_ * squareSize_ + deltaY_,
 				squareSize_, squareSize_,
-				sprite
+				sprite,
+				color_
 			);
 		}
 	}
@@ -71,7 +73,8 @@ void DrawBlock::updateVertexData() {
 		addRectangle(vertexes_,
 			lowX_ + sq.column_ * squareSize_, lowY_ + (row_ - sq.row_) * timeLeft_ / movingTime_ * squareSize_ + sq.row_ *  squareSize_,
 			squareSize_, squareSize_,
-			sprite
+			sprite,
+			color_
 		);
 	}
 }

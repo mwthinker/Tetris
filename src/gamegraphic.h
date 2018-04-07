@@ -77,10 +77,11 @@ private:
 
 	DrawText textLevel_, textPoints_, textClearedRows_, name_, middleMessage_;
 	DrawText middleText_;
-	DrawBlock currentBlock_, nextBlock_;
+	DrawBlock currentBlock_, nextBlock_, downBlock_;
 	int level_, points_, clearedRows_;
 	Block latestBlockDownGround_;
 	bool blockDownGround_;
+	bool showDownBlock_;
 
 	mw::signals::Connection connection_;
 	float width_, height_;

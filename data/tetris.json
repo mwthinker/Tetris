@@ -89,6 +89,8 @@
 			"playerAreaColor": "0.4 0.1 0.15 0.5",
 			"middleTextColor": "0.2 0.2 0.2 0.5",
 			"middleTextBoxSize": 7
+			"showDownBlock": true,
+			"downBlockColor": "1 1 1 0.15"
 		},
 		"port": 11155,
 		"ip": "127.0.0.1",

@@ -57,7 +57,7 @@ void GameGraphic::restart(BoardBatch& boardBatch, Player& player, float x, float
 	connection_ = player.addGameEventListener(std::bind(&GameGraphic::callback, this, std::placeholders::_1, std::placeholders::_2));
 
 	showPoints_ = showPoints;
-	
+
 	initStaticBackground(boardBatch, x, y, player);
 	update(player.getClearedRows(), player.getPoints(), player.getLevel());
 }
@@ -86,8 +86,17 @@ void GameGraphic::restart(Player& player) {
 
 	currentBlock_ = DrawBlock(player.getTetrisBoard().getBlock(), player.getTetrisBoard().getRows(), squareSize,
 		lowX_ + borderSize, lowY_ + borderSize, false);
+	currentBlock_.update(player.getTetrisBoard().getBlock());
 
-	nextBlock_.update(Block(player.getTetrisBoard().getNextBlockType(), 0, 0));
+	nextBlock_.update(Block(player.getTetrisBoard().getNextBlockType(), 0, 0));	
+	
+	RawTetrisBoard board = player.getTetrisBoard();
+	board.update(Move::DOWN_GROUND);
+	downBlock_ = DrawBlock(board.getBlock(), board.getRows(), squareSize,
+		lowX_ + borderSize, lowY_ + borderSize, false);
+	downBlock_.setColor(TetrisData::getInstance().getDownBlockColor());
+	downBlock_.update(board.getBlock());
+	showDownBlock_ = TetrisData::getInstance().isShowDownBlock();
 }
 
 void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX, float lowY, Player& player) {
@@ -159,6 +168,7 @@ void GameGraphic::initStaticBackground(BoardBatch& staticBoardBatch, float lowX,
 		tetrisBoard.getRows(),
 		squareSize, x + squareSize * 2.5f, y + squareSize * 2.5f,
 		true);
+	nextBlock_.update(Block(player.getTetrisBoard().getNextBlockType(), 0, 0));
 
 	mw::Font font = TetrisData::getInstance().getDefaultFont(30);
 	name_ = DrawText(player.getName(), font, x, y + squareSize * 5, 8.f);
@@ -289,6 +299,11 @@ void GameGraphic::callback(GameEvent gameEvent, const TetrisBoard& tetrisBoard) 
 			// Fall through!
 		case GameEvent::PLAYER_MOVES_BLOCK_RIGHT:
 			currentBlock_.update(tetrisBoard.getBlock());
+			{
+				RawTetrisBoard board = tetrisBoard;
+				board.update(Move::DOWN_GROUND);
+				downBlock_.update(board.getBlock());
+			}
 			break;
 		case GameEvent::PLAYER_MOVES_BLOCK_DOWN_GROUND:
 			blockDownGround_ = true;
@@ -329,8 +344,13 @@ void GameGraphic::addDrawRowAtTheTop(const TetrisBoard& tetrisBoard, int nbr) {
 
 void GameGraphic::update(float deltaTime, BoardBatch& dynamicBoardBatch) {
 	currentBlock_.update(deltaTime);
+
+	if (showDownBlock_) {
+		dynamicBoardBatch.add(downBlock_.getVertexes());
+	}
+
 	dynamicBoardBatch.add(currentBlock_.getVertexes());
-	dynamicBoardBatch.add(nextBlock_.getVertexes());
+	dynamicBoardBatch.add(nextBlock_.getVertexes());	
 
 	// Update the animation for the rows still showing animations.
 	for (auto& rowPtr : freeRows_) {
@@ -353,7 +373,7 @@ void GameGraphic::drawText(BoardBatch& batch) {
 	batch.add(name_.getVertexes());
 	batch.uploadToGraphicCard();
 	batch.draw();
-	
+
 	if (showPoints_) {
 		// Show points only in single player game.
 		batch.clear();
