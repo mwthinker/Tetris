@@ -487,15 +487,28 @@ void TetrisGame::applyRulesForLocalPlayers(GameEvent gameEvent, const TetrisBoar
 		} else { // Singleplayer!
 			player->setLevelUpCounter(player->getLevelUpCounter() + rows);
 		}
+	}
 
-		// Set level.
-		int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
-		if (level <= maxLevel_ && level != player->getLevel()) {
-			int oldLevel = player->getLevel();
-			player->setLevel(level);
-			LevelChange levelChange(player, level, oldLevel);
-			eventHandler_(levelChange);
-		}
+	// Set level.
+	int level = (player->getLevelUpCounter() / ROWS_TO_LEVEL_UP) + 1;
+	if (level <= maxLevel_ && level != player->getLevel()) {
+		int oldLevel = player->getLevel();
+		player->setLevel(level);
+		LevelChange levelChange(player, level, oldLevel);
+		eventHandler_(levelChange);
+		sendLevelToRemoteConnections(*player);
+	}
+}
+
+void TetrisGame::sendLevelToRemoteConnections(const LocalPlayer& localPlayer) {
+	if (sender_.isActive()) {
+		// Send level to remote connections.
+		net::Packet packet;
+		packet << PacketType::PLAYER_LEVEL;
+		packet << localConnection_.getId();
+		packet << localPlayer.getId();
+		packet << localPlayer.getLevel();
+		sender_.sendToAll(packet);
 	}
 }
 
@@ -537,20 +550,21 @@ void TetrisGame::applyRulesForRemotePlayers(GameEvent gameEvent, const TetrisBoa
 		}
 	}
 
-	if (nbrOfPlayers_ > 1 && rows > 0) {
-		// Increase level up counter for all opponents to the current player.
-		// Remote players will be added indirectly.
-		for (auto& opponent : localConnection_) {
-			if (!opponent->getTetrisBoard().isGameOver()) {
-				opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
-			}
-		}
-	}
 	if (rows > 0) {
 		int newPoints = player->getPoints() + player->getLevel() * rows * rows;
 		PointsChange pointsChange(player, player->getPoints(), newPoints);
 		player->setPoints(newPoints);
 		eventHandler_(pointsChange);
+
+		if (nbrOfPlayers_ > 1 && rows > 0) {
+			// Increase level up counter for all opponents to the current player.
+			// Remote players will be added indirectly.
+			for (auto& opponent : localConnection_) {
+				if (!opponent->getTetrisBoard().isGameOver()) {
+					opponent->setLevelUpCounter(opponent->getLevelUpCounter() + rows);
+				}
+			}
+		}
 	}
 }
 

@@ -76,6 +76,8 @@ void RemoteConnection::receive(net::Packet& packet) {
 				players_.push_back(player);
 			}
 			break;
+		case PacketType::PLAYER_LEVEL:
+			// Fall through!
 		case PacketType::PLAYER_MOVE:
 			// Fall through!
 		case PacketType::PLAYER_TETRIS:

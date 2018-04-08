@@ -43,6 +43,13 @@ void RemotePlayer::receive(net::Packet& packet) {
 		case PacketType::PLAYER_NAME:
 			packet >> name_;
 			break;
+		case PacketType::PLAYER_LEVEL:
+		{
+			int level;
+			packet >> level;
+			setLevel(level);
+			break;
+		}			
 	}
 }
 

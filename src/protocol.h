@@ -19,7 +19,8 @@ enum class PacketType {
 	CONNECTION_START_BLOCK,// The start blocks for all players for a connection.
 	PLAYER_MOVE,           // A move to update the tetrisboard for a player.
 	PLAYER_TETRIS,         // Add rows to a player.
-	PLAYER_NAME            // The name for a player.
+	PLAYER_NAME,           // The name for a player.
+	PLAYER_LEVEL           // The level for a player.
 };
 
 static const int SERVER_CONNECTION_ID = 0;

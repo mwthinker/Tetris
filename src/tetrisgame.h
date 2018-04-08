@@ -143,6 +143,8 @@ private:
 
 	void addRowsToOpponentPlayersExcept(const std::shared_ptr<Player>& skipPlayer);
 
+	void sendLevelToRemoteConnections(const LocalPlayer& localPlayer);
+
 	mw::Signal<TetrisGameEvent&> eventHandler_;
 	bool pause_;
 	int nbrOfPlayers_;
