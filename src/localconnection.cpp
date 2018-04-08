@@ -37,9 +37,9 @@ void LocalConnection::restart() {
 	}
 }
 
-void LocalConnection::resizeBoard(int width, int height) {
+void LocalConnection::restart(int width, int height) {
 	for (auto& player : players_) {
-		player->resizeBoard(width, height);
+		player->restart(width, height);
 	}
 
 	if (packetSender_.isActive()) {

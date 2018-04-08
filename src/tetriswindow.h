@@ -53,7 +53,7 @@ private:
 	void loadHighscore();
 	void saveHighscore();
 
-	void setPlayers();
+	void setPlayers(int width, int height);
 
 	DevicePtr findHumanDevice(std::string name) const;
 	DevicePtr findAiDevice(std::string name) const;

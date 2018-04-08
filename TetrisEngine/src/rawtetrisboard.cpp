@@ -163,9 +163,9 @@ void RawTetrisBoard::updateRestart(BlockType current, BlockType next) {
 
 void RawTetrisBoard::updateRestart(int rows, int columns, BlockType current, BlockType next) {
 	next_ = next;
-	current_ = createBlock(current);
 	rows_ = rows;
 	columns_ = columns;
+	current_ = createBlock(current);	
 	rowToBeRemoved_ = -1;
 	externalRowsAdded_ = 0;
 	clearBoard();

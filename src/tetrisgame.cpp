@@ -77,7 +77,7 @@ void TetrisGame::createLocalGame(int rows, int columns) {
 		height_ = rows;
 
 		lastConnectionId_ = UNDEFINED_CONNECTION_ID;
-		localConnection_.restart();
+		localConnection_.restart(columns, rows);
 		initGame();
 	}
 }
@@ -224,15 +224,15 @@ void TetrisGame::resizeBoard(int width, int height) {
 			packet << width << height;
 			sender_.sendToAll(packet);
 		}
-		localConnection_.resizeBoard(width, height);
+		localConnection_.restart(width, height);
 
 		initGame();
 	}
 }
 
-void TetrisGame::setPlayers(const std::vector<DevicePtr>& devices) {
+void TetrisGame::setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
 	// Add human players.
-	localConnection_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, devices);
+	localConnection_.setPlayers(width, height, devices);
 	for (std::shared_ptr<LocalPlayer>& player : localConnection_) {
 		player->addGameEventListener(std::bind(&TetrisGame::applyRulesForLocalPlayers, this, std::placeholders::_1, std::placeholders::_2, player));
 	}
@@ -401,7 +401,7 @@ void TetrisGame::remoteReceive(std::shared_ptr<RemoteConnection> remoteConnectio
 		case PacketType::BOARD_SIZE:
 			packet >> width_;
 			packet >> height_;
-			localConnection_.resizeBoard(width_, height_);
+			localConnection_.restart(width_, height_);
 			initGame();
 			break;
 		case PacketType::CONNECTION_INFO:

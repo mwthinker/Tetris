@@ -186,7 +186,7 @@ void ConsoleTetris::restartCurrentGame() {
 		devices.push_back(activeAis_[i]);
 	}
 
-	tetrisGame_.setPlayers(devices);
+	tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, devices);
 	tetrisGame_.createLocalGame();
 }
 

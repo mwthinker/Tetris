@@ -138,7 +138,7 @@ void LocalPlayer::restart(BlockType current, BlockType next) {
 	points_ = 0;
 }
 
-void LocalPlayer::resizeBoard(int width, int height) {
+void LocalPlayer::restart(int width, int height) {
 	tetrisBoard_.updateRestart(height, width, tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
 	levelUpCounter_ = 0;
 	level_ = 1;

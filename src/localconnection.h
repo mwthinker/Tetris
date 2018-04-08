@@ -23,7 +23,7 @@ public:
 
 	void restart();
 
-	void resizeBoard(int width, int height);
+	void restart(int width, int height);
 
 	// Return the number of players.
 	int getNbrOfPlayers() const;

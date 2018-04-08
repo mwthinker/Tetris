@@ -172,8 +172,8 @@ void TetrisWindow::resumeGame() {
 }
 
 void TetrisWindow::saveCurrentLocalGame() {
-	if (getCurrentPanelIndex() == playIndex_ && tetrisGame_.getStatus() == TetrisGame::LOCAL) {
-		// Save only when the game is active and is a local game.
+	if (tetrisGame_.isDefaultGame() && getCurrentPanelIndex() == playIndex_ && tetrisGame_.getStatus() == TetrisGame::LOCAL) {
+		// Save only when the game is active and is a local default game.
 		TetrisData::getInstance().setActiveLocalGame(tetrisGame_.getRows(), tetrisGame_.getColumns(), tetrisGame_.getPlayerData());
 		TetrisData::getInstance().save();
 	}
@@ -286,20 +286,20 @@ void TetrisWindow::initPlayPanel() {
 			tetrisGame_.restartGame();
 		} else {
 			tetrisGame_.closeGame();
-			setPlayers();
-			tetrisGame_.createLocalGame();
+			setPlayers(tetrisGame_.getColumns(), tetrisGame_.getRows());
+			tetrisGame_.createLocalGame(tetrisGame_.getRows(), tetrisGame_.getColumns());
 		}
 	});
 
 	nbrHumans_ = manBar_->addDefault<ManButton>(devices_.size(), TetrisData::getInstance().getHumanSprite(), TetrisData::getInstance().getCrossSprite());
 	nbrHumans_->addActionListener([&](gui::Component&) {
-		setPlayers();
+		setPlayers(tetrisGame_.getColumns(), tetrisGame_.getRows());
 	});
 
 	nbrAis_ = manBar_->addDefault<ManButton>(activeAis_.size(), TetrisData::getInstance().getComputerSprite(), TetrisData::getInstance().getCrossSprite());
 	nbrAis_->setNbr(0);
 	nbrAis_->addActionListener([&](gui::Component&) {
-		setPlayers();
+		setPlayers(tetrisGame_.getColumns(), tetrisGame_.getRows());
 	});
 
 	pauseButton_ = p2->addDefault<Button>("Pause", TetrisData::getInstance().getDefaultFont(30));
@@ -422,13 +422,13 @@ void TetrisWindow::initCustomPlayPanel() {
 
 	auto button = centerPanel->addDefault<Button>("Play", TetrisData::getInstance().getDefaultFont(30));
 	button->addActionListener([&](gui::Component&) {
-		int rows = std::stoi(customWidthField_->getText());
+		int rows = std::stoi(customHeightField_->getText());
 		int columns = std::stoi(customWidthField_->getText());
 		
 		tetrisGame_.closeGame();
 		nbrHumans_->setNbr(1);
 		nbrAis_->setNbr(0);
-		setPlayers();
+		setPlayers(columns, rows);
 		tetrisGame_.createLocalGame(rows, columns);
 
 		if (tetrisGame_.getNbrOfPlayers() == 1) {
@@ -637,14 +637,14 @@ void TetrisWindow::initNetworkPanel() {
 				TetrisData::getInstance().save();
 				tetrisGame_.closeGame();
 				nbrHumans_->setNbr(1);
-				tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+				tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 				tetrisGame_.createServerGame(std::stoi(port_->getText()));
 			} else {
 				TetrisData::getInstance().setIp(ipClient_->getText());
 				TetrisData::getInstance().save();
 				tetrisGame_.closeGame();
 				nbrHumans_->setNbr(1);
-				tetrisGame_.setPlayers(std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+				tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 				tetrisGame_.createClientGame(std::stoi(port_->getText()), ipClient_->getText());
 				addTimerMS(TetrisData::getInstance().getTimeToConnectMS());
 				progressBar_->setVisible(true);
@@ -721,9 +721,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		// Test if the player is a local player, exception otherwise.
 		auto localPlayer = std::dynamic_pointer_cast<LocalPlayer>(gameOver.player_);
 		
-		if (tetrisGame_.getNbrOfPlayers() == 1 &&
-			tetrisGame_.getStatus() == TetrisGame::LOCAL &&
-			tetrisGame_.getRows() == TETRIS_HEIGHT && tetrisGame_.getColumns() == TETRIS_WIDTH &&
+		if (tetrisGame_.isDefaultGame() &&
 			highscore_->isNewRecord(localPlayer->getPoints())) { // New record only in local game with default settings.
 			
 			saveCurrentLocalGame();
@@ -798,7 +796,11 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		auto& start = dynamic_cast<GameStart&>(tetrisEvent);
 		switch (start.status_) {
 			case GameStart::LOCAL:
-				menu_->setLabel("Menu");
+				if (tetrisGame_.isDefaultGame()) {
+					menu_->setLabel("Menu");
+				} else {
+					menu_->setLabel("Abort");
+				}
 				break;
 			case GameStart::CLIENT:
 				setTitle("MWetris@Client");
@@ -832,7 +834,7 @@ void TetrisWindow::saveHighscore() {
 	TetrisData::getInstance().save();
 }
 
-void TetrisWindow::setPlayers() {
+void TetrisWindow::setPlayers(int width, int height) {
 	std::vector<DevicePtr> playerDevices(devices_.begin(), devices_.begin() + nbrHumans_->getNbr());
 
 	for (unsigned int i = 0; i < nbrAis_->getNbr(); ++i) {
@@ -841,7 +843,7 @@ void TetrisWindow::setPlayers() {
 		}
 	}
 	
-	tetrisGame_.setPlayers(playerDevices);
+	tetrisGame_.setPlayers(width, height, playerDevices);
 }
 
 DevicePtr TetrisWindow::findHumanDevice(std::string name) const {

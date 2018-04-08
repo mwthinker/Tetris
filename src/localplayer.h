@@ -29,7 +29,7 @@ public:
 
 	void restart(BlockType current, BlockType next);
 
-	void resizeBoard(int width, int height);
+	void restart(int width, int height);
 
 	int getLevelUpCounter() const {
 		return levelUpCounter_;
