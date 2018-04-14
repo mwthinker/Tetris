@@ -179,12 +179,12 @@ if (MSVC AND NOT DLL_FOLDER)
 	message(STATUS "Enviroment variable DLL_FOLDER not defined, installer can not be created")
 endif ()
 
+install(TARGETS MWetris
+	DESTINATION .
+	COMPONENT application
+)
+
 if (MSVC AND DLL_FOLDER)
-	install(TARGETS MWetris
-        DESTINATION .
-        COMPONENT application
-	)
-	
 	set(TMP_DLL_FOLDER ${DLL_FOLDER})
 	string(REPLACE "\\" "/" DLL_FOLDER ${TMP_DLL_FOLDER})
 	message(STATUS ${DLL_FOLDER} "")
@@ -217,60 +217,64 @@ if (MSVC AND DLL_FOLDER)
 	else ()
 		message(STATUS "Enviroment variable DLL_FOLDER not defined")
 	endif ()
+endif ()
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/data/
+	DESTINATION .
+	COMPONENT data
+)
 	
-	install(DIRECTORY ${CMAKE_SOURCE_DIR}/data/
-		DESTINATION .
-		COMPONENT data
-	)
+# Replace the USE_APPLICATION_JSON file, use default saving place.
+install(FILES ${CMAKE_SOURCE_DIR}/data/package/USE_APPLICATION_JSON
+	DESTINATION .
+	COMPONENT data
+)
+
+########################################################################
+# Tell CMake to install the windows runtime libraries to the programs
+# directory and tell CPack that they belong to the applications component
+include(InstallRequiredSystemLibraries)
+install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+	DESTINATION .
+	COMPONENT application
+)
+
+set(CPACK_PACKAGE_CONTACT "mwthinker@yahoo.com")
+
+# CPack configuration
+set(CPACK_PACKAGE_NAME "MWetris")
+
+set(CPACK_PACKAGE_VENDOR "MW")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Installs MWetris")
+set(CPACK_PACKAGE_VERSION_MAJOR ${MWETRIS_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${MWETRIS_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${MWETRIS_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")	
+
+set(CPACK_GENERATOR ZIP)
+
+# Tell CPack about the components and group the data components together.
+set(CPACK_COMPONENTS_ALL application data runtime vcredist)
+
+# More descriptive names for each of the components, and component groups.
+set(CPACK_COMPONENT_APPLICATION_DISPLAY_NAME "Application")
+set(CPACK_COMPONENT_APPLICATION_REQUIRED true)
+
+set(CPACK_COMPONENT_DATA_DISPLAY_NAME "Data")
+set(CPACK_COMPONENT_DATA_REQUIRED true)
+
+set(CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime")
+set(CPACK_COMPONENT_RUNTIME_REQUIRED true)
+
+# Text from "LICENSE.txt" is displayed in the installer's license tab.
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\data\\\\package\\\\mw.bmp")
+
+set(CPACK_PACKAGE_EXECUTABLES "MWetris" "MWetris")
+set(CPACK_CREATE_DESKTOP_LINKS "MWetris")
 	
-	# Replace the USE_APPLICATION_JSON file, use default saving place.
-	install(FILES ${CMAKE_SOURCE_DIR}/data/package/USE_APPLICATION_JSON
-		DESTINATION .
-		COMPONENT data
-	)
-
-	########################################################################
-	# Tell CMake to install the windows runtime libraries to the programs
-	# directory and tell CPack that they belong to the applications component
-	include(InstallRequiredSystemLibraries)
-	install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-		DESTINATION .
-		COMPONENT application
-	)
-
-	# CPack configuration
-	set(CPACK_PACKAGE_NAME "MWetris")
-
-	set(CPACK_PACKAGE_VENDOR "MW")
-	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Installs MWetris")
-	set(CPACK_PACKAGE_VERSION_MAJOR ${MWETRIS_VERSION_MAJOR})
-	set(CPACK_PACKAGE_VERSION_MINOR ${MWETRIS_VERSION_MINOR})
-	set(CPACK_PACKAGE_VERSION_PATCH ${MWETRIS_VERSION_PATCH})
-	set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")	
-	
-	set(CPACK_GENERATOR ZIP)
-
-	# Tell CPack about the components and group the data components together.
-	set(CPACK_COMPONENTS_ALL application data runtime vcredist)
-
-	# More descriptive names for each of the components, and component groups.
-	set(CPACK_COMPONENT_APPLICATION_DISPLAY_NAME "Application")
-	set(CPACK_COMPONENT_APPLICATION_REQUIRED true)
-
-	set(CPACK_COMPONENT_DATA_DISPLAY_NAME "Data")
-	set(CPACK_COMPONENT_DATA_REQUIRED true)
-
-	set(CPACK_COMPONENT_RUNTIME_DISPLAY_NAME "Runtime")
-	set(CPACK_COMPONENT_RUNTIME_REQUIRED true)
-
-	# Text from "LICENSE.txt" is displayed in the installer's license tab.
-	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
-	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}\\\\data\\\\package\\\\mw.bmp")
-	
-	set(CPACK_PACKAGE_EXECUTABLES "MWetris" "MWetris")
-	set(CPACK_CREATE_DESKTOP_LINKS "MWetris")
-	
+if (MSVC AND DLL_FOLDER)
 	option(USE_NSIS_GENERATOR "Use NSIS generator" OFF)
 	if (USE_NSIS_GENERATOR)
 		set(CPACK_GENERATOR ${CPACK_GENERATOR} NSIS)
@@ -293,6 +297,20 @@ if (MSVC AND DLL_FOLDER)
 		
 		set(CPACK_NSIS_MUI_FINISHPAGE_RUN "MWetris.exe")
 	endif ()
-	
-	include(CPack)
 endif ()
+
+if (UNIX)
+	option(USE_DEB_GENERATOR "Use NSIS generator" OFF)
+	if (USE_DEB_GENERATOR)
+		set(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
+
+		set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
+		set(CPACK_DEB_COMPONENT_INSTALL ON)
+		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+		set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
+		
+		set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2 (>=2.0-0), libsdl2-image (>=2.0-0), libsdl2-mixer(>=2.0-0), libsdl2-net (>= 2.0-0), libsdl2-ttf (>= 2.0-0), libglew (>= 1.13)")
+	endif ()
+endif ()
+
+include(CPack)
