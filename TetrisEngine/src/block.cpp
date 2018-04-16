@@ -4,10 +4,6 @@
 
 Block::Block() : maxRotations_(0), currentRotation_(0), rotationSquareIndex_(0),
 blockType_(BlockType::EMPTY), lowestStartRow_(0), startColumn_(0) {
-	squares_[0] = Square(blockType_, 0, 0);
-	squares_[1] = Square(blockType_, 0, 0);
-	squares_[2] = Square(blockType_, 0, 0);
-	squares_[3] = Square(blockType_, 0, 0);
 }
 
 Block::Block(BlockType blockType, int lowestStartRow, int leftColumn, int currentRotation)
@@ -18,9 +14,9 @@ Block::Block(BlockType blockType, int lowestStartRow, int leftColumn, int curren
 	}
 }
 
-Block::Block(BlockType blockType, int lowestStartRow, int startColumn) : maxRotations_(4),
-currentRotation_(0), rotationSquareIndex_(0), blockType_(blockType), startColumn_(startColumn),
-lowestStartRow_(lowestStartRow) {
+Block::Block(BlockType blockType, int lowestStartRow, int startColumn) : 
+	maxRotations_(4), currentRotation_(0), rotationSquareIndex_(0), 
+	blockType_(blockType), startColumn_(startColumn), lowestStartRow_(lowestStartRow) {
 
 	int nbrOfSquares = 0;
     switch (blockType) {
@@ -139,6 +135,7 @@ void Block::rotateLeft() {
 void Block::rotateRight() {
 	int row = squares_[rotationSquareIndex_].row_;
 	int column = squares_[rotationSquareIndex_].column_;
+	currentRotation_ = (currentRotation_ + 3) % 4;
 	for (Square& sq : squares_) {
 		Square tmp = sq;
 		tmp.column_ = sq.row_ + column - row;

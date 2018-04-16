@@ -46,7 +46,7 @@ void RawTetrisBoard::update(Move move) {
 	// Game over?
 	if (isGameOver_ || collision(current_)) {
 		if (!isGameOver_) {
-			// Only called once when the game becomes game over.
+			// Only called once, when the game becomes game over.
 			isGameOver_ = true;
 			triggerEvent(GameEvent::GAME_OVER);
 		}
@@ -54,7 +54,7 @@ void RawTetrisBoard::update(Move move) {
 		Block block = current_;
 		switch (move) {
 			case Move::GAME_OVER:
-				// Only called once when the game becomes game over.
+				// Only called once, when the game becomes game over.
 				isGameOver_ = true;
 				triggerEvent(GameEvent::GAME_OVER);
 				break;

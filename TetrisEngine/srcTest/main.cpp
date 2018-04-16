@@ -146,23 +146,7 @@ std::istream& operator>>(std::istream& is, std::chrono::milliseconds& time) {
 	return is;
 }
 
-struct Innocent {};
-
-struct Evil {
-	// Don't try this at home
-	template <typename T>
-	Evil(T) {}
-};
-
-bool operator==(Evil const&, Evil const&) { return true; }
-
 int main(const int argc, const char* const argv[]) {
-	Innocent a, b;
-
-	// Should never compile, right?
-	// But it does, thanks to the Evil non-explicit templated constructor
-	a == b;
-
 	std::string programName;
 	if (argc > 0) {
 		programName = argv[0];

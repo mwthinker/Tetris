@@ -43,7 +43,7 @@ public:
 		return lowestStartRow_;
 	}
 
-	// Returns the lowest row.
+	// Return the lowest row.
 	int getLowestRow() const {
 		return std::min({squares_[0].row_, squares_[1].row_, squares_[2].row_, squares_[3].row_});;
 	}

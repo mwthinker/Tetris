@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(MWetris)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SdlGui/MwLibrary2/cmake/Modules/)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SimpleNetwork/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SdlGui/MwLibrary2/cmake/Modules/)
 if (MSVC)
 	# Exception handler model.
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
@@ -89,6 +89,11 @@ set(SOURCES_CONSOLE
 	src/consoletetris.h
 )
 
+set(SOURCES_TEST
+	src/testmain.cpp
+	src/testtetrisengine.cpp
+)
+
 # End of source files.
 
 find_package(SDL2 REQUIRED)
@@ -98,6 +103,7 @@ find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_net REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(CATCH2)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
 	find_package(Threads REQUIRED) # Due to a bug, which forces the user to link to Threads when using #include <thread>.
@@ -156,7 +162,7 @@ if (MSVC)
 	set_target_properties(MWetris PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:windows")
 endif ()
 
-target_link_libraries(MWetris
+set(LINK_LIBS
 	${CONSOLE_LIB}
 	SimpleNetwork
 	SdlGui
@@ -172,6 +178,20 @@ target_link_libraries(MWetris
 	${SDL2_NET_LIBRARIES}
 	${CMAKE_THREAD_LIBS_INIT}
 )
+
+target_link_libraries(MWetris ${LINK_LIBS})
+
+if (CATCH2_FOUND)
+	add_executable(MWetrisTest ${SOURCES_TEST})
+	
+	target_include_directories(MWetrisTest
+		PUBLIC ${CATCH2_INCLUDE_DIRS}
+		PUBLIC src
+	)
+
+	target_link_libraries(MWetrisTest ${LINK_LIBS})
+endif ()
+
 
 set(DLL_FOLDER $ENV{DLL_FOLDER})
 
@@ -300,7 +320,7 @@ if (MSVC AND DLL_FOLDER)
 endif ()
 
 if (UNIX)
-	option(USE_DEB_GENERATOR "Use NSIS generator" OFF)
+	option(USE_DEB_GENERATOR "Use DEB generator" OFF)
 	if (USE_DEB_GENERATOR)
 		set(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
 
