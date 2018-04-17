@@ -69,14 +69,14 @@ void ConsoleGraphic::drawNextBlock(BlockType nextBlockType) const {
 
 	Block nextBlock = Block(nextBlockType, 0, 0);
 	for (const Square& sq : nextBlock) {
-		drawSquare((6 + columns_ - sq.column_) * 2, 3 + sq.row_, sq.blockType_);
+		drawSquare((6 + columns_ - sq.column_) * 2, 3 + sq.row_, nextBlock.getBlockType());
 	}
 }
 
 void ConsoleGraphic::drawCurrentBlock(const Block& currentBlock) const {
 	for (const Square& sq : currentBlock) {
 		if (sq.row_ < rows_ + 2) {
-			drawSquare(1 + sq.column_ * 2, rows_ - sq.row_ - 2, sq.blockType_);
+			drawSquare(1 + sq.column_ * 2, rows_ - sq.row_ - 2, currentBlock.getBlockType());
 		}
 	}
 }

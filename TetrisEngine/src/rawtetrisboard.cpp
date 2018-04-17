@@ -179,7 +179,7 @@ const std::vector<BlockType>& RawTetrisBoard::getBoardVector() const {
 void RawTetrisBoard::addBlockToBoard(const Block& block) {
 	// All squares in the block is added to the gameboard.
 	for (const Square& sq : block) {
-		blockType(sq.row_, sq.column_) = sq.blockType_;
+		blockType(sq.row_, sq.column_) = block.getBlockType();
 	}
 }
 

@@ -39,22 +39,15 @@ TEST_CASE("Test Square", "[square]") {
 
 	const Square sq(BlockType::L, 1, 5);
 	SECTION("square constuctor give the correct result") {		
-		REQUIRE((sq.blockType_ == BlockType::L && sq.row_ == 1 && sq.column_ == 5));
+		REQUIRE((sq.row_ == 1 && sq.column_ == 5));
 	}
 
 	SECTION("square copy give the same result") {
 		const Square sqCopy = sq;
-		REQUIRE((sq.blockType_ == sqCopy.blockType_ && sqCopy.row_ == sq.row_ && sqCopy.column_ == sq.column_));
+		REQUIRE((sqCopy.row_ == sq.row_ && sqCopy.column_ == sq.column_));
 	}
 
 	SECTION("testing equality") {
-		SECTION("changing blockType") {
-			Square sqCopy = sq;
-			sqCopy.blockType_ = BlockType::J;
-			REQUIRE(sqCopy.blockType_ != sq.blockType_);
-			REQUIRE(sqCopy != sq);
-			REQUIRE(!(sqCopy == sq));
-		}
 		SECTION("changing row") {
 			Square sqCopy = sq;
 			++sqCopy.row_;

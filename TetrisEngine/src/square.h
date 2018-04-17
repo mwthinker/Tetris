@@ -18,18 +18,17 @@ public:
 	Square() = default;
 
 	Square(BlockType blockType, int row, int column)
-		: blockType_(blockType), row_(row), column_(column) {
+		: row_(row), column_(column) {
 	}
 
 	bool operator==(const Square& square) const {
-		return square.row_ == row_ && square.column_ == column_ && square.blockType_ == blockType_;
+		return square.row_ == row_ && square.column_ == column_;
 	}
 
 	bool operator!=(const Square& square) const {
-		return square.row_ != row_ || square.column_ != column_ || square.blockType_ != blockType_;
+		return square.row_ != row_ || square.column_ != column_;
 	}
 
-	BlockType blockType_;
 	int row_, column_;
 };
 
