@@ -22,61 +22,61 @@ Block::Block(BlockType blockType, int lowestStartRow, int startColumn) :
     switch (blockType) {
 	case BlockType::EMPTY:
 		maxRotations_ = 0;
-		squares_[nbrOfSquares++] = Square(blockType_, 0, 0);
-		squares_[nbrOfSquares++] = Square(blockType_, 0, 0);
-		squares_[nbrOfSquares++] = Square(blockType_, 0, 0);
-		squares_[nbrOfSquares++] = Square(blockType_, 0, 0);
+		squares_[nbrOfSquares++] = Square(0, 0);
+		squares_[nbrOfSquares++] = Square(0, 0);
+		squares_[nbrOfSquares++] = Square(0, 0);
+		squares_[nbrOfSquares++] = Square(0, 0);
 		break;
 	case BlockType::I:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 3, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 2, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 3, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 2, startColumn);
 		rotationSquareIndex_ = nbrOfSquares;
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
 		maxRotations_ = 1;
 		break;
 	case BlockType::J:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 2, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 2, startColumn + 1);
 		rotationSquareIndex_ = nbrOfSquares;
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn + 1);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn + 1);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
 		break;
 	case BlockType::L:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 2, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 2, startColumn);
 		rotationSquareIndex_ = nbrOfSquares;
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn + 1);
 		break;
 	case BlockType::O:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn + 1);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn + 1);
 		maxRotations_ = 0;
 		break;
 	case BlockType::S:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn + 1);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn);
 		rotationSquareIndex_ = nbrOfSquares;
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn - 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn - 1);
 		maxRotations_ = 1;
 		break;
 	case BlockType::T:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn + 1);
 		rotationSquareIndex_ = nbrOfSquares;
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn - 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn - 1);
 		break;
 	case BlockType::Z:
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn - 1);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_ + 1, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn - 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_ + 1, startColumn);
 		rotationSquareIndex_ = nbrOfSquares;
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn);
-		squares_[nbrOfSquares++] = Square(blockType_, lowestStartRow_, startColumn + 1);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn);
+		squares_[nbrOfSquares++] = Square(lowestStartRow_, startColumn + 1);
 		maxRotations_ = 1;
 		break;
     }

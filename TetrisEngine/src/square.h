@@ -17,7 +17,7 @@ class Square {
 public:
 	Square() = default;
 
-	Square(BlockType blockType, int row, int column)
+	Square(int row, int column)
 		: row_(row), column_(column) {
 	}
 

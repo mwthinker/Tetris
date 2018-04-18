@@ -37,7 +37,7 @@ bool blockEqual(const Block& block1, const Block& block2) {
 TEST_CASE("Test Square", "[square]") {
 	INFO("Testing square");
 
-	const Square sq(BlockType::L, 1, 5);
+	const Square sq(1, 5);
 	SECTION("square constuctor give the correct result") {		
 		REQUIRE((sq.row_ == 1 && sq.column_ == 5));
 	}
