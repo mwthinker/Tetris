@@ -41,8 +41,9 @@ enum class Move {
 // Represents a tetris board.
 class RawTetrisBoard {
 public:
-	RawTetrisBoard(int rows, int columns, BlockType current, BlockType next);
-	RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, const Block& current, BlockType next);
+	RawTetrisBoard(int columns, int rows, BlockType current, BlockType next);
+	RawTetrisBoard(const std::vector<BlockType>& board,
+		int columns, int rows, const Block& current, BlockType next);
 	
 	virtual ~RawTetrisBoard() = default;
 
@@ -58,7 +59,7 @@ public:
 
 	void updateRestart(BlockType current, BlockType next);
 
-	void updateRestart(int rows, int columns, BlockType current, BlockType next);
+	void updateRestart(int column, int row, BlockType current, BlockType next);
     
 	// Return the number of rows.
 	int getRows() const {
@@ -95,7 +96,7 @@ public:
 	}
 
 	// Return the blocktype for a given position.
-	BlockType getBlockType(int row, int column) const;
+	BlockType getBlockType(int column, int row) const;
 
 	// Return true if the block is outside or on an already occupied square on the board.
 	// Otherwise it return false.
@@ -110,7 +111,11 @@ public:
 	}
 
 private:
-	BlockType& blockType(int row, int column) {
+	BlockType& board(int column, int row) {
+		return gameboard_[row * columns_ + column];
+	}
+	
+	BlockType board(int column, int row) const {
 		return gameboard_[row * columns_ + column];
 	}
 
@@ -118,7 +123,7 @@ private:
 
 	bool isRowEmpty(int row) const {
 		for (int column = 0; column < columns_; ++column) {
-			if (gameboard_[row * columns_ + column] != BlockType::EMPTY) {
+			if (board(column, row) != BlockType::EMPTY) {
 				return false;
 			}
 		}
@@ -127,7 +132,7 @@ private:
 
 	bool isRowFilled(int row) const {
 		for (int column = 0; column < columns_; ++column) {
-			if (gameboard_[row * columns_ + column] == BlockType::EMPTY) {
+			if (board(column, row) == BlockType::EMPTY) {
 				return false;
 			}
 		}
@@ -158,7 +163,7 @@ private:
 	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	BlockType next_;					// Next block for the player to control.
 	Block current_;						// The current block for the player to control.
-	int rows_, columns_;				// The size of the gameboard.
+	int columns_, rows_;				// The size of the gameboard.
 	bool isGameOver_;					// True when game is over, else false.
 	int externalRowsAdded_;
 	int rowToBeRemoved_;

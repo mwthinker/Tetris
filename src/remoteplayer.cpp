@@ -54,7 +54,7 @@ void RemotePlayer::receive(net::Packet& packet) {
 }
 
 void RemotePlayer::resizeBoard(int width, int height) {
-	tetrisBoard_.updateRestart(height, width, tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
+	tetrisBoard_.updateRestart(width, height, tetrisBoard_.getBlockType(), tetrisBoard_.getNextBlockType());
 	level_ = 1;
 	points_ = 0;
 }

@@ -111,7 +111,7 @@ bool DrawRow::isActive() const {
 void DrawRow::updateVertexData(const TetrisBoard& tetrisBoard) {
 	blockTypes_.clear();
 	for (int column = 0; column < columns_; ++column) {
-		blockTypes_.push_back(tetrisBoard.getBlockType(row_, column));
+		blockTypes_.push_back(tetrisBoard.getBlockType(column, row_));
 	}
 	updateVertexData();
 }

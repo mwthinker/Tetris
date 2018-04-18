@@ -16,8 +16,16 @@
 using namespace console;
 
 ConsoleTetris::ConsoleTetris() :
-	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", console::Key::DOWN, console::Key::LEFT, console::Key::RIGHT, console::Key::UP, console::Key::KEY_DELETE)),
-	keyboard2_(std::make_shared<ConsoleKeyboard>("Keyboard 2", console::Key::KEY_S, console::Key::KEY_A, console::Key::KEY_D, console::Key::KEY_W, console::Key::KEY_Q)),
+	keyboard1_(std::make_shared<ConsoleKeyboard>("Keyboard 1", 
+		console::Key::DOWN, console::Key::LEFT, 
+		console::Key::RIGHT, console::Key::UP, 
+		console::Key::KEY_DELETE)),
+	
+	keyboard2_(std::make_shared<ConsoleKeyboard>("Keyboard 2", 
+		console::Key::KEY_S, console::Key::KEY_A,
+		console::Key::KEY_D, console::Key::KEY_W,
+		console::Key::KEY_Q)),
+
 	mode_(MENU), option_(GAME),
 	humanPlayers_(1), aiPlayers_(0) {
 

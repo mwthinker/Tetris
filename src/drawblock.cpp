@@ -71,7 +71,8 @@ void DrawBlock::updateVertexData() {
 	mw::Sprite sprite = getSprite(block_.getBlockType());
 	for (Square sq : block_) {
 		addRectangle(vertexes_,
-			lowX_ + sq.column_ * squareSize_, lowY_ + (row_ - sq.row_) * timeLeft_ / movingTime_ * squareSize_ + sq.row_ *  squareSize_,
+			lowX_ + sq.column_ * squareSize_,
+			lowY_ + (row_ - sq.row_) * timeLeft_ / movingTime_ * squareSize_ + sq.row_ *  squareSize_,
 			squareSize_, squareSize_,
 			sprite,
 			color_

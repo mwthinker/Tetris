@@ -30,13 +30,13 @@ public:
 
 	// Uses the same settings as last call.
 	void createLocalGame();
-	void createLocalGame(int rows, int columns);
+	void createLocalGame(int columns, int rows);
 
 	void createServerGame(int port);
 
 	void createClientGame(int port, std::string ip);
 
-	void resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData);
+	void resumeGame(int columns, int rows, const std::vector<PlayerData>& playersData);
 
 	void closeGame();
 

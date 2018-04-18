@@ -39,12 +39,12 @@ TEST_CASE("Test Square", "[square]") {
 
 	const Square sq(1, 5);
 	SECTION("square constuctor give the correct result") {		
-		REQUIRE((sq.row_ == 1 && sq.column_ == 5));
+		REQUIRE((sq.column_ == 1 && sq.row_ == 5));
 	}
 
 	SECTION("square copy give the same result") {
 		const Square sqCopy = sq;
-		REQUIRE((sqCopy.row_ == sq.row_ && sqCopy.column_ == sq.column_));
+		REQUIRE((sqCopy.column_ == sq.column_ && sqCopy.row_ == sq.row_));
 	}
 
 	SECTION("testing equality") {
@@ -71,45 +71,45 @@ TEST_CASE("Test Block", "[block][square]") {
 
 		SECTION("Move down") {
 			block.moveDown();
-			Block tmpBlock(BlockType::J, -1, 0);
+			Block tmpBlock(BlockType::J, 0, -1);
 			REQUIRE(blockEqual(tmpBlock, block));
 
 			block.moveDown();
 			block.moveDown();
-			tmpBlock = Block(BlockType::J, -3, 0);
+			tmpBlock = Block(BlockType::J, 0, -3);
 			REQUIRE(blockEqual(tmpBlock, block));
 		}
 
 		SECTION("Move up") {
 			block.moveUp();
-			Block tmpBlock(BlockType::J, 1, 0);
+			Block tmpBlock(BlockType::J, 0, 1);
 			REQUIRE(blockEqual(tmpBlock, block));
 
 			block.moveUp();
 			block.moveUp();
-			tmpBlock = Block(BlockType::J, 3, 0);
+			tmpBlock = Block(BlockType::J, 0, 3);
 			REQUIRE(blockEqual(tmpBlock, block));
 		}
 
 		SECTION("Move left") {
 			block.moveLeft();
-			Block tmpBlock(BlockType::J, 0, -1);
+			Block tmpBlock(BlockType::J, -1, 0);
 			REQUIRE(blockEqual(tmpBlock, block));
 
 			block.moveLeft();
 			block.moveLeft();
-			tmpBlock = Block(BlockType::J, 0, -3);
+			tmpBlock = Block(BlockType::J, -3, 0);
 			REQUIRE(blockEqual(tmpBlock, block));
 		}
 
 		SECTION("Move right") {
 			block.moveRight();
-			Block tmpBlock(BlockType::J, 0, 1);
+			Block tmpBlock(BlockType::J, 1, 0);
 			REQUIRE(blockEqual(tmpBlock, block));
 
 			block.moveRight();
 			block.moveRight();
-			tmpBlock = Block(BlockType::J, 0, 3);
+			tmpBlock = Block(BlockType::J, 3, 0);
 			REQUIRE(blockEqual(tmpBlock, block));
 		}
 	}
@@ -174,7 +174,7 @@ TEST_CASE("Test tetrisboard", "[tetrisboard]") {
 
 	const BlockType firstNextBlockType = BlockType::L;
 	const BlockType firstCurrentBlockType = BlockType::S;
-	RawTetrisBoard board(TETRIS_HEIGHT, TETRIS_WIDTH, firstCurrentBlockType, firstNextBlockType);
+	RawTetrisBoard board(TETRIS_WIDTH, TETRIS_HEIGHT, firstCurrentBlockType, firstNextBlockType);
 
 	int size = sizeof(RawTetrisBoard);
 
@@ -218,7 +218,7 @@ TEST_CASE("Test tetrisboard", "[tetrisboard]") {
 		const int NEW_HEIGHT = 30;
 		const BlockType NEW_CURRENT = BlockType::I;
 		const BlockType NEW_NEXT = BlockType::Z;
-		RawTetrisBoard restartBoard(NEW_HEIGHT, NEW_WIDTH, NEW_CURRENT, NEW_NEXT);
+		RawTetrisBoard restartBoard(NEW_WIDTH, NEW_HEIGHT, NEW_CURRENT, NEW_NEXT);
 
 		// Different size compare to board.
 		REQUIRE(board.getBlockType() != restartBoard.getBlockType());
@@ -241,7 +241,7 @@ TEST_CASE("Test tetrisboard", "[tetrisboard]") {
 			// Restart.
 			board.update(Move::LEFT);
 			board.update(Move::DOWN_GROUND);
-			board.updateRestart(NEW_HEIGHT, NEW_WIDTH, NEW_CURRENT, NEW_NEXT);
+			board.updateRestart(NEW_WIDTH, NEW_HEIGHT, NEW_CURRENT, NEW_NEXT);
 			// New types.
 			REQUIRE(board.getBlockType() == restartBoard.getBlockType());
 			REQUIRE(board.getNextBlockType() == restartBoard.getNextBlockType());

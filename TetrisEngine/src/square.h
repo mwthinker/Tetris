@@ -17,19 +17,19 @@ class Square {
 public:
 	Square() = default;
 
-	Square(int row, int column)
-		: row_(row), column_(column) {
+	Square(int column, int row)
+		: column_(column), row_(row) {
 	}
 
 	bool operator==(const Square& square) const {
-		return square.row_ == row_ && square.column_ == column_;
+		return square.column_ == column_ && square.row_ == row_;
 	}
 
 	bool operator!=(const Square& square) const {
-		return square.row_ != row_ || square.column_ != column_;
+		return square.column_ != column_ || square.row_ != row_;
 	}
 
-	int row_, column_;
+	int column_, row_;
 };
 
 #endif	// SQUARE_H

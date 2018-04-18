@@ -255,7 +255,7 @@ int main(const int argc, const char* const argv[]) {
 		next = readBlockType(infile);
 	}
 
-	TetrisBoard tetrisBoard(height, width, start, next);
+	TetrisBoard tetrisBoard(width, height, start, next);
 	int nbrOneLine = 0;
 	int nbrTwoLine = 0;
 	int nbrThreeLine = 0;

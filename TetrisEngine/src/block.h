@@ -11,8 +11,8 @@ public:
 	using const_iterator = std::array<Square, 4>::const_iterator;
 
     Block();
-	Block(BlockType blockType, int lowestStartRow, int startColumn);
-	Block(BlockType blockType, int lowestStartRow, int startColumn, int rotations);
+	Block(BlockType blockType, int startColumn, int lowestStartRow);
+	Block(BlockType blockType, int startColumn, int lowestStartRow, int rotations);
 	
 	void moveLeft();
 	void moveRight();

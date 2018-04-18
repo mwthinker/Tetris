@@ -51,14 +51,14 @@ std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPe
 	return rows;
 }
 
-TetrisBoard::TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next)
-	: RawTetrisBoard(nbrRows, nbrColumns, current, next), turns_(0), rowsRemoved_(0) {
+TetrisBoard::TetrisBoard(int columns, int rows, BlockType current, BlockType next)
+	: RawTetrisBoard(columns, rows, current, next), turns_(0), rowsRemoved_(0) {
 }
 
 TetrisBoard::TetrisBoard(const std::vector<BlockType>& board,
-	int rows, int columns, Block current, BlockType next,
+	int columns, int rows, Block current, BlockType next,
 	int savedRowsRemoved)
-	: RawTetrisBoard(board, rows, columns, current, next), turns_(0), rowsRemoved_(savedRowsRemoved) {
+	: RawTetrisBoard(board, columns, rows, current, next), turns_(0), rowsRemoved_(savedRowsRemoved) {
 }
 
 TetrisBoard::TetrisBoard(const TetrisBoard& board)

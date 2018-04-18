@@ -28,7 +28,7 @@ TetrisGame::~TetrisGame() {
 	closeGame();
 }
 
-void TetrisGame::resumeGame(int rows, int columns, const std::vector<PlayerData>& playersData) {
+void TetrisGame::resumeGame(int columns, int rows, const std::vector<PlayerData>& playersData) {
 	width_ = columns;
 	height_ = rows;
 	status_ = LOCAL;
@@ -69,7 +69,7 @@ void TetrisGame::createLocalGame() {
 	createLocalGame(TETRIS_HEIGHT, TETRIS_WIDTH);
 }
 
-void TetrisGame::createLocalGame(int rows, int columns) {
+void TetrisGame::createLocalGame(int columns, int rows) {
 	if (status_ == WAITING_TO_CONNECT) {
 		status_ = LOCAL;
 

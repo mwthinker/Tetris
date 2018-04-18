@@ -16,7 +16,7 @@ std::vector<BlockType> generateRow(const RawTetrisBoard& board, double squaresPe
 // Represents a tetris board.
 class TetrisBoard : public RawTetrisBoard {
 public:
-    TetrisBoard(int nbrRows, int nbrColumns, BlockType current, BlockType next);
+    TetrisBoard(int columns, int rows, BlockType current, BlockType next);
 
 	TetrisBoard(const std::vector<BlockType>& board,
 		int rows, int columns, Block current, BlockType next,

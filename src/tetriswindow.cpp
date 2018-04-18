@@ -166,7 +166,7 @@ void TetrisWindow::resumeGame() {
 			++humans;
 		}
 	}
-	tetrisGame_.resumeGame(rows, columns, playerDataVector);
+	tetrisGame_.resumeGame(columns, rows, playerDataVector);
 	nbrAis_->setNbr(ais);
 	nbrHumans_->setNbr(humans);
 }
@@ -287,7 +287,7 @@ void TetrisWindow::initPlayPanel() {
 		} else {
 			tetrisGame_.closeGame();
 			setPlayers(tetrisGame_.getColumns(), tetrisGame_.getRows());
-			tetrisGame_.createLocalGame(tetrisGame_.getRows(), tetrisGame_.getColumns());
+			tetrisGame_.createLocalGame(tetrisGame_.getColumns(), tetrisGame_.getRows());
 		}
 	});
 
@@ -429,7 +429,7 @@ void TetrisWindow::initCustomPlayPanel() {
 		nbrHumans_->setNbr(1);
 		nbrAis_->setNbr(0);
 		setPlayers(columns, rows);
-		tetrisGame_.createLocalGame(rows, columns);
+		tetrisGame_.createLocalGame(columns, rows);
 
 		if (tetrisGame_.getNbrOfPlayers() == 1) {
 			tetrisGame_.pause();

@@ -2,10 +2,10 @@
 #include "square.h"
 #include "block.h"
 
-RawTetrisBoard::RawTetrisBoard(int rows, int columns, BlockType current, BlockType next) :
+RawTetrisBoard::RawTetrisBoard(int columns, int rows, BlockType current, BlockType next) :
 	gameboard_(rows * columns, BlockType::EMPTY),
 	next_(next),
-	rows_(rows), columns_(columns),
+	columns_(columns), rows_(rows),
 	isGameOver_(false),
 	externalRowsAdded_(0),
 	rowToBeRemoved_(-1) {
@@ -14,8 +14,8 @@ RawTetrisBoard::RawTetrisBoard(int rows, int columns, BlockType current, BlockTy
 	current_ = createBlock(current);
 }
 
-RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int rows, int columns, const Block& current, BlockType next) :
-	RawTetrisBoard(rows, columns, current.getBlockType(), next) {
+RawTetrisBoard::RawTetrisBoard(const std::vector<BlockType>& board, int columns, int rows, const Block& current, BlockType next) :
+	RawTetrisBoard(columns, rows, current.getBlockType(), next) {
 
 	gameboard_.insert(gameboard_.begin(), board.begin(), board.end());
 
@@ -158,10 +158,10 @@ void RawTetrisBoard::updateCurrentBlock(BlockType current) {
 }
 
 void RawTetrisBoard::updateRestart(BlockType current, BlockType next) {
-	updateRestart(rows_, columns_, current, next);
+	updateRestart(columns_, rows_, current, next);
 }
 
-void RawTetrisBoard::updateRestart(int rows, int columns, BlockType current, BlockType next) {
+void RawTetrisBoard::updateRestart(int columns, int rows, BlockType current, BlockType next) {
 	next_ = next;
 	rows_ = rows;
 	columns_ = columns;
@@ -179,29 +179,29 @@ const std::vector<BlockType>& RawTetrisBoard::getBoardVector() const {
 void RawTetrisBoard::addBlockToBoard(const Block& block) {
 	// All squares in the block is added to the gameboard.
 	for (const Square& sq : block) {
-		blockType(sq.row_, sq.column_) = block.getBlockType();
+		board(sq.column_, sq.row_) = block.getBlockType();
 	}
 }
 
 Block RawTetrisBoard::createBlock(BlockType blockType) const {
-	return Block(blockType, rows_ - 4, columns_ / 2 - 1); // 4 rows are the starting area.
+	return Block(blockType, columns_ / 2 - 1, rows_ - 4); // 4 rows are the starting area.
 }
 
-BlockType RawTetrisBoard::getBlockType(int row, int column) const {
+BlockType RawTetrisBoard::getBlockType(int column, int row) const {
 	if (column < 0 || column >= columns_ || row < 0) {
 		return BlockType::WALL;
 	}
 	if (row * columns_ + column >= (int) gameboard_.size()) {
 		return BlockType::EMPTY;
 	}
-	return gameboard_[row * columns_ + column];
+	return board(column, row);
 }
 
 bool RawTetrisBoard::collision(const Block& block) const {
 	bool collision = false;
 
 	for (const Square& sq : block) {
-		if (getBlockType(sq.row_, sq.column_) != BlockType::EMPTY) {
+		if (getBlockType(sq.column_, sq.row_) != BlockType::EMPTY) {
 			collision = true;
 			break;
 		}
