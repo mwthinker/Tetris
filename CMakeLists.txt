@@ -91,6 +91,7 @@ set(SOURCES_CONSOLE
 
 set(SOURCES_TEST
 	src/testmain.cpp
+	src/testspeed.cpp
 	src/testtetrisengine.cpp
 )
 
