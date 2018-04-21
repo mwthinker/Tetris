@@ -4,6 +4,7 @@
 #include <rawtetrisboard.h>
 #include <tetrisboard.h>
 #include <tetrisparameters.h>
+#include <block2.h>
 
 TEST_CASE("benchmarked", "[!benchmark]") {
 
@@ -27,15 +28,51 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 		BlockType blockTypes[] = {BlockType::I, BlockType::J, BlockType::L,
 			BlockType::O, BlockType::S, BlockType::T, BlockType::Z};
 
-		int size = sizeof(Block);
-		int size2 = sizeof(int);
-		int size3 = sizeof(RawTetrisBoard);
-		int size4 = sizeof(TetrisBoard);
+		sizeof(Block);
+		sizeof(int);
+		sizeof(RawTetrisBoard);
+		sizeof(TetrisBoard);
+		sizeof(Block2);
+		sizeof(int_fast32_t);
 
-		for (int i = 0; i < 1000; ++i) {
+		for (int i = 0; i < 10000; ++i) {
 			Block block(blockTypes[i % sizeof(blockTypes)], 0, 0);
-			for (int j = 0; j < 1; ++j) {
+			for (int j = 0; j < 4; ++j) {
 				block.rotateLeft();
+			}
+			for (int j = 0; j < 4; ++j) {
+				block.rotateRight();
+			}
+			for (int j = 0; j < 8; ++j) {
+				block.moveDown();
+			}
+			for (int j = 0; j < 8; ++j) {
+				block.moveUp();
+			}
+		}
+	}
+
+	sizeof(Block);
+	sizeof(Block2);
+	
+	BENCHMARK("Copy block2") {
+		BlockType blockTypes[] = {BlockType::I, BlockType::J, BlockType::L,
+			BlockType::O, BlockType::S, BlockType::T, BlockType::Z};
+		INFO("ASDDDDDDDDDDDDDDDDDDD");
+
+		for (int i = 0; i < 10000; ++i) {
+			Block2 block(blockTypes[i % sizeof(blockTypes)]);
+			for (int j = 0; j < 4; ++j) {
+				block.rotateLeft();
+			}
+			for (int j = 0; j < 4; ++j) {
+				block.rotateRight();
+			}
+			for (int j = 0; j < 8; ++j) {
+				block.moveDown();
+			}
+			for (int j = 0; j < 8; ++j) {
+				block.moveUp();
 			}
 		}
 	}

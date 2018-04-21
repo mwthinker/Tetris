@@ -5,7 +5,13 @@ if (MSVC)
 	# Nothing.
 else ()
 	set(CMAKE_CXX_FLAGS "-std=c++1y")
-	set(CMAKE_BUILD_TYPE "Debug")
+	option(Debug "Set projects to debug mode.")
+	if (Debug)
+		set(CMAKE_BUILD_TYPE "Debug" CACHE INTERNAL "Build type.")
+		add_definitions(-D_DEBUG)
+	else ()
+		set(CMAKE_BUILD_TYPE "Release" CACHE INTERNAL "Build type.")
+	endif ()
 endif ()
 
 option(TetrisEngineTest "TetrisEngineTest project is added" OFF)
@@ -16,7 +22,9 @@ set(SOURCES
 	src/ai.cpp
 	src/ai.h
 	src/block.cpp
-	src/block.h	
+	src/block.h
+	src/block2.cpp
+	src/block2.h
 	src/random.h
 	src/rawtetrisboard.cpp
 	src/rawtetrisboard.h
