@@ -172,9 +172,12 @@ void TetrisWindow::resumeGame() {
 }
 
 void TetrisWindow::saveCurrentLocalGame() {
-	if (tetrisGame_.isDefaultGame() && getCurrentPanelIndex() == playIndex_ && tetrisGame_.getStatus() == TetrisGame::LOCAL) {
+	if (tetrisGame_.isDefaultGame() && getCurrentPanelIndex() == playIndex_
+		&& tetrisGame_.getStatus() == TetrisGame::LOCAL) {
+
 		// Save only when the game is active and is a local default game.
-		TetrisData::getInstance().setActiveLocalGame(tetrisGame_.getRows(), tetrisGame_.getColumns(), tetrisGame_.getPlayerData());
+		TetrisData::getInstance().setActiveLocalGame(tetrisGame_.getColumns(), 
+			tetrisGame_.getRows(), tetrisGame_.getPlayerData());
 		TetrisData::getInstance().save();
 	}
 }

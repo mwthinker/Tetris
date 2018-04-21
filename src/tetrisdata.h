@@ -188,7 +188,7 @@ public:
 	mw::Color getMiddleTextColor() const;
 	int getMiddleTextBoxSize() const;
 
-	void setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector);
+	void setActiveLocalGame(int columns, int rows, const std::vector<PlayerData>& playerDataVector);
 	std::vector<PlayerData> getActiveLocalGamePlayers();
 	int getActiveLocalGameRows() const;
 	int getActiveLocalGameColumns() const;

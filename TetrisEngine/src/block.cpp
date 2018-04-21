@@ -110,6 +110,34 @@ void Block::moveDown() {
 	}
 }
 
+void Block::rotate(int rotate) {
+	int row = squares_[rotationSquareIndex_].row_;
+	int column = squares_[rotationSquareIndex_].column_;
+
+	if (rotate > 0) {
+		// Rotate left.
+		for (int i = 0; i < rotate; ++i) {
+			for (Square& sq : squares_) {
+				Square tmp = sq;
+				tmp.column_ = column + row - sq.row_;
+				tmp.row_ = sq.column_ + row - column;
+				sq = tmp;
+			}
+		}
+	} else {
+		rotate *= -1;
+		for (int i = 0; i < rotate; ++i) {
+			// Rotate right.
+			for (Square& sq : squares_) {
+				Square tmp = sq;
+				tmp.column_ = sq.row_ + column - row;
+				tmp.row_ = column + row - sq.column_;
+				sq = tmp;
+			}
+		}
+	}
+}
+
 void Block::rotateLeft() {
 	int row = squares_[rotationSquareIndex_].row_;
 	int column = squares_[rotationSquareIndex_].column_;
@@ -118,17 +146,11 @@ void Block::rotateLeft() {
 	// Rotate back to start orientation?
 	if (currentRotation_ > maxRotations_) {
 		currentRotation_ = 0;
-		for (int i = 0; i < maxRotations_; ++i) {
-			rotateRight();
-		}
+		// Rotate right in order to get back to default orientation.
+		rotate(-maxRotations_);
 	} else {
-		// Rotate to the right!
-		for (Square& sq : squares_) {
-			Square tmp = sq;
-			tmp.column_ = column + row - sq.row_;
-			tmp.row_ = sq.column_ + row - column;
-			sq = tmp;
-		}
+		// Rotate to the left!
+		rotate(1);
 	}
 }
 
@@ -136,10 +158,13 @@ void Block::rotateRight() {
 	int row = squares_[rotationSquareIndex_].row_;
 	int column = squares_[rotationSquareIndex_].column_;
 	currentRotation_ = (currentRotation_ + 3) % 4;
-	for (Square& sq : squares_) {
-		Square tmp = sq;
-		tmp.column_ = sq.row_ + column - row;
-		tmp.row_ = column + row - sq.column_;
-		sq = tmp;
+
+	// Rotate back to start orientation?
+	if (currentRotation_ > maxRotations_) {
+		currentRotation_ = 0;
+		rotate(maxRotations_);
+	} else {
+		// Rotate to the right!
+		rotate(-1);
 	}
 }

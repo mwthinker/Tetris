@@ -69,6 +69,8 @@ public:
 	}
 
 private:
+	void rotate(int rotate);
+
 	int rotationSquareIndex_;
 	std::array<Square, 4> squares_;
 	int maxRotations_, currentRotation_;

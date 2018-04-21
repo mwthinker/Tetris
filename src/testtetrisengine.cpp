@@ -63,6 +63,19 @@ TEST_CASE("Test Square", "[square]") {
 	}
 }
 
+void rotateBlock(Block& block, int rotation) {
+	if (rotation > 0) {
+		for (int i = 0; i < rotation; ++i) {
+			block.rotateLeft();
+		}
+	} else {
+		rotation = -1 * rotation;
+		for (int i = 0; i < rotation; ++i) {
+			block.rotateRight();
+		}
+	}
+}
+
 TEST_CASE("Test Block", "[block][square]") {
 	INFO("Default tetrisboard");
 

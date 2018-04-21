@@ -113,7 +113,10 @@ void to_json(json& j, const BlockType& blockType) {
 }
 
 void from_json(const json& j, Block& block) {
-	block = Block(j.at("blockType").get<BlockType>(), j.at("bottomRow").get<int>(), j.at("leftColumn").get<int>(), j.at("currentRotation").get<int>());
+	block = Block(j.at("blockType").get<BlockType>(),
+		j.at("leftColumn").get<int>(),
+		j.at("bottomRow").get<int>(),
+		j.at("currentRotation").get<int>());
 }
 
 void to_json(json& j, const Block& block) {
@@ -685,9 +688,9 @@ int TetrisData::getMiddleTextBoxSize() const {
 	}
 }
 
-void TetrisData::setActiveLocalGame(int rows, int columns, const std::vector<PlayerData>& playerDataVector) {
-	jsonObject_["activeGames"]["localGame"]["rows"] = rows;
+void TetrisData::setActiveLocalGame(int columns, int rows, const std::vector<PlayerData>& playerDataVector) {
 	jsonObject_["activeGames"]["localGame"]["columns"] = columns;
+	jsonObject_["activeGames"]["localGame"]["rows"] = rows;
 
 	nlohmann::json playerJson = nlohmann::json::array();
 	for (const PlayerData& data : playerDataVector) {
