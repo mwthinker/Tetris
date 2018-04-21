@@ -28,6 +28,8 @@ set(SOURCES
 	src/random.h
 	src/rawtetrisboard.cpp
 	src/rawtetrisboard.h
+	src/rawtetrisboard2.cpp
+	src/rawtetrisboard2.h
 	src/square.h
 	src/tetrisboard.cpp
 	src/tetrisboard.h

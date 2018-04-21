@@ -28,109 +28,114 @@ public:
 	inline void rotateRight();
 	inline void rotateLeft();
 	inline int getCurrentRotation() const;
+	inline BlockType getBlockType() const;
 
 	inline int getLowX() const;
 	inline int getLowY() const;
 
+	uint16_t getBits() const {
+		return bits_;
+	}
+
 private:
 	int lowX_, lowY_;
-	int_fast16_t bits_;
+	uint16_t bits_;
 
-	static constexpr int_fast16_t extractBlockTypeI(int rotations);
-	static constexpr int_fast16_t extractBlockTypeJ(int rotations);
-	static constexpr int_fast16_t extractBlockTypeL(int rotations);
-	static constexpr int_fast16_t extractBlockTypeO(int rotations);
-	static constexpr int_fast16_t extractBlockTypeS(int rotations);
-	static constexpr int_fast16_t extractBlockTypeT(int rotations);
-	static constexpr int_fast16_t extractBlockTypeZ(int rotations);
-	static constexpr int_fast16_t extractBitsFromBlockType(BlockType blockType, int rotations);
-	static constexpr BlockType extractBlockTypeFromBits(int_fast16_t bits);
-	static constexpr int extractRotationsFromBits(int_fast16_t bits);
+	static constexpr uint16_t extractBlockTypeI(int rotations);
+	static constexpr uint16_t extractBlockTypeJ(int rotations);
+	static constexpr uint16_t extractBlockTypeL(int rotations);
+	static constexpr uint16_t extractBlockTypeO(int rotations);
+	static constexpr uint16_t extractBlockTypeS(int rotations);
+	static constexpr uint16_t extractBlockTypeT(int rotations);
+	static constexpr uint16_t extractBlockTypeZ(int rotations);
+	static constexpr uint16_t extractBitsFromBlockType(BlockType blockType, int rotations);
+	static constexpr BlockType extractBlockTypeFromBits(uint16_t bits);
+	static constexpr int extractRotationsFromBits(uint16_t bits);
 
 	// 0 1 0 0
 	// 0 1 0 0
 	// 0 1 0 0
 	// 0 1 0 0
-	static constexpr int_fast16_t I_0 = 0b0100010001000100;
+	static constexpr uint16_t I_0 = 0b0100010001000100;
 	// 0 0 0 0
 	// 0 0 0 0
 	// 1 1 1 1
 	// 0 0 0 0
-	static constexpr int_fast16_t I_1 = 0b0000000011110000;
+	static constexpr uint16_t I_1 = 0b0000000011110000;
 
 	// 0 0 0 0
 	// 0 0 1 0
 	// 0 0 1 0
 	// 0 1 1 0
-	static constexpr int_fast16_t J_0 = 0b0000001000100110;
+	static constexpr uint16_t J_0 = 0b0000001000100110;
 	// 0 0 0 0
 	// 0 0 0 0
 	// 1 1 1 0
 	// 0 0 1 0
-	static constexpr int_fast16_t J_1 = 0b0000000011100010;
+	static constexpr uint16_t J_1 = 0b0000000011100010;
 
 	// 0 0 0 0
 	// 0 1 0 0
 	// 0 1 0 0
 	// 0 1 1 0
-	static constexpr int_fast16_t L_0 = 0b0000010001000110;
+	static constexpr uint16_t L_0 = 0b0000010001000110;
 	// 0 0 0 0
 	// 0 0 1 0
 	// 1 1 1 0
 	// 0 0 0 0
-	static constexpr int_fast16_t L_1 = 0b0000001011100000;
+	static constexpr uint16_t L_1 = 0b0000001011100000;
 
 	// 0 0 0 0
 	// 0 1 1 0
 	// 0 1 1 0
 	// 0 0 0 0
-	static constexpr int_fast16_t O_0 = 0b0000011001100000;
+	static constexpr uint16_t O_0 = 0b0000011001100000;
 
 	// 0 0 0 0
 	// 0 1 1 0
 	// 1 1 0 0
 	// 0 0 0 0
-	static constexpr int_fast16_t S_0 = 0b0000011011000000;
+	static constexpr uint16_t S_0 = 0b0000011011000000;
 	// 0 0 0 0
 	// 0 1 0 0
 	// 0 1 1 0
 	// 0 0 1 0
-	static constexpr int_fast16_t S_1 = 0b0000010001100010;
+	static constexpr uint16_t S_1 = 0b0000010001100010;
 
 	// 0 0 0 0
 	// 0 1 0 0
 	// 1 1 1 0
 	// 0 0 0 0
-	static constexpr int_fast16_t T_0 = 0b0000111001000100;
+	static constexpr uint16_t T_0 = 0b0000111001000100;
 	// 0 0 0 0
 	// 0 1 0 0
 	// 1 1 0 0
 	// 0 1 0 0
-	static constexpr int_fast16_t T_1 = 0b0000010011000100;
+	static constexpr uint16_t T_1 = 0b0000010011000100;
 	// 0 0 0 0
 	// 0 0 0 0
 	// 1 1 1 0
 	// 0 1 0 0
-	static constexpr int_fast16_t T_2 = 0b0000000011100100;
+	static constexpr uint16_t T_2 = 0b0000000011100100;
 	// 0 0 0 0
 	// 0 1 0 0
 	// 0 1 1 0
 	// 0 1 0 0
-	static constexpr int_fast16_t T_3 = 0b0000010001100100;
+	static constexpr uint16_t T_3 = 0b0000010001100100;
 
 	// 0 0 0 0
 	// 1 1 0 0
 	// 0 1 1 0
 	// 0 0 0 0
-	static constexpr int_fast16_t Z_0 = 0b0000110001100000;
+	static constexpr uint16_t Z_0 = 0b0000110001100000;
 	// 0 0 0 0
 	// 0 1 0 0
 	// 1 1 0 0
 	// 1 0 0 0
-	static constexpr int_fast16_t Z_1 = 0b0000010011001000;
+	static constexpr uint16_t Z_1 = 0b0000010011001000;
 };
 
-constexpr int_fast16_t Block2::extractBlockTypeI(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeI(int rotations) {
 	switch ((rotations % 2) + 2) {
 		case 0:
 			return I_0;
@@ -140,7 +145,7 @@ constexpr int_fast16_t Block2::extractBlockTypeI(int rotations) {
 	return 0; // Is not possible.
 }
 
-constexpr int_fast16_t Block2::extractBlockTypeJ(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeJ(int rotations) {
 	switch ((rotations % 2) + 2) {
 		case 0:
 			return J_0;
@@ -150,7 +155,7 @@ constexpr int_fast16_t Block2::extractBlockTypeJ(int rotations) {
 	return 0; // Is not possible.
 }
 
-constexpr int_fast16_t Block2::extractBlockTypeL(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeL(int rotations) {
 	switch ((rotations % 2) + 2) {
 		case 0:
 			return L_0;
@@ -160,11 +165,11 @@ constexpr int_fast16_t Block2::extractBlockTypeL(int rotations) {
 	return 0; // Is not possible.
 }
 
-constexpr int_fast16_t Block2::extractBlockTypeO(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeO(int rotations) {
 	return O_0;
 }
 
-constexpr int_fast16_t Block2::extractBlockTypeS(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeS(int rotations) {
 	switch ((rotations % 2) + 2) {
 		case 0:
 			return S_0;
@@ -174,7 +179,7 @@ constexpr int_fast16_t Block2::extractBlockTypeS(int rotations) {
 	return 0; // Is not possible.
 }
 
-constexpr int_fast16_t Block2::extractBlockTypeT(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeT(int rotations) {
 	switch ((rotations % 4) + 4) {
 		case 0:
 			return T_0;
@@ -188,7 +193,7 @@ constexpr int_fast16_t Block2::extractBlockTypeT(int rotations) {
 	return 0; // Is not possible.
 }
 
-constexpr int_fast16_t Block2::extractBlockTypeZ(int rotations) {
+constexpr uint16_t Block2::extractBlockTypeZ(int rotations) {
 	switch ((rotations % 2) + 2) {
 		case 0:
 			return Z_0;
@@ -198,7 +203,7 @@ constexpr int_fast16_t Block2::extractBlockTypeZ(int rotations) {
 	return 0; // Is not possible.
 }
 
-constexpr int_fast16_t Block2::extractBitsFromBlockType(BlockType blockType, int rotations) {
+constexpr uint16_t Block2::extractBitsFromBlockType(BlockType blockType, int rotations) {
 	switch (blockType) {
 		case BlockType::WALL:
 			return 0b1111111111111111;
@@ -220,7 +225,7 @@ constexpr int_fast16_t Block2::extractBitsFromBlockType(BlockType blockType, int
 	return 0;
 }
 
-constexpr BlockType Block2::extractBlockTypeFromBits(int_fast16_t bits) {
+constexpr BlockType Block2::extractBlockTypeFromBits(uint16_t bits) {
 	switch (bits) {
 		case 0:
 			return BlockType::EMPTY;
@@ -250,7 +255,7 @@ constexpr BlockType Block2::extractBlockTypeFromBits(int_fast16_t bits) {
 	return BlockType::WALL;
 }
 
-constexpr int Block2::extractRotationsFromBits(int_fast16_t bits) {
+constexpr int Block2::extractRotationsFromBits(uint16_t bits) {
 	switch (bits) {
 		case 0:
 		case I_0:
@@ -304,13 +309,17 @@ void Block2::rotateRight() {
 }
 
 void Block2::rotateLeft() {
-	BlockType blockType = extractBlockTypeFromBits(bits_);
+	BlockType blockType = getBlockType();
 	int rotations = getCurrentRotation();
 	bits_ = extractBitsFromBlockType(blockType, rotations - 1);
 }
 
 int Block2::getCurrentRotation() const {
 	return extractRotationsFromBits(bits_);
+}
+
+BlockType Block2::getBlockType() const {
+	return extractBlockTypeFromBits(bits_);
 }
 
 int Block2::getLowX() const {

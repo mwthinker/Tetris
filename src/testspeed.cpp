@@ -5,6 +5,7 @@
 #include <tetrisboard.h>
 #include <tetrisparameters.h>
 #include <block2.h>
+#include <rawtetrisboard2.h>
 
 TEST_CASE("benchmarked", "[!benchmark]") {
 
@@ -33,6 +34,7 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 		sizeof(RawTetrisBoard);
 		sizeof(TetrisBoard);
 		sizeof(Block2);
+		sizeof(RawTetrisBoard2);
 		sizeof(int_fast32_t);
 
 		for (int i = 0; i < 10000; ++i) {
