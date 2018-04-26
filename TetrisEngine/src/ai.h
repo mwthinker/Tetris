@@ -8,6 +8,28 @@
 #include <string>
 #include <vector>
 
+struct RowRoughness {
+	RowRoughness() : holes_(0), rowSum_(0) {
+	}
+
+	int holes_;
+	int rowSum_;
+};
+
+struct ColumnRoughness {
+	ColumnRoughness() : holes_(0), bumpiness(0) {
+	}
+
+	int holes_;
+	int bumpiness;
+};
+
+RowRoughness calculateRowRoughness(const RawTetrisBoard& board, int highestUsedRow);
+ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUsedRow);
+int calculateHighestUsedRow(const RawTetrisBoard& board);
+float calculateBlockMeanHeight(const Block& block);
+int calculateBlockEdges(const RawTetrisBoard& board, const Block& block);
+
 class Ai {
 public:
 	Ai();

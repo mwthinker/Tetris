@@ -159,8 +159,12 @@ else ()
 endif ()
 
 if (MSVC)
-	set_target_properties(MWetris PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt")
-	set_target_properties(MWetris PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:windows")
+	set_target_properties(MWetris PROPERTIES
+		LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt"
+	)
+	set_target_properties(MWetris PROPERTIES
+		LINK_FLAGS_RELEASE "/SUBSYSTEM:windows"
+	)
 endif ()
 
 set(LINK_LIBS
@@ -183,16 +187,16 @@ set(LINK_LIBS
 target_link_libraries(MWetris ${LINK_LIBS})
 
 if (CATCH2_FOUND)
-	add_executable(MWetrisTest ${SOURCES_TEST})
+	add_executable(MWetrisTest ${SOURCES_TEST})	
 	
 	target_include_directories(MWetrisTest
 		PUBLIC ${CATCH2_INCLUDE_DIRS}
 		PUBLIC src
 	)
 
-	target_link_libraries(MWetrisTest ${LINK_LIBS})
+	add_library(MWetrisLib ${SOURCES})
+	target_link_libraries(MWetrisTest MWetrisLib ${LINK_LIBS})
 endif ()
-
 
 set(DLL_FOLDER $ENV{DLL_FOLDER})
 

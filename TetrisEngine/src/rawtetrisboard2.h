@@ -46,11 +46,11 @@ public:
 	RawTetrisBoard2(int columns, int rows, BlockType current, BlockType next);
 	RawTetrisBoard2(const std::vector<BlockType>& board,
 		int columns, int rows, const Block2& current, BlockType next);
-	
+
 	virtual ~RawTetrisBoard2() = default;
 
 	// Move the block. The board will stay constant if game over is true.
-    void update(Move2 move);
+	void update(Move2 move);
 
 	// Update the next block to be. Triggers the game event NEXT_BLOCK_UPDATED.
 	void updateNextBlock(BlockType next);
@@ -62,7 +62,7 @@ public:
 	void updateRestart(BlockType current, BlockType next);
 
 	void updateRestart(int column, int row, BlockType current, BlockType next);
-    
+
 	// Return the number of rows.
 	int getRows() const {
 		return rows_;
@@ -80,7 +80,7 @@ public:
 
 	// Return all non moving squares on the board. Index 0 to (rows+4)*columns-1.
 	// All squares are saved in row major order and in ascending order.
-    const std::vector<BlockType>& getBoardVector() const;
+	const std::vector<BlockType>& getBoardVector() const;
 
 	// Return the moving block.
 	Block2 getBlock() const {
@@ -118,7 +118,7 @@ private:
 	BlockType& board(int column, int row) {
 		return gameboard_[row * columns_ + column];
 	}
-	
+
 	BlockType board(int column, int row) const {
 		return gameboard_[row * columns_ + column];
 	}
@@ -161,9 +161,9 @@ private:
 	// I.e. The block become a part of the static board.
 	void addBlockToBoard(const Block2& block);
 
-    int removeFilledRows(const Block2& block);
-    void moveRowsOneStepDown(int rowToRemove);
-    
+	int removeFilledRows(const Block2& block);
+	void moveRowsOneStepDown(int rowToRemove);
+
 	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	BlockType next_;					// Next block for the player to control.
 	Block2 current_;					// The current block for the player to control.
@@ -172,5 +172,154 @@ private:
 	int externalRowsAdded_;
 	int rowToBeRemoved_;
 };
+
+class Board {
+public:
+	Board() = default;
+
+	Board(int width, int height) : gameboard_(height, 0),
+		width_(width), height_(height) {
+	}
+
+	Board(const std::vector<BlockType>& board,
+		int width, int height) : gameboard_(board.size() / width_ + 1), width_(width), height_(height) {
+
+		const int size = board.size();
+		for (int y = 0; y < (size / width_ + 1); ++y) {
+			uint32_t row = 0;
+			for (int x = 0; x < width_ && getIndex(x, y) < size; ++x) {
+				if (board[getIndex(x, y)] != BlockType::EMPTY) {
+					gameboard_[getIndex(x, y)] &= (1 << width_);
+				}
+			}
+		}
+	}
+
+	void addBlockToBoard(Block2 block) {
+		gameboard_[block.getLowY() + 3] &= ((block.getBits() & 0xF000) << block.getLowX());
+		gameboard_[block.getLowY() + 2] &= ((block.getBits() & 0x0F00) << block.getLowX());
+		gameboard_[block.getLowY() + 1] &= ((block.getBits() & 0x00F0) << block.getLowX());
+		gameboard_[block.getLowY() + 0] &= ((block.getBits() & 0x000F) << block.getLowX());
+	}
+
+	bool collision(Block2& block) const {
+		return false;
+	}
+
+	int getIndex(int x, int y) const {
+		return x + y * width_;
+	}
+
+	void removeRow(int row1, int row2, int row3, int row4) {
+		if (row1 >= 0 && row1 < height_) {
+			int row = 0;
+			auto it = std::remove_if(gameboard_.begin(), gameboard_.end(), [&](uint32_t value) {
+				return true;
+			});
+		}
+	}
+
+	bool isRowFilled(int row) const {
+		return gameboard_[row] > 0;
+	}
+
+private:
+	int removeFilledRows(Block2 block) {
+		return 0;
+	}
+
+	int width_, height_;
+	std::vector<uint32_t> gameboard_;
+};
+
+/*
+template <class EventListener>
+	void update(Move2 move, EventListener& eventListener) {
+		// Game over?
+		if (collision(block_)) {
+			eventListener(GameEvent2::GAME_OVER);
+		} else {
+			Block2 block = block_;
+			switch (move) {
+				case Move2::GAME_OVER:
+					eventListener(GameEvent2::GAME_OVER);
+					break;
+				case Move2::LEFT:
+					block.moveLeft();
+					if (!collision(block)) {
+						block_ = block;
+						eventListener(GameEvent2::PLAYER_MOVES_BLOCK_LEFT);
+					}
+					break;
+				case Move2::RIGHT:
+					block.moveRight();
+					if (!collision(block)) {
+						block_ = block;
+						eventListener(GameEvent2::PLAYER_MOVES_BLOCK_RIGHT);
+					}
+					break;
+				case Move2::DOWN_GROUND:
+					eventListener(GameEvent2::PLAYER_MOVES_BLOCK_DOWN_GROUND);
+					do {
+						block_ = block;
+						block_.moveDown();
+					} while (!collision(block));
+					eventListener(GameEvent2::PLAYER_MOVES_BLOCK_DOWN);
+					break;
+				case Move2::DOWN:
+					block.moveDown();
+					if (!collision(block)) {
+						block_ = block;
+						eventListener(GameEvent2::PLAYER_MOVES_BLOCK_DOWN);
+					}
+					break;
+				case Move2::ROTATE_RIGHT:
+					block.rotateRight();
+					if (!collision(block)) {
+						block_ = block;
+						eventListener(GameEvent2::PLAYER_MOVES_BLOCK_ROTATE);
+					}
+					break;
+				case Move2::ROTATE_LEFT:
+					block.rotateLeft();
+					if (!collision(block)) {
+						block_ = block;
+						eventListener(GameEvent2::PLAYER_MOVES_BLOCK_ROTATE);
+					}
+					break;
+				case Move2::DOWN_GRAVITY:
+					block.moveDown();
+					if (collision(block)) {
+						// Collision detected, add squares to the gameboard.
+						addBlockToBoard(block_);
+
+						eventListener(GameEvent2::BLOCK_COLLISION);
+
+						// Remove any filled row on the gameboard.
+						int nbr = removeFilledRows(block_);
+
+						switch (nbr) {
+							case 1:
+								eventListener(GameEvent2::ONE_ROW_REMOVED);
+								break;
+							case 2:
+								eventListener(GameEvent2::TWO_ROW_REMOVED);
+								break;
+							case 3:
+								eventListener(GameEvent2::THREE_ROW_REMOVED);
+								break;
+							case 4:
+								eventListener(GameEvent2::FOUR_ROW_REMOVED);
+								break;
+						}
+					} else {
+						block_ = block;
+						eventListener(GameEvent2::GRAVITY_MOVES_BLOCK);
+					}
+					break;
+			}
+		}
+	}
+*/
 
 #endif // RAWTETRISBOARD2_H

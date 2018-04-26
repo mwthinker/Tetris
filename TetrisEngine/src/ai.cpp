@@ -59,96 +59,6 @@ namespace {
 		return states;
 	}
 
-	struct RowRoughness {
-		RowRoughness() : holes_(0), rowSum_(0) {
-		}
-
-		int holes_;
-		int rowSum_;
-	};
-
-	RowRoughness calculateRowRoughness(const RawTetrisBoard& board, int highestUsedRow) {
-		RowRoughness rowRoughness;
-		int holes = 0;
-		for (int row = 0; row < highestUsedRow; ++row) {
-			bool lastHole = board.getBlockType(row, 0) == BlockType::EMPTY;
-			for (int column = 1; column < board.getColumns(); ++column) {
-				bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
-				if (lastHole != hole) {
-					rowRoughness.holes_ += 1;
-					lastHole = hole;
-				}
-				if (!hole) {
-					rowRoughness.rowSum_ += row;
-					++holes;
-				}
-			}
-		}
-		return rowRoughness;
-	}
-
-	struct ColumnRoughness {
-		ColumnRoughness() : holes_(0), bumpiness(0) {
-		}
-
-		int holes_;
-		int bumpiness;
-	};
-
-	ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUsedRow) {
-		ColumnRoughness roughness;
-		int lastColumnNbr;
-		for (int column = 0; column < board.getColumns(); ++column) {
-			bool lastHole = board.getBlockType(0, column) == BlockType::EMPTY;
-			int columnNbr = lastHole ? 0 : 1;
-			for (int row = 1; row < highestUsedRow; ++row) {
-				bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
-				if (lastHole != hole) {
-					roughness.holes_ += 1;
-					lastHole = hole;
-				}
-				if (!hole) {
-					++columnNbr;
-				}
-			}
-			if (column != 0) {
-				roughness.bumpiness += std::abs(lastColumnNbr - columnNbr);
-			}
-			lastColumnNbr = columnNbr;
-		}
-		return roughness;
-	}
-
-	int calculateHighestUsedRow(const RawTetrisBoard& board) {
-		auto v = board.getBoardVector();
-		int index = 0;
-		for (auto it = v.rbegin(); it != v.rend(); ++it) {
-			if (*it != BlockType::EMPTY) {
-				index = it - v.rbegin();
-				break;
-			}
-		}
-		return (v.size() - index - 1) / board.getColumns() + 2;
-	}
-
-	float calculateBlockMeanHeight(const Block& block) {
-		int blockMeanHeight = 0;
-		for (const Square& sq : block) {
-			blockMeanHeight += sq.row_;
-		}
-		return (float) blockMeanHeight / block.getSize();
-	}
-
-	int calculateBlockEdges(const RawTetrisBoard& board, const Block& block) {
-		int edges = 0;
-		for (const Square& sq : block) {
-			board.getBlockType(sq.row_, sq.column_ - 1) != BlockType::EMPTY ? ++edges : 0;
-			board.getBlockType(sq.row_ - 1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
-			board.getBlockType(sq.row_, sq.column_ + 1) != BlockType::EMPTY ? ++edges : 0;
-		}
-		return edges;
-	}
-
 	float calculateValue(calc::Calculator& calculator, const calc::Cache& cache, const RawTetrisBoard& board, const Block& block) {
 		int highestUsedRow = calculateHighestUsedRow(board);
 		RowRoughness rowRoughness = calculateRowRoughness(board, highestUsedRow);
@@ -166,6 +76,80 @@ namespace {
 	}
 
 } // Anonymous namespace.
+
+RowRoughness calculateRowRoughness(const RawTetrisBoard& board, int highestUsedRow) {
+	RowRoughness rowRoughness;
+	int holes = 0;
+	for (int row = 0; row < highestUsedRow; ++row) {
+		bool lastHole = board.getBlockType(row, 0) == BlockType::EMPTY;
+		for (int column = 1; column < board.getColumns(); ++column) {
+			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
+			if (lastHole != hole) {
+				rowRoughness.holes_ += 1;
+				lastHole = hole;
+			}
+			if (!hole) {
+				rowRoughness.rowSum_ += row;
+				++holes;
+			}
+		}
+	}
+	return rowRoughness;
+}
+
+ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUsedRow) {
+	ColumnRoughness roughness;
+	int lastColumnNbr;
+	for (int column = 0; column < board.getColumns(); ++column) {
+		bool lastHole = board.getBlockType(0, column) == BlockType::EMPTY;
+		int columnNbr = lastHole ? 0 : 1;
+		for (int row = 1; row < highestUsedRow; ++row) {
+			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
+			if (lastHole != hole) {
+				roughness.holes_ += 1;
+				lastHole = hole;
+			}
+			if (!hole) {
+				++columnNbr;
+			}
+		}
+		if (column != 0) {
+			roughness.bumpiness += std::abs(lastColumnNbr - columnNbr);
+		}
+		lastColumnNbr = columnNbr;
+	}
+	return roughness;
+}
+
+int calculateHighestUsedRow(const RawTetrisBoard& board) {
+	auto v = board.getBoardVector();
+	int index = 0;
+	for (auto it = v.rbegin(); it != v.rend(); ++it) {
+		if (*it != BlockType::EMPTY) {
+			index = it - v.rbegin();
+			break;
+		}
+	}
+	return (v.size() - index - 1) / board.getColumns() + 2;
+}
+
+float calculateBlockMeanHeight(const Block& block) {
+	int blockMeanHeight = 0;
+	for (const Square& sq : block) {
+		blockMeanHeight += sq.row_;
+	}
+	return (float) blockMeanHeight / block.getSize();
+}
+
+int calculateBlockEdges(const RawTetrisBoard& board, const Block& block) {
+	int edges = 0;
+	for (const Square& sq : block) {
+		board.getBlockType(sq.row_, sq.column_ - 1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_ - 1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.row_, sq.column_ + 1) != BlockType::EMPTY ? ++edges : 0;
+	}
+	return edges;
+}
 
 Ai::State::State() : left_(0), rotationLeft_(0), value_(std::numeric_limits<float>::lowest()) {
 }

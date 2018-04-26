@@ -1,6 +1,7 @@
 #ifndef TETRISDATA_H
 #define TETRISDATA_H
 
+#include "square.h"
 #include "block.h"
 #include "ai.h"
 #include "tetrisgame.h"
@@ -16,6 +17,9 @@
 
 #include <map>
 #include <vector>
+
+BlockType charToBlockType(char key);
+std::string blockTypeToString(BlockType blocktype);
 
 class HighscoreRecord {
 public:

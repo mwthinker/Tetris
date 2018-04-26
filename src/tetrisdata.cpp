@@ -6,75 +6,71 @@
 #include <fstream>
 #include <sstream>
 
-using nlohmann::json;
-
-namespace {
-
-	BlockType charToBlockType(char key) {
-		switch (key) {
-			case 'z':
-				// Fall through.
-			case 'Z':
-				return BlockType::Z;
-			case 'w':
-				// Fall through.
-			case 'W':
-				return BlockType::WALL;
-			case 't':
-				// Fall through.
-			case 'T':
-				return BlockType::T;
-			case 's':
-				// Fall through.
-			case 'S':
-				return BlockType::S;
-			case 'o':
-				// Fall through.
-			case 'O':
-				return BlockType::O;
-			case 'l':
-				// Fall through.
-			case 'L':
-				return BlockType::L;
-			case 'j':
-				// Fall through.
-			case 'J':
-				return BlockType::J;
-			case 'I':
-				// Fall through.
-			case 'i':
-				return BlockType::I;
-			default:
-				return BlockType::EMPTY;
-		}
+BlockType charToBlockType(char key) {
+	switch (key) {
+		case 'z':
+			// Fall through.
+		case 'Z':
+			return BlockType::Z;
+		case 'w':
+			// Fall through.
+		case 'W':
+			return BlockType::WALL;
+		case 't':
+			// Fall through.
+		case 'T':
+			return BlockType::T;
+		case 's':
+			// Fall through.
+		case 'S':
+			return BlockType::S;
+		case 'o':
+			// Fall through.
+		case 'O':
+			return BlockType::O;
+		case 'l':
+			// Fall through.
+		case 'L':
+			return BlockType::L;
+		case 'j':
+			// Fall through.
+		case 'J':
+			return BlockType::J;
+		case 'I':
+			// Fall through.
+		case 'i':
+			return BlockType::I;
+		default:
+			return BlockType::EMPTY;
 	}
-
-	std::string blockTypeToString(BlockType blocktype) {
-		switch (blocktype) {
-			case BlockType::Z:
-				return "Z";
-			case BlockType::WALL:
-				return "W";
-			case BlockType::T:
-				return "T";
-			case BlockType::S:
-				return "S";
-			case BlockType::O:
-				return "O";
-			case BlockType::L:
-				return "L";
-			case BlockType::J:
-				return "J";
-			case BlockType::I:
-				return "I";
-			case BlockType::EMPTY:
-				return "E";
-			default:
-				return "E";
-		}
-	}
-
 }
+
+std::string blockTypeToString(BlockType blocktype) {
+	switch (blocktype) {
+		case BlockType::Z:
+			return "Z";
+		case BlockType::WALL:
+			return "W";
+		case BlockType::T:
+			return "T";
+		case BlockType::S:
+			return "S";
+		case BlockType::O:
+			return "O";
+		case BlockType::L:
+			return "L";
+		case BlockType::J:
+			return "J";
+		case BlockType::I:
+			return "I";
+		case BlockType::EMPTY:
+			return "E";
+		default:
+			return "E";
+	}
+}
+
+using nlohmann::json;
 
 namespace mw { // Must use the namespace color origin from.
 

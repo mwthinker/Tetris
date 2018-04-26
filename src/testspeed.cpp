@@ -5,7 +5,10 @@
 #include <tetrisboard.h>
 #include <tetrisparameters.h>
 #include <block2.h>
+#include <square.h>
 #include <rawtetrisboard2.h>
+#include <tetrisdata.h>
+#include <vector>
 
 TEST_CASE("benchmarked", "[!benchmark]") {
 
@@ -60,7 +63,6 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 	BENCHMARK("Copy block2") {
 		BlockType blockTypes[] = {BlockType::I, BlockType::J, BlockType::L,
 			BlockType::O, BlockType::S, BlockType::T, BlockType::Z};
-		INFO("ASDDDDDDDDDDDDDDDDDDD");
 
 		for (int i = 0; i < 10000; ++i) {
 			Block2 block(blockTypes[i % sizeof(blockTypes)]);
@@ -78,4 +80,36 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 			}
 		}
 	}
+
+	std::vector<BlockType> blockTypes;
+	std::string str = "TTOOZZSSEIETOOSZSEEEEEESSEEEEEEEES";
+	for (char chr : str) {
+		blockTypes.push_back(charToBlockType(chr));
+	}
+	RawTetrisBoard board(blockTypes, TETRIS_WIDTH, TETRIS_HEIGHT,
+		Block(BlockType::J, 4, 18, 0), BlockType::L);
+	int highestUsedRow = calculateHighestUsedRow(board);
+	
+	BENCHMARK("calculateColumnHoles") {
+		calculateColumnHoles(board, highestUsedRow);
+	}
+	BENCHMARK("calculateRowRoughness") {
+		calculateRowRoughness(board, highestUsedRow);
+	}
+	BENCHMARK("calculateBlockMeanHeight") {
+		calculateBlockMeanHeight(board.getBlock());
+	}
+	BENCHMARK("calculateHighestUsedRow") {
+		calculateHighestUsedRow(board);
+	}
+	BENCHMARK("calculateBlockEdges") {
+		calculateBlockEdges(board, board.getBlock());
+	}
+
+	BENCHMARK("AI calculateBestState") {
+		Ai ai;
+		ai.calculateBestState(board, 1);
+	}
+	
+	Board b;
 }
