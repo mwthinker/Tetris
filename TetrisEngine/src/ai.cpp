@@ -81,9 +81,9 @@ RowRoughness calculateRowRoughness(const RawTetrisBoard& board, int highestUsedR
 	RowRoughness rowRoughness;
 	int holes = 0;
 	for (int row = 0; row < highestUsedRow; ++row) {
-		bool lastHole = board.getBlockType(row, 0) == BlockType::EMPTY;
+		bool lastHole = board.getBlockType(0, row) == BlockType::EMPTY;
 		for (int column = 1; column < board.getColumns(); ++column) {
-			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
+			bool hole = board.getBlockType(column, row) == BlockType::EMPTY;
 			if (lastHole != hole) {
 				rowRoughness.holes_ += 1;
 				lastHole = hole;
@@ -101,10 +101,10 @@ ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUse
 	ColumnRoughness roughness;
 	int lastColumnNbr;
 	for (int column = 0; column < board.getColumns(); ++column) {
-		bool lastHole = board.getBlockType(0, column) == BlockType::EMPTY;
+		bool lastHole = board.getBlockType(column, 0) == BlockType::EMPTY;
 		int columnNbr = lastHole ? 0 : 1;
 		for (int row = 1; row < highestUsedRow; ++row) {
-			bool hole = board.getBlockType(row, column) == BlockType::EMPTY;
+			bool hole = board.getBlockType(column, row) == BlockType::EMPTY;
 			if (lastHole != hole) {
 				roughness.holes_ += 1;
 				lastHole = hole;
@@ -144,9 +144,9 @@ float calculateBlockMeanHeight(const Block& block) {
 int calculateBlockEdges(const RawTetrisBoard& board, const Block& block) {
 	int edges = 0;
 	for (const Square& sq : block) {
-		board.getBlockType(sq.row_, sq.column_ - 1) != BlockType::EMPTY ? ++edges : 0;
-		board.getBlockType(sq.row_ - 1, sq.column_) != BlockType::EMPTY ? ++edges : 0;
-		board.getBlockType(sq.row_, sq.column_ + 1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.column_ - 1, sq.row_) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.column_, sq.row_ - 1) != BlockType::EMPTY ? ++edges : 0;
+		board.getBlockType(sq.column_ + 1, sq.row_) != BlockType::EMPTY ? ++edges : 0;
 	}
 	return edges;
 }
