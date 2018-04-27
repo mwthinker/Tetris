@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstdint>
 #include <array>
+#include <algorithm>
 
 // The events triggered by the tetris board.
 enum class GameEvent2 {
