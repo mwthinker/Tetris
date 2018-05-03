@@ -248,21 +248,23 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/data/
 	DESTINATION .
 	COMPONENT data
 )
-	
+
 # Replace the USE_APPLICATION_JSON file, use default saving place.
 install(FILES ${CMAKE_SOURCE_DIR}/data/package/USE_APPLICATION_JSON
 	DESTINATION .
 	COMPONENT data
 )
 
-########################################################################
-# Tell CMake to install the windows runtime libraries to the programs
-# directory and tell CPack that they belong to the applications component
-include(InstallRequiredSystemLibraries)
-install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-	DESTINATION .
-	COMPONENT application
-)
+if (MSVC AND DLL_FOLDER)
+	########################################################################
+	# Tell CMake to install the windows runtime libraries to the programs
+	# directory and tell CPack that they belong to the applications component
+	include(InstallRequiredSystemLibraries)
+	install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+		DESTINATION .
+		COMPONENT application
+	)
+endif ()
 
 set(CPACK_PACKAGE_CONTACT "mwthinker@yahoo.com")
 
@@ -280,7 +282,11 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "MWetris")
 set(CPACK_GENERATOR ZIP)
 
 # Tell CPack about the components and group the data components together.
-set(CPACK_COMPONENTS_ALL application data runtime vcredist)
+if (MSVC)
+	set(CPACK_COMPONENTS_ALL application data runtime vcredist)
+else ()
+	set(CPACK_COMPONENTS_ALL application data)
+endif ()
 
 # More descriptive names for each of the components, and component groups.
 set(CPACK_COMPONENT_APPLICATION_DISPLAY_NAME "Application")
@@ -330,11 +336,12 @@ if (UNIX)
 		set(CPACK_GENERATOR ${CPACK_GENERATOR} DEB)
 
 		set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
-		set(CPACK_DEB_COMPONENT_INSTALL ON)
-		set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+		#set(CPACK_DEB_COMPONENT_INSTALL OFF)		
+		#set(CPACK_DEBIAN_PACKAGE_PREDEPENDS ON)		# Hmm
+		#set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 		set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
 		
-		set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2 (>=2.0-0), libsdl2-image (>=2.0-0), libsdl2-mixer(>=2.0-0), libsdl2-net (>= 2.0-0), libsdl2-ttf (>= 2.0-0), libglew (>= 1.13)")
+		#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2 (>=2.0-0), libsdl2-image (>=2.0-0), libsdl2-mixer(>=2.0-0), libsdl2-net (>= 2.0-0), libsdl2-ttf (>= 2.0-0), libglew (>= 1.13)")
 	endif ()
 endif ()
 
