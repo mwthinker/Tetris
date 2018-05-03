@@ -30,6 +30,13 @@ int calculateHighestUsedRow(const RawTetrisBoard& board);
 float calculateBlockMeanHeight(const Block& block);
 int calculateBlockEdges(const RawTetrisBoard& board, const Block& block);
 
+int calculateLandingHeight(const Block& block);
+int calculateErodedPieces(const RawTetrisBoard& board);
+int calculateRowTransitions(const RawTetrisBoard& board);
+int calculateColumnTransitions(const RawTetrisBoard& board);
+int calculateNumberOfHoles(const RawTetrisBoard& board);
+int calculateCumulativeWells(const RawTetrisBoard& board);
+
 class Ai {
 public:
 	Ai();
@@ -67,7 +74,7 @@ public:
 private:
 	void initCalculator();
 	
-	State calculateBestStateRecursive(RawTetrisBoard board, int depth);
+	State calculateBestStateRecursive(RawTetrisBoard board, int depth, int startDepth);
 
 	std::string name_;
 	std::string valueFunction_;

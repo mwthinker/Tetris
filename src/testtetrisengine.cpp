@@ -3,6 +3,7 @@
 
 #include <rawtetrisboard.h>
 #include <tetrisparameters.h>
+#include <ai.h>
 
 bool blockEqual(const Block& block1, const Block& block2) {
 	if (block1.getSize() != block2.getSize()) {
@@ -264,5 +265,76 @@ TEST_CASE("Test tetrisboard", "[tetrisboard]") {
 			REQUIRE(board.getColumns() == restartBoard.getColumns());
 			REQUIRE(board.getRows() == restartBoard.getRows());
 		}
+	}
+}
+
+TEST_CASE("Test ai", "[ai]") {
+	INFO("Default tetrisboard");
+	
+	const BlockType NEW_NEXT = BlockType::Z;
+
+	Block current(BlockType::I, 4, 20);
+	
+	int intBoard[] = {
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+		0, 0, 0, 0, 0, 0, 0, 1, 0, 1,
+		0, 0, 1, 1, 0, 0, 1, 1, 1, 1,		
+		1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+		0, 1, 1, 1, 0, 0, 1, 1, 0, 1,
+		1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+		0, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+		0, 1, 1, 1, 1, 1, 0, 1, 1, 1,		
+		1, 1, 0, 1, 1, 0, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 0, 1, 0,
+		0, 1, 1, 0, 1, 0, 1, 0, 1, 1,
+		0, 1, 1, 0, 1, 1, 1, 1, 0, 1,
+		1, 1, 1, 1, 0, 1, 1, 1, 0, 0,
+		1, 0, 1, 1, 0, 1, 1, 1, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
+	std::vector<BlockType> boardBlockTypes;
+
+	// Take the lowest row first, and so forth.
+	for (int y = 0; y < 16; ++y) {
+		for (int x = 0; x < 10; ++x) {
+			int index = x + (15 - y) * 10;
+			if (intBoard[index] == 0) {
+				boardBlockTypes.push_back(BlockType::EMPTY);
+			} else {
+				boardBlockTypes.push_back(BlockType::I);
+			}
+		}
+	}
+
+	RawTetrisBoard tetrisBoard(boardBlockTypes, TETRIS_WIDTH, TETRIS_HEIGHT, current, NEW_NEXT);
+	tetrisBoard.update(Move::DOWN_GROUND);
+
+	SECTION("Calculate Landing heigt") {
+		REQUIRE( (calculateLandingHeight(tetrisBoard.getBlock()) == 8) );
+	}
+
+	SECTION("Calculate eroded pieces") {
+		REQUIRE( (calculateErodedPieces(tetrisBoard) == 2 * 2 ) );
+	}
+
+	SECTION("Calcualte highest used row") {
+		REQUIRE(calculateHighestUsedRow(tetrisBoard) == 15);
+		tetrisBoard.update(Move::DOWN_GRAVITY); // Two rows removed.
+		REQUIRE(calculateHighestUsedRow(tetrisBoard) == 13);
+	}
+
+	SECTION("Calculate row holes") {
+		tetrisBoard.update(Move::DOWN_GRAVITY);
+		REQUIRE((calculateRowTransitions(tetrisBoard) == 29));
+	}
+	
+	SECTION("Calculate column transitions") {
+		tetrisBoard.update(Move::DOWN_GRAVITY);
+		REQUIRE((calculateColumnTransitions(tetrisBoard) == 27));
+	}
+
+	SECTION("Calculate sum of cumulative wells") {
+		tetrisBoard.update(Move::DOWN_GRAVITY);
+		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
 	}
 }

@@ -98,6 +98,16 @@ public:
 	// Return the blocktype for a given position.
 	BlockType getBlockType(int column, int row) const;
 
+	int calculateSquaresFilled(int row) const {
+		int filled = 0;
+		for (int x = 0; x < columns_; ++x) {
+			if (board(x, row) != BlockType::EMPTY) {
+				++filled;
+			}
+		}
+		return filled;
+	}
+
 	// Return true if the block is outside or on an already occupied square on the board.
 	// Otherwise it return false.
 	bool collision(const Block& block) const;
