@@ -55,3 +55,13 @@ target_link_libraries(TetrisEngine
 	Calculator
 	TetrisEngineLib
 )
+
+install(TARGETS TetrisEngine
+	EXPORT TetrisEngine
+	DESTINATION .
+	COMPONENT application
+)
+
+
+#install(TARGETS TetrisEngine EXPORT TetrisEngine)
+

@@ -209,6 +209,10 @@ install(TARGETS MWetris
 	COMPONENT application
 )
 
+install(EXPORT TetrisEngine
+	DESTINATION application
+)
+
 if (MSVC AND DLL_FOLDER)
 	set(TMP_DLL_FOLDER ${DLL_FOLDER})
 	string(REPLACE "\\" "/" DLL_FOLDER ${TMP_DLL_FOLDER})
