@@ -14,25 +14,23 @@ else ()
 	endif ()
 endif ()
 
-option(TetrisEngineTest "TetrisEngineTest project is added" OFF)
-
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
 
-set(SOURCES
-	src/ai.cpp
-	src/ai.h
-	src/block.cpp
-	src/block.h
-	src/block2.cpp
-	src/block2.h
-	src/random.h
-	src/rawtetrisboard.cpp
-	src/rawtetrisboard.h
-	src/rawtetrisboard2.cpp
-	src/rawtetrisboard2.h
-	src/square.h
-	src/tetrisboard.cpp
-	src/tetrisboard.h
+set(SOURCES_LIB
+	srcLib/ai.cpp
+	srcLib/ai.h
+	srcLib/block.cpp
+	srcLib/block.h
+	srcLib/block2.cpp
+	srcLib/block2.h
+	srcLib/random.h
+	srcLib/rawtetrisboard.cpp
+	srcLib/rawtetrisboard.h
+	srcLib/rawtetrisboard2.cpp
+	srcLib/rawtetrisboard2.h
+	srcLib/square.h
+	srcLib/tetrisboard.cpp
+	srcLib/tetrisboard.h
 )
 
 include_directories(
@@ -40,22 +38,20 @@ include_directories(
 	../Calculator/src
 )
 
-set(SOURCES_TEST
-	srcTest/flags.cpp
-	srcTest/flags.h
-	srcTest/flagsexception.h
-	srcTest/main.cpp
+set(SOURCES_MAIN
+	src/flags.cpp
+	src/flags.h
+	src/flagsexception.h
+	src/main.cpp
 )
 
-add_library(TetrisEngine ${SOURCES})
+add_library(TetrisEngineLib ${SOURCES_LIB})
 
-if (TetrisEngineTest)
-	include_directories(src)
+include_directories(srcLib)
+
+add_executable(TetrisEngine ${SOURCES_MAIN})
 	
-	add_executable(TetrisEngineTest ${SOURCES_TEST})
-	
-	target_link_libraries(TetrisEngineTest
-		Calculator
-		TetrisEngine
-	)
-endif ()
+target_link_libraries(TetrisEngine
+	Calculator
+	TetrisEngineLib
+)

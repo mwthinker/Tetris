@@ -26,7 +26,7 @@ namespace {
 Flags::Flags() : Flags(0, nullptr) {
 }
 
-Flags::Flags(const int argc, const char* const argv[]) : programName_("TetrisEngineTest"), printHelp_(false),
+Flags::Flags(const int argc, const char* const argv[]) : programName_("TetrisEngine"), printHelp_(false),
 delay_(0), maxNbrBlocks_(std::numeric_limits<int>::max()), play_(false),
 useRandomFile_(false), verbose_(false), depth_(1), width_(10), height_(24) {
 

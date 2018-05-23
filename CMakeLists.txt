@@ -136,7 +136,7 @@ include_directories(
 	SdlGui/MwLibrary2/src
 	SdlGui/Signal/src
 	Calculator/src
-	TetrisEngine/src
+	TetrisEngine/srcLib
 	nlohmann-json/src
 )
 
@@ -172,7 +172,7 @@ set(LINK_LIBS
 	SimpleNetwork
 	SdlGui
 	MwLibrary2
-	TetrisEngine
+	TetrisEngineLib
 	Calculator
 	${GLEW_LIBRARIES}
 	${OPENGL_LIBRARIES}
