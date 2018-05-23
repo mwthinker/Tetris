@@ -96,23 +96,19 @@
 		"ip": "127.0.0.1",
 		"timeToConnectMS": 5000
 	},
-	"ai1": "DefaultAi",
-	"ai2": "DefaultAi",
-	"ai3": "DefaultAi",
-	"ai4": "DefaultAi",
+	"ai1": "Default",
+	"ai2": "Default",
+	"ai3": "Default",
+	"ai4": "Default",
 	
 	"ais": [
 		{
 			"name": "Default2",
-			"valueFunction": "-5*rowRoughness - 10*columnRoughness + 10*meanHeight - 10*blockMeanHeight"
+			"valueFunction": "-0.2*cumulativeWells - 1*holeDepth - 1*holes - 1*landingHeight"
 		},
 		{
 			"name": "Defensive",
-			"valueFunction": "5*rowRoughness -10*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
-		},
-		{
-			"name": "Worthless",
-			"valueFunction": "-10*rowRoughness -5*columnRoughness + 1*edges + 1*meanHeight -1*blockMeanHeight"
+			"valueFunction": "-0.2*cumulativeWells - 0.8*holeDepth - 1.1*holes - 0.4*landingHeight"
 		}
 	],
 	"highscore": [

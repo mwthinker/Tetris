@@ -36,6 +36,7 @@ int calculateRowTransitions(const RawTetrisBoard& board);
 int calculateColumnTransitions(const RawTetrisBoard& board);
 int calculateNumberOfHoles(const RawTetrisBoard& board);
 int calculateCumulativeWells(const RawTetrisBoard& board);
+int calculateHoleDepth(const RawTetrisBoard& board);
 
 class Ai {
 public:
@@ -69,12 +70,13 @@ public:
 		float value_;
 	};
 
-	State calculateBestState(RawTetrisBoard board, int depth);
+	State calculateBestState(const RawTetrisBoard& board, int depth);
+	float moveBlockToGroundCalculateValue(const State& state, RawTetrisBoard& board);
 	
 private:
 	void initCalculator();
 	
-	State calculateBestStateRecursive(RawTetrisBoard board, int depth, int startDepth);
+	State calculateBestStateRecursive(const RawTetrisBoard& board, int depth);
 
 	std::string name_;
 	std::string valueFunction_;
@@ -82,5 +84,7 @@ private:
 	calc::Calculator calculator_;
 	calc::Cache cache_;
 };
+
+void moveBlockToBeforeImpact(const Ai::State& state, RawTetrisBoard& board);
 
 #endif // AI_H

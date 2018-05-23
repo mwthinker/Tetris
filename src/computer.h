@@ -23,8 +23,10 @@ public:
 	std::string getName() const override;
 
 	void update(const TetrisBoard& board) override;
-
+	
 private:
+	static Ai::State calculateBestState(RawTetrisBoard board, Ai ai, int depth);
+
 	// Calculate and return the best input to achieve the current state.
 	Input calculateInput(Ai::State state) const;
 

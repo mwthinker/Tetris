@@ -5,15 +5,6 @@
 #include <string>
 #include <future>
 
-namespace {
-
-	// All parameters are copied, to avoid thread problems.
-	Ai::State asyncCalculateBestState(RawTetrisBoard board, Ai ai, int depth) {
-		return ai.calculateBestState(board, depth);
-	}
-
-}
-
 Computer::Computer() : Device(true) {
 	currentTurn_ = 0;
 	activeThread_ = false;
@@ -39,7 +30,7 @@ void Computer::update(const TetrisBoard& board) {
 		activeThread_ = true;
 		input_ = Input();
 		currentTurn_ = board.getTurns();
-		handle_ = std::async(std::launch::async | std::launch::deferred, asyncCalculateBestState, board, ai_, 1);
+		handle_ = std::async(std::launch::async | std::launch::deferred, Computer::calculateBestState, board, ai_, 1);
 	} else {
 		if (handle_.valid()) {
 			latestState_ = handle_.get();
@@ -61,6 +52,10 @@ void Computer::update(const TetrisBoard& board) {
 
 		input_ = calculateInput(latestState_);
 	}
+}
+
+Ai::State Computer::calculateBestState(RawTetrisBoard board, Ai ai, int depth) {
+	return ai.calculateBestState(board, depth);
 }
 
 // Calculate and return the best input to achieve the current state.

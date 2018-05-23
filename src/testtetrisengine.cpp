@@ -337,4 +337,9 @@ TEST_CASE("Test ai", "[ai]") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
 		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
 	}
+
+	SECTION("Calculate sum of hole depths") {
+		tetrisBoard.update(Move::DOWN_GRAVITY);
+		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
+	}
 }

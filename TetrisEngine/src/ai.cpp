@@ -59,22 +59,6 @@ namespace {
 		return states;
 	}
 
-	float calculateValue(calc::Calculator& calculator, const calc::Cache& cache, const RawTetrisBoard& board, const Block& block) {
-		int highestUsedRow = calculateHighestUsedRow(board);
-		RowRoughness rowRoughness = calculateRowRoughness(board, highestUsedRow);
-		ColumnRoughness columnRoughness = calculateColumnHoles(board, highestUsedRow);
-		int edges = calculateBlockEdges(board, block);
-		float blockMeanHeight = calculateBlockMeanHeight(block);
-
-		calculator.updateVariable("rowHoles", (float) rowRoughness.holes_);
-		calculator.updateVariable("columnHoles", (float) columnRoughness.holes_);
-		calculator.updateVariable("bumpiness", (float) columnRoughness.bumpiness);
-		calculator.updateVariable("edges", (float) edges);
-		calculator.updateVariable("rowSumHeight", (float) rowRoughness.rowSum_);
-		calculator.updateVariable("blockMeanHeight", blockMeanHeight);
-		return calculator.excecute(cache);
-	}
-
 	inline int factorial(int number) {
 		int result = number;
 		while (number > 1) {
@@ -106,7 +90,6 @@ RowRoughness calculateRowRoughness(const RawTetrisBoard& board, int highestUsedR
 	return rowRoughness;
 }
 
-
 ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUsedRow) {
 	ColumnRoughness roughness;
 	int lastColumnNbr;
@@ -131,7 +114,7 @@ ColumnRoughness calculateColumnHoles(const RawTetrisBoard& board, int highestUse
 	return roughness;
 }
 
-// Calculation is perfomed before the block is part of the board.
+// Calculation is performed before the block is part of the board.
 int calculateLandingHeight(const Block& block) { // f1	
 	return block.getLowestRow();
 }
@@ -260,7 +243,25 @@ int calculateCumulativeWells(const RawTetrisBoard& board) { // f6
 
 // Calculate the number of filled cells above holes summed over all columns.
 int calculateHoleDepth(const RawTetrisBoard& board) { // f7
-	return 0;
+	const int w = board.getColumns();
+	const int h = board.getRows();
+	const int highestRow = calculateHighestUsedRow(board) + 1; // One higher, should be a empty square.
+
+	int holes = 0;
+	for (int x = 0; x < w; ++x) {
+		bool lastFilled = true; // Upper limit counts as filled.
+		for (int y = 0; y <= highestRow; ++y) {
+			bool filled = board.getBlockType(x, y) != BlockType::EMPTY;
+			if (lastFilled != filled && filled) {
+				++holes;
+			}
+			lastFilled = filled;
+		}
+		if (!lastFilled) {
+			++holes;
+		}
+	}
+	return holes;
 }
 
 // Calculate the number of rows containing at least one hole.
@@ -297,60 +298,48 @@ int calculateBlockEdges(const RawTetrisBoard& board, const Block& block) {
 	}
 	return edges;
 }
-
 Ai::State::State() : left_(0), rotationLeft_(0), value_(std::numeric_limits<float>::lowest()) {
 }
 
 Ai::State::State(int left, int rotations) : left_(left), rotationLeft_(rotations), value_(std::numeric_limits<float>::lowest()) {
 }
 
-Ai::Ai() : Ai("DefaultAi", "-2*rowHoles - 5*columnHoles - 1*rowSumHeight / (1 + rowHoles) - 2*blockMeanHeight") {
+Ai::Ai() : Ai("Default", "-0.2*cumulativeWells - 1*holeDepth - 1*holes - 1*landingHeight") {
 }
 
 Ai::Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {
 	initCalculator();
 }
 
-Ai::State Ai::calculateBestState(RawTetrisBoard board, int depth) {
+Ai::State Ai::calculateBestState(const RawTetrisBoard& board, int depth) {
 	calculator_.updateVariable("rows", (float) board.getRows());
 	calculator_.updateVariable("columns", (float) board.getColumns());
-	return calculateBestStateRecursive(board, depth, depth);
+	if (depth >= 2) {
+		return calculateBestStateRecursive(board, 2);
+	} else if (depth == 1) {
+		return calculateBestStateRecursive(board, 1);
+	} else {
+		return calculateBestStateRecursive(board, 0);
+	}
 }
 
 // Find the best state for the block to move.
-Ai::State Ai::calculateBestStateRecursive(RawTetrisBoard board, int depth, int startDepth) {
+Ai::State Ai::calculateBestStateRecursive(const RawTetrisBoard& board, int depth) {
 	Ai::State bestState;
 
-	if (depth != 0) {
+	if (depth > 0) {
 		std::vector<Ai::State> states = calculateAllPossibleStates(board, board.getBlock());
 
 		for (const Ai::State& state : states) {
 			RawTetrisBoard childBoard = board;
 
-			// Rotate.
-			for (int i = 0; i < state.rotationLeft_; ++i) {
-				childBoard.update(Move::ROTATE_LEFT);
-			}
+			if (depth == 2) {
+				moveBlockToBeforeImpact(state, childBoard);
 
-			// Move left.
-			for (int i = 0; i < state.left_; ++i) {
-				childBoard.update(Move::LEFT);
-			}
-			// Move right.
-			for (int i = 0; i < -1 * state.left_; ++i) {
-				childBoard.update(Move::RIGHT);
-			}
+				// Impact, the block is now a part of the board.
+				childBoard.update(Move::DOWN_GRAVITY);
 
-			// Move down the block and stop just before impact.
-			childBoard.update(Move::DOWN_GROUND);
-			// Save the current block before impact.
-			Block block = childBoard.getBlock();
-			// Impact, the block is now a part of the board.
-			childBoard.update(Move::DOWN_GRAVITY);
-
-			if (depth > 1) {
-				State childState = calculateBestStateRecursive(childBoard, depth - 1, startDepth);
-				constexpr std::array<BlockType, 7> blockTypes = {BlockType::I, BlockType::J, BlockType::L,BlockType::O, BlockType::S, BlockType::T, BlockType::Z};
+				State childState = calculateBestStateRecursive(childBoard, 1);
 
 				if (childState.value_ > bestState.value_) {
 					bestState = state;
@@ -358,48 +347,57 @@ Ai::State Ai::calculateBestStateRecursive(RawTetrisBoard board, int depth, int s
 					bestState.value_ = childState.value_;
 				}
 			} else {
-				float value = calculateValue(calculator_, cache_, childBoard, block);
+				float value = moveBlockToGroundCalculateValue(state, childBoard);
 				if (value > bestState.value_) {
 					bestState = state;
 					bestState.value_ = value;
 				}
 			}
-
-			/*
-			if (startDepth - depth == 0) {  // 3-3=0, 3-2=1, 3-1=2, 3-0=3
-				float value = calculateValue(calculator_, cache_, childBoard, block);
-				if (value > bestState.value_) {
-					bestState = state;
-					bestState.value_ = value;
-				}
-			} else if (startDepth - depth == 1) {
-				State childState = calculateBestStateRecursive(childBoard, depth - 1, startDepth);
-				constexpr std::array<BlockType, 7> blockTypes = {BlockType::I, BlockType::J, BlockType::L,BlockType::O, BlockType::S, BlockType::T, BlockType::Z};
-
-				if (childState.value_ > bestState.value_) {
-					bestState = state;
-					// Only updating the value from the child.
-					bestState.value_ = childState.value_;
-				}
-			} else {
-				float value = calculateValue(calculator_, cache_, childBoard, block);
-				if (value > bestState.value_) {
-					bestState = state;
-					bestState.value_ = value;
-				}
-			}*/				
 		}
 	}
 	return bestState;
 }
 
+void moveBlockToBeforeImpact(const Ai::State& state, RawTetrisBoard& board) {
+	// Rotate.
+	for (int i = 0; i < state.rotationLeft_; ++i) {
+		board.update(Move::ROTATE_LEFT);
+	}
+
+	// Move left.
+	for (int i = 0; i < state.left_; ++i) {
+		board.update(Move::LEFT);
+	}
+	// Move right.
+	for (int i = 0; i < -1 * state.left_; ++i) {
+		board.update(Move::RIGHT);
+	}
+
+	// Move down the block and stop just before impact.
+	board.update(Move::DOWN_GROUND);
+}
+
+float Ai::moveBlockToGroundCalculateValue(const State& state, RawTetrisBoard& board) {
+	moveBlockToBeforeImpact(state, board);
+	calculator_.updateVariable("landingHeight", (float) calculateLandingHeight(board.getBlock()));
+	calculator_.updateVariable("erodedPieces", (float) calculateErodedPieces(board));
+	board.update(Move::DOWN_GRAVITY);
+	calculator_.updateVariable("rowHoles", (float) calculateRowTransitions(board));
+	calculator_.updateVariable("columnHoles", (float) calculateColumnTransitions(board));
+	calculator_.updateVariable("holes", (float) calculateNumberOfHoles(board));
+	calculator_.updateVariable("cumulativeWells", (float) calculateCumulativeWells(board));
+	calculator_.updateVariable("holeDepth", (float) calculateHoleDepth(board));
+	return calculator_.excecute(cache_);
+}
+
 void Ai::initCalculator() {
+	calculator_.addVariable("landingHeight", 0);
+	calculator_.addVariable("erodedPieces", 0);
 	calculator_.addVariable("rowHoles", 0);
 	calculator_.addVariable("columnHoles", 0);
-	calculator_.addVariable("edges", 0);
-	calculator_.addVariable("rowSumHeight", 0);
-	calculator_.addVariable("blockMeanHeight", 0);
-	calculator_.addVariable("bumpiness", 0);
+	calculator_.addVariable("holes", 0);
+	calculator_.addVariable("cumulativeWells", 0);
+	calculator_.addVariable("holeDepth", 0);
 
 	calculator_.addVariable("rows", 0);
 	calculator_.addVariable("columns", 0);

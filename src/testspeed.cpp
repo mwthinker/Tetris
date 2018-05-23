@@ -9,6 +9,7 @@
 #include <rawtetrisboard2.h>
 #include <tetrisdata.h>
 #include <vector>
+#include <ai.h>
 
 TEST_CASE("benchmarked", "[!benchmark]") {
 
@@ -90,6 +91,16 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 		Block(BlockType::J, 4, 18, 0), BlockType::L);
 	int highestUsedRow = calculateHighestUsedRow(board);
 	
+	board.update(Move::DOWN_GROUND);
+
+	BENCHMARK("Old ai functions") {
+		calculateColumnHoles(board, highestUsedRow);
+		calculateRowRoughness(board, highestUsedRow);
+		calculateBlockMeanHeight(board.getBlock());
+		calculateHighestUsedRow(board);
+		calculateBlockEdges(board, board.getBlock());
+	}
+
 	BENCHMARK("calculateColumnHoles") {
 		calculateColumnHoles(board, highestUsedRow);
 	}
@@ -104,6 +115,39 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 	}
 	BENCHMARK("calculateBlockEdges") {
 		calculateBlockEdges(board, board.getBlock());
+	}
+
+	BENCHMARK("New ai functions") {
+		calculateLandingHeight(board.getBlock());
+		calculateErodedPieces(board);
+		board.update(Move::DOWN_GROUND);
+		calculateRowTransitions(board);
+		calculateColumnTransitions(board);
+		calculateNumberOfHoles(board);
+		calculateCumulativeWells(board);
+		calculateHoleDepth(board);
+	}
+	
+	BENCHMARK("calculateLandingHeight ") {
+		calculateLandingHeight(board.getBlock());
+	}
+	BENCHMARK("calculateErodedPieces") {
+		calculateErodedPieces(board);
+	}
+	BENCHMARK("calculateRowTransitions") {
+		calculateRowTransitions(board);
+	}
+	BENCHMARK("calculateColumnTransitions") {
+		calculateColumnTransitions(board);
+	}
+	BENCHMARK("calculateNumberOfHoles") {
+		calculateNumberOfHoles(board);
+	}
+	BENCHMARK("calculateCumulativeWells") {
+		calculateCumulativeWells(board);
+	}
+	BENCHMARK("calculateHoleDepth") {
+		calculateHoleDepth(board);
 	}
 
 	BENCHMARK("AI calculateBestState") {

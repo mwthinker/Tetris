@@ -99,6 +99,9 @@ public:
 	BlockType getBlockType(int column, int row) const;
 
 	int calculateSquaresFilled(int row) const {
+		if (row >= (int) gameboard_.size() / columns_) {
+			return 0;
+		}
 		int filled = 0;
 		for (int x = 0; x < columns_; ++x) {
 			if (board(x, row) != BlockType::EMPTY) {

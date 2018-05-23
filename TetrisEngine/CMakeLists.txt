@@ -41,7 +41,11 @@ include_directories(
 )
 
 set(SOURCES_TEST
-	srcTest/main.cpp)
+	srcTest/flags.cpp
+	srcTest/flags.h
+	srcTest/flagsexception.h
+	srcTest/main.cpp
+)
 
 add_library(TetrisEngine ${SOURCES})
 
