@@ -325,21 +325,31 @@ TEST_CASE("Test ai", "[ai]") {
 
 	SECTION("Calculate row holes, f3") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
-		REQUIRE((calculateRowTransitions(tetrisBoard) == 29));
+		REQUIRE( (calculateRowTransitions(tetrisBoard) == 29) );
 	}
 	
 	SECTION("Calculate column holes, f4") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
-		REQUIRE((calculateColumnTransitions(tetrisBoard) == 27));
+		REQUIRE( (calculateColumnTransitions(tetrisBoard) == 27) );
 	}
 
-	SECTION("Calculate sum of cumulative wells, f5") {
+	SECTION("Calculate number of holes, f5") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
-		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
+		REQUIRE( (calculateNumberOfHoles(tetrisBoard) == 17) );
 	}
 
-	SECTION("Calculate sum of hole depths, f6") {
+	SECTION("Calculate sum of cumulative wells, f6") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
-		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
+		REQUIRE( (calculateCumulativeWells(tetrisBoard) == 8) );
+	}
+
+	SECTION("Calculate sum of hole depths, f7") {
+		tetrisBoard.update(Move::DOWN_GRAVITY);
+		REQUIRE((calculateHoleDepth(tetrisBoard) == 62));
+	}
+
+	SECTION("Calculate the number of rows containing at least one hole, f8") {
+		tetrisBoard.update(Move::DOWN_GRAVITY);
+		REQUIRE((calculateRowHoles(tetrisBoard) == 9));
 	}
 }

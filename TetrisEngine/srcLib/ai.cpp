@@ -201,14 +201,16 @@ int calculateNumberOfHoles(const RawTetrisBoard& board) { // f5
 	int holes = 0;
 	for (int x = 0; x < w; ++x) {
 		bool foundFirstFilled = false; // Is always empty at the top. No hole.
+		bool lastEmpty = false;
 		for (int y = highestRow; y >= 0; --y) {
 			bool empty = board.getBlockType(x, y) == BlockType::EMPTY;
 			if (!empty) {
 				foundFirstFilled = true;
 			}
-			if (empty && foundFirstFilled) {
+			if (empty && foundFirstFilled && !lastEmpty) {
 				++holes;
 			}
+			lastEmpty = empty;
 		}
 	}
 	return holes;
@@ -243,30 +245,56 @@ int calculateCumulativeWells(const RawTetrisBoard& board) { // f6
 
 // Calculate the number of filled cells above holes summed over all columns.
 int calculateHoleDepth(const RawTetrisBoard& board) { // f7
-	const int w = board.getColumns();
-	const int h = board.getRows();
-	const int highestRow = calculateHighestUsedRow(board) + 1; // One higher, should be a empty square.
+	int w = board.getColumns();
+	int h = board.getRows();
+	const int highestRow = calculateHighestUsedRow(board);
 
-	int holes = 0;
+	int filled = 0;
 	for (int x = 0; x < w; ++x) {
-		bool lastFilled = true; // Upper limit counts as filled.
+		bool foundEmpty = false;
 		for (int y = 0; y <= highestRow; ++y) {
-			bool filled = board.getBlockType(x, y) != BlockType::EMPTY;
-			if (lastFilled != filled && filled) {
-				++holes;
+			bool empty = board.getBlockType(x, y) == BlockType::EMPTY;
+			if (empty) {
+				foundEmpty = true;
 			}
-			lastFilled = filled;
-		}
-		if (!lastFilled) {
-			++holes;
+			if (foundEmpty && !empty) {
+				++filled;
+			}
 		}
 	}
-	return holes;
+	return filled;
+}
+
+namespace {
+
+	bool isAtLeastOneFilledSquareAbowe(int x, int y, const RawTetrisBoard& board, int highestRow) {
+		for (++y; y <= highestRow; ++y) {
+			if (board.getBlockType(x,y) != BlockType::EMPTY) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
 
 // Calculate the number of rows containing at least one hole.
-int calculateRowHoles(const RawTetrisBoard& board) { // f7
-	return 0;
+int calculateRowHoles(const RawTetrisBoard& board) { // f8
+	int w = board.getColumns();
+	int h = board.getRows();
+	const int highestRow = calculateHighestUsedRow(board);
+
+	int rows = 0;
+	for (int y = 0; y <= highestRow; ++y) {
+		for (int x = 0; x < w; ++x) {
+			bool empty = board.getBlockType(x, y) == BlockType::EMPTY;
+			if (empty && isAtLeastOneFilledSquareAbowe(x, y, board, highestRow)) {
+				++rows;
+				break;
+			}
+		}
+	}
+	return rows;
 }
 
 int calculateHighestUsedRow(const RawTetrisBoard& board) {

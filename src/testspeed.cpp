@@ -126,6 +126,7 @@ TEST_CASE("benchmarked", "[!benchmark]") {
 		calculateNumberOfHoles(board);
 		calculateCumulativeWells(board);
 		calculateHoleDepth(board);
+		calculateRowHoles(board);
 	}
 	
 	BENCHMARK("calculateLandingHeight ") {

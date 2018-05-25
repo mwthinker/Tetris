@@ -37,6 +37,7 @@ int calculateColumnTransitions(const RawTetrisBoard& board);
 int calculateNumberOfHoles(const RawTetrisBoard& board);
 int calculateCumulativeWells(const RawTetrisBoard& board);
 int calculateHoleDepth(const RawTetrisBoard& board);
+int calculateRowHoles(const RawTetrisBoard& board);
 
 class Ai {
 public:
