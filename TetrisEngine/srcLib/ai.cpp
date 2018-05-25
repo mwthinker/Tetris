@@ -307,8 +307,8 @@ Ai::State::State(int left, int rotations) : left_(left), rotationLeft_(rotations
 Ai::Ai() : Ai("Default", "-0.2*cumulativeWells - 1*holeDepth - 1*holes - 1*landingHeight") {
 }
 
-Ai::Ai(std::string name, std::string valueFunction) : name_(name), valueFunction_(valueFunction) {
-	initCalculator();
+Ai::Ai(std::string name, std::string valueFunction, bool allowException) : name_(name), valueFunction_(valueFunction) {
+	initCalculator(allowException);
 }
 
 Ai::State Ai::calculateBestState(const RawTetrisBoard& board, int depth) {
@@ -390,7 +390,7 @@ float Ai::moveBlockToGroundCalculateValue(const State& state, RawTetrisBoard& bo
 	return calculator_.excecute(cache_);
 }
 
-void Ai::initCalculator() {
+void Ai::initCalculator(bool allowException) {
 	calculator_.addVariable("landingHeight", 0);
 	calculator_.addVariable("erodedPieces", 0);
 	calculator_.addVariable("rowHoles", 0);
@@ -401,9 +401,14 @@ void Ai::initCalculator() {
 
 	calculator_.addVariable("rows", 0);
 	calculator_.addVariable("columns", 0);
-	try {
+
+	if (allowException) {
 		cache_ = calculator_.preCalculate(valueFunction_);
-	} catch (calc::CalculatorException exception) {
-		cache_ = calculator_.preCalculate("0");
+	} else {
+		try {
+			cache_ = calculator_.preCalculate(valueFunction_);
+		} catch (calc::CalculatorException exception) {
+			cache_ = calculator_.preCalculate("0");
+		}
 	}
 }

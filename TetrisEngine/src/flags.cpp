@@ -53,9 +53,9 @@ useRandomFile_(false), verbose_(false), depth_(1), width_(10), height_(24) {
 			if (i + 1 < argc) {
 				std::string valueFunction = argv[i + 1];
 				try {
-					ai_ = Ai("AI", valueFunction);
+					ai_ = Ai("AI", valueFunction, true);
 				} catch (calc::CalculatorException exception) {
-					throw FlagsException(std::string("Value function error: ") + exception.what() + std::string("\n"));
+					throw FlagsException(std::string("Value function error. ") + exception.what() + std::string("\n"));
 				}
 				++i;
 			} else {
@@ -107,13 +107,15 @@ useRandomFile_(false), verbose_(false), depth_(1), width_(10), height_(24) {
 			outputOrder_.push("-T");
 		} else if (arg == "-t" || arg == "--turn-output") {
 			outputOrder_.push("-t");
-		} else if (arg == "-c1" || arg == "--cleared-row-1") {
+		} else if (arg == "-c" || arg == "--cleared-rows") {
+			outputOrder_.push("-c");
+		} else if (arg == "-c1" || arg == "--cleared-rows-1") {
 			outputOrder_.push("-c1");
-		} else if (arg == "-c2" || arg == "--cleared-row-2") {
+		} else if (arg == "-c2" || arg == "--cleared-rows-2") {
 			outputOrder_.push("-c2");
-		} else if (arg == "-c3" || arg == "--cleared-row-3") {
+		} else if (arg == "-c3" || arg == "--cleared-rows-3") {
 			outputOrder_.push("-c3");
-		} else if (arg == "-c4" || arg == "--cleared-row-4") {
+		} else if (arg == "-c4" || arg == "--cleared-rows-4") {
 			outputOrder_.push("-c4");
 		}
 	}
@@ -173,10 +175,11 @@ void Flags::printHelpFunction() const {
 	std::cout << "\tOutput order:\n";
 	std::cout << "\t-T --time                print the time lapsed\n";
 	std::cout << "\t-t --turns               print the number of turns\n";
-	std::cout << "\t-c1 --cleared-row-1      print cleared one rows\n";
-	std::cout << "\t-c2 --cleared-row-2      print cleared two rows\n";
-	std::cout << "\t-c3 --cleared-row-3      print cleared three rows\n";
-	std::cout << "\t-c4 --cleared-row-4      print cleared four rows\n\n";
+	std::cout << "\t-c --cleared-rows        print cleared rows\n";
+	std::cout << "\t-c1 --cleared-rows-1     print cleared one rows\n";
+	std::cout << "\t-c2 --cleared-rows-2     print cleared two rows\n";
+	std::cout << "\t-c3 --cleared-rows-3     print cleared three rows\n";
+	std::cout << "\t-c4 --cleared-rows-4     print cleared four rows\n\n";
 
 	std::cout << "Example: " << "\n";
 	std::cout << "\tShow the default result for the default ai, in the same order as the abowe output order.\n";
@@ -187,5 +190,4 @@ void Flags::printHelpFunction() const {
 
 	std::cout << "\tList the time and number of four-rows cleared.\n";
 	std::cout << "\t" << programName_ << "-T --cleared-row-4\n";
-	std::exit(0);
 }

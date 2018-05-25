@@ -12,7 +12,7 @@
 		"rowMovingTime": 0.05,
 		"bar": {
 			"height": 35,
-			"color": "0.5 0 0 0.3)"
+			"color": "0.5 0 0 0.3"
 		},
 		"label": {
 			"textColor": "1 1 1",

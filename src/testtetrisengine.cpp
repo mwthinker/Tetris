@@ -309,36 +309,36 @@ TEST_CASE("Test ai", "[ai]") {
 	RawTetrisBoard tetrisBoard(boardBlockTypes, TETRIS_WIDTH, TETRIS_HEIGHT, current, NEW_NEXT);
 	tetrisBoard.update(Move::DOWN_GROUND);
 
-	SECTION("Calculate Landing heigt") {
-		REQUIRE( (calculateLandingHeight(tetrisBoard.getBlock()) == 8) );
-	}
-
-	SECTION("Calculate eroded pieces") {
-		REQUIRE( (calculateErodedPieces(tetrisBoard) == 2 * 2 ) );
-	}
-
 	SECTION("Calcualte highest used row") {
 		REQUIRE(calculateHighestUsedRow(tetrisBoard) == 15);
 		tetrisBoard.update(Move::DOWN_GRAVITY); // Two rows removed.
 		REQUIRE(calculateHighestUsedRow(tetrisBoard) == 13);
 	}
 
-	SECTION("Calculate row holes") {
+	SECTION("Calculate Landing height, f1") {
+		REQUIRE( (calculateLandingHeight(tetrisBoard.getBlock()) == 8) );
+	}
+
+	SECTION("Calculate eroded pieces, f2") {
+		REQUIRE( (calculateErodedPieces(tetrisBoard) == 2 * 2 ) );
+	}	
+
+	SECTION("Calculate row holes, f3") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
 		REQUIRE((calculateRowTransitions(tetrisBoard) == 29));
 	}
 	
-	SECTION("Calculate column transitions") {
+	SECTION("Calculate column holes, f4") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
 		REQUIRE((calculateColumnTransitions(tetrisBoard) == 27));
 	}
 
-	SECTION("Calculate sum of cumulative wells") {
+	SECTION("Calculate sum of cumulative wells, f5") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
 		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
 	}
 
-	SECTION("Calculate sum of hole depths") {
+	SECTION("Calculate sum of hole depths, f6") {
 		tetrisBoard.update(Move::DOWN_GRAVITY);
 		REQUIRE((calculateCumulativeWells(tetrisBoard) == 8));
 	}

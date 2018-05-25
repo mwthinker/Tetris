@@ -42,7 +42,7 @@ class Ai {
 public:
 	Ai();
 
-	Ai(std::string name, std::string valueFunction);
+	Ai(std::string name, std::string valueFunction, bool allowException = false);
 
 	std::string getName() const {
 		return name_;
@@ -74,7 +74,7 @@ public:
 	float moveBlockToGroundCalculateValue(const State& state, RawTetrisBoard& board);
 	
 private:
-	void initCalculator();
+	void initCalculator(bool allowException);
 	
 	State calculateBestStateRecursive(const RawTetrisBoard& board, int depth);
 

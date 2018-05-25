@@ -153,24 +153,29 @@ void printGameResult(const TetrisBoard& tetrisBoard, const Flags& flags, std::ch
 				std::cout << "turns = ";
 			}
 			std::cout << tetrisBoard.getTurns() << "\t";
+		} else if (flag == "-c") {
+			if (flags.verbose_) {
+				std::cout << "cleared-rows = ";
+			}
+			std::cout << lines1 + lines2 + lines3 + lines4 << "\t";
 		} else if (flag == "-c1") {
 			if (flags.verbose_) {
-				std::cout << "cleared-row-1 = ";
+				std::cout << "cleared-rows-1 = ";
 			}
 			std::cout << lines1 << "\t";
 		} else if (flag == "-c2") {
 			if (flags.verbose_) {
-				std::cout << "cleared-row-2 = ";
+				std::cout << "cleared-rows-2 = ";
 			}
 			std::cout << lines2 << "\t";
 		} else if (flag == "-c3") {
 			if (flags.verbose_) {
-				std::cout << "cleared-row-3 = ";
+				std::cout << "cleared-rows-3 = ";
 			}
 			std::cout << lines3 << "\t";
 		} else if (flag == "-c4") {
 			if (flags.verbose_) {
-				std::cout << "cleared-row-4 = ";
+				std::cout << "cleared-rows-4 = ";
 			}
 			std::cout << lines4 << "\t";
 		}
