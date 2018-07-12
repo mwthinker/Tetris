@@ -163,11 +163,9 @@ private:
 	}
 
 	virtual std::vector<BlockType> addExternalRows() {
-		return std::vector<BlockType>(0); // A vector with no dynamic allocated size.
+		return std::vector<BlockType>(0);
 	}
-
-	// Add a block directly to the board.
-	// I.e. The block become a part of the static board.
+	
 	void addBlockToBoard(const Block& block);
 
     int removeFilledRows(const Block& block);
@@ -176,8 +174,8 @@ private:
 	std::vector<BlockType> gameboard_;	// Containing all non moving squares on the board.
 	BlockType next_;					// Next block for the player to control.
 	Block current_;						// The current block for the player to control.
-	int columns_, rows_;				// The size of the gameboard.
-	bool isGameOver_;					// True when game is over, else false.
+	int columns_, rows_;
+	bool isGameOver_;
 	int externalRowsAdded_;
 	int rowToBeRemoved_;
 };

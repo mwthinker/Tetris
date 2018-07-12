@@ -84,13 +84,6 @@ BlockType readBlockType(std::ifstream& infile) {
 	return badRandomBlockType();
 }
 
-std::istream& operator>>(std::istream& is, std::chrono::milliseconds& time) {
-	int intTime;
-	is >> intTime;
-	time = std::chrono::milliseconds(intTime);
-	return is;
-}
-
 std::chrono::duration<double> runGame(TetrisBoard& tetrisBoard, const Flags& flags) {
 	auto time = std::chrono::high_resolution_clock::now();
 
@@ -203,7 +196,7 @@ int main(const int argc, const char* const argv[]) {
 	BlockType next = randomBlockType();
 
 	std::ifstream infile;
-	infile.exceptions(std::ifstream::badbit|std::ifstream::failbit);
+	infile.exceptions(std::ifstream::badbit| std::ifstream::failbit);
 
 	if (flags.useRandomFile_) {
 		try {
@@ -211,7 +204,7 @@ int main(const int argc, const char* const argv[]) {
 		} catch (std::ifstream::failure e) {
 			std::cerr << "Failed to open file: " + flags.randomFilePath_;
 			if (flags.verbose_) {
-				std::cerr << e.what() << "\n";
+				std::cerr << "\n" << e.what() << "\n";
 			}
 			std::exit(1);
 		}
