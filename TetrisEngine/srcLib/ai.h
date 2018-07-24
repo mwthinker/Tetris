@@ -39,6 +39,22 @@ int calculateCumulativeWells(const RawTetrisBoard& board);
 int calculateHoleDepth(const RawTetrisBoard& board);
 int calculateRowHoles(const RawTetrisBoard& board);
 
+struct AiParameters {
+	inline AiParameters() : landingHeight_(false), erodedPieces_(false),
+		rowHoles_(false), columnHoles_(false),
+		holes_(false), cumulativeWells_(false),
+		holeDepth_(false) {
+	}
+
+	bool landingHeight_;
+	bool erodedPieces_;
+	bool rowHoles_;
+	bool columnHoles_;
+	bool holes_;
+	bool cumulativeWells_;
+	bool holeDepth_;
+};
+
 class Ai {
 public:
 	Ai();
@@ -56,10 +72,6 @@ public:
 	const calc::Calculator& getCalculator() const {
 		return calculator_;
 	}
-
-	const calc::Cache& getCache() {
-		return cache_;
-	}
 	
 	struct State {
 		State();
@@ -76,6 +88,7 @@ public:
 	
 private:
 	void initCalculator(bool allowException);
+	void initAiParameters(const calc::Calculator& calculator, const calc::Cache& cache);
 	
 	State calculateBestStateRecursive(const RawTetrisBoard& board, int depth);
 
@@ -84,6 +97,7 @@ private:
 
 	calc::Calculator calculator_;
 	calc::Cache cache_;
+	AiParameters parameters_;
 };
 
 void moveBlockToBeforeImpact(const Ai::State& state, RawTetrisBoard& board);

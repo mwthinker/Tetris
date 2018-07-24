@@ -407,14 +407,28 @@ void moveBlockToBeforeImpact(const Ai::State& state, RawTetrisBoard& board) {
 
 float Ai::moveBlockToGroundCalculateValue(const State& state, RawTetrisBoard& board) {
 	moveBlockToBeforeImpact(state, board);
-	calculator_.updateVariable("landingHeight", (float) calculateLandingHeight(board.getBlock()));
-	calculator_.updateVariable("erodedPieces", (float) calculateErodedPieces(board));
+	if (parameters_.landingHeight_) {
+		calculator_.updateVariable("landingHeight", (float) calculateLandingHeight(board.getBlock()));
+	}
+	if (parameters_.erodedPieces_) {
+		calculator_.updateVariable("erodedPieces", (float) calculateErodedPieces(board));
+	}
 	board.update(Move::DOWN_GRAVITY);
-	calculator_.updateVariable("rowHoles", (float) calculateRowTransitions(board));
-	calculator_.updateVariable("columnHoles", (float) calculateColumnTransitions(board));
-	calculator_.updateVariable("holes", (float) calculateNumberOfHoles(board));
-	calculator_.updateVariable("cumulativeWells", (float) calculateCumulativeWells(board));
-	calculator_.updateVariable("holeDepth", (float) calculateHoleDepth(board));
+	if (parameters_.rowHoles_) {
+		calculator_.updateVariable("rowHoles", (float) calculateRowTransitions(board));
+	}
+	if (parameters_.columnHoles_) {
+		calculator_.updateVariable("columnHoles", (float) calculateColumnTransitions(board));
+	}
+	if (parameters_.holes_) {
+		calculator_.updateVariable("holes", (float) calculateNumberOfHoles(board));
+	}
+	if (parameters_.cumulativeWells_) {
+		calculator_.updateVariable("cumulativeWells", (float) calculateCumulativeWells(board));
+	}
+	if (parameters_.holeDepth_) {
+		calculator_.updateVariable("holeDepth", (float) calculateHoleDepth(board));
+	}
 	return calculator_.excecute(cache_);
 }
 
@@ -426,7 +440,7 @@ void Ai::initCalculator(bool allowException) {
 	calculator_.addVariable("holes", 0);
 	calculator_.addVariable("cumulativeWells", 0);
 	calculator_.addVariable("holeDepth", 0);
-
+	
 	calculator_.addVariable("rows", 0);
 	calculator_.addVariable("columns", 0);
 
@@ -439,4 +453,15 @@ void Ai::initCalculator(bool allowException) {
 			cache_ = calculator_.preCalculate("0");
 		}
 	}
+	initAiParameters(calculator_, cache_);
+}
+
+void Ai::initAiParameters(const calc::Calculator& calculator, const calc::Cache& cache) {
+	parameters_.landingHeight_ = calculator_.hasVariable("landingHeight", cache_);
+	parameters_.erodedPieces_ = calculator_.hasVariable("erodedPieces", cache_);
+	parameters_.rowHoles_ = calculator_.hasVariable("rowHoles", cache_);
+	parameters_.columnHoles_ = calculator_.hasVariable("columnHoles", cache_);
+	parameters_.holes_ = calculator_.hasVariable("holes", cache_);
+	parameters_.cumulativeWells_ = calculator_.hasVariable("cumulativeWells", cache_);
+	parameters_.holeDepth_ = calculator_.hasVariable("holeDepth", cache_);
 }
