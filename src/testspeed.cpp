@@ -1,5 +1,5 @@
 // main() provided by Catch in file testmain.cpp.
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <rawtetrisboard.h>
 #include <tetrisboard.h>
