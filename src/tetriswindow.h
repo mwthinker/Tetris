@@ -17,6 +17,7 @@
 #include <array>
 #include <memory>
 
+class GuiComponentFactory;
 class ManButton;
 class Highscore;
 class GameComponent;
@@ -26,7 +27,7 @@ class GameData;
 
 class TetrisWindow : public gui::Frame {
 public:
-	TetrisWindow();
+	TetrisWindow(std::unique_ptr<GuiComponentFactory> componentFactoryPtr);
 
 	~TetrisWindow();
 
@@ -62,6 +63,8 @@ private:
 	void panelChangeListenerFpsLimiter(gui::Component& c, bool enterFrame);
 
 	TetrisGame tetrisGame_;
+
+	std::unique_ptr<GuiComponentFactory> componentFactoryPtr_;
 
 	// initPlayPanel
 	std::shared_ptr<GameComponent> game_;

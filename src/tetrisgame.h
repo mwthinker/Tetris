@@ -86,8 +86,13 @@ public:
 	bool isCurrentGameActive() const {
 		return nbrOfAlivePlayers_ > 0;
 	}
+	
 	bool isDefaultGame() const {
 		return status_ == TetrisGame::LOCAL && width_ == TETRIS_WIDTH && height_ == TETRIS_HEIGHT && localConnection_.getNbrOfPlayers() == 1;
+	}
+
+	bool isCustomGame() const {
+		return status_ == TetrisGame::LOCAL && !(width_ == TETRIS_WIDTH && height_ == TETRIS_HEIGHT);
 	}
 
 private:

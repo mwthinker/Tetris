@@ -7,9 +7,9 @@
 #include "manbutton.h"
 #include "highscore.h"
 #include "gamecomponent.h"
-#include "guiclasses.h"
 #include "tetrisgameevent.h"
 #include "tetrisdata.h"
+#include "guicomponentfactory.h"
 
 #include <gui/borderlayout.h>
 #include <gui/flowlayout.h>
@@ -34,10 +34,10 @@ namespace {
 
 }
 
-TetrisWindow::TetrisWindow() : 
+TetrisWindow::TetrisWindow(std::unique_ptr<GuiComponentFactory> componentFactoryPtr) :
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
 	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU),
-	lastTimerId_(0) {
+	lastTimerId_(0), componentFactoryPtr_(std::move(componentFactoryPtr)) {
 
 	Frame::setPosition(TetrisData::getInstance().getWindowPositionX(), TetrisData::getInstance().getWindowPositionY());
 	Frame::setWindowSize(TetrisData::getInstance().getWindowWidth(), TetrisData::getInstance().getWindowHeight());
@@ -83,12 +83,12 @@ void TetrisWindow::initPreLoop() {
 	auto background = TetrisData::getInstance().getBackgroundSprite();
 	getCurrentPanel()->setBackground(background);
 	menuIndex_ = getCurrentPanelIndex();
-	playIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	highscoreIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	customIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	settingsIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	newHighscoreIndex_ = pushBackPanel(std::make_shared<Background>(background));
-	networkIndex_ = pushBackPanel(std::make_shared<Background>(background));
+	playIndex_ = pushBackPanel(componentFactoryPtr_->createBackground(background));
+	highscoreIndex_ = pushBackPanel(componentFactoryPtr_->createBackground(background));
+	customIndex_ = pushBackPanel(componentFactoryPtr_->createBackground(background));
+	settingsIndex_ = pushBackPanel(componentFactoryPtr_->createBackground(background));
+	newHighscoreIndex_ = pushBackPanel(componentFactoryPtr_->createBackground(background));
+	networkIndex_ = pushBackPanel(componentFactoryPtr_->createBackground(background));
 
 	initMenuPanel();
 	initPlayPanel();
@@ -200,18 +200,19 @@ TetrisWindow::~TetrisWindow() {
 }
 
 void TetrisWindow::initMenuPanel() {
-	setCurrentPanel(menuIndex_);
-	
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
+	setCurrentPanel(menuIndex_);	
 
 	// 400 in order to be wide enough for all buttons.
-	auto panel = add<TransparentPanel>(gui::BorderLayout::WEST, 400.f);
+	auto bar = add(gui::BorderLayout::NORTH, componentFactoryPtr_->createBar());
+
+	auto panel = componentFactoryPtr_->createTransparentPanel(400, 100);
+	add(gui::BorderLayout::WEST, panel);
 
 	panel->setLayout<gui::VerticalLayout>(5.f, 15.f, 10.f);
 	panel->setBackgroundColor(1, 1, 1, 0);
-	panel->addDefault<Label>("MWetris", TetrisData::getInstance().getDefaultFont(50));
+	panel->addDefault(componentFactoryPtr_->createLabel("MWetris", 50));	
 	
-	auto button = panel->addDefault<Button>("Play", TetrisData::getInstance().getDefaultFont(30));
+	auto button = componentFactoryPtr_->createButton("Play", 30);
 	button->addActionListener([&](gui::Component&) {
 		resumeGame();
 		if (tetrisGame_.getNbrOfPlayers() == 1) {
@@ -219,36 +220,42 @@ void TetrisWindow::initMenuPanel() {
 		}
 		setCurrentPanel(playIndex_);
 	});
+	panel->addDefault(button);
 	groupMenu_.add(button);
 
-	button = panel->addDefault<Button>("Custom play", TetrisData::getInstance().getDefaultFont(30));
+	button = componentFactoryPtr_->createButton("Custom play", 30);
 	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(customIndex_);
 	});
-	groupMenu_.add(button);
+	panel->addDefault(button);
+	groupMenu_.add(button);	
 
-	button = panel->addDefault<Button>("Network play", TetrisData::getInstance().getDefaultFont(30));
+	button = componentFactoryPtr_->createButton("Network play", 30);
 	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(networkIndex_);
 	});
+	panel->addDefault(button);
 	groupMenu_.add(button);
 
-	button = panel->addDefault<Button>("Highscore", TetrisData::getInstance().getDefaultFont(30));
+	button = componentFactoryPtr_->createButton("Highscore", 30);
 	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(highscoreIndex_);
 	});
+	panel->addDefault(button);
 	groupMenu_.add(button);
 
-	button = panel->addDefault<Button>("Settings", TetrisData::getInstance().getDefaultFont(30));
+	button = componentFactoryPtr_->createButton("Settings", 30);
 	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(settingsIndex_);
 	});
+	panel->addDefault(button);
 	groupMenu_.add(button);
 	
-	button = panel->addDefault<Button>("Exit", TetrisData::getInstance().getDefaultFont(30));
+	button = componentFactoryPtr_->createButton("Exit", 30);
 	button->addActionListener([&](gui::Component&) {
 		Window::quit();
 	});
+	panel->addDefault(button);
 	groupMenu_.add(button);
 
 	// In order for the user to traverse the menu with the keyboard.
@@ -262,16 +269,20 @@ void TetrisWindow::initMenuPanel() {
 void TetrisWindow::initPlayPanel() {
 	setCurrentPanel(playIndex_);
 
-    auto bar = add<Bar>(gui::BorderLayout::NORTH);
+	auto bar = componentFactoryPtr_->createBar();
 	bar->setLayout<gui::BorderLayout>();
+	add(gui::BorderLayout::NORTH, bar);
 
-	manBar_ = bar->add<TransparentPanel>(gui::BorderLayout::WEST, 400.f, 100.f);
-	auto p2 = bar->add<TransparentPanel>(gui::BorderLayout::EAST, 200.f, 100.f);
+	manBar_ = componentFactoryPtr_->createTransparentPanel(400.f, 100.f);
+	bar->add(gui::BorderLayout::WEST, manBar_);
+	auto p2 = componentFactoryPtr_->createTransparentPanel(200.f, 100.f);
+	bar->add(gui::BorderLayout::EAST, p2);
 
 	manBar_->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
 	p2->setLayout<gui::FlowLayout>(gui::FlowLayout::RIGHT, 5.f, 0.f);
 	
-	menu_ = manBar_->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30));
+	menu_ = componentFactoryPtr_->createButton("Menu", 30);
+	manBar_->addDefault(menu_);
 	menu_->addActionListener([&](gui::Component&) {
 		saveCurrentLocalGame(); // Must be called first, must be in play frame.
 		setCurrentPanel(menuIndex_);
@@ -283,7 +294,9 @@ void TetrisWindow::initPlayPanel() {
 	});
 	menu_->setFocus(false);
 
-	restart_ = manBar_->addDefault<Button>("Restart", TetrisData::getInstance().getDefaultFont(30));
+
+	restart_ = componentFactoryPtr_->createButton("Restart", 30);
+	manBar_->addDefault(restart_);
 	restart_->addActionListener([&](gui::Component&) {
 		if (tetrisGame_.getStatus() == TetrisGame::CLIENT || tetrisGame_.getStatus() == TetrisGame::SERVER) {
 			tetrisGame_.restartGame();
@@ -305,7 +318,8 @@ void TetrisWindow::initPlayPanel() {
 		setPlayers(tetrisGame_.getColumns(), tetrisGame_.getRows());
 	});
 
-	pauseButton_ = p2->addDefault<Button>("Pause", TetrisData::getInstance().getDefaultFont(30));
+	pauseButton_ = componentFactoryPtr_->createButton("Pause", 30);
+	p2->addDefault(pauseButton_);
 	pauseButton_->addActionListener([&](gui::Component&) {
 		tetrisGame_.pause();
 	});
@@ -339,8 +353,10 @@ void TetrisWindow::initPlayPanel() {
 void TetrisWindow::initHighscorePanel() {
 	setCurrentPanel(highscoreIndex_);
 
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
-	bar->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	auto bar = componentFactoryPtr_->createBar();
+	add(gui::BorderLayout::NORTH, bar);
+	auto button = componentFactoryPtr_->createButton("Menu", 30);
+	bar->addDefault(button)->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
@@ -350,27 +366,37 @@ void TetrisWindow::initHighscorePanel() {
 }
 
 void TetrisWindow::initNewHighscorePanel() {
-	setCurrentPanel(newHighscoreIndex_);
-	add<Bar>(gui::BorderLayout::NORTH);
+	setCurrentPanel(newHighscoreIndex_);	
+	auto bar = componentFactoryPtr_->createBar();
+	add(gui::BorderLayout::NORTH, bar);
 	
-	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
+	auto centerPanel = componentFactoryPtr_->createTransparentPanel(100, 100);
+	add(gui::BorderLayout::CENTER, centerPanel);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	centerPanel->addDefault<Label>("New higscore record!", TetrisData::getInstance().getDefaultFont(40));
+	auto label = componentFactoryPtr_->createLabel("New higscore record!", 40);
+	centerPanel->addDefault(label);
 
-	centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
-	newHighscorePositionlabel_ = centerPanel->addDefault<Label>("", TetrisData::getInstance().getDefaultFont(32));
-	newHighscorePointslabel_ = centerPanel->addDefault<Label>("", TetrisData::getInstance().getDefaultFont(18));
-	centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
 
-	auto panel = centerPanel->addDefault<TransparentPanel>(400.f, 50.f);
+	centerPanel->addDefault(componentFactoryPtr_->createTransparentPanel(400.f, 50.f));
+	newHighscorePositionlabel_ = componentFactoryPtr_->createLabel("", 32);
+	centerPanel->addDefault(newHighscorePositionlabel_);
+	newHighscorePointslabel_ = componentFactoryPtr_->createLabel("", 18);
+	centerPanel->addDefault(newHighscorePointslabel_);
+	centerPanel->addDefault(componentFactoryPtr_->createTransparentPanel(400.f, 50.f));
+
+	auto panel = componentFactoryPtr_->createTransparentPanel(400.f, 50.f);
+	centerPanel->addDefault(panel);
 	panel->setLayout<gui::FlowLayout>(gui::FlowLayout::LEFT, 5.f, 0.f);
 
-	panel->addDefault<Label>("Name: ", TetrisData::getInstance().getDefaultFont(18));	
+	label = componentFactoryPtr_->createLabel("Name", 18);
+	panel->addDefault(label);
 
-    textField_ = panel->addDefault<TextField>(TetrisData::getInstance().getDefaultFont(18));
+	
+	textField_ = componentFactoryPtr_->createTextField("", 18);
+	panel->addDefault(textField_);
 	textField_->addActionListener([&](gui::Component& c) {
-		TextField& textField = static_cast<TextField&>(c);
+		gui::TextField& textField = static_cast<gui::TextField&>(c);
 		std::string name = textField.getText();
 
 		bool validName = false;
@@ -388,7 +414,8 @@ void TetrisWindow::initNewHighscorePanel() {
 		}
 	});
 
-	centerPanel->addDefault<Button>("Continue", TetrisData::getInstance().getDefaultFont(25))->addActionListener([&](gui::Component& c) {
+	auto button = componentFactoryPtr_->createButton("Continue", 25);
+	centerPanel->addDefault(button)->addActionListener([&](gui::Component& c) {
 		textField_->doAction();
 	});
 
@@ -402,28 +429,41 @@ void TetrisWindow::initNewHighscorePanel() {
 
 void TetrisWindow::initCustomPlayPanel() {
 	setCurrentPanel(customIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
+	auto bar = componentFactoryPtr_->createBar();
+	add(gui::BorderLayout::NORTH, bar);
 
-	bar->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	auto button = componentFactoryPtr_->createButton("Menu", 30);
+	bar->addDefault(button)->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
-	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
+	auto centerPanel = componentFactoryPtr_->createTransparentPanel(100, 100);
+	add(gui::BorderLayout::CENTER, centerPanel);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	auto p1 = centerPanel->addDefault<TransparentPanel>(450.f, 100.f);
-	p1->addDefault<Label>("Width", TetrisData::getInstance().getDefaultFont(18));
-	customWidthField_  = p1->addDefault<TextField>("10", TetrisData::getInstance().getDefaultFont(18));
-	p1->addDefault<Label>("Height", TetrisData::getInstance().getDefaultFont(18));
-	customHeightField_ = p1->addDefault<TextField>("24", TetrisData::getInstance().getDefaultFont(18));
+	auto p1 = componentFactoryPtr_->createTransparentPanel(450.f, 100.f);
+	centerPanel->addDefault(p1);
+	p1->addDefault(componentFactoryPtr_->createLabel("Width", 18));
+	customWidthField_ = componentFactoryPtr_->createTextField("10", 18);
+	p1->addDefault(customWidthField_);
+	p1->addDefault(componentFactoryPtr_->createLabel("Height", 18));
+	customHeightField_ = componentFactoryPtr_->createTextField("24", 18);
+	p1->addDefault(customHeightField_);
 
-	auto p2 = centerPanel->addDefault<TransparentPanel>(100.f, 100.f);
-	p2->addDefault<Label>("Min Level", TetrisData::getInstance().getDefaultFont(18));
-	customMinLevel_ = p2->addDefault<TextField>("1", TetrisData::getInstance().getDefaultFont(18));
-	p2->addDefault<Label>("Max Level", TetrisData::getInstance().getDefaultFont(18));
-	customMaxLevel_ = p2->addDefault<TextField>("24", TetrisData::getInstance().getDefaultFont(18));
+	auto p2 = componentFactoryPtr_->createTransparentPanel(100.f, 100.f);
+	centerPanel->addDefault(p2);
 
-	auto button = centerPanel->addDefault<Button>("Play", TetrisData::getInstance().getDefaultFont(30));
+	auto label = componentFactoryPtr_->createLabel("Min Level", 18);
+	p2->addDefault(label);	
+	customMinLevel_ = componentFactoryPtr_->createTextField("1", 18);
+	p2->addDefault(customMinLevel_);
+	label = componentFactoryPtr_->createLabel("Max Level", 18);
+	p2->addDefault(label);
+	customMaxLevel_ = componentFactoryPtr_->createTextField("24", 18);
+	p2->addDefault(customMaxLevel_);
+
+	button = componentFactoryPtr_->createButton("Play", 30);
+	centerPanel->addDefault(button);
 	button->addActionListener([&](gui::Component&) {
 		int rows = std::stoi(customHeightField_->getText());
 		int columns = std::stoi(customWidthField_->getText());
@@ -444,79 +484,94 @@ void TetrisWindow::initCustomPlayPanel() {
 
 void TetrisWindow::initSettingsPanel() {
 	setCurrentPanel(settingsIndex_);
-	auto bar = add<Bar>(gui::BorderLayout::NORTH);
-
-	bar->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	auto bar = componentFactoryPtr_->createBar();
+	add(gui::BorderLayout::NORTH, bar);
+	
+	auto button = componentFactoryPtr_->createButton("Menu", 30);
+	bar->addDefault(button)->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
-    auto p = add<TransparentPanel>(gui::BorderLayout::CENTER);
+	auto p = componentFactoryPtr_->createTransparentPanel(100, 100);
+	add(gui::BorderLayout::CENTER, p);
     p->setLayout<gui::VerticalLayout>();
-	p->addDefault<Label>("Settings", TetrisData::getInstance().getDefaultFont(30));
+	auto label = componentFactoryPtr_->createLabel("Settings", 30);
+	p->addDefault(label);
 
-	auto checkBox = p->addDefault<CheckBox>("Border around window", TetrisData::getInstance().getDefaultFont(18));
+	auto checkBox = componentFactoryPtr_->createCheckBox("Border around window", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isWindowBordered());
 	checkBox->addActionListener([&](gui::Component& c) {
-        auto& check = static_cast<CheckBox&>(c);
+        auto& check = static_cast<gui::CheckBox&>(c);
 		bool test = check.isSelected();
 		TetrisData::getInstance().setWindowBordered(check.isSelected());
 		TetrisData::getInstance().save();
 		setBordered(check.isSelected());
 	});
-	checkBox = p->addDefault<CheckBox>("Fullscreen on double click", TetrisData::getInstance().getDefaultFont(18));
+	
+	checkBox = componentFactoryPtr_->createCheckBox("Fullscreen on double click", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isFullscreenOnDoubleClick());
 	checkBox->addActionListener([&](gui::Component& c) {
-        auto& check = static_cast<CheckBox&>(c);
+        auto& check = static_cast<gui::CheckBox&>(c);
 		TetrisData::getInstance().setFullscreenOnDoubleClick(check.isSelected());
 		TetrisData::getInstance().save();
 	});
 
-	checkBox = p->addDefault<CheckBox>("Move the window by holding down left mouse button", TetrisData::getInstance().getDefaultFont(18));
+	checkBox = componentFactoryPtr_->createCheckBox("Move the window by holding down left mouse button", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isMoveWindowByHoldingDownMouse());
 	checkBox->addActionListener([&](gui::Component& c) {
-        auto& check =  static_cast<CheckBox&>(c);
+        auto& check =  static_cast<gui::CheckBox&>(c);
 		TetrisData::getInstance().setMoveWindowByHoldingDownMouse(check.isSelected());
 		TetrisData::getInstance().save();
 	});
 
-	checkBox = p->addDefault<CheckBox>("Vsync", TetrisData::getInstance().getDefaultFont(18));
+	checkBox = componentFactoryPtr_->createCheckBox("Vsync", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isWindowVsync());
 	checkBox->addActionListener([&](gui::Component& c) {
-		auto& check = static_cast<CheckBox&>(c);
+		auto& check = static_cast<gui::CheckBox&>(c);
 		TetrisData::getInstance().setWindowVsync(check.isSelected());
 		TetrisData::getInstance().save();
 		SDL_GL_SetSwapInterval(check.isSelected() ? 1 : 0);
 		updateCurrentFpsLimiter();
 	});
 
-	checkBox = p->addDefault<CheckBox>("Fps limiter", TetrisData::getInstance().getDefaultFont(18));
+	checkBox = componentFactoryPtr_->createCheckBox("Fps limiter", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isLimitFps());
 	checkBox->addActionListener([&](gui::Component& c) {
-		auto& check = static_cast<CheckBox&>(c);
+		auto& check = static_cast<gui::CheckBox&>(c);
 		TetrisData::getInstance().setLimitFps(check.isSelected());
 		TetrisData::getInstance().save();
 		updateCurrentFpsLimiter();
 	});
 
-	checkBox = p->addDefault<CheckBox>("Pause on lost focus", TetrisData::getInstance().getDefaultFont(18));
+	checkBox = componentFactoryPtr_->createCheckBox("Pause on lost focus", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isWindowPauseOnLostFocus());
 	checkBox->addActionListener([&](gui::Component& c) {
-		auto& check = static_cast<CheckBox&>(c);
+		auto& check = static_cast<gui::CheckBox&>(c);
 		TetrisData::getInstance().setWindowPauseOnLostFocus(check.isSelected());
 		TetrisData::getInstance().save();
 	});
 
-	checkBox = p->addDefault<CheckBox>("Show down block", TetrisData::getInstance().getDefaultFont(18));
+	checkBox = componentFactoryPtr_->createCheckBox("Show down block", 18);
+	p->addDefault(checkBox);
 	checkBox->setSelected(TetrisData::getInstance().isShowDownBlock());
 	checkBox->addActionListener([&](gui::Component& c) {
-		auto& check = static_cast<CheckBox&>(c);
+		auto& check = static_cast<gui::CheckBox&>(c);
 		TetrisData::getInstance().setShowDownBlock(check.isSelected());
 		TetrisData::getInstance().save();
-	});
+	});	
 	
-	auto label = p->addDefault<Label>("Ai players", TetrisData::getInstance().getDefaultFont(30));
+	label = componentFactoryPtr_->createLabel("Ai players", 30);
+	p->addDefault(label);
+
 	{
-		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto comboBox = componentFactoryPtr_->createComboBox(20);
+		p->addDefault(comboBox);
 		auto ais = TetrisData::getInstance().getAiVector();		
 		for (int i = 0; i < (int) ais.size(); ++i) {
 			comboBox->addItem(ais[i].getName());
@@ -524,14 +579,16 @@ void TetrisWindow::initSettingsPanel() {
 				comboBox->setSelectedItem(i);
 			}
 			comboBox->addActionListener([&](gui::Component& c) {
-				auto& box = static_cast<ComboBox&>(c);
+				auto& box = static_cast<gui::ComboBox&>(c);
 				activeAis_[0] = findAiDevice(box.getChosenItemText());
 				TetrisData::getInstance().setAi1Name(box.getChosenItemText());
 			});
 		}
-	}
+	}	
+
 	{
-		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto comboBox = componentFactoryPtr_->createComboBox(20);
+		p->addDefault(comboBox);
 		auto ais = TetrisData::getInstance().getAiVector();
 		for (int i = 0; i < (int) ais.size(); ++i) {
 			comboBox->addItem(ais[i].getName());
@@ -539,14 +596,16 @@ void TetrisWindow::initSettingsPanel() {
 				comboBox->setSelectedItem(i);
 			}
 			comboBox->addActionListener([&](gui::Component& c) {
-				auto& box = static_cast<ComboBox&>(c);
+				auto& box = static_cast<gui::ComboBox&>(c);
 				activeAis_[1] = findAiDevice(box.getChosenItemText());
 				TetrisData::getInstance().setAi2Name(box.getChosenItemText());
 			});
 		}
 	}
+
 	{
-		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto comboBox = componentFactoryPtr_->createComboBox(20);
+		p->addDefault(comboBox);
 		auto ais = TetrisData::getInstance().getAiVector();
 		for (int i = 0; i < (int) ais.size(); ++i) {
 			comboBox->addItem(ais[i].getName());
@@ -554,14 +613,16 @@ void TetrisWindow::initSettingsPanel() {
 				comboBox->setSelectedItem(i);
 			}
 			comboBox->addActionListener([&](gui::Component& c) {
-				auto& box = static_cast<ComboBox&>(c);
+				auto& box = static_cast<gui::ComboBox&>(c);
 				activeAis_[2] = findAiDevice(box.getChosenItemText());
 				TetrisData::getInstance().setAi3Name(box.getChosenItemText());
 			});
 		}
 	}
+
 	{
-		auto comboBox = p->addDefault<ComboBox>(TetrisData::getInstance().getDefaultFont(20));
+		auto comboBox = componentFactoryPtr_->createComboBox(20);
+		p->addDefault(comboBox);
 		auto ais = TetrisData::getInstance().getAiVector();
 		for (int i = 0; i < (int) ais.size(); ++i) {
 			comboBox->addItem(ais[i].getName());
@@ -569,29 +630,36 @@ void TetrisWindow::initSettingsPanel() {
 				comboBox->setSelectedItem(i);
 			}
 			comboBox->addActionListener([&](gui::Component& c) {
-				auto& box = static_cast<ComboBox&>(c);
+				auto& box = static_cast<gui::ComboBox&>(c);
 				activeAis_[3] = findAiDevice(box.getChosenItemText());
 				TetrisData::getInstance().setAi4Name(box.getChosenItemText());
 			});
 		}
 	}
+
 	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void TetrisWindow::initNetworkPanel() {
 	setCurrentPanel(networkIndex_);
 	
-	add<Bar>(gui::BorderLayout::NORTH)->addDefault<Button>("Menu", TetrisData::getInstance().getDefaultFont(30))->addActionListener([&](gui::Component&) {
+	auto bar = componentFactoryPtr_->createBar();
+	add(gui::BorderLayout::NORTH, bar);
+	auto button = componentFactoryPtr_->createButton("Menu", 30);
+	bar->addDefault(button);
+	button->addActionListener([&](gui::Component&) {
 		setCurrentPanel(menuIndex_);
 	});
 
-	auto centerPanel = add<TransparentPanel>(gui::BorderLayout::CENTER);
+	auto centerPanel = componentFactoryPtr_->createTransparentPanel(100, 100);
+	add(gui::BorderLayout::CENTER, centerPanel);
 	centerPanel->setLayout<gui::VerticalLayout>();
 
-	radioButtonServer_ = centerPanel->addDefault<RadioButton>("   Server", TetrisData::getInstance().getDefaultFont(18));
+	radioButtonServer_ = componentFactoryPtr_->createRadioButton("   Server", 18);
+	centerPanel->addDefault(radioButtonServer_);
 	radioButtonServer_->setSelected(true);
 	radioButtonServer_->addActionListener([&](gui::Component& c) {
-		auto& check = static_cast<RadioButton&>(c);
+		auto& check = static_cast<gui::CheckBox&>(c);
 		radioButtonServer_->setSelected(true);
 		radioButtonClient_->setSelected(false);
 		
@@ -599,10 +667,11 @@ void TetrisWindow::initNetworkPanel() {
 		ipClient_->setVisible(false);
 	});
 	
-	radioButtonClient_ = centerPanel->addDefault<RadioButton>("   Client", TetrisData::getInstance().getDefaultFont(18));
+	radioButtonClient_ = componentFactoryPtr_->createRadioButton("   Client", 18);
+	centerPanel->addDefault(radioButtonClient_);
 	radioButtonClient_->setSelected(false);
 	radioButtonClient_->addActionListener([&](gui::Component& c) {
-		auto& check = static_cast<RadioButton&>(c);
+		auto& check = static_cast<gui::CheckBox&>(c);
 		radioButtonClient_->setSelected(true);
 		radioButtonServer_->setSelected(false);
 		
@@ -610,25 +679,33 @@ void TetrisWindow::initNetworkPanel() {
 		ipClient_->setVisible(true);
 	});
 
-	auto p3 = centerPanel->addDefault<TransparentPanel>(450.f, 40.f);
-	p3->addDefault<Label>("Port", TetrisData::getInstance().getDefaultFont(18));
-	port_ = p3->addDefault<TextField>(std::to_string(TetrisData::getInstance().getPort()), TetrisData::getInstance().getDefaultFont(18));
+	auto p3 = componentFactoryPtr_->createTransparentPanel(450.f, 40.f);
+	centerPanel->addDefault(p3);
+	p3->addDefault(componentFactoryPtr_->createLabel("Port", 18));
+	port_ = componentFactoryPtr_->createTextField(std::to_string(TetrisData::getInstance().getPort()), 18);
+	p3->addDefault(port_);
 	
-	auto p4 = centerPanel->addDefault<TransparentPanel>(450.f, 60.f);
+	auto p4 = componentFactoryPtr_->createTransparentPanel(450.f, 60.f);
+	centerPanel->addDefault(p4);
 	p4->setLayout<gui::VerticalLayout>();
 
-	clientIpLabel_ = p3->addDefault<Label>("IP", TetrisData::getInstance().getDefaultFont(18));
+	clientIpLabel_ = componentFactoryPtr_->createLabel("IP", 18);
+	p3->addDefault(clientIpLabel_);
 	clientIpLabel_->setVisible(false);
-	ipClient_ = p3->addDefault<TextField>(TetrisData::getInstance().getIp(), TetrisData::getInstance().getDefaultFont(18));
+	ipClient_ = componentFactoryPtr_->createTextField(TetrisData::getInstance().getIp(), 18);
+	p3->addDefault(ipClient_);
 	ipClient_->setVisible(false);
 
-	errorMessage_ = p4->addDefault<Label>("Connecting ...", TetrisData::getInstance().getDefaultFont(18));
+	errorMessage_ = componentFactoryPtr_->createLabel("Connecting ...", 18);
+	p4->addDefault(errorMessage_);
 	errorMessage_->setVisible(false);
 	
-	progressBar_ = p4->addDefault<ProgressBar>();
+	progressBar_ = componentFactoryPtr_->createProgressBar();
+	p4->addDefault(progressBar_);
 	progressBar_->setVisible(false);
 
-	networkConnect_ = centerPanel->addDefault<Button>("Connect", TetrisData::getInstance().getDefaultFont(30));
+	networkConnect_ = componentFactoryPtr_->createButton("Connect", 30);
+	centerPanel->addDefault(networkConnect_);
 
 	networkConnect_->addActionListener([&](gui::Component& c) {
 		if (tetrisGame_.getStatus() == TetrisGame::Status::WAITING_TO_CONNECT) { // Is connecting!
@@ -799,7 +876,7 @@ void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {
 		auto& start = dynamic_cast<GameStart&>(tetrisEvent);
 		switch (start.status_) {
 			case GameStart::LOCAL:
-				if (tetrisGame_.isDefaultGame()) {
+				if (tetrisGame_.isDefaultGame() || !tetrisGame_.isCustomGame()) {
 					menu_->setLabel("Menu");
 				} else {
 					menu_->setLabel("Abort");

@@ -46,7 +46,8 @@ set(SOURCES
 	src/gamecomponent.h
 	src/gamegraphic.cpp
 	src/gamegraphic.h
-	src/guiclasses.h
+	src/guicomponentfactory.h
+	src/guicomponentfactory.cpp
 	src/highscore.cpp
 	src/highscore.h
 	src/gamecontroller.cpp

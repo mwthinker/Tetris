@@ -1,5 +1,6 @@
 #include "tetriswindow.h"
 #include "tetrisdata.h"
+#include "guicomponentfactory.h"
 
 #if CONSOLE_TETRIS
 #include "consoletetris.h"
@@ -49,7 +50,7 @@ void startServerGame(int argc, char** argv) {
 			return;
 		}
 	}
-	TetrisWindow game;
+	TetrisWindow game(std::make_unique<GuiComponentFactory>());
 	game.startServerLoop(port);
 }
 
@@ -67,7 +68,7 @@ void startClientGame(int argc, char** argv) {
 			return;
 		}
 	}
-	TetrisWindow game;
+	TetrisWindow game(std::make_unique<GuiComponentFactory>());
 	game.startClientLoop(port, ip);
 }
 
@@ -81,12 +82,12 @@ void startMenuOption(int argc, char** argv) {
 			return;
 		}
 	}
-	TetrisWindow game;
+	TetrisWindow game(std::make_unique<GuiComponentFactory>());
 	game.startLoop();
 }
 
 void startDefaultGame() {
-	TetrisWindow game;
+	TetrisWindow game(std::make_unique<GuiComponentFactory>());
 	game.startLoop();
 }
 
