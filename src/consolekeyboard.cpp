@@ -2,7 +2,9 @@
 
 #include <iostream>
 
-ConsoleKeyboard::ConsoleKeyboard(std::string name, console::Key down, console::Key left, console::Key right, console::Key rotate, console::Key downGround) : Device(false),
+ConsoleKeyboard::ConsoleKeyboard(std::string name, 
+	console::Key down, console::Key left, console::Key right, 
+	console::Key rotate, console::Key downGround) :
 	name_(name),
 	down_(down),
 	right_(right),

@@ -50,6 +50,7 @@ set(SOURCES
 	src/guicomponentfactory.cpp
 	src/highscore.cpp
 	src/highscore.h
+	src/input.h
 	src/gamecontroller.cpp
 	src/gamecontroller.h
 	src/keyboard.cpp

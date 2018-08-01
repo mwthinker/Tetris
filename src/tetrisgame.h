@@ -67,7 +67,7 @@ public:
 		return width_;
 	}
 
-	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices);
+	void setPlayers(int width, int height, const std::vector<IDevicePtr>& devices);
 
 	Status getStatus() const {
 		return status_;

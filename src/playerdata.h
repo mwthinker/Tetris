@@ -13,7 +13,7 @@ public:
 		ai_(false), points_(0), level_(0), levelUpCounter_(0), clearedRows_(0) {
 	}
 
-	DevicePtr device_;
+	IDevicePtr device_;
 	std::string name_;
 	std::string deviceName_;
 	bool ai_;

@@ -9,7 +9,7 @@ class GameController : public SdlDevice {
 public:
 	GameController(const mw::GameControllerPtr& gameController, int rotateButton = 0, int downButton = 1);
 
-	Input currentInput() override;
+	Input getInput() const override;
 	std::string getName() const override;
 
 	int getInstanceId() const {

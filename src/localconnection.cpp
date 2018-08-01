@@ -7,7 +7,7 @@ LocalConnection::LocalConnection(PacketSender& packetSender) :
 	id_(UNDEFINED_CONNECTION_ID) {
 }
 
-void LocalConnection::setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
+void LocalConnection::setPlayers(int width, int height, const std::vector<IDevicePtr>& devices) {
 	players_.clear();
 	for (const auto& device : devices) {
 		auto player = std::make_shared<LocalPlayer>(id_, players_.size(), width, height,

@@ -230,7 +230,7 @@ void TetrisGame::resizeBoard(int width, int height) {
 	}
 }
 
-void TetrisGame::setPlayers(int width, int height, const std::vector<DevicePtr>& devices) {
+void TetrisGame::setPlayers(int width, int height, const std::vector<IDevicePtr>& devices) {
 	// Add human players.
 	localConnection_.setPlayers(width, height, devices);
 	for (std::shared_ptr<LocalPlayer>& player : localConnection_) {

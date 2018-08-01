@@ -10,15 +10,18 @@
 class SdlDevice;
 typedef std::shared_ptr<SdlDevice> SdlDevicePtr;
 
-class SdlDevice : public Device {
+class SdlDevice : public IDevice {
 public:
-	SdlDevice(bool ai) : Device(ai) {
-	}
-
-	virtual ~SdlDevice() {
-	}
+	virtual ~SdlDevice() = default;
 
 	virtual void eventUpdate(const SDL_Event& windowEvent) {
+	}
+
+	void update(const TetrisBoard& board) override {
+	}
+
+	bool isAi() const override {
+		return false;
 	}
 };
 

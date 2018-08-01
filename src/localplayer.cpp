@@ -5,7 +5,7 @@
 #include <functional>
 
 LocalPlayer::LocalPlayer(int connectionId, int playerId, int width, int height,
-	BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender) :
+	BlockType moving, BlockType next, const IDevicePtr& device, PacketSender& sender) :
 	Player(playerId, width, height, moving, next),
 	sender_(sender),
 	leftHandler_(0.09, false),
@@ -91,7 +91,7 @@ void LocalPlayer::boardListener(GameEvent gameEvent, const TetrisBoard& board) {
 }
 
 void LocalPlayer::update(double deltaTime) {
-	Input input = device_->currentInput();
+	Input input = device_->getInput();
 
 	// The time beetween each "gravity" move.
 	double downTime = 1.0 / getGravityDownSpeed();

@@ -15,7 +15,7 @@
 class LocalPlayer : public Player {
 public:
 	LocalPlayer(int connectionId, int playerId, int width, int height,
-		BlockType moving, BlockType next, const DevicePtr& device, PacketSender& sender);
+		BlockType moving, BlockType next, const IDevicePtr& device, PacketSender& sender);
 
 	LocalPlayer(int connectionId, int playerId, int width, int height,
 		const PlayerData& playerData, PacketSender& sender);
@@ -23,7 +23,7 @@ public:
 	// @Player
     void update(double deltaTime) override;
 
-	const DevicePtr& getDevice() const {
+	const IDevicePtr& getDevice() const {
 		return device_;
 	}
 
@@ -66,7 +66,7 @@ private:
 
     // Objects controlling how the moving block is moved.
 	ActionHandler gravityMove_, downHandler_, leftHandler_, rightHandler_, rotateHandler_, downGroundHandler_;
-	DevicePtr device_;
+	IDevicePtr device_;
 	PacketSender& sender_;
 	int levelUpCounter_;
 	int connectionId_;

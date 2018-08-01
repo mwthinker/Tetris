@@ -43,7 +43,7 @@ private:
 
 	void handleConnectionEvent(TetrisGameEvent& tetrisEvent);
 
-	DevicePtr findAiDevice(std::string name) const;
+	IDevicePtr findAiDevice(std::string name) const;
 
 	void moveMenuUp();
 	void moveMenuDown();
@@ -54,14 +54,14 @@ private:
 
 	TetrisGame tetrisGame_;
 
-	std::array<DevicePtr, 3> activeAis_;
+	std::array<IDevicePtr, 3> activeAis_;
 
 	TetrisMenu mode_;
 	TetrisMenu option_;
 	std::shared_ptr<ConsoleKeyboard> keyboard1_, keyboard2_;
 	int humanPlayers_;
 	int aiPlayers_;
-	std::vector<DevicePtr> activePlayers_;
+	std::vector<IDevicePtr> activePlayers_;
 	std::map<int, ConsoleGraphic> graphicPlayers_;
 	std::array<char, 100 * 100> screen_;
 };

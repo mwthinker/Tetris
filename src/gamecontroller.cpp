@@ -4,13 +4,13 @@
 
 #include <SDL.h>
 
-GameController::GameController(const mw::GameControllerPtr& gameController, int rotateButton, int downButton) : SdlDevice(false) {
+GameController::GameController(const mw::GameControllerPtr& gameController, int rotateButton, int downButton) {
 	gameController_ = gameController;
 	rotateButton_ = rotateButton;
 	downButton_ = downButton;
 }
 
-Input GameController::currentInput() {
+Input GameController::getInput() const {
 	return input_;
 }
 

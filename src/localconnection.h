@@ -15,7 +15,7 @@ public:
 
 	LocalConnection(PacketSender& packetSender);
 
-	void setPlayers(int width, int height, const std::vector<DevicePtr>& devices);
+	void setPlayers(int width, int height, const std::vector<IDevicePtr>& devices);
 
 	void removeAllPlayers();
 

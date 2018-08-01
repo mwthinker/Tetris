@@ -7,11 +7,13 @@
 
 #include <string>
 
-class ConsoleKeyboard : public Device {
+class ConsoleKeyboard : public IDevice {
 public:
-	ConsoleKeyboard(std::string name, console::Key down, console::Key left, console::Key right, console::Key rotate, console::Key downGround);
+	ConsoleKeyboard(std::string name, 
+		console::Key down, console::Key left, console::Key right,
+		console::Key rotate, console::Key downGround);
 
-	Input currentInput() override {
+	Input getInput() const override {
 		return input_;
 	}
 
@@ -20,6 +22,13 @@ public:
 	}
 
 	void eventUpdate(const console::ConsoleEvent& consoleEvent);
+
+	void update(const TetrisBoard& board) override {
+	}
+
+	bool isAi() const override {
+		return true;
+	}
 
 private:
 	std::string name_, playerName_;	

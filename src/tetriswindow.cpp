@@ -717,14 +717,14 @@ void TetrisWindow::initNetworkPanel() {
 				TetrisData::getInstance().save();
 				tetrisGame_.closeGame();
 				nbrHumans_->setNbr(1);
-				tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+				tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, std::vector<IDevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 				tetrisGame_.createServerGame(std::stoi(port_->getText()));
 			} else {
 				TetrisData::getInstance().setIp(ipClient_->getText());
 				TetrisData::getInstance().save();
 				tetrisGame_.closeGame();
 				nbrHumans_->setNbr(1);
-				tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, std::vector<DevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
+				tetrisGame_.setPlayers(TETRIS_WIDTH, TETRIS_HEIGHT, std::vector<IDevicePtr>(devices_.begin(), devices_.begin() + nbrHumans_->getNbr()));
 				tetrisGame_.createClientGame(std::stoi(port_->getText()), ipClient_->getText());
 				addTimerMS(TetrisData::getInstance().getTimeToConnectMS());
 				progressBar_->setVisible(true);
@@ -915,7 +915,7 @@ void TetrisWindow::saveHighscore() {
 }
 
 void TetrisWindow::setPlayers(int width, int height) {
-	std::vector<DevicePtr> playerDevices(devices_.begin(), devices_.begin() + nbrHumans_->getNbr());
+	std::vector<IDevicePtr> playerDevices(devices_.begin(), devices_.begin() + nbrHumans_->getNbr());
 
 	for (unsigned int i = 0; i < nbrAis_->getNbr(); ++i) {
 		if (activeAis_[i]) {
@@ -926,8 +926,8 @@ void TetrisWindow::setPlayers(int width, int height) {
 	tetrisGame_.setPlayers(width, height, playerDevices);
 }
 
-DevicePtr TetrisWindow::findHumanDevice(std::string name) const {
-	for (const DevicePtr& device: devices_) {
+IDevicePtr TetrisWindow::findHumanDevice(std::string name) const {
+	for (const IDevicePtr& device: devices_) {
 		if (device->getName() == name) {
 			return device;
 		}
@@ -935,7 +935,7 @@ DevicePtr TetrisWindow::findHumanDevice(std::string name) const {
 	return devices_[0];
 }
 
-DevicePtr TetrisWindow::findAiDevice(std::string name) const {
+IDevicePtr TetrisWindow::findAiDevice(std::string name) const {
 	auto ais = TetrisData::getInstance().getAiVector();
 	for (const Ai& ai : ais) {
 		if (ai.getName() == name) {

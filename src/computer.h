@@ -12,18 +12,22 @@
 #include <string>
 #include <future>
 
-class Computer : public Device {
+class Computer : public IDevice {
 public:
 	Computer();
 
 	Computer(const Ai& ai);
 
-	Input currentInput() override;
+	Input getInput() const override;
 
 	std::string getName() const override;
 
 	void update(const TetrisBoard& board) override;
 	
+	bool isAi() const override {
+		return true;
+	}
+
 private:
 	static Ai::State calculateBestState(RawTetrisBoard board, Ai ai, int depth);
 

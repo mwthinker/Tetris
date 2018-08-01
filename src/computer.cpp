@@ -6,14 +6,14 @@
 #include <future>
 
 Computer::Computer()
-	: Device(true), currentTurn_(0), activeThread_(false) {
+	: currentTurn_(0), activeThread_(false) {
 }
 
 Computer::Computer(const Ai& ai)
-	: Device(true), ai_(ai), currentTurn_(0), activeThread_(false) {
+	: ai_(ai), currentTurn_(0), activeThread_(false) {
 }
 
-Input Computer::currentInput() {
+Input Computer::getInput() const {
 	return input_;
 }
 

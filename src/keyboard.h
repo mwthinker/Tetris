@@ -10,7 +10,7 @@ class Keyboard : public SdlDevice {
 public:
 	Keyboard(std::string name, SDL_Keycode down, SDL_Keycode left, SDL_Keycode right, SDL_Keycode rotate, SDL_Keycode downGround);
 
-	Input currentInput() override;
+	Input getInput() const override;
 	std::string getName() const override;
 
 private:

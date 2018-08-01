@@ -42,7 +42,7 @@ void ConsoleTetris::initPreLoop() {
 	printMainMenu();
 }
 
-DevicePtr ConsoleTetris::findAiDevice(std::string name) const {
+IDevicePtr ConsoleTetris::findAiDevice(std::string name) const {
 	auto ais = TetrisData::getInstance().getAiVector();
 	ais.push_back(Ai()); // Add default ai.
 
@@ -183,7 +183,7 @@ void ConsoleTetris::eventUpdate(console::ConsoleEvent& consoleEvent) {
 
 void ConsoleTetris::restartCurrentGame() {
 	// Initialization local game settings.	
-	std::vector<DevicePtr> devices;
+	std::vector<IDevicePtr> devices;
 	if (humanPlayers_ == 1) {
 		devices.push_back(keyboard1_);
 	} else if (humanPlayers_ == 2) {
