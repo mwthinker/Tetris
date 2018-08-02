@@ -56,8 +56,8 @@ private:
 
 	void setPlayers(int width, int height);
 
-	DevicePtr findHumanDevice(std::string name) const;
-	DevicePtr findAiDevice(std::string name) const;
+	IDevicePtr findHumanDevice(std::string name) const;
+	IDevicePtr findAiDevice(std::string name) const;
 
 	void updateCurrentFpsLimiter();
 	void panelChangeListenerFpsLimiter(gui::Component& c, bool enterFrame);
@@ -104,7 +104,7 @@ private:
 	// Devices.
 	std::vector<SdlDevicePtr> devices_;
 	int nbrOfHumanPlayers_, nbrOfComputerPlayers_;
-	std::array<DevicePtr, 4> activeAis_;
+	std::array<IDevicePtr, 4> activeAis_;
 
 	// All panels.
 	void initMenuPanel();
