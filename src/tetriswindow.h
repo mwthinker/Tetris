@@ -4,6 +4,7 @@
 #include "sdldevice.h"
 #include "ai.h"
 #include "tetrisgame.h"
+#include "windowtimer.h"
 
 #include <gui/frame.h>
 #include <gui/textfield.h>
@@ -25,7 +26,7 @@ class GameComponent;
 class TetrisGameEvent;
 class GameData;
 
-class TetrisWindow : public gui::Frame {
+class TetrisWindow : public gui::Frame, public WindowTimer {
 public:
 	TetrisWindow(std::unique_ptr<GuiComponentFactory> componentFactoryPtr);
 
@@ -117,10 +118,6 @@ private:
 
 	void sdlEventListener(const SDL_Event& e);
 
-	void addTimerMS(unsigned int ms);
-	void removeLastTimer();
-	static Uint32 addTimer(Uint32 interval, void* sdlTimerId);
-
 	// Panel indexes.
 	int menuIndex_,
 		playIndex_,
@@ -135,7 +132,6 @@ private:
 
 	int lastX_, lastY_;
 	StartFrame startFrame_;
-	SDL_TimerID lastTimerId_;
 	gui::TraversalGroup groupMenu_;
 };
 

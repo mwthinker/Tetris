@@ -37,7 +37,7 @@ namespace {
 TetrisWindow::TetrisWindow(std::unique_ptr<GuiComponentFactory> componentFactoryPtr) :
 	windowFollowMouse_(false), followMouseX_(0), followMouseY_(0),
 	nbrOfHumanPlayers_(1), nbrOfComputerPlayers_(0), startFrame_(StartFrame::MENU),
-	lastTimerId_(0), componentFactoryPtr_(std::move(componentFactoryPtr)) {
+	componentFactoryPtr_(std::move(componentFactoryPtr)) {
 
 	Frame::setPosition(TetrisData::getInstance().getWindowPositionX(), TetrisData::getInstance().getWindowPositionY());
 	Frame::setWindowSize(TetrisData::getInstance().getWindowWidth(), TetrisData::getInstance().getWindowHeight());
@@ -759,39 +759,6 @@ void TetrisWindow::initNetworkPanel() {
 	});
 
 	addPanelChangeListener(std::bind(&TetrisWindow::panelChangeListenerFpsLimiter, this, std::placeholders::_1, std::placeholders::_2));
-}
-
-// Add a new timer and remove the last.
-void TetrisWindow::addTimerMS(unsigned int ms) {
-	removeLastTimer();
-	lastTimerId_ = SDL_AddTimer(ms, TetrisWindow::addTimer, 0); // Clean up timer?
-	if (lastTimerId_ == 0) {
-		std::cout << SDL_GetError() << "\n";
-	}
-}
-
-// Remove last timer. Safe to be called mulltiple times.
-void TetrisWindow::removeLastTimer() {
-	if (lastTimerId_ != 0) {
-		SDL_RemoveTimer(lastTimerId_); // Only call this once per id.
-		lastTimerId_ = 0;
-	}
-}
-
-// Only allowed to be called by addTimer().
-Uint32 TetrisWindow::addTimer(Uint32 interval, void* sdlTimerId) {
-	SDL_Event event;
-	SDL_UserEvent userevent;
-	userevent.type = SDL_USEREVENT;
-	userevent.code = 0;
-	userevent.data1 = nullptr;
-	userevent.data2 = nullptr;
-
-	event.type = SDL_USEREVENT;
-	event.user = userevent;
-
-	SDL_PushEvent(&event);
-	return 0;
 }
 
 void TetrisWindow::handleConnectionEvent(TetrisGameEvent& tetrisEvent) {

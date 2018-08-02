@@ -80,6 +80,8 @@ set(SOURCES
 	src/tetrisparameters.h
 	src/tetriswindow.cpp
 	src/tetriswindow.h 
+	src/windowtimer.cpp
+	src/windowtimer.h
 )
 
 set(SOURCES_CONSOLE
