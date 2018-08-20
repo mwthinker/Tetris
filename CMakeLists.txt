@@ -164,7 +164,9 @@ if (ConsoleTetris)
 	include_directories(
 		external/CppConsole/src
 	)
-	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE} ${WIN_RESOURCE_FILE})
+	
+	# Problem with WIN_RESOURCE_FILE to work with some versions of visual studio 2017 compiler.
+	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE} ) #${WIN_RESOURCE_FILE})
 else ()
 	set(ConsoleTest OFF)
 	add_executable(MWetris ${SOURCES})
