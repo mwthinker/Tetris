@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.0)
 project(MWetris)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/Calculator/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SimpleNetwork/cmake/Modules/ ${CMAKE_CURRENT_SOURCE_DIR}/SdlGui/MwLibrary2/cmake/Modules/)
+set(CMAKE_MODULE_PATH
+	${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/
+	${CMAKE_CURRENT_SOURCE_DIR}/external/Calculator/cmake/Modules/
+	${CMAKE_CURRENT_SOURCE_DIR}/external/SimpleNetwork/cmake/Modules/
+	${CMAKE_CURRENT_SOURCE_DIR}/external/SdlGui/MwLibrary2/cmake/Modules/
+)
+
 if (MSVC)
 	# Exception handler model.
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")
@@ -114,16 +120,16 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	find_package(Threads REQUIRED) # Due to a bug, which forces the user to link to Threads when using #include <thread>.
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-add_subdirectory(SdlGui)
-add_subdirectory(Calculator)
-add_subdirectory(SimpleNetwork)
+add_subdirectory(external/SdlGui)
+add_subdirectory(external/Calculator)
+add_subdirectory(external/SimpleNetwork)
 add_subdirectory(TetrisEngine)
 
 option(ConsoleTetris "Console tetris is added" ON)
 
 if (ConsoleTetris)
 	add_definitions(-DCONSOLE_TETRIS)
-	add_subdirectory(CppConsole)
+	add_subdirectory(external/CppConsole)
 endif ()
 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) # Copy data to build folder.
@@ -135,13 +141,15 @@ include_directories(
 	${SDL2_IMAGE_INCLUDE_DIRS}
 	${SDL2_NET_INCLUDE_DIRS}
 	${GLEW_INCLUDE_DIRS}
-	SimpleNetwork/src
-	SdlGui/src
-	SdlGui/MwLibrary2/src
-	SdlGui/Signal/src
-	Calculator/src
+	
+	external/SimpleNetwork/src
+	external/SdlGui/src
+	external/SdlGui/MwLibrary2/src
+	external/SdlGui/Signal/src
+	external/Calculator/src
+	external/nlohmann-json/src
+	
 	TetrisEngine/srcLib
-	nlohmann-json/src
 )
 
 if (ConsoleTetris)
@@ -154,7 +162,7 @@ if (ConsoleTetris)
 	endif ()
 
 	include_directories(
-		CppConsole/src
+		external/CppConsole/src
 	)
 	add_executable(MWetris ${SOURCES} ${SOURCES_CONSOLE} ${WIN_RESOURCE_FILE})
 else ()

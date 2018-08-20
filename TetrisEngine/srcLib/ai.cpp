@@ -332,7 +332,7 @@ Ai::State::State() : left_(0), rotationLeft_(0), value_(std::numeric_limits<floa
 Ai::State::State(int left, int rotations) : left_(left), rotationLeft_(rotations), value_(std::numeric_limits<float>::lowest()) {
 }
 
-Ai::Ai() : Ai("Default", "-0.2*cumulativeWells - 1*holeDepth - 1*holes - 1*landingHeight") {
+Ai::Ai() : Ai("Default", Ai::getDefaultValueFunction()) {
 }
 
 Ai::Ai(std::string name, std::string valueFunction, bool allowException) : name_(name), valueFunction_(valueFunction) {

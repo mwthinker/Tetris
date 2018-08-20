@@ -2,21 +2,18 @@
 #define FLAGSEXCEPTION_H
 
 #include <string>
+#include <stdexcept>
 
-class FlagsException {
+class FlagsException : public std::runtime_error {
 public:
-	FlagsException() {
+	explicit FlagsException() : std::runtime_error("") {
 	}
 
-	FlagsException(std::string error) : error_(error) {
+	explicit FlagsException(const char* error) : std::runtime_error(error) {
 	}
 
-	std::string what() const {
-		return error_;
+	explicit FlagsException(const std::string& error) : std::runtime_error(error) {
 	}
-
-private:
-	std::string error_;
 };
 
 #endif	// FLAGSEXCEPTION_H

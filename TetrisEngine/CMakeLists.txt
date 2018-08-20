@@ -34,8 +34,8 @@ set(SOURCES_LIB
 )
 
 include_directories(
-	../SdlGui/Signal/src
-	../Calculator/src
+	../external/SdlGui/Signal/src
+	../external/Calculator/src	
 )
 
 set(SOURCES_MAIN

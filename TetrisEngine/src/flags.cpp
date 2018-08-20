@@ -76,7 +76,7 @@ useRandomFile_(false), verbose_(false), depth_(1), width_(10), height_(24) {
 			} else {
 				throw FlagsException(std::string("Missing argument after ") + arg + std::string("flag\n"));
 			}
-		} else if (arg == "-z" || arg == "--board-size") {
+		} else if (arg == "-s" || arg == "--board-size") {
 			if (i + 2 < argc) {
 				std::stringstream stream;
 				stream << argv[i + 1];
